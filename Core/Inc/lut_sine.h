@@ -12,7 +12,7 @@
 #ifndef _LUT_SINE_H
 #define _LUT_SINE_H
 
-#include "CONSTS.h"
+// #include "CONSTS.h"
 
 #define LUT_SINE_SIZE   1024
 

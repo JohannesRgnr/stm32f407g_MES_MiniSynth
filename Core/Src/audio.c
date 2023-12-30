@@ -2,8 +2,8 @@
  * @file audio.c
  * @author johannes regnier
  * @brief Functions to make sound! 
- *  Most of it from Tom Erbe:
- *  http://synthnotes.ucsd.edu/wp4/index.php/2019/09/24/setting-up-the-stmf4-to-connect-to-the-codec-and-make-sound/
+ * @note  Most of it from Tom Erbe:
+ * @note  http://synthnotes.ucsd.edu/wp4/index.php/2019/09/24/setting-up-the-stmf4-to-connect-to-the-codec-and-make-sound/
  * @version 0.1
  * @date 2023-12-12
  * 
@@ -12,7 +12,7 @@
  */
 
 
-#include<stdint.h>
+#include <stdint.h>
 #include "audio.h"
 #include "oscillators.h"
 #include "MIDI_lut.h"
@@ -20,11 +20,15 @@
 
 
 
-
 int16_t audioBuffer[BUFFER_SIZE_DIV_2]; // 32 samples X 2 channels
 float outputBuffer[BUFFER_SIZE_DIV_4];
+
 extern int8_t currentPitch;
-// extern float mtof[128];
+extern int8_t velocity;
+extern ADSR_t adsr;
+
+static float env;
+static float y = 0;
 
 extern oscillator_t osc1, osc2, osc3, osc4, osc5, osc6, osc7;
 
@@ -46,8 +50,12 @@ void AUDIO_Init()
 	osc_init(&osc5, 0.5, 440, 0, 0, 0.5);
 	osc_init(&osc6, 0.5, 440, 0, 0, 0.5);
 	osc_init(&osc7, 0.5, 440, 0, 0, 0.5);
+
+	ADSR_init(&adsr);
+	ADSR_setReleaseTime(&adsr, 0.4);
+	// ADSR_setTarget(&adsr, 1);
 	
-	
+
 }
 
 float superSaw_outL, superSaw_outR;
@@ -57,7 +65,7 @@ void audioBlock(float *output, int32_t samples)
 {
 	//osc1.freq = 440.f;
 	//osc2.freq = 110;
-
+	
 	
 	for (uint16_t i = 0; i < samples; i++)
 	{
@@ -65,14 +73,18 @@ void audioBlock(float *output, int32_t samples)
 		//osc_polyblepSaw(&osc2);
 		//osc_Sine(&osc1);
 		osc_Sine(&osc1);
+		/*--- Apply envelop and tremolo ---*/
+		env = ADSR_computeSample(&adsr);
 		float frequency = mtof[currentPitch];
 		osc1.freq = frequency;
+		y = osc1.output;
+		y *= env;
 		// osc_superSaw(50, 0.3, &superSaw_outL, &superSaw_outR);
 		// output[i << 1] 			= superSaw_outL;		// LEFT
 		// output[(i << 1) + 1] 	= superSaw_outR;  		// RIGHT
 
-		output[i << 1] 			= osc1.output;			// LEFT
-		output[(i << 1) + 1] 	= osc1.output;  		// RIGHT
+		output[i << 1] 			= y;			// LEFT
+		output[(i << 1) + 1] 	= y;  		// RIGHT
 
 		
 	}

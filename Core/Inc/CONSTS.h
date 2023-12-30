@@ -27,8 +27,9 @@
 #define PI                  3.14159265359
 #define TWOPI               6.28318530718
 
-#define MIN_MIDI_NOTE    0      // C-2
-#define MAX_MIDI_NOTE    127    // G-8
+#define MIN_MIDI_NOTE       0      // C-2
+#define MAX_MIDI_NOTE       127    // G-8
+#define MIDI_MAX            127.f 
 
 
 

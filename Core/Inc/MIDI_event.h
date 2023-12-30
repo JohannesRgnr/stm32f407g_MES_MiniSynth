@@ -1,6 +1,6 @@
 /**
  * @file MIDI_event.h
- * @author johannes regnier
+ * @author modified by johannes regnier
  * @brief MIDI events processing
  * @version 0.1
  * @date 2023-12-30
@@ -21,25 +21,6 @@
 
 
 
-
-typedef struct synthVoice
-{
-	int active;
-	int note;
-	int velocity;
-	float volume;
-	float frequency;
-	float phase;
-} synthVoice;
-
-typedef enum
-{
-	INACTIVE = 0,
-	ATTACK,
-	DECAY,
-	SUSTAIN,
-	RELEASE
-} voiceState;
 
 void allNotesOff(void);
 

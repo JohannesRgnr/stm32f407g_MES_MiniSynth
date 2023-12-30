@@ -44,6 +44,7 @@ Core/Src/audio.c \
 Core/Src/console.c \
 Core/Src/consoleCommands.c \
 Core/Src/consoleIo.c \
+Core/Src/envelope.c \
 Core/Src/filter.c \
 Core/Src/gpio.c \
 Core/Src/helper_functions.c \

@@ -34,7 +34,7 @@ build/spi.o: Core/Src/spi.c Core/Inc/spi.h Core/Inc/main.h \
  Core/Inc/../../Drivers/BSP/STM32F4-Discovery/../Components/cs43l22/../Common/audio.h \
  Core/Inc/../../Drivers/BSP/STM32F4-Discovery/stm32f4_discovery.h \
  Core/Inc/../../Drivers/BSP/STM32F4-Discovery/../../../Middlewares/ST/STM32_Audio/Addons/PDM/Inc/pdm2pcm_glo.h \
- Core/Inc/CONSTS.h Core/Inc/SEGGER_RTT.h \
+ Core/Inc/CONSTS.h Core/Inc/envelope.h Core/Inc/SEGGER_RTT.h \
  Core/Inc/Config/SEGGER_RTT_Conf.h Core/Inc/console.h \
  Core/Inc/usbh_MIDI.h \
  Middlewares/ST/STM32_USB_Host_Library/Core/Inc/usbh_core.h \
@@ -86,6 +86,7 @@ Core/Inc/../../Drivers/BSP/STM32F4-Discovery/../Components/cs43l22/../Common/aud
 Core/Inc/../../Drivers/BSP/STM32F4-Discovery/stm32f4_discovery.h:
 Core/Inc/../../Drivers/BSP/STM32F4-Discovery/../../../Middlewares/ST/STM32_Audio/Addons/PDM/Inc/pdm2pcm_glo.h:
 Core/Inc/CONSTS.h:
+Core/Inc/envelope.h:
 Core/Inc/SEGGER_RTT.h:
 Core/Inc/Config/SEGGER_RTT_Conf.h:
 Core/Inc/console.h:

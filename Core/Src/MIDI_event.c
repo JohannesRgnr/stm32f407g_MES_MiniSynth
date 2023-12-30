@@ -1,6 +1,6 @@
 /**
  * @file MIDI_event.c
- * @author johannes regnier
+ * @author modified by johannes regnier
  * @brief MIDI events processing
  * @note Makes use of the great resources from Tom Erbe
  * @note http://synthnotes.ucsd.edu/wp4/index.php/2019/09/24/adding-the-usb-otg-midi-driver-polyphonic-framework/
@@ -12,26 +12,25 @@
  *
  */
 
+#include <stdint.h>
+
 #include "MIDI_event.h"
-#include "oscillators.h"
 #include "gpio.h"
 #include "SEGGER_RTT.h"
-#include "stdint.h"
 #include "CONSTS.h"
 #include "helper_functions.h"
+#include "envelope.h"
 
 USBH_HandleTypeDef hUSBHost; /* USB Host handle */
 MIDI_ApplicationTypeDef Appli_state = MIDI_APPLICATION_IDLE;
 
-int pitchbend;
-
-
+uint16_t pitchbend;
 uint8_t currentPitch;
 uint8_t velocity;
 uint8_t notes_Active[128] = {0}; // at most, 128 MIDI notes are active
 int8_t notesCount = 0;			 // number of notes active
+extern ADSR_t adsr;
 
-extern oscillator_t osc1, osc2, osc3, osc4, osc5, osc6, osc7;
 
 void allNotesOff(void)
 {
@@ -40,10 +39,6 @@ void allNotesOff(void)
 	notesCount = 0;
 }
 
-void OpSetFreq(oscillator_t *op, float f)
-{
-	op->freq = f;
-}
 
 void MIDI_eventInit()
 {
@@ -94,12 +89,12 @@ void ProcessMIDI(midi_package_t pack)
 		notesCount--;
 		if (notesCount <= 0) // no more keys pressed
 		{
-			// ADSR_keyOff(&adsr);
+			ADSR_keyOff(&adsr);
 			notesCount = 0;
 		}
-		else // some keys still pressed... (legato)
+		else // legato 
 		{
-			if ((noteOff - MIN_MIDI_NOTE) == currentPitch) // then let sound the lowest key pressed
+			if ((noteOff - MIN_MIDI_NOTE) == currentPitch) // let sound the lowest key pressed
 			{
 				uint8_t i;
 				for (i = 0; i < 128; i++)
@@ -127,7 +122,7 @@ void ProcessMIDI(midi_package_t pack)
 			}
 			SEGGER_RTT_printf(0, "Note ON, pitch %u\r\n", currentPitch);
 			HAL_GPIO_WritePin(LD5_GPIO_Port, LD5_Pin, GPIO_PIN_SET); // red LED ON when incoming MIDI note on
-			// ADSR_keyOn(&adsr);
+			ADSR_keyOn(&adsr);
 			notesCount++;
 			notes_Active[noteOn] = 1;
 		}
@@ -140,7 +135,7 @@ void ProcessMIDI(midi_package_t pack)
 			SEGGER_RTT_printf(0, "Note OFF, pitch %u\r\n", currentPitch);
 			if (notesCount <= 0)
 			{
-				// ADSR_keyOff(&adsr);
+				ADSR_keyOff(&adsr);
 				notesCount = 0;
 				HAL_GPIO_WritePin(LD5_GPIO_Port, LD5_Pin, GPIO_PIN_RESET); // red LED OFF when all MIDI notes off
 			}

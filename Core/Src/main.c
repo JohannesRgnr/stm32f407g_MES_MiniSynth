@@ -116,14 +116,10 @@ int main(void)
 	while (1)
 	{
 		/* USER CODE END WHILE */
-		// MX_USB_HOST_Process();
-		// ConsoleProcess();
 
 		/* USER CODE BEGIN 3 */
 		MIDI_Application();
-
-		// USBH_Delay(1);
-
+		// ConsoleProcess();
 		/* USBH_Background Process */
 		USBH_Process(&hUSBHost);
 	}
