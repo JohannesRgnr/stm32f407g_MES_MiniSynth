@@ -1,3 +1,15 @@
+/**
+ * @file MIDI_event.h
+ * @author johannes regnier
+ * @brief MIDI events processing
+ * @version 0.1
+ * @date 2023-12-30
+ * 
+ * @copyright Copyright (c) 2023
+ * 
+ */
+
+
 #ifndef _MIDI_EVENT_H
 #define _MIDI_EVENT_H
 
@@ -29,13 +41,12 @@ typedef enum
 	RELEASE
 } voiceState;
 
+void allNotesOff(void);
 
-
-/* USER CODE BEGIN EFP */
 void USBH_UserProcess_callback(USBH_HandleTypeDef *pHost, uint8_t vId);
 void MIDI_eventInit(void);
 void ProcessMIDI(midi_package_t pack);
-/* USER CODE END EFP */
+
 
 
 

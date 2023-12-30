@@ -44,7 +44,7 @@ build/MIDI_application.o: Core/Src/MIDI_application.c Core/Inc/main.h \
  Middlewares/ST/STM32_USB_Host_Library/Core/Inc/usbh_core.h \
  Middlewares/ST/STM32_USB_Host_Library/Core/Inc/usbh_pipes.h \
  Middlewares/ST/STM32_USB_Host_Library/Core/Inc/usbh_ctlreq.h \
- Core/Inc/MIDI_application.h
+ Core/Inc/MIDI_application.h Core/Inc/MIDI_application.h
 Core/Inc/main.h:
 Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal.h:
 Core/Inc/stm32f4xx_hal_conf.h:
@@ -96,4 +96,5 @@ Middlewares/ST/STM32_USB_Host_Library/Core/Inc/usbh_ioreq.h:
 Middlewares/ST/STM32_USB_Host_Library/Core/Inc/usbh_core.h:
 Middlewares/ST/STM32_USB_Host_Library/Core/Inc/usbh_pipes.h:
 Middlewares/ST/STM32_USB_Host_Library/Core/Inc/usbh_ctlreq.h:
+Core/Inc/MIDI_application.h:
 Core/Inc/MIDI_application.h:

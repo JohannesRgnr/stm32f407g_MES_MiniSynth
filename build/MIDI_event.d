@@ -37,8 +37,8 @@ build/MIDI_event.o: Core/Src/MIDI_event.c Core/Inc/MIDI_event.h \
  Middlewares/ST/STM32_USB_Host_Library/Core/Inc/usbh_core.h \
  Middlewares/ST/STM32_USB_Host_Library/Core/Inc/usbh_pipes.h \
  Middlewares/ST/STM32_USB_Host_Library/Core/Inc/usbh_ctlreq.h \
- Core/Inc/MIDI_application.h Core/Inc/MIDI_lut.h Core/Inc/oscillators.h \
- Core/Inc/gpio.h Core/Inc/main.h Core/Inc/audio.h \
+ Core/Inc/MIDI_application.h Core/Inc/oscillators.h Core/Inc/gpio.h \
+ Core/Inc/main.h Core/Inc/audio.h \
  Core/Inc/../../Drivers/BSP/STM32F4-Discovery/stm32f4_discovery_audio.h \
  Core/Inc/../../Drivers/BSP/STM32F4-Discovery/../Components/cs43l22/cs43l22.h \
  Core/Inc/../../Drivers/BSP/STM32F4-Discovery/../Components/cs43l22/../Common/audio.h \
@@ -46,7 +46,7 @@ build/MIDI_event.o: Core/Src/MIDI_event.c Core/Inc/MIDI_event.h \
  Core/Inc/../../Drivers/BSP/STM32F4-Discovery/../../../Middlewares/ST/STM32_Audio/Addons/PDM/Inc/pdm2pcm_glo.h \
  Core/Inc/CONSTS.h Core/Inc/SEGGER_RTT.h \
  Core/Inc/Config/SEGGER_RTT_Conf.h Core/Inc/console.h \
- Core/Inc/SEGGER_RTT.h
+ Core/Inc/SEGGER_RTT.h Core/Inc/CONSTS.h Core/Inc/helper_functions.h
 Core/Inc/MIDI_event.h:
 Core/Inc/usbh_MIDI.h:
 Middlewares/ST/STM32_USB_Host_Library/Core/Inc/usbh_core.h:
@@ -89,7 +89,6 @@ Middlewares/ST/STM32_USB_Host_Library/Core/Inc/usbh_core.h:
 Middlewares/ST/STM32_USB_Host_Library/Core/Inc/usbh_pipes.h:
 Middlewares/ST/STM32_USB_Host_Library/Core/Inc/usbh_ctlreq.h:
 Core/Inc/MIDI_application.h:
-Core/Inc/MIDI_lut.h:
 Core/Inc/oscillators.h:
 Core/Inc/gpio.h:
 Core/Inc/main.h:
@@ -104,3 +103,5 @@ Core/Inc/SEGGER_RTT.h:
 Core/Inc/Config/SEGGER_RTT_Conf.h:
 Core/Inc/console.h:
 Core/Inc/SEGGER_RTT.h:
+Core/Inc/CONSTS.h:
+Core/Inc/helper_functions.h:

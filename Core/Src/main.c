@@ -26,7 +26,7 @@
 
 /* Private typedef -----------------------------------------------------------*/
 /* USER CODE BEGIN PTD */
-
+extern USBH_HandleTypeDef hUSBHost; /* USB Host handle */
 /* USER CODE END PTD */
 
 /* Private define ------------------------------------------------------------*/
@@ -42,7 +42,7 @@
 /* Private variables ---------------------------------------------------------*/
 
 /* USER CODE BEGIN PV */
-extern USBH_HandleTypeDef hUSBHost; /* USB Host handle */
+
 
 /* USER CODE END PV */
 
@@ -118,7 +118,7 @@ int main(void)
 		/* USER CODE END WHILE */
 		// MX_USB_HOST_Process();
 		// ConsoleProcess();
-		// OpSetFreq(&osc1, 1000);
+
 		/* USER CODE BEGIN 3 */
 		MIDI_Application();
 

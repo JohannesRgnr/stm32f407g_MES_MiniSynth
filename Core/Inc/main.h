@@ -39,6 +39,7 @@ extern "C" {
 #ifndef __USBH_MIDI_CORE_H
 #include "usbh_MIDI.h"
 #endif
+#include "MIDI_application.h"
 /* USER CODE END Includes */
 
 /* Exported types ------------------------------------------------------------*/

@@ -15,14 +15,16 @@
 #include<stdint.h>
 #include "audio.h"
 #include "oscillators.h"
+#include "MIDI_lut.h"
+
 
 
 
 
 int16_t audioBuffer[BUFFER_SIZE_DIV_2]; // 32 samples X 2 channels
 float outputBuffer[BUFFER_SIZE_DIV_4];
-
-
+extern int8_t currentPitch;
+// extern float mtof[128];
 
 extern oscillator_t osc1, osc2, osc3, osc4, osc5, osc6, osc7;
 
@@ -63,6 +65,8 @@ void audioBlock(float *output, int32_t samples)
 		//osc_polyblepSaw(&osc2);
 		//osc_Sine(&osc1);
 		osc_Sine(&osc1);
+		float frequency = mtof[currentPitch];
+		osc1.freq = frequency;
 		// osc_superSaw(50, 0.3, &superSaw_outL, &superSaw_outR);
 		// output[i << 1] 			= superSaw_outL;		// LEFT
 		// output[(i << 1) + 1] 	= superSaw_outR;  		// RIGHT
