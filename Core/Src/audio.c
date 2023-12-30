@@ -28,7 +28,8 @@ extern int8_t velocity;
 extern ADSR_t adsr;
 
 static float env;
-static float y = 0;
+static float yL = 0;
+static float yR = 0;
 
 extern oscillator_t osc1, osc2, osc3, osc4, osc5, osc6, osc7;
 
@@ -52,7 +53,7 @@ void AUDIO_Init()
 	osc_init(&osc7, 0.5, 440, 0, 0, 0.5);
 
 	ADSR_init(&adsr);
-	ADSR_setReleaseTime(&adsr, 0.4);
+	// ADSR_setReleaseTime(&adsr, 0.4);
 	// ADSR_setTarget(&adsr, 1);
 	
 
@@ -71,20 +72,24 @@ void audioBlock(float *output, int32_t samples)
 	{
 		//osc_polyblepSaw(&osc1);
 		//osc_polyblepSaw(&osc2);
-		//osc_Sine(&osc1);
-		osc_Sine(&osc1);
+		// osc_Sine(&osc1);
+		// osc_Sine(&osc1);
 		/*--- Apply envelop and tremolo ---*/
+		// env = ADSR_computeSample(&adsr);
 		env = ADSR_computeSample(&adsr);
 		float frequency = mtof[currentPitch];
-		osc1.freq = frequency;
-		y = osc1.output;
-		y *= env;
-		// osc_superSaw(50, 0.3, &superSaw_outL, &superSaw_outR);
-		// output[i << 1] 			= superSaw_outL;		// LEFT
-		// output[(i << 1) + 1] 	= superSaw_outR;  		// RIGHT
+		osc_superSaw(frequency, 0.3, &superSaw_outL, &superSaw_outR);
+		//osc1.freq = frequency;
+		//yL = osc1.output;
+		//yL *= env;
+		//osc_superSaw(frequency, 0.3, &superSaw_outL, &superSaw_outR);
+		yL = superSaw_outL * env;
+		yR = superSaw_outR * env;
+		output[i << 1] 			= yL;		// LEFT
+		output[(i << 1) + 1] 	= yR;  		// RIGHT
 
-		output[i << 1] 			= y;			// LEFT
-		output[(i << 1) + 1] 	= y;  		// RIGHT
+		// output[i << 1] 			= y;			// LEFT
+		// output[(i << 1) + 1] 	= y;  		// RIGHT
 
 		
 	}

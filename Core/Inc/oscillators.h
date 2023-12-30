@@ -18,6 +18,7 @@
 
 
 
+
 enum osc_type
 {
     sine = 0,

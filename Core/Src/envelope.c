@@ -39,7 +39,7 @@
 /***************************************************/
 
 #include "envelope.h"
-#include "SEGGER_RTT.h"
+// #include "SEGGER_RTT.h"
 #include <stdint.h>
 #include "lut_log10.h"
 #include "helper_functions.h"
@@ -47,189 +47,171 @@
 /*---------------------------------------------------------------------------*/
 
 ADSR_t			adsr;
-
+float multiplier[3] = {0};
 /*---------------------------------------------------------------------------*/
 
 
 
 void ADSR_init(ADSR_t *env)
 {
-  env->target_ = 1.0;
-  env->value_ = 0.0;
-  env->attackRate_ = 0.001;
-  env->decayRate_ = 0.001;
-  env->decay_mult = 0.5;
-  env->sustainLevel_ = 0.5;
-  env->releaseRate_ = 0.00001;
-  env->release_mult = 0.5;
-  env->state_ = ATTACK;
-  env->sample_index = 0;
-  env->nextStageSampleIndex = 0;
-  env->stageValue[OFF] = 0;
-  env->stageValue[OFF] = 0.01;
-  env->stageValue[OFF] = 0.5;
-  env->stageValue[OFF] = 0.1;
-  env->stageValue[OFF] = 1;
-  env->cnt_ = 0;
-  //env->gateTime_ = 10000;
+    env->target_ = 1.0;
+    env->value_ = 0.0;
+    env->state_ = OFF;
+    env->atk_time = 0.01;
+    env->dcy_time = 0.1;
+    env->sust_level = 0.8;
+    env->rel_time = 1; 
+    env->atk_mult = ADSR_calculateMultiplier(ADSR_MIN_LEVEL, 1.0, env->atk_time);; 
+    env->dcy_mult = ADSR_calculateMultiplier(1.0, env->sust_level, env->dcy_time); ;
+    env->rel_mult = ADSR_calculateMultiplier(env->sust_level, ADSR_MIN_LEVEL, env->rel_time);;
 }
 
 void ADSR_keyOn(ADSR_t *env)
 {
-	env->cnt_ = 0;
 	env->target_ = 1.0f;
-	env->rate_ = 	env->attackRate_;
-	env->state_ = ATTACK;
+    env->value_ = ADSR_MIN_LEVEL;
+    env->state_ = ATTACK;
 }
 
 void ADSR_keyOff(ADSR_t *env)
 {
-	env->cnt_ = 0;
 	env->target_ = 0.0;
-	env->rate_ = 	env->releaseRate_;
 	env->state_ = RELEASE;
 }
 
-void ADSR_setAttackRate(ADSR_t *env, float rate)
-{
-	env->attackRate_ = rate;
-}
+// void ADSR_setAttackRate(ADSR_t *env, float rate)
+// {
+// 	env->attackRate_ = rate;
+// }
 
-void ADSR_setDecayRate(ADSR_t *env, float rate)
-{
-	env->decayRate_ = rate;
-}
+// void ADSR_setDecayRate(ADSR_t *env, float rate)
+// {
+// 	env->decayRate_ = rate;
+// }
 
 void ADSR_setSustainLevel(ADSR_t *env, float level)
 {
-	env->sustainLevel_ = level;
+	env->sust_level = level;
 }
 
-void ADSR_setReleaseRate(ADSR_t *env, float rate)
-{
-	env->releaseRate_ = rate;
+// void ADSR_setReleaseRate(ADSR_t *env, float rate)
+// {
+// 	env->releaseRate_ = rate;
     
+// }
+
+// void ADSR_setAttackTime(ADSR_t *env, float time)
+// {
+// 	env->attackRate_ = 1.0 / ( time * FS );
+// }
+
+// void ADSR_setDecayTime(ADSR_t *env, float time)
+// {
+// 	env->decayRate_ = 1.0 / ( time * FS );
+// }
+
+// void ADSR_setReleaseTime(ADSR_t *env, float time)
+// {
+// 	env->releaseRate_ = env->sustainLevel_ / ( time * FS );
+//     env->release_mult = 1.0 + (interp_lin_lut(LUT_LOG10_SIZE * (0.001), LUT_LOG10_SIZE, log10_lut) - interp_lin_lut(LUT_LOG10_SIZE * (env->sustainLevel_), LUT_LOG10_SIZE, log10_lut)) / (time * FS);
+// }
+
+float ADSR_calculateMultiplier(float start_level, float end_level, float time){
+    return  1.0 + (interp_lin_lut(LUT_LOG10_SIZE * (end_level), LUT_LOG10_SIZE, log10_lut) - interp_lin_lut(LUT_LOG10_SIZE * (start_level), LUT_LOG10_SIZE, log10_lut)) / (time * FS);
 }
 
-void ADSR_setAttackTime(ADSR_t *env, float time)
-{
-	env->attackRate_ = 1.0 / ( time * FS );
-}
+// void ADSR_setAllTimes(ADSR_t *env, float aTime, float dTime, float sLevel, float rTime)
+// {
+//   ADSR_setAttackTime(env, aTime);
+//   ADSR_setDecayTime(env, dTime);
+//   ADSR_setSustainLevel(env, sLevel);
+//   ADSR_setReleaseTime(env, rTime);
+// }
 
-void ADSR_setDecayTime(ADSR_t *env, float time)
-{
-	env->decayRate_ = 1.0 / ( time * FS );
-}
+// void ADSR_setTarget(ADSR_t *env, float target)
+// {
+// 	env->target_ = target;
+//   if (env->value_ < env->target_) {
+// 	  env->state_ = ATTACK;
+// 	  ADSR_setSustainLevel(env, env->target_);
+//     env->rate_ = env->attackRate_;
+//   }
+//   if (env->value_ > env->target_) {
+// 	  ADSR_setSustainLevel(env, env->target_);
+//     env->state_ = DECAY;
+//     env->rate_ = env->decayRate_;
+//   }
+// }
 
-void ADSR_setReleaseTime(ADSR_t *env, float time)
-{
-	env->releaseRate_ = env->sustainLevel_ / ( time * FS );
-    env->release_mult = 1.0 + (interp_lin_lut(LUT_LOG10_SIZE * (0.001), LUT_LOG10_SIZE, log10_lut) - interp_lin_lut(LUT_LOG10_SIZE * (env->sustainLevel_), LUT_LOG10_SIZE, log10_lut)) / (time * FS);
-}
+// void ADSR_setValue(ADSR_t *env, float value)
+// {
+// 	env->state_ = SUSTAIN;
+// 	env->target_ = value;
+// 	env->value_ = value;
+// 	ADSR_setSustainLevel(env, value);
+// 	env->rate_ = 0.0f;
+// }
 
-void ADSR_setAllTimes(ADSR_t *env, float aTime, float dTime, float sLevel, float rTime)
-{
-  ADSR_setAttackTime(env, aTime);
-  ADSR_setDecayTime(env, dTime);
-  ADSR_setSustainLevel(env, sLevel);
-  ADSR_setReleaseTime(env, rTime);
-}
+// int ADSR_getState(ADSR_t *env)
+// {
+//   return env->state_;
+// }
 
-void ADSR_setTarget(ADSR_t *env, float target)
-{
-	env->target_ = target;
-  if (env->value_ < env->target_) {
-	  env->state_ = ATTACK;
-	  ADSR_setSustainLevel(env, env->target_);
-    env->rate_ = env->attackRate_;
-  }
-  if (env->value_ > env->target_) {
-	  ADSR_setSustainLevel(env, env->target_);
-    env->state_ = DECAY;
-    env->rate_ = env->decayRate_;
-  }
-}
-
-void ADSR_setValue(ADSR_t *env, float value)
-{
-	env->state_ = SUSTAIN;
-	env->target_ = value;
-	env->value_ = value;
-	ADSR_setSustainLevel(env, value);
-	env->rate_ = 0.0f;
-}
-
-int ADSR_getState(ADSR_t *env)
-{
-  return env->state_;
-}
-
-void AttTime_set(uint8_t val)
-{
-	ADSR_setAttackTime(&adsr, val/MIDI_MAX + 0.0001f);
-}
-void DecTime_set(uint8_t val)
-{
-	ADSR_setDecayTime(&adsr, .2*val/MIDI_MAX + 0.0001f);
-}
-void SustLevel_set(uint8_t val)
-{
-	ADSR_setSustainLevel(&adsr, val/MIDI_MAX);
-}
-void RelTime_set(uint8_t val)
-{
-	ADSR_setReleaseTime(&adsr, .5f * val/MIDI_MAX + 0.0001f);
-}
+// void AttTime_set(uint8_t val)
+// {
+// 	ADSR_setAttackTime(&adsr, val/MIDI_MAX + 0.0001f);
+// }
+// void DecTime_set(uint8_t val)
+// {
+// 	ADSR_setDecayTime(&adsr, .2*val/MIDI_MAX + 0.0001f);
+// }
+// void SustLevel_set(uint8_t val)
+// {
+// 	ADSR_setSustainLevel(&adsr, val/MIDI_MAX);
+// }
+// void RelTime_set(uint8_t val)
+// {
+// 	ADSR_setReleaseTime(&adsr, .5f * val/MIDI_MAX + 0.0001f);
+// }
 /*--------------------------------------------------------------------------------------*/
+
+
+
+
 float ADSR_computeSample(ADSR_t *env)
 {
-	(env->cnt_)++;
-    if (env->state_ != ATTACK && env->state_ != SUSTAIN) {
-        if (env->sample_index == env->nextStageSampleIndex) {
-            EnvelopeStage newStage = static_cast<EnvelopeStage>(
-                (env->state_ + 1) % kNumEnvelopeStages
-            );
-            enterStage(newStage);
-        }
-        currentLevel *= multiplier;
-        currentSampleIndex++;
-    }
-    return currentLevel;
-    (env->sample_index)++;
     switch (env->state_)
     {
 
     case ATTACK:
-        env->value_ += env->rate_;
+        env->value_ *= env->atk_mult;
         if (env->value_ >= env->target_)
         {
             env->value_ = env->target_;
-            env->rate_ = env->decayRate_;
-            env->target_ = env->sustainLevel_;
+            env->target_ = env->sust_level;
             env->state_ = DECAY;
         }
         break;
 
     case DECAY:
-        env->value_ -= env->decayRate_;
-        if (env->value_ <= env->sustainLevel_)
+        env->value_ *= env->dcy_mult;
+        if (env->value_ <= env->sust_level)
         {
-            env->value_ = env->sustainLevel_;
-            env->rate_ = 0.0f;
+            env->value_ = env->sust_level;
             env->state_ = SUSTAIN;
         }
         break;
 
     case RELEASE:
-        env->value_ *= env->release_mult;
-        if (env->value_ <= 0.0001f)
+        env->value_ *= env->rel_mult;
+        if (env->value_ <= ADSR_MIN_LEVEL)
         {
             env->value_ = 0.0f;
-            env->state_ = DONE;
-    }
+            env->state_ = OFF;
+        }
     }
 
-  env->lastOutput_ = env->value_;
+
   return env->value_;
 }
 

@@ -28,26 +28,20 @@
 
 
 //! Envelope states.
-enum { OFF, ATTACK, DECAY, SUSTAIN, RELEASE, kNumEnvelopeStages };
+enum { ATTACK, DECAY, SUSTAIN, RELEASE, OFF};
 
 typedef struct
 {
-	float 	attackRate_;
-	float 	decayRate_;
-    float   decay_mult;
-    float   sustainLevel_;
-    float 	releaseRate_;
-    float   release_mult;
     float   value_;
-    float	lastOutput_;
 	float 	target_;
-	float	rate_;
 	int 	state_;
-    uint32_t sample_index;
-    uint32_t nextStageSampleIndex;
-    float   stageValue[kNumEnvelopeStages];
-    uint32_t cnt_; // sample counter for on state
-
+    float   atk_time;
+    float   dcy_time;
+    float   sust_level;
+    float   rel_time;
+    float   atk_mult;
+    float   dcy_mult;
+    float   rel_mult;
 } ADSR_t ;
 
 
@@ -96,6 +90,9 @@ int ADSR_getState(ADSR_t *env) ;
 void ADSR_setValue(ADSR_t *env, float value);
 
 float ADSR_computeSample( ADSR_t *env );
+
+float ADSR_calculateMultiplier(float start_level, float end_level, float time);
+float env_Compute(ADSR_t *env);
 
 void setGateTime(uint8_t val);
 void AttTime_set(uint8_t val);

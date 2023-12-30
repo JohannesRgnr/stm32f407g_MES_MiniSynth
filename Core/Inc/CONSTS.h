@@ -19,7 +19,7 @@
 #define correctedFS         48095.f   // real samplerate (check STM32CubeMX configuration)
 #define A0                  FS/correctedFS  // correcting factor for tuning
 #define TS		            (1.f/FS)    // sampling period
-#define BUFFER_SIZE         128         // size of the audio buffer (samples)
+#define BUFFER_SIZE         512         // size of the audio buffer (samples)
 #define BUFFER_SIZE_DIV_2   BUFFER_SIZE/2
 #define BUFFER_SIZE_DIV_4   BUFFER_SIZE/4
 #define INITIAL_VOLUME      65      // initial volume level
