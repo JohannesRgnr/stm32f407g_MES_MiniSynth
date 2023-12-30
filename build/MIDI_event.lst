@@ -1,4 +1,4 @@
-ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccPrAAv0.s 			page 1
+ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccdFp30O.s 			page 1
 
 
    1              		.cpu cortex-m4
@@ -19,11 +19,2271 @@ ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccPrAAv0.s 			page 1
   16              		.text
   17              	.Ltext0:
   18              		.cfi_sections	.debug_frame
-  19              	.Letext0:
-ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccPrAAv0.s 			page 2
+  19              		.section	.text.OpSetFreq,"ax",%progbits
+  20              		.align	1
+  21              		.global	OpSetFreq
+  22              		.syntax unified
+  23              		.thumb
+  24              		.thumb_func
+  26              	OpSetFreq:
+  27              	.LVL0:
+  28              	.LFB134:
+  29              		.file 1 "Core/Src/MIDI_event.c"
+   1:Core/Src/MIDI_event.c **** 
+   2:Core/Src/MIDI_event.c **** 
+   3:Core/Src/MIDI_event.c **** 
+   4:Core/Src/MIDI_event.c **** #include "MIDI_event.h"
+   5:Core/Src/MIDI_event.c **** #include "MIDI_lut.h"
+   6:Core/Src/MIDI_event.c **** #include "oscillators.h"
+   7:Core/Src/MIDI_event.c **** #include "gpio.h"
+   8:Core/Src/MIDI_event.c **** #include "SEGGER_RTT.h"
+   9:Core/Src/MIDI_event.c **** 
+  10:Core/Src/MIDI_event.c **** USBH_HandleTypeDef hUSBHost; /* USB Host handle */
+  11:Core/Src/MIDI_event.c **** MIDI_ApplicationTypeDef Appli_state = MIDI_APPLICATION_IDLE;
+  12:Core/Src/MIDI_event.c **** 
+  13:Core/Src/MIDI_event.c **** int pitchbend;
+  14:Core/Src/MIDI_event.c **** int keyboard[128];
+  15:Core/Src/MIDI_event.c **** uint8_t runningStatus;
+  16:Core/Src/MIDI_event.c **** float mtoinc[128];
+  17:Core/Src/MIDI_event.c **** synthVoice voice[16];
+  18:Core/Src/MIDI_event.c **** 
+  19:Core/Src/MIDI_event.c **** extern oscillator_t osc1, osc2, osc3, osc4, osc5, osc6, osc7;
+  20:Core/Src/MIDI_event.c **** void OpSetFreq(oscillator_t *op, float f)
+  21:Core/Src/MIDI_event.c **** {
+  30              		.loc 1 21 1 view -0
+  31              		.cfi_startproc
+  32              		@ args = 0, pretend = 0, frame = 0
+  33              		@ frame_needed = 0, uses_anonymous_args = 0
+  34              		@ link register save eliminated.
+  22:Core/Src/MIDI_event.c **** 	op->freq = f;
+  35              		.loc 1 22 2 view .LVU1
+  36              		.loc 1 22 11 is_stmt 0 view .LVU2
+ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccdFp30O.s 			page 2
+
+
+  37 0000 80ED010A 		vstr.32	s0, [r0, #4]
+  23:Core/Src/MIDI_event.c **** }
+  38              		.loc 1 23 1 view .LVU3
+  39 0004 7047     		bx	lr
+  40              		.cfi_endproc
+  41              	.LFE134:
+  43              		.section	.text.MIDI_eventInit,"ax",%progbits
+  44              		.align	1
+  45              		.global	MIDI_eventInit
+  46              		.syntax unified
+  47              		.thumb
+  48              		.thumb_func
+  50              	MIDI_eventInit:
+  51              	.LFB135:
+  24:Core/Src/MIDI_event.c **** 
+  25:Core/Src/MIDI_event.c **** void MIDI_eventInit(){
+  52              		.loc 1 25 22 is_stmt 1 view -0
+  53              		.cfi_startproc
+  54              		@ args = 0, pretend = 0, frame = 0
+  55              		@ frame_needed = 0, uses_anonymous_args = 0
+  56              		@ link register save eliminated.
+  26:Core/Src/MIDI_event.c ****     pitchbend = 8192;
+  57              		.loc 1 26 5 view .LVU5
+  58              		.loc 1 26 15 is_stmt 0 view .LVU6
+  59 0000 184B     		ldr	r3, .L12
+  60 0002 4FF40052 		mov	r2, #8192
+  61 0006 1A60     		str	r2, [r3]
+  27:Core/Src/MIDI_event.c **** 	for (int i = 0; i < 128; i++)
+  62              		.loc 1 27 2 is_stmt 1 view .LVU7
+  63              	.LBB2:
+  64              		.loc 1 27 7 view .LVU8
+  65              	.LVL1:
+  66              		.loc 1 27 11 is_stmt 0 view .LVU9
+  67 0008 0023     		movs	r3, #0
+  68              		.loc 1 27 2 view .LVU10
+  69 000a 13E0     		b	.L3
+  70              	.LVL2:
+  71              	.L4:
+  28:Core/Src/MIDI_event.c **** 	{
+  29:Core/Src/MIDI_event.c **** 		mtoinc[i] = mtof[i] * 0.0000208333f; // 1/48000
+  72              		.loc 1 29 3 is_stmt 1 discriminator 3 view .LVU11
+  73              		.loc 1 29 19 is_stmt 0 discriminator 3 view .LVU12
+  74 000c 164A     		ldr	r2, .L12+4
+  75 000e 02EB8302 		add	r2, r2, r3, lsl #2
+  76 0012 D2ED007A 		vldr.32	s15, [r2]
+  77              		.loc 1 29 23 discriminator 3 view .LVU13
+  78 0016 9FED157A 		vldr.32	s14, .L12+8
+  79 001a 67EE877A 		vmul.f32	s15, s15, s14
+  80              		.loc 1 29 13 discriminator 3 view .LVU14
+  81 001e 144A     		ldr	r2, .L12+12
+  82 0020 02EB8302 		add	r2, r2, r3, lsl #2
+  83 0024 C2ED007A 		vstr.32	s15, [r2]
+  30:Core/Src/MIDI_event.c **** 		keyboard[i] = -1;
+  84              		.loc 1 30 3 is_stmt 1 discriminator 3 view .LVU15
+  85              		.loc 1 30 15 is_stmt 0 discriminator 3 view .LVU16
+  86 0028 124A     		ldr	r2, .L12+16
+  87 002a 4FF0FF31 		mov	r1, #-1
+ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccdFp30O.s 			page 3
+
+
+  88 002e 42F82310 		str	r1, [r2, r3, lsl #2]
+  27:Core/Src/MIDI_event.c **** 	for (int i = 0; i < 128; i++)
+  89              		.loc 1 27 28 is_stmt 1 discriminator 3 view .LVU17
+  90 0032 0133     		adds	r3, r3, #1
+  91              	.LVL3:
+  92              	.L3:
+  27:Core/Src/MIDI_event.c **** 	for (int i = 0; i < 128; i++)
+  93              		.loc 1 27 20 discriminator 1 view .LVU18
+  94 0034 7F2B     		cmp	r3, #127
+  95 0036 E9DD     		ble	.L4
+  96              	.LBE2:
+  97              	.LBB3:
+  31:Core/Src/MIDI_event.c **** 	}
+  32:Core/Src/MIDI_event.c **** 	for (int i = 0; i < 16; i++)
+  98              		.loc 1 32 11 is_stmt 0 view .LVU19
+  99 0038 0023     		movs	r3, #0
+ 100              	.LVL4:
+ 101              		.loc 1 32 20 is_stmt 1 view .LVU20
+ 102 003a 0F2B     		cmp	r3, #15
+ 103 003c 10DC     		bgt	.L11
+ 104              	.LBE3:
+  25:Core/Src/MIDI_event.c ****     pitchbend = 8192;
+ 105              		.loc 1 25 22 is_stmt 0 view .LVU21
+ 106 003e 10B4     		push	{r4}
+ 107              		.cfi_def_cfa_offset 4
+ 108              		.cfi_offset 4, -4
+ 109              	.L6:
+ 110              	.LBB4:
+  33:Core/Src/MIDI_event.c **** 	{
+  34:Core/Src/MIDI_event.c **** 		voice[i].active = INACTIVE;
+ 111              		.loc 1 34 3 is_stmt 1 discriminator 3 view .LVU22
+ 112              		.loc 1 34 19 is_stmt 0 discriminator 3 view .LVU23
+ 113 0040 0D48     		ldr	r0, .L12+20
+ 114 0042 03EB4301 		add	r1, r3, r3, lsl #1
+ 115 0046 CA00     		lsls	r2, r1, #3
+ 116 0048 8118     		adds	r1, r0, r2
+ 117 004a 0024     		movs	r4, #0
+ 118 004c 8450     		str	r4, [r0, r2]
+  35:Core/Src/MIDI_event.c **** 		voice[i].phase = 0.0f;
+ 119              		.loc 1 35 3 is_stmt 1 discriminator 3 view .LVU24
+ 120              		.loc 1 35 18 is_stmt 0 discriminator 3 view .LVU25
+ 121 004e 0022     		movs	r2, #0
+ 122 0050 4A61     		str	r2, [r1, #20]	@ float
+  36:Core/Src/MIDI_event.c **** 		voice[i].volume = 0.0f;
+ 123              		.loc 1 36 3 is_stmt 1 discriminator 3 view .LVU26
+ 124              		.loc 1 36 19 is_stmt 0 discriminator 3 view .LVU27
+ 125 0052 CA60     		str	r2, [r1, #12]	@ float
+  32:Core/Src/MIDI_event.c **** 	{
+ 126              		.loc 1 32 27 is_stmt 1 discriminator 3 view .LVU28
+ 127 0054 0133     		adds	r3, r3, #1
+ 128              	.LVL5:
+  32:Core/Src/MIDI_event.c **** 	{
+ 129              		.loc 1 32 20 discriminator 3 view .LVU29
+ 130 0056 0F2B     		cmp	r3, #15
+ 131 0058 F2DD     		ble	.L6
+ 132              	.LBE4:
+  37:Core/Src/MIDI_event.c **** 	}
+ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccdFp30O.s 			page 4
+
+
+  38:Core/Src/MIDI_event.c **** }
+ 133              		.loc 1 38 1 is_stmt 0 view .LVU30
+ 134 005a 5DF8044B 		ldr	r4, [sp], #4
+ 135              		.cfi_restore 4
+ 136              		.cfi_def_cfa_offset 0
+ 137 005e 7047     		bx	lr
+ 138              	.L11:
+ 139              		.loc 1 38 1 view .LVU31
+ 140 0060 7047     		bx	lr
+ 141              	.L13:
+ 142 0062 00BF     		.align	2
+ 143              	.L12:
+ 144 0064 00000000 		.word	.LANCHOR0
+ 145 0068 00000000 		.word	.LANCHOR1
+ 146 006c 2CC3AE37 		.word	934200108
+ 147 0070 00000000 		.word	.LANCHOR2
+ 148 0074 00000000 		.word	.LANCHOR3
+ 149 0078 00000000 		.word	.LANCHOR4
+ 150              		.cfi_endproc
+ 151              	.LFE135:
+ 153              		.section	.rodata.ProcessMIDI.str1.4,"aMS",%progbits,1
+ 154              		.align	2
+ 155              	.LC0:
+ 156 0000 4E6F7465 		.ascii	"Note ON, pitch %u\015\012\000"
+ 156      204F4E2C 
+ 156      20706974 
+ 156      63682025 
+ 156      750D0A00 
+ 157              		.section	.text.ProcessMIDI,"ax",%progbits
+ 158              		.align	1
+ 159              		.global	ProcessMIDI
+ 160              		.syntax unified
+ 161              		.thumb
+ 162              		.thumb_func
+ 164              	ProcessMIDI:
+ 165              	.LVL6:
+ 166              	.LFB136:
+  39:Core/Src/MIDI_event.c **** 
+  40:Core/Src/MIDI_event.c **** 
+  41:Core/Src/MIDI_event.c **** void ProcessMIDI(midi_package_t pack)
+  42:Core/Src/MIDI_event.c **** {
+ 167              		.loc 1 42 1 is_stmt 1 view -0
+ 168              		.cfi_startproc
+ 169              		@ args = 0, pretend = 0, frame = 0
+ 170              		@ frame_needed = 0, uses_anonymous_args = 0
+ 171              		.loc 1 42 1 is_stmt 0 view .LVU33
+ 172 0000 2DE9F041 		push	{r4, r5, r6, r7, r8, lr}
+ 173              		.cfi_def_cfa_offset 24
+ 174              		.cfi_offset 4, -24
+ 175              		.cfi_offset 5, -20
+ 176              		.cfi_offset 6, -16
+ 177              		.cfi_offset 7, -12
+ 178              		.cfi_offset 8, -8
+ 179              		.cfi_offset 14, -4
+ 180 0004 2DED028B 		vpush.64	{d8}
+ 181              		.cfi_def_cfa_offset 32
+ 182              		.cfi_offset 80, -32
+ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccdFp30O.s 			page 5
+
+
+ 183              		.cfi_offset 81, -28
+ 184 0008 0546     		mov	r5, r0
+ 185              	.LVL7:
+  43:Core/Src/MIDI_event.c **** 	int i;
+ 186              		.loc 1 43 2 is_stmt 1 view .LVU34
+  44:Core/Src/MIDI_event.c **** 	uint8_t status;
+ 187              		.loc 1 44 2 view .LVU35
+  45:Core/Src/MIDI_event.c **** 
+  46:Core/Src/MIDI_event.c **** 	// Status messages that start with F, for all MIDI channels
+  47:Core/Src/MIDI_event.c **** 	// None of these are implemented - though we will flash an LED
+  48:Core/Src/MIDI_event.c **** 	// for the MIDI clock
+  49:Core/Src/MIDI_event.c **** 	status = pack.evnt0 & 0xF0;
+ 188              		.loc 1 49 2 view .LVU36
+ 189              		.loc 1 49 15 is_stmt 0 view .LVU37
+ 190 000a C0F30723 		ubfx	r3, r0, #8, #8
+ 191              		.loc 1 49 9 view .LVU38
+ 192 000e 03F0F004 		and	r4, r3, #240
+ 193              	.LVL8:
+  50:Core/Src/MIDI_event.c **** 	if (status == 0xF0)
+ 194              		.loc 1 50 2 is_stmt 1 view .LVU39
+ 195              		.loc 1 50 5 is_stmt 0 view .LVU40
+ 196 0012 F02C     		cmp	r4, #240
+ 197 0014 0CD0     		beq	.L38
+  51:Core/Src/MIDI_event.c **** 	{
+  52:Core/Src/MIDI_event.c **** 		switch (pack.evnt0)
+  53:Core/Src/MIDI_event.c **** 		{
+  54:Core/Src/MIDI_event.c **** 		case 0xF0: // Start of System Exclusive
+  55:Core/Src/MIDI_event.c **** 		case 0xF1: // MIDI Time Code Quarter Fram
+  56:Core/Src/MIDI_event.c **** 		case 0xF2: // Song Position Pointer
+  57:Core/Src/MIDI_event.c **** 		case 0xF3: // Song Select
+  58:Core/Src/MIDI_event.c **** 		case 0xF4: // Undefined
+  59:Core/Src/MIDI_event.c **** 		case 0xF5: // Undefined
+  60:Core/Src/MIDI_event.c **** 		case 0xF6: // Tune Request
+  61:Core/Src/MIDI_event.c **** 		case 0xF7: // End of System Exclusive
+  62:Core/Src/MIDI_event.c **** 			status = runningStatus = 0x00;
+  63:Core/Src/MIDI_event.c **** 			break;
+  64:Core/Src/MIDI_event.c **** 		case 0xF8:										// Timing Clock (24 times a quarter note)
+  65:Core/Src/MIDI_event.c **** 			HAL_GPIO_TogglePin(LD5_GPIO_Port, LD5_Pin); // RED LED
+  66:Core/Src/MIDI_event.c **** 			break;
+  67:Core/Src/MIDI_event.c **** 		case 0xF9: // Undefined
+  68:Core/Src/MIDI_event.c **** 		case 0xFA: // Start Sequence
+  69:Core/Src/MIDI_event.c **** 		case 0xFB: // Continue Sequence
+  70:Core/Src/MIDI_event.c **** 		case 0xFC: // Pause Sequence
+  71:Core/Src/MIDI_event.c **** 		case 0xFD: // Undefined
+  72:Core/Src/MIDI_event.c **** 		case 0xFE: // Active Sensing
+  73:Core/Src/MIDI_event.c **** 		case 0xFF: // Reset all synthesizers to power up
+  74:Core/Src/MIDI_event.c **** 			break;
+  75:Core/Src/MIDI_event.c **** 		}
+  76:Core/Src/MIDI_event.c **** 	}
+  77:Core/Src/MIDI_event.c **** 
+  78:Core/Src/MIDI_event.c **** 	// MIDI running status (same status as last message) doesn't seem to work over this USB driver
+  79:Core/Src/MIDI_event.c **** 	// code commented out.
+  80:Core/Src/MIDI_event.c **** 
+  81:Core/Src/MIDI_event.c **** 	//	else if((pack.evnt0 & 0x80) == 0x00)
+  82:Core/Src/MIDI_event.c **** 	//		status = runningStatus;
+  83:Core/Src/MIDI_event.c **** 	else
+  84:Core/Src/MIDI_event.c **** 		runningStatus = status = pack.evnt0 & 0xF0;
+ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccdFp30O.s 			page 6
+
+
+ 198              		.loc 1 84 3 is_stmt 1 view .LVU41
+ 199              		.loc 1 84 17 is_stmt 0 view .LVU42
+ 200 0016 5E4B     		ldr	r3, .L43
+ 201 0018 1C70     		strb	r4, [r3]
+ 202              	.LVL9:
+ 203              	.L18:
+  85:Core/Src/MIDI_event.c **** 
+  86:Core/Src/MIDI_event.c **** 	switch (status)
+ 204              		.loc 1 86 2 is_stmt 1 view .LVU43
+ 205 001a 902C     		cmp	r4, #144
+ 206 001c 39D0     		beq	.L20
+ 207 001e E02C     		cmp	r4, #224
+ 208 0020 00F0AE80 		beq	.L21
+ 209 0024 802C     		cmp	r4, #128
+ 210 0026 32D0     		beq	.L39
+ 211              	.LVL10:
+ 212              	.L14:
+  87:Core/Src/MIDI_event.c **** 	{
+  88:Core/Src/MIDI_event.c **** 	case 0x80: // Note Off
+  89:Core/Src/MIDI_event.c **** 		// turn off all voices that match the note off note
+  90:Core/Src/MIDI_event.c **** 		for (i = 0; i < 16; i++)
+  91:Core/Src/MIDI_event.c **** 		{
+  92:Core/Src/MIDI_event.c **** 			if (voice[i].note == pack.evnt1)
+  93:Core/Src/MIDI_event.c **** 			{
+  94:Core/Src/MIDI_event.c **** 				voice[i].active = RELEASE;
+  95:Core/Src/MIDI_event.c **** 				keyboard[voice[i].note] = -1;
+  96:Core/Src/MIDI_event.c **** 				HAL_GPIO_WritePin(LD5_GPIO_Port, LD5_Pin, GPIO_PIN_RESET);
+  97:Core/Src/MIDI_event.c **** 			}
+  98:Core/Src/MIDI_event.c **** 		}
+  99:Core/Src/MIDI_event.c **** 		break;
+ 100:Core/Src/MIDI_event.c **** 	case 0x90:				 // Note On
+ 101:Core/Src/MIDI_event.c **** 		if (pack.evnt2 == 0) // velocity 0 means note off
+ 102:Core/Src/MIDI_event.c **** 			// turn off all voices that match the note off note
+ 103:Core/Src/MIDI_event.c **** 			for (i = 0; i < 16; i++)
+ 104:Core/Src/MIDI_event.c **** 			{
+ 105:Core/Src/MIDI_event.c **** 				if ((voice[i].note == pack.evnt1) && (voice[i].active != INACTIVE))
+ 106:Core/Src/MIDI_event.c **** 				{
+ 107:Core/Src/MIDI_event.c **** 					voice[i].active = RELEASE;
+ 108:Core/Src/MIDI_event.c **** 					keyboard[voice[i].note] = -1;
+ 109:Core/Src/MIDI_event.c **** 					HAL_GPIO_WritePin(LD5_GPIO_Port, LD5_Pin, GPIO_PIN_RESET);
+ 110:Core/Src/MIDI_event.c **** 				}
+ 111:Core/Src/MIDI_event.c **** 			}
+ 112:Core/Src/MIDI_event.c **** 		else
+ 113:Core/Src/MIDI_event.c **** 		{
+ 114:Core/Src/MIDI_event.c **** 			// if this key is already on, end the associated note and turn it off
+ 115:Core/Src/MIDI_event.c **** 			if (keyboard[pack.evnt1] != -1)
+ 116:Core/Src/MIDI_event.c **** 			{
+ 117:Core/Src/MIDI_event.c **** 				voice[keyboard[pack.evnt1]].active = RELEASE;
+ 118:Core/Src/MIDI_event.c **** 				keyboard[pack.evnt1] = -1;
+ 119:Core/Src/MIDI_event.c **** 				HAL_GPIO_WritePin(LD5_GPIO_Port, LD5_Pin, GPIO_PIN_RESET);
+ 120:Core/Src/MIDI_event.c **** 			}
+ 121:Core/Src/MIDI_event.c **** 			// find an inactive voice and assign this key to it
+ 122:Core/Src/MIDI_event.c **** 			for (i = 0; i < 16; i++)
+ 123:Core/Src/MIDI_event.c **** 			{
+ 124:Core/Src/MIDI_event.c **** 				if (voice[i].active == INACTIVE)
+ 125:Core/Src/MIDI_event.c **** 				{
+ 126:Core/Src/MIDI_event.c **** 					voice[i].active = ATTACK;
+ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccdFp30O.s 			page 7
+
+
+ 127:Core/Src/MIDI_event.c **** 					voice[i].note = pack.evnt1;
+ 128:Core/Src/MIDI_event.c **** 					float frequency;
+ 129:Core/Src/MIDI_event.c **** 					frequency = mtof[voice[i].note];
+ 130:Core/Src/MIDI_event.c **** 					OpSetFreq(&osc1, frequency);
+ 131:Core/Src/MIDI_event.c **** 					voice[i].velocity = pack.evnt2;
+ 132:Core/Src/MIDI_event.c **** 					keyboard[pack.evnt1] = i;
+ 133:Core/Src/MIDI_event.c **** 					HAL_GPIO_WritePin(LD5_GPIO_Port, LD5_Pin, GPIO_PIN_SET);
+ 134:Core/Src/MIDI_event.c **** 					SEGGER_RTT_printf(0, "Note ON, pitch %u\r\n", (int)frequency);
+ 135:Core/Src/MIDI_event.c **** 					break;
+ 136:Core/Src/MIDI_event.c **** 				}
+ 137:Core/Src/MIDI_event.c **** 			}
+ 138:Core/Src/MIDI_event.c **** 		}
+ 139:Core/Src/MIDI_event.c **** 		break;
+ 140:Core/Src/MIDI_event.c **** 	case 0xA0: // Polyphonic Pressure
+ 141:Core/Src/MIDI_event.c **** 		break;
+ 142:Core/Src/MIDI_event.c **** 	case 0xB0:				// Control Change
+ 143:Core/Src/MIDI_event.c **** 		switch (pack.evnt1) // CC number
+ 144:Core/Src/MIDI_event.c **** 		{
+ 145:Core/Src/MIDI_event.c **** 		case 20:
+ 146:Core/Src/MIDI_event.c **** 
+ 147:Core/Src/MIDI_event.c **** 			break;
+ 148:Core/Src/MIDI_event.c **** 		case 7:
+ 149:Core/Src/MIDI_event.c **** 			break; // master volume
+ 150:Core/Src/MIDI_event.c **** 		}
+ 151:Core/Src/MIDI_event.c **** 		break;
+ 152:Core/Src/MIDI_event.c **** 	case 0xC0: // Program Change
+ 153:Core/Src/MIDI_event.c **** 		break;
+ 154:Core/Src/MIDI_event.c **** 	case 0xD0: // After Touch
+ 155:Core/Src/MIDI_event.c **** 		break;
+ 156:Core/Src/MIDI_event.c **** 	case 0xE0: // Pitch Bend
+ 157:Core/Src/MIDI_event.c **** 		pitchbend = pack.evnt2 * 128 + pack.evnt1;
+ 158:Core/Src/MIDI_event.c **** 		break;
+ 159:Core/Src/MIDI_event.c **** 	}
+ 160:Core/Src/MIDI_event.c **** }
+ 213              		.loc 1 160 1 is_stmt 0 view .LVU44
+ 214 0028 BDEC028B 		vldm	sp!, {d8}
+ 215              		.cfi_remember_state
+ 216              		.cfi_restore 80
+ 217              		.cfi_restore 81
+ 218              		.cfi_def_cfa_offset 24
+ 219 002c BDE8F081 		pop	{r4, r5, r6, r7, r8, pc}
+ 220              	.LVL11:
+ 221              	.L38:
+ 222              		.cfi_restore_state
+  52:Core/Src/MIDI_event.c **** 		{
+ 223              		.loc 1 52 3 is_stmt 1 view .LVU45
+ 224 0030 F72B     		cmp	r3, #247
+ 225 0032 07D9     		bls	.L40
+ 226 0034 F82B     		cmp	r3, #248
+ 227 0036 F0D1     		bne	.L18
+  65:Core/Src/MIDI_event.c **** 			break;
+ 228              		.loc 1 65 4 view .LVU46
+ 229 0038 4FF48041 		mov	r1, #16384
+ 230 003c 5548     		ldr	r0, .L43+4
+ 231              	.LVL12:
+  65:Core/Src/MIDI_event.c **** 			break;
+ 232              		.loc 1 65 4 is_stmt 0 view .LVU47
+ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccdFp30O.s 			page 8
+
+
+ 233 003e FFF7FEFF 		bl	HAL_GPIO_TogglePin
+ 234              	.LVL13:
+  66:Core/Src/MIDI_event.c **** 		case 0xF9: // Undefined
+ 235              		.loc 1 66 4 is_stmt 1 view .LVU48
+ 236 0042 EAE7     		b	.L18
+ 237              	.LVL14:
+ 238              	.L40:
+  52:Core/Src/MIDI_event.c **** 		{
+ 239              		.loc 1 52 3 is_stmt 0 view .LVU49
+ 240 0044 F02B     		cmp	r3, #240
+ 241 0046 E8D3     		bcc	.L18
+  62:Core/Src/MIDI_event.c **** 			break;
+ 242              		.loc 1 62 4 is_stmt 1 view .LVU50
+  62:Core/Src/MIDI_event.c **** 			break;
+ 243              		.loc 1 62 27 is_stmt 0 view .LVU51
+ 244 0048 0024     		movs	r4, #0
+ 245              	.LVL15:
+  62:Core/Src/MIDI_event.c **** 			break;
+ 246              		.loc 1 62 27 view .LVU52
+ 247 004a 514B     		ldr	r3, .L43
+ 248              	.LVL16:
+  62:Core/Src/MIDI_event.c **** 			break;
+ 249              		.loc 1 62 27 view .LVU53
+ 250 004c 1C70     		strb	r4, [r3]
+ 251              	.LVL17:
+  63:Core/Src/MIDI_event.c **** 		case 0xF8:										// Timing Clock (24 times a quarter note)
+ 252              		.loc 1 63 4 is_stmt 1 view .LVU54
+ 253 004e E4E7     		b	.L18
+ 254              	.LVL18:
+ 255              	.L24:
+  90:Core/Src/MIDI_event.c **** 		{
+ 256              		.loc 1 90 24 discriminator 2 view .LVU55
+ 257 0050 0134     		adds	r4, r4, #1
+ 258              	.LVL19:
+ 259              	.L22:
+  90:Core/Src/MIDI_event.c **** 		{
+ 260              		.loc 1 90 17 discriminator 1 view .LVU56
+ 261 0052 0F2C     		cmp	r4, #15
+ 262 0054 E8DC     		bgt	.L14
+  92:Core/Src/MIDI_event.c **** 			{
+ 263              		.loc 1 92 4 view .LVU57
+  92:Core/Src/MIDI_event.c **** 			{
+ 264              		.loc 1 92 16 is_stmt 0 view .LVU58
+ 265 0056 04EB4402 		add	r2, r4, r4, lsl #1
+ 266 005a 4F4B     		ldr	r3, .L43+8
+ 267 005c 03EBC203 		add	r3, r3, r2, lsl #3
+ 268 0060 5B68     		ldr	r3, [r3, #4]
+  92:Core/Src/MIDI_event.c **** 			{
+ 269              		.loc 1 92 29 view .LVU59
+ 270 0062 C5F30742 		ubfx	r2, r5, #16, #8
+  92:Core/Src/MIDI_event.c **** 			{
+ 271              		.loc 1 92 7 view .LVU60
+ 272 0066 9342     		cmp	r3, r2
+ 273 0068 F2D1     		bne	.L24
+  94:Core/Src/MIDI_event.c **** 				keyboard[voice[i].note] = -1;
+ 274              		.loc 1 94 5 is_stmt 1 view .LVU61
+  94:Core/Src/MIDI_event.c **** 				keyboard[voice[i].note] = -1;
+ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccdFp30O.s 			page 9
+
+
+ 275              		.loc 1 94 21 is_stmt 0 view .LVU62
+ 276 006a 04EB4402 		add	r2, r4, r4, lsl #1
+ 277 006e 4A49     		ldr	r1, .L43+8
+ 278 0070 0420     		movs	r0, #4
+ 279 0072 41F83200 		str	r0, [r1, r2, lsl #3]
+  95:Core/Src/MIDI_event.c **** 				HAL_GPIO_WritePin(LD5_GPIO_Port, LD5_Pin, GPIO_PIN_RESET);
+ 280              		.loc 1 95 5 is_stmt 1 view .LVU63
+  95:Core/Src/MIDI_event.c **** 				HAL_GPIO_WritePin(LD5_GPIO_Port, LD5_Pin, GPIO_PIN_RESET);
+ 281              		.loc 1 95 29 is_stmt 0 view .LVU64
+ 282 0076 494A     		ldr	r2, .L43+12
+ 283 0078 4FF0FF31 		mov	r1, #-1
+ 284 007c 42F82310 		str	r1, [r2, r3, lsl #2]
+  96:Core/Src/MIDI_event.c **** 			}
+ 285              		.loc 1 96 5 is_stmt 1 view .LVU65
+ 286 0080 0022     		movs	r2, #0
+ 287 0082 4FF48041 		mov	r1, #16384
+ 288 0086 4348     		ldr	r0, .L43+4
+ 289 0088 FFF7FEFF 		bl	HAL_GPIO_WritePin
+ 290              	.LVL20:
+ 291 008c E0E7     		b	.L24
+ 292              	.LVL21:
+ 293              	.L39:
+  86:Core/Src/MIDI_event.c **** 	{
+ 294              		.loc 1 86 2 is_stmt 0 view .LVU66
+ 295 008e 0024     		movs	r4, #0
+ 296              	.LVL22:
+  86:Core/Src/MIDI_event.c **** 	{
+ 297              		.loc 1 86 2 view .LVU67
+ 298 0090 DFE7     		b	.L22
+ 299              	.LVL23:
+ 300              	.L20:
+ 101:Core/Src/MIDI_event.c **** 			// turn off all voices that match the note off note
+ 301              		.loc 1 101 3 is_stmt 1 view .LVU68
+ 101:Core/Src/MIDI_event.c **** 			// turn off all voices that match the note off note
+ 302              		.loc 1 101 6 is_stmt 0 view .LVU69
+ 303 0092 2E0E     		lsrs	r6, r5, #24
+ 304 0094 38D0     		beq	.L35
+ 115:Core/Src/MIDI_event.c **** 			{
+ 305              		.loc 1 115 4 is_stmt 1 view .LVU70
+ 115:Core/Src/MIDI_event.c **** 			{
+ 306              		.loc 1 115 21 is_stmt 0 view .LVU71
+ 307 0096 C5F30745 		ubfx	r5, r5, #16, #8
+ 115:Core/Src/MIDI_event.c **** 			{
+ 308              		.loc 1 115 16 view .LVU72
+ 309 009a 404B     		ldr	r3, .L43+12
+ 310 009c 53F82530 		ldr	r3, [r3, r5, lsl #2]
+ 115:Core/Src/MIDI_event.c **** 			{
+ 311              		.loc 1 115 7 view .LVU73
+ 312 00a0 B3F1FF3F 		cmp	r3, #-1
+ 313 00a4 32D1     		bne	.L41
+ 314              	.L30:
+ 122:Core/Src/MIDI_event.c **** 			{
+ 315              		.loc 1 122 4 is_stmt 1 view .LVU74
+ 316              	.LVL24:
+ 122:Core/Src/MIDI_event.c **** 			{
+ 317              		.loc 1 122 11 is_stmt 0 view .LVU75
+ 318 00a6 0024     		movs	r4, #0
+ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccdFp30O.s 			page 10
+
+
+ 319              	.LVL25:
+ 320              	.L31:
+ 122:Core/Src/MIDI_event.c **** 			{
+ 321              		.loc 1 122 18 is_stmt 1 discriminator 1 view .LVU76
+ 322 00a8 0F2C     		cmp	r4, #15
+ 323 00aa BDDC     		bgt	.L14
+ 124:Core/Src/MIDI_event.c **** 				{
+ 324              		.loc 1 124 5 view .LVU77
+ 124:Core/Src/MIDI_event.c **** 				{
+ 325              		.loc 1 124 17 is_stmt 0 view .LVU78
+ 326 00ac 04EB4403 		add	r3, r4, r4, lsl #1
+ 327 00b0 394A     		ldr	r2, .L43+8
+ 328 00b2 52F83330 		ldr	r3, [r2, r3, lsl #3]
+ 124:Core/Src/MIDI_event.c **** 				{
+ 329              		.loc 1 124 8 view .LVU79
+ 330 00b6 002B     		cmp	r3, #0
+ 331 00b8 3AD0     		beq	.L42
+ 122:Core/Src/MIDI_event.c **** 			{
+ 332              		.loc 1 122 25 is_stmt 1 discriminator 2 view .LVU80
+ 333 00ba 0134     		adds	r4, r4, #1
+ 334              	.LVL26:
+ 122:Core/Src/MIDI_event.c **** 			{
+ 335              		.loc 1 122 25 is_stmt 0 discriminator 2 view .LVU81
+ 336 00bc F4E7     		b	.L31
+ 337              	.LVL27:
+ 338              	.L28:
+ 103:Core/Src/MIDI_event.c **** 			{
+ 339              		.loc 1 103 25 is_stmt 1 discriminator 2 view .LVU82
+ 340 00be 0134     		adds	r4, r4, #1
+ 341              	.LVL28:
+ 342              	.L26:
+ 103:Core/Src/MIDI_event.c **** 			{
+ 343              		.loc 1 103 18 discriminator 1 view .LVU83
+ 344 00c0 0F2C     		cmp	r4, #15
+ 345 00c2 B1DC     		bgt	.L14
+ 105:Core/Src/MIDI_event.c **** 				{
+ 346              		.loc 1 105 5 view .LVU84
+ 105:Core/Src/MIDI_event.c **** 				{
+ 347              		.loc 1 105 18 is_stmt 0 view .LVU85
+ 348 00c4 04EB4402 		add	r2, r4, r4, lsl #1
+ 349 00c8 334B     		ldr	r3, .L43+8
+ 350 00ca 03EBC203 		add	r3, r3, r2, lsl #3
+ 351 00ce 5B68     		ldr	r3, [r3, #4]
+ 105:Core/Src/MIDI_event.c **** 				{
+ 352              		.loc 1 105 31 view .LVU86
+ 353 00d0 C5F30742 		ubfx	r2, r5, #16, #8
+ 105:Core/Src/MIDI_event.c **** 				{
+ 354              		.loc 1 105 8 view .LVU87
+ 355 00d4 9342     		cmp	r3, r2
+ 356 00d6 F2D1     		bne	.L28
+ 105:Core/Src/MIDI_event.c **** 				{
+ 357              		.loc 1 105 51 discriminator 1 view .LVU88
+ 358 00d8 04EB4402 		add	r2, r4, r4, lsl #1
+ 359 00dc 2E49     		ldr	r1, .L43+8
+ 360 00de 51F83220 		ldr	r2, [r1, r2, lsl #3]
+ 105:Core/Src/MIDI_event.c **** 				{
+ 361              		.loc 1 105 39 discriminator 1 view .LVU89
+ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccdFp30O.s 			page 11
+
+
+ 362 00e2 002A     		cmp	r2, #0
+ 363 00e4 EBD0     		beq	.L28
+ 107:Core/Src/MIDI_event.c **** 					keyboard[voice[i].note] = -1;
+ 364              		.loc 1 107 6 is_stmt 1 view .LVU90
+ 107:Core/Src/MIDI_event.c **** 					keyboard[voice[i].note] = -1;
+ 365              		.loc 1 107 22 is_stmt 0 view .LVU91
+ 366 00e6 04EB4402 		add	r2, r4, r4, lsl #1
+ 367 00ea 0420     		movs	r0, #4
+ 368 00ec 41F83200 		str	r0, [r1, r2, lsl #3]
+ 108:Core/Src/MIDI_event.c **** 					HAL_GPIO_WritePin(LD5_GPIO_Port, LD5_Pin, GPIO_PIN_RESET);
+ 369              		.loc 1 108 6 is_stmt 1 view .LVU92
+ 108:Core/Src/MIDI_event.c **** 					HAL_GPIO_WritePin(LD5_GPIO_Port, LD5_Pin, GPIO_PIN_RESET);
+ 370              		.loc 1 108 30 is_stmt 0 view .LVU93
+ 371 00f0 2A4A     		ldr	r2, .L43+12
+ 372 00f2 4FF0FF31 		mov	r1, #-1
+ 373 00f6 42F82310 		str	r1, [r2, r3, lsl #2]
+ 109:Core/Src/MIDI_event.c **** 				}
+ 374              		.loc 1 109 6 is_stmt 1 view .LVU94
+ 375 00fa 0022     		movs	r2, #0
+ 376 00fc 4FF48041 		mov	r1, #16384
+ 377 0100 2448     		ldr	r0, .L43+4
+ 378 0102 FFF7FEFF 		bl	HAL_GPIO_WritePin
+ 379              	.LVL29:
+ 380 0106 DAE7     		b	.L28
+ 381              	.LVL30:
+ 382              	.L35:
+ 103:Core/Src/MIDI_event.c **** 			{
+ 383              		.loc 1 103 11 is_stmt 0 view .LVU95
+ 384 0108 0024     		movs	r4, #0
+ 385              	.LVL31:
+ 103:Core/Src/MIDI_event.c **** 			{
+ 386              		.loc 1 103 11 view .LVU96
+ 387 010a D9E7     		b	.L26
+ 388              	.LVL32:
+ 389              	.L41:
+ 117:Core/Src/MIDI_event.c **** 				keyboard[pack.evnt1] = -1;
+ 390              		.loc 1 117 5 is_stmt 1 view .LVU97
+ 117:Core/Src/MIDI_event.c **** 				keyboard[pack.evnt1] = -1;
+ 391              		.loc 1 117 40 is_stmt 0 view .LVU98
+ 392 010c 03EB4303 		add	r3, r3, r3, lsl #1
+ 393 0110 214A     		ldr	r2, .L43+8
+ 394 0112 0421     		movs	r1, #4
+ 395 0114 42F83310 		str	r1, [r2, r3, lsl #3]
+ 118:Core/Src/MIDI_event.c **** 				HAL_GPIO_WritePin(LD5_GPIO_Port, LD5_Pin, GPIO_PIN_RESET);
+ 396              		.loc 1 118 5 is_stmt 1 view .LVU99
+ 118:Core/Src/MIDI_event.c **** 				HAL_GPIO_WritePin(LD5_GPIO_Port, LD5_Pin, GPIO_PIN_RESET);
+ 397              		.loc 1 118 26 is_stmt 0 view .LVU100
+ 398 0118 204B     		ldr	r3, .L43+12
+ 399 011a 4FF0FF32 		mov	r2, #-1
+ 400 011e 43F82520 		str	r2, [r3, r5, lsl #2]
+ 119:Core/Src/MIDI_event.c **** 			}
+ 401              		.loc 1 119 5 is_stmt 1 view .LVU101
+ 402 0122 0022     		movs	r2, #0
+ 403 0124 4FF48041 		mov	r1, #16384
+ 404 0128 1A48     		ldr	r0, .L43+4
+ 405              	.LVL33:
+ 119:Core/Src/MIDI_event.c **** 			}
+ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccdFp30O.s 			page 12
+
+
+ 406              		.loc 1 119 5 is_stmt 0 view .LVU102
+ 407 012a FFF7FEFF 		bl	HAL_GPIO_WritePin
+ 408              	.LVL34:
+ 409 012e BAE7     		b	.L30
+ 410              	.LVL35:
+ 411              	.L42:
+ 412              	.LBB5:
+ 126:Core/Src/MIDI_event.c **** 					voice[i].note = pack.evnt1;
+ 413              		.loc 1 126 6 is_stmt 1 view .LVU103
+ 126:Core/Src/MIDI_event.c **** 					voice[i].note = pack.evnt1;
+ 414              		.loc 1 126 22 is_stmt 0 view .LVU104
+ 415 0130 1346     		mov	r3, r2
+ 416 0132 04EB4402 		add	r2, r4, r4, lsl #1
+ 417 0136 03EBC208 		add	r8, r3, r2, lsl #3
+ 418 013a 0127     		movs	r7, #1
+ 419 013c 43F83270 		str	r7, [r3, r2, lsl #3]
+ 127:Core/Src/MIDI_event.c **** 					float frequency;
+ 420              		.loc 1 127 6 is_stmt 1 view .LVU105
+ 127:Core/Src/MIDI_event.c **** 					float frequency;
+ 421              		.loc 1 127 20 is_stmt 0 view .LVU106
+ 422 0140 C8F80450 		str	r5, [r8, #4]
+ 128:Core/Src/MIDI_event.c **** 					frequency = mtof[voice[i].note];
+ 423              		.loc 1 128 6 is_stmt 1 view .LVU107
+ 129:Core/Src/MIDI_event.c **** 					OpSetFreq(&osc1, frequency);
+ 424              		.loc 1 129 6 view .LVU108
+ 129:Core/Src/MIDI_event.c **** 					OpSetFreq(&osc1, frequency);
+ 425              		.loc 1 129 16 is_stmt 0 view .LVU109
+ 426 0144 164B     		ldr	r3, .L43+16
+ 427 0146 03EB8503 		add	r3, r3, r5, lsl #2
+ 428 014a 93ED008A 		vldr.32	s16, [r3]
+ 429              	.LVL36:
+ 130:Core/Src/MIDI_event.c **** 					voice[i].velocity = pack.evnt2;
+ 430              		.loc 1 130 6 is_stmt 1 view .LVU110
+ 431 014e B0EE480A 		vmov.f32	s0, s16
+ 432 0152 1448     		ldr	r0, .L43+20
+ 433              	.LVL37:
+ 130:Core/Src/MIDI_event.c **** 					voice[i].velocity = pack.evnt2;
+ 434              		.loc 1 130 6 is_stmt 0 view .LVU111
+ 435 0154 FFF7FEFF 		bl	OpSetFreq
+ 436              	.LVL38:
+ 131:Core/Src/MIDI_event.c **** 					keyboard[pack.evnt1] = i;
+ 437              		.loc 1 131 6 is_stmt 1 view .LVU112
+ 131:Core/Src/MIDI_event.c **** 					keyboard[pack.evnt1] = i;
+ 438              		.loc 1 131 24 is_stmt 0 view .LVU113
+ 439 0158 C8F80860 		str	r6, [r8, #8]
+ 132:Core/Src/MIDI_event.c **** 					HAL_GPIO_WritePin(LD5_GPIO_Port, LD5_Pin, GPIO_PIN_SET);
+ 440              		.loc 1 132 6 is_stmt 1 view .LVU114
+ 132:Core/Src/MIDI_event.c **** 					HAL_GPIO_WritePin(LD5_GPIO_Port, LD5_Pin, GPIO_PIN_SET);
+ 441              		.loc 1 132 27 is_stmt 0 view .LVU115
+ 442 015c 0F4B     		ldr	r3, .L43+12
+ 443 015e 43F82540 		str	r4, [r3, r5, lsl #2]
+ 133:Core/Src/MIDI_event.c **** 					SEGGER_RTT_printf(0, "Note ON, pitch %u\r\n", (int)frequency);
+ 444              		.loc 1 133 6 is_stmt 1 view .LVU116
+ 445 0162 3A46     		mov	r2, r7
+ 446 0164 4FF48041 		mov	r1, #16384
+ 447 0168 0A48     		ldr	r0, .L43+4
+ 448 016a FFF7FEFF 		bl	HAL_GPIO_WritePin
+ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccdFp30O.s 			page 13
+
+
+ 449              	.LVL39:
+ 134:Core/Src/MIDI_event.c **** 					break;
+ 450              		.loc 1 134 6 view .LVU117
+ 451 016e FDEEC87A 		vcvt.s32.f32	s15, s16
+ 452 0172 17EE902A 		vmov	r2, s15	@ int
+ 453 0176 0C49     		ldr	r1, .L43+24
+ 454 0178 0020     		movs	r0, #0
+ 455 017a FFF7FEFF 		bl	SEGGER_RTT_printf
+ 456              	.LVL40:
+ 135:Core/Src/MIDI_event.c **** 				}
+ 457              		.loc 1 135 6 view .LVU118
+ 458 017e 53E7     		b	.L14
+ 459              	.LVL41:
+ 460              	.L21:
+ 135:Core/Src/MIDI_event.c **** 				}
+ 461              		.loc 1 135 6 is_stmt 0 view .LVU119
+ 462              	.LBE5:
+ 157:Core/Src/MIDI_event.c **** 		break;
+ 463              		.loc 1 157 3 is_stmt 1 view .LVU120
+ 157:Core/Src/MIDI_event.c **** 		break;
+ 464              		.loc 1 157 19 is_stmt 0 view .LVU121
+ 465 0180 2B0E     		lsrs	r3, r5, #24
+ 157:Core/Src/MIDI_event.c **** 		break;
+ 466              		.loc 1 157 38 view .LVU122
+ 467 0182 C5F30745 		ubfx	r5, r5, #16, #8
+ 157:Core/Src/MIDI_event.c **** 		break;
+ 468              		.loc 1 157 32 view .LVU123
+ 469 0186 05EBC315 		add	r5, r5, r3, lsl #7
+ 157:Core/Src/MIDI_event.c **** 		break;
+ 470              		.loc 1 157 13 view .LVU124
+ 471 018a 084B     		ldr	r3, .L43+28
+ 472 018c 1D60     		str	r5, [r3]
+ 158:Core/Src/MIDI_event.c **** 	}
+ 473              		.loc 1 158 3 is_stmt 1 view .LVU125
+ 474              		.loc 1 160 1 is_stmt 0 view .LVU126
+ 475 018e 4BE7     		b	.L14
+ 476              	.L44:
+ 477              		.align	2
+ 478              	.L43:
+ 479 0190 00000000 		.word	.LANCHOR5
+ 480 0194 000C0240 		.word	1073875968
+ 481 0198 00000000 		.word	.LANCHOR4
+ 482 019c 00000000 		.word	.LANCHOR3
+ 483 01a0 00000000 		.word	.LANCHOR1
+ 484 01a4 00000000 		.word	osc1
+ 485 01a8 00000000 		.word	.LC0
+ 486 01ac 00000000 		.word	.LANCHOR0
+ 487              		.cfi_endproc
+ 488              	.LFE136:
+ 490              		.section	.text.USBH_UserProcess_callback,"ax",%progbits
+ 491              		.align	1
+ 492              		.global	USBH_UserProcess_callback
+ 493              		.syntax unified
+ 494              		.thumb
+ 495              		.thumb_func
+ 497              	USBH_UserProcess_callback:
+ 498              	.LVL42:
+ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccdFp30O.s 			page 14
+
+
+ 499              	.LFB137:
+ 161:Core/Src/MIDI_event.c **** 
+ 162:Core/Src/MIDI_event.c **** /*=================================================================================================
+ 163:Core/Src/MIDI_event.c **** /**
+ 164:Core/Src/MIDI_event.c ****  * @brief  User Process function callback
+ 165:Core/Src/MIDI_event.c ****  * @param  phost: Host Handle
+ 166:Core/Src/MIDI_event.c ****  * @param  id: Host Library user message ID
+ 167:Core/Src/MIDI_event.c ****  * @retval none
+ 168:Core/Src/MIDI_event.c ****  */
+ 169:Core/Src/MIDI_event.c **** void USBH_UserProcess_callback(USBH_HandleTypeDef *pHost, uint8_t vId)
+ 170:Core/Src/MIDI_event.c **** {
+ 500              		.loc 1 170 1 is_stmt 1 view -0
+ 501              		.cfi_startproc
+ 502              		@ args = 0, pretend = 0, frame = 0
+ 503              		@ frame_needed = 0, uses_anonymous_args = 0
+ 504              		.loc 1 170 1 is_stmt 0 view .LVU128
+ 505 0000 10B5     		push	{r4, lr}
+ 506              		.cfi_def_cfa_offset 8
+ 507              		.cfi_offset 4, -8
+ 508              		.cfi_offset 14, -4
+ 171:Core/Src/MIDI_event.c **** 	switch (vId)
+ 509              		.loc 1 171 2 is_stmt 1 view .LVU129
+ 510 0002 0429     		cmp	r1, #4
+ 511 0004 2CD0     		beq	.L46
+ 512 0006 0529     		cmp	r1, #5
+ 513 0008 02D0     		beq	.L47
+ 514 000a 0229     		cmp	r1, #2
+ 515 000c 11D0     		beq	.L51
+ 516              	.LVL43:
+ 517              	.L45:
+ 172:Core/Src/MIDI_event.c **** 	{
+ 173:Core/Src/MIDI_event.c **** 	case HOST_USER_SELECT_CONFIGURATION:
+ 174:Core/Src/MIDI_event.c **** 		break;
+ 175:Core/Src/MIDI_event.c **** 
+ 176:Core/Src/MIDI_event.c **** 	case HOST_USER_DISCONNECTION:
+ 177:Core/Src/MIDI_event.c **** 		Appli_state = MIDI_APPLICATION_DISCONNECT;
+ 178:Core/Src/MIDI_event.c **** 		// 4 - green, 3 - orange, 5 - red, 6 - blue
+ 179:Core/Src/MIDI_event.c **** 		HAL_GPIO_WritePin(LD4_GPIO_Port, LD4_Pin, GPIO_PIN_RESET);
+ 180:Core/Src/MIDI_event.c **** 		HAL_GPIO_WritePin(LD6_GPIO_Port, LD6_Pin, GPIO_PIN_RESET);
+ 181:Core/Src/MIDI_event.c **** 		break;
+ 182:Core/Src/MIDI_event.c **** 
+ 183:Core/Src/MIDI_event.c **** 	case HOST_USER_CLASS_ACTIVE:
+ 184:Core/Src/MIDI_event.c **** 		Appli_state = MIDI_APPLICATION_READY;
+ 185:Core/Src/MIDI_event.c **** 		HAL_GPIO_WritePin(LD4_GPIO_Port, LD4_Pin, GPIO_PIN_SET);
+ 186:Core/Src/MIDI_event.c **** 		HAL_GPIO_WritePin(LD6_GPIO_Port, LD6_Pin, GPIO_PIN_RESET);
+ 187:Core/Src/MIDI_event.c **** 		HAL_GPIO_WritePin(LD5_GPIO_Port, LD5_Pin, GPIO_PIN_RESET);
+ 188:Core/Src/MIDI_event.c **** 		break;
+ 189:Core/Src/MIDI_event.c **** 
+ 190:Core/Src/MIDI_event.c **** 	case HOST_USER_CONNECTION:
+ 191:Core/Src/MIDI_event.c **** 		Appli_state = MIDI_APPLICATION_START;
+ 192:Core/Src/MIDI_event.c **** 		HAL_GPIO_WritePin(GPIOD, 0x8000, GPIO_PIN_SET);
+ 193:Core/Src/MIDI_event.c **** 		break;
+ 194:Core/Src/MIDI_event.c **** 
+ 195:Core/Src/MIDI_event.c **** 	default:
+ 196:Core/Src/MIDI_event.c **** 		break;
+ 197:Core/Src/MIDI_event.c **** 	}
+ 198:Core/Src/MIDI_event.c **** }
+ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccdFp30O.s 			page 15
+
+
+ 518              		.loc 1 198 1 is_stmt 0 view .LVU130
+ 519 000e 10BD     		pop	{r4, pc}
+ 520              	.LVL44:
+ 521              	.L47:
+ 177:Core/Src/MIDI_event.c **** 		// 4 - green, 3 - orange, 5 - red, 6 - blue
+ 522              		.loc 1 177 3 is_stmt 1 view .LVU131
+ 177:Core/Src/MIDI_event.c **** 		// 4 - green, 3 - orange, 5 - red, 6 - blue
+ 523              		.loc 1 177 15 is_stmt 0 view .LVU132
+ 524 0010 184B     		ldr	r3, .L52
+ 525 0012 0422     		movs	r2, #4
+ 526 0014 1A70     		strb	r2, [r3]
+ 179:Core/Src/MIDI_event.c **** 		HAL_GPIO_WritePin(LD6_GPIO_Port, LD6_Pin, GPIO_PIN_RESET);
+ 527              		.loc 1 179 3 is_stmt 1 view .LVU133
+ 528 0016 184C     		ldr	r4, .L52+4
+ 529 0018 0022     		movs	r2, #0
+ 530 001a 4FF48051 		mov	r1, #4096
+ 531              	.LVL45:
+ 179:Core/Src/MIDI_event.c **** 		HAL_GPIO_WritePin(LD6_GPIO_Port, LD6_Pin, GPIO_PIN_RESET);
+ 532              		.loc 1 179 3 is_stmt 0 view .LVU134
+ 533 001e 2046     		mov	r0, r4
+ 534              	.LVL46:
+ 179:Core/Src/MIDI_event.c **** 		HAL_GPIO_WritePin(LD6_GPIO_Port, LD6_Pin, GPIO_PIN_RESET);
+ 535              		.loc 1 179 3 view .LVU135
+ 536 0020 FFF7FEFF 		bl	HAL_GPIO_WritePin
+ 537              	.LVL47:
+ 180:Core/Src/MIDI_event.c **** 		break;
+ 538              		.loc 1 180 3 is_stmt 1 view .LVU136
+ 539 0024 0022     		movs	r2, #0
+ 540 0026 4FF40041 		mov	r1, #32768
+ 541 002a 2046     		mov	r0, r4
+ 542 002c FFF7FEFF 		bl	HAL_GPIO_WritePin
+ 543              	.LVL48:
+ 181:Core/Src/MIDI_event.c **** 
+ 544              		.loc 1 181 3 view .LVU137
+ 545 0030 EDE7     		b	.L45
+ 546              	.LVL49:
+ 547              	.L51:
+ 184:Core/Src/MIDI_event.c **** 		HAL_GPIO_WritePin(LD4_GPIO_Port, LD4_Pin, GPIO_PIN_SET);
+ 548              		.loc 1 184 3 view .LVU138
+ 184:Core/Src/MIDI_event.c **** 		HAL_GPIO_WritePin(LD4_GPIO_Port, LD4_Pin, GPIO_PIN_SET);
+ 549              		.loc 1 184 15 is_stmt 0 view .LVU139
+ 550 0032 104B     		ldr	r3, .L52
+ 551 0034 0222     		movs	r2, #2
+ 552 0036 1A70     		strb	r2, [r3]
+ 185:Core/Src/MIDI_event.c **** 		HAL_GPIO_WritePin(LD6_GPIO_Port, LD6_Pin, GPIO_PIN_RESET);
+ 553              		.loc 1 185 3 is_stmt 1 view .LVU140
+ 554 0038 0F4C     		ldr	r4, .L52+4
+ 555 003a 0122     		movs	r2, #1
+ 556 003c 4FF48051 		mov	r1, #4096
+ 557              	.LVL50:
+ 185:Core/Src/MIDI_event.c **** 		HAL_GPIO_WritePin(LD6_GPIO_Port, LD6_Pin, GPIO_PIN_RESET);
+ 558              		.loc 1 185 3 is_stmt 0 view .LVU141
+ 559 0040 2046     		mov	r0, r4
+ 560              	.LVL51:
+ 185:Core/Src/MIDI_event.c **** 		HAL_GPIO_WritePin(LD6_GPIO_Port, LD6_Pin, GPIO_PIN_RESET);
+ 561              		.loc 1 185 3 view .LVU142
+ 562 0042 FFF7FEFF 		bl	HAL_GPIO_WritePin
+ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccdFp30O.s 			page 16
+
+
+ 563              	.LVL52:
+ 186:Core/Src/MIDI_event.c **** 		HAL_GPIO_WritePin(LD5_GPIO_Port, LD5_Pin, GPIO_PIN_RESET);
+ 564              		.loc 1 186 3 is_stmt 1 view .LVU143
+ 565 0046 0022     		movs	r2, #0
+ 566 0048 4FF40041 		mov	r1, #32768
+ 567 004c 2046     		mov	r0, r4
+ 568 004e FFF7FEFF 		bl	HAL_GPIO_WritePin
+ 569              	.LVL53:
+ 187:Core/Src/MIDI_event.c **** 		break;
+ 570              		.loc 1 187 3 view .LVU144
+ 571 0052 0022     		movs	r2, #0
+ 572 0054 4FF48041 		mov	r1, #16384
+ 573 0058 2046     		mov	r0, r4
+ 574 005a FFF7FEFF 		bl	HAL_GPIO_WritePin
+ 575              	.LVL54:
+ 188:Core/Src/MIDI_event.c **** 
+ 576              		.loc 1 188 3 view .LVU145
+ 577 005e D6E7     		b	.L45
+ 578              	.LVL55:
+ 579              	.L46:
+ 191:Core/Src/MIDI_event.c **** 		HAL_GPIO_WritePin(GPIOD, 0x8000, GPIO_PIN_SET);
+ 580              		.loc 1 191 3 view .LVU146
+ 191:Core/Src/MIDI_event.c **** 		HAL_GPIO_WritePin(GPIOD, 0x8000, GPIO_PIN_SET);
+ 581              		.loc 1 191 15 is_stmt 0 view .LVU147
+ 582 0060 0122     		movs	r2, #1
+ 583 0062 044B     		ldr	r3, .L52
+ 584 0064 1A70     		strb	r2, [r3]
+ 192:Core/Src/MIDI_event.c **** 		break;
+ 585              		.loc 1 192 3 is_stmt 1 view .LVU148
+ 586 0066 4FF40041 		mov	r1, #32768
+ 587              	.LVL56:
+ 192:Core/Src/MIDI_event.c **** 		break;
+ 588              		.loc 1 192 3 is_stmt 0 view .LVU149
+ 589 006a 0348     		ldr	r0, .L52+4
+ 590              	.LVL57:
+ 192:Core/Src/MIDI_event.c **** 		break;
+ 591              		.loc 1 192 3 view .LVU150
+ 592 006c FFF7FEFF 		bl	HAL_GPIO_WritePin
+ 593              	.LVL58:
+ 193:Core/Src/MIDI_event.c **** 
+ 594              		.loc 1 193 3 is_stmt 1 view .LVU151
+ 595              		.loc 1 198 1 is_stmt 0 view .LVU152
+ 596 0070 CDE7     		b	.L45
+ 597              	.L53:
+ 598 0072 00BF     		.align	2
+ 599              	.L52:
+ 600 0074 00000000 		.word	.LANCHOR6
+ 601 0078 000C0240 		.word	1073875968
+ 602              		.cfi_endproc
+ 603              	.LFE137:
+ 605              		.global	voice
+ 606              		.global	mtoinc
+ 607              		.global	runningStatus
+ 608              		.global	keyboard
+ 609              		.global	pitchbend
+ 610              		.global	Appli_state
+ 611              		.global	hUSBHost
+ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccdFp30O.s 			page 17
+
+
+ 612              		.global	pbend
+ 613              		.global	mtof
+ 614              		.section	.bss.Appli_state,"aw",%nobits
+ 615              		.set	.LANCHOR6,. + 0
+ 618              	Appli_state:
+ 619 0000 00       		.space	1
+ 620              		.section	.bss.hUSBHost,"aw",%nobits
+ 621              		.align	2
+ 624              	hUSBHost:
+ 625 0000 00000000 		.space	1564
+ 625      00000000 
+ 625      00000000 
+ 625      00000000 
+ 625      00000000 
+ 626              		.section	.bss.keyboard,"aw",%nobits
+ 627              		.align	2
+ 628              		.set	.LANCHOR3,. + 0
+ 631              	keyboard:
+ 632 0000 00000000 		.space	512
+ 632      00000000 
+ 632      00000000 
+ 632      00000000 
+ 632      00000000 
+ 633              		.section	.bss.mtoinc,"aw",%nobits
+ 634              		.align	2
+ 635              		.set	.LANCHOR2,. + 0
+ 638              	mtoinc:
+ 639 0000 00000000 		.space	512
+ 639      00000000 
+ 639      00000000 
+ 639      00000000 
+ 639      00000000 
+ 640              		.section	.bss.pitchbend,"aw",%nobits
+ 641              		.align	2
+ 642              		.set	.LANCHOR0,. + 0
+ 645              	pitchbend:
+ 646 0000 00000000 		.space	4
+ 647              		.section	.bss.runningStatus,"aw",%nobits
+ 648              		.set	.LANCHOR5,. + 0
+ 651              	runningStatus:
+ 652 0000 00       		.space	1
+ 653              		.section	.bss.voice,"aw",%nobits
+ 654              		.align	2
+ 655              		.set	.LANCHOR4,. + 0
+ 658              	voice:
+ 659 0000 00000000 		.space	384
+ 659      00000000 
+ 659      00000000 
+ 659      00000000 
+ 659      00000000 
+ 660              		.section	.rodata.mtof,"a"
+ 661              		.align	2
+ 662              		.set	.LANCHOR1,. + 0
+ 665              	mtof:
+ 666 0000 13D00241 		.word	1090703379
+ 667 0004 60970A41 		.word	1091213152
+ 668 0008 17D51241 		.word	1091753239
+ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccdFp30O.s 			page 18
+
+
+ 669 000c 41901B41 		.word	1092325441
+ 670 0010 54D02441 		.word	1092931668
+ 671 0014 369D2E41 		.word	1093573942
+ 672 0018 4AFF3841 		.word	1094254410
+ 673 001c 6AFF4341 		.word	1094975338
+ 674 0020 01A74F41 		.word	1095739137
+ 675 0024 00005C41 		.word	1096548352
+ 676 0028 F7146941 		.word	1097405687
+ 677 002c 10F17641 		.word	1098314000
+ 678 0030 13D08241 		.word	1099091987
+ 679 0034 60978A41 		.word	1099601760
+ 680 0038 17D59241 		.word	1100141847
+ 681 003c 41909B41 		.word	1100714049
+ 682 0040 54D0A441 		.word	1101320276
+ 683 0044 369DAE41 		.word	1101962550
+ 684 0048 49FFB841 		.word	1102643017
+ 685 004c 6BFFC341 		.word	1103363947
+ 686 0050 01A7CF41 		.word	1104127745
+ 687 0054 0000DC41 		.word	1104936960
+ 688 0058 F614E941 		.word	1105794294
+ 689 005c 10F1F641 		.word	1106702608
+ 690 0060 13D00242 		.word	1107480595
+ 691 0064 60970A42 		.word	1107990368
+ 692 0068 17D51242 		.word	1108530455
+ 693 006c 41901B42 		.word	1109102657
+ 694 0070 54D02442 		.word	1109708884
+ 695 0074 379D2E42 		.word	1110351159
+ 696 0078 49FF3842 		.word	1111031625
+ 697 007c 6AFF4342 		.word	1111752554
+ 698 0080 00A74F42 		.word	1112516352
+ 699 0084 00005C42 		.word	1113325568
+ 700 0088 F6146942 		.word	1114182902
+ 701 008c 10F17642 		.word	1115091216
+ 702 0090 12D08242 		.word	1115869202
+ 703 0094 60978A42 		.word	1116378976
+ 704 0098 17D59242 		.word	1116919063
+ 705 009c 41909B42 		.word	1117491265
+ 706 00a0 54D0A442 		.word	1118097492
+ 707 00a4 379DAE42 		.word	1118739767
+ 708 00a8 49FFB842 		.word	1119420233
+ 709 00ac 6AFFC342 		.word	1120141162
+ 710 00b0 00A7CF42 		.word	1120904960
+ 711 00b4 0000DC42 		.word	1121714176
+ 712 00b8 F614E942 		.word	1122571510
+ 713 00bc 10F1F642 		.word	1123479824
+ 714 00c0 13D00243 		.word	1124257811
+ 715 00c4 60970A43 		.word	1124767584
+ 716 00c8 17D51243 		.word	1125307671
+ 717 00cc 41901B43 		.word	1125879873
+ 718 00d0 54D02443 		.word	1126486100
+ 719 00d4 379D2E43 		.word	1127128375
+ 720 00d8 49FF3843 		.word	1127808841
+ 721 00dc 6AFF4343 		.word	1128529770
+ 722 00e0 00A74F43 		.word	1129293568
+ 723 00e4 00005C43 		.word	1130102784
+ 724 00e8 F6146943 		.word	1130960118
+ 725 00ec 10F17643 		.word	1131868432
+ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccdFp30O.s 			page 19
+
+
+ 726 00f0 13D08243 		.word	1132646419
+ 727 00f4 60978A43 		.word	1133156192
+ 728 00f8 17D59243 		.word	1133696279
+ 729 00fc 41909B43 		.word	1134268481
+ 730 0100 54D0A443 		.word	1134874708
+ 731 0104 379DAE43 		.word	1135516983
+ 732 0108 49FFB843 		.word	1136197449
+ 733 010c 6AFFC343 		.word	1136918378
+ 734 0110 00A7CF43 		.word	1137682176
+ 735 0114 0000DC43 		.word	1138491392
+ 736 0118 F614E943 		.word	1139348726
+ 737 011c 10F1F643 		.word	1140257040
+ 738 0120 13D00244 		.word	1141035027
+ 739 0124 60970A44 		.word	1141544800
+ 740 0128 17D51244 		.word	1142084887
+ 741 012c 41901B44 		.word	1142657089
+ 742 0130 54D02444 		.word	1143263316
+ 743 0134 379D2E44 		.word	1143905591
+ 744 0138 49FF3844 		.word	1144586057
+ 745 013c 6AFF4344 		.word	1145306986
+ 746 0140 00A74F44 		.word	1146070784
+ 747 0144 00005C44 		.word	1146880000
+ 748 0148 F6146944 		.word	1147737334
+ 749 014c 10F17644 		.word	1148645648
+ 750 0150 13D08244 		.word	1149423635
+ 751 0154 60978A44 		.word	1149933408
+ 752 0158 17D59244 		.word	1150473495
+ 753 015c 41909B44 		.word	1151045697
+ 754 0160 54D0A444 		.word	1151651924
+ 755 0164 379DAE44 		.word	1152294199
+ 756 0168 49FFB844 		.word	1152974665
+ 757 016c 6AFFC344 		.word	1153695594
+ 758 0170 00A7CF44 		.word	1154459392
+ 759 0174 0000DC44 		.word	1155268608
+ 760 0178 F614E944 		.word	1156125942
+ 761 017c 10F1F644 		.word	1157034256
+ 762 0180 13D00245 		.word	1157812243
+ 763 0184 60970A45 		.word	1158322016
+ 764 0188 17D51245 		.word	1158862103
+ 765 018c 41901B45 		.word	1159434305
+ 766 0190 54D02445 		.word	1160040532
+ 767 0194 379D2E45 		.word	1160682807
+ 768 0198 49FF3845 		.word	1161363273
+ 769 019c 6AFF4345 		.word	1162084202
+ 770 01a0 00A74F45 		.word	1162848000
+ 771 01a4 00005C45 		.word	1163657216
+ 772 01a8 F6146945 		.word	1164514550
+ 773 01ac 10F17645 		.word	1165422864
+ 774 01b0 13D08245 		.word	1166200851
+ 775 01b4 60978A45 		.word	1166710624
+ 776 01b8 17D59245 		.word	1167250711
+ 777 01bc 41909B45 		.word	1167822913
+ 778 01c0 54D0A445 		.word	1168429140
+ 779 01c4 379DAE45 		.word	1169071415
+ 780 01c8 49FFB845 		.word	1169751881
+ 781 01cc 6AFFC345 		.word	1170472810
+ 782 01d0 00A7CF45 		.word	1171236608
+ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccdFp30O.s 			page 20
+
+
+ 783 01d4 0000DC45 		.word	1172045824
+ 784 01d8 F614E945 		.word	1172903158
+ 785 01dc 10F1F645 		.word	1173811472
+ 786 01e0 13D00246 		.word	1174589459
+ 787 01e4 60970A46 		.word	1175099232
+ 788 01e8 17D51246 		.word	1175639319
+ 789 01ec 41901B46 		.word	1176211521
+ 790 01f0 54D02446 		.word	1176817748
+ 791 01f4 379D2E46 		.word	1177460023
+ 792 01f8 49FF3846 		.word	1178140489
+ 793 01fc 6AFF4346 		.word	1178861418
+ 794              		.section	.rodata.pbend,"a"
+ 795              		.align	2
+ 798              	pbend:
+ 799 0000 0000003F 		.word	1056964608
+ 800 0004 5E2C003F 		.word	1056975966
+ 801 0008 DE58003F 		.word	1056987358
+ 802 000c 5E85003F 		.word	1056998750
+ 803 0010 EEB1003F 		.word	1057010158
+ 804 0014 8FDE003F 		.word	1057021583
+ 805 0018 410B013F 		.word	1057033025
+ 806 001c 0438013F 		.word	1057044484
+ 807 0020 D864013F 		.word	1057055960
+ 808 0024 AC91013F 		.word	1057067436
+ 809 0028 A1BE013F 		.word	1057078945
+ 810 002c A7EB013F 		.word	1057090471
+ 811 0030 AD18023F 		.word	1057101997
+ 812 0034 D445023F 		.word	1057113556
+ 813 0038 FC72023F 		.word	1057125116
+ 814 003c 34A0023F 		.word	1057136692
+ 815 0040 8ECD023F 		.word	1057148302
+ 816 0044 E8FA023F 		.word	1057159912
+ 817 0048 5228033F 		.word	1057171538
+ 818 004c CE55033F 		.word	1057183182
+ 819 0050 5A83033F 		.word	1057194842
+ 820 0054 F7B0033F 		.word	1057206519
+ 821 0058 A4DE033F 		.word	1057218212
+ 822 005c 630C043F 		.word	1057229923
+ 823 0060 213A043F 		.word	1057241633
+ 824 0064 0168043F 		.word	1057253377
+ 825 0068 F295043F 		.word	1057265138
+ 826 006c E3C3043F 		.word	1057276899
+ 827 0070 F5F1043F 		.word	1057288693
+ 828 0074 1920053F 		.word	1057300505
+ 829 0078 3C4E053F 		.word	1057312316
+ 830 007c 707C053F 		.word	1057324144
+ 831 0080 C5AA053F 		.word	1057336005
+ 832 0084 1BD9053F 		.word	1057347867
+ 833 0088 9207063F 		.word	1057359762
+ 834 008c 0936063F 		.word	1057371657
+ 835 0090 9164063F 		.word	1057383569
+ 836 0094 2993063F 		.word	1057395497
+ 837 0098 D3C1063F 		.word	1057407443
+ 838 009c 9EF0063F 		.word	1057419422
+ 839 00a0 681F073F 		.word	1057431400
+ 840 00a4 444E073F 		.word	1057443396
+ 841 00a8 317D073F 		.word	1057455409
+ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccdFp30O.s 			page 21
+
+
+ 842 00ac 2EAC073F 		.word	1057467438
+ 843 00b0 3CDB073F 		.word	1057479484
+ 844 00b4 5B0A083F 		.word	1057491547
+ 845 00b8 7A39083F 		.word	1057503610
+ 846 00bc BA68083F 		.word	1057515706
+ 847 00c0 0B98083F 		.word	1057527819
+ 848 00c4 6DC7083F 		.word	1057539949
+ 849 00c8 E0F6083F 		.word	1057552096
+ 850 00cc 6326093F 		.word	1057564259
+ 851 00d0 E755093F 		.word	1057576423
+ 852 00d4 8C85093F 		.word	1057588620
+ 853 00d8 42B5093F 		.word	1057600834
+ 854 00dc 08E5093F 		.word	1057613064
+ 855 00e0 CF140A3F 		.word	1057625295
+ 856 00e4 B7440A3F 		.word	1057637559
+ 857 00e8 B0740A3F 		.word	1057649840
+ 858 00ec A9A40A3F 		.word	1057662121
+ 859 00f0 C3D40A3F 		.word	1057674435
+ 860 00f4 EE040B3F 		.word	1057686766
+ 861 00f8 2B350B3F 		.word	1057699115
+ 862 00fc 67650B3F 		.word	1057711463
+ 863 0100 C4950B3F 		.word	1057723844
+ 864 0104 32C60B3F 		.word	1057736242
+ 865 0108 A1F60B3F 		.word	1057748641
+ 866 010c 31270C3F 		.word	1057761073
+ 867 0110 D1570C3F 		.word	1057773521
+ 868 0114 72880C3F 		.word	1057785970
+ 869 0118 34B90C3F 		.word	1057798452
+ 870 011c 07EA0C3F 		.word	1057810951
+ 871 0120 DA1A0D3F 		.word	1057823450
+ 872 0124 CF4B0D3F 		.word	1057835983
+ 873 0128 D47C0D3F 		.word	1057848532
+ 874 012c DAAD0D3F 		.word	1057861082
+ 875 0130 01DF0D3F 		.word	1057873665
+ 876 0134 38100E3F 		.word	1057886264
+ 877 0138 81410E3F 		.word	1057898881
+ 878 013c DA720E3F 		.word	1057911514
+ 879 0140 33A40E3F 		.word	1057924147
+ 880 0144 AED50E3F 		.word	1057936814
+ 881 0148 3A070F3F 		.word	1057949498
+ 882 014c D6380F3F 		.word	1057962198
+ 883 0150 836A0F3F 		.word	1057974915
+ 884 0154 419C0F3F 		.word	1057987649
+ 885 0158 10CE0F3F 		.word	1058000400
+ 886 015c EFFF0F3F 		.word	1058013167
+ 887 0160 DF31103F 		.word	1058025951
+ 888 0164 E063103F 		.word	1058038752
+ 889 0168 F295103F 		.word	1058051570
+ 890 016c 15C8103F 		.word	1058064405
+ 891 0170 48FA103F 		.word	1058077256
+ 892 0174 8C2C113F 		.word	1058090124
+ 893 0178 F25E113F 		.word	1058103026
+ 894 017c 5891113F 		.word	1058115928
+ 895 0180 CEC3113F 		.word	1058128846
+ 896 0184 66F6113F 		.word	1058141798
+ 897 0188 FE28123F 		.word	1058154750
+ 898 018c B85B123F 		.word	1058167736
+ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccdFp30O.s 			page 22
+
+
+ 899 0190 718E123F 		.word	1058180721
+ 900 0194 4CC1123F 		.word	1058193740
+ 901 0198 28F4123F 		.word	1058206760
+ 902 019c 2427133F 		.word	1058219812
+ 903 01a0 325A133F 		.word	1058232882
+ 904 01a4 3F8D133F 		.word	1058245951
+ 905 01a8 6EC0133F 		.word	1058259054
+ 906 01ac AEF3133F 		.word	1058272174
+ 907 01b0 FE26143F 		.word	1058285310
+ 908 01b4 605A143F 		.word	1058298464
+ 909 01b8 D28D143F 		.word	1058311634
+ 910 01bc 55C1143F 		.word	1058324821
+ 911 01c0 E8F4143F 		.word	1058338024
+ 912 01c4 9E28153F 		.word	1058351262
+ 913 01c8 535C153F 		.word	1058364499
+ 914 01cc 1990153F 		.word	1058377753
+ 915 01d0 00C4153F 		.word	1058391040
+ 916 01d4 E8F7153F 		.word	1058404328
+ 917 01d8 F12B163F 		.word	1058417649
+ 918 01dc 0B60163F 		.word	1058430987
+ 919 01e0 2594163F 		.word	1058444325
+ 920 01e4 60C8163F 		.word	1058457696
+ 921 01e8 ADFC163F 		.word	1058471085
+ 922 01ec 0A31173F 		.word	1058484490
+ 923 01f0 7765173F 		.word	1058497911
+ 924 01f4 079A173F 		.word	1058511367
+ 925 01f8 96CE173F 		.word	1058524822
+ 926 01fc 3603183F 		.word	1058538294
+ 927 0200 F837183F 		.word	1058551800
+ 928 0204 B96C183F 		.word	1058565305
+ 929 0208 9DA1183F 		.word	1058578845
+ 930 020c 80D6183F 		.word	1058592384
+ 931 0210 850B193F 		.word	1058605957
+ 932 0214 9A40193F 		.word	1058619546
+ 933 0218 C075193F 		.word	1058633152
+ 934 021c F8AA193F 		.word	1058646776
+ 935 0220 3FE0193F 		.word	1058660415
+ 936 0224 A9151A3F 		.word	1058674089
+ 937 0228 124B1A3F 		.word	1058687762
+ 938 022c 9D801A3F 		.word	1058701469
+ 939 0230 28B61A3F 		.word	1058715176
+ 940 0234 D5EB1A3F 		.word	1058728917
+ 941 0238 92211B3F 		.word	1058742674
+ 942 023c 60571B3F 		.word	1058756448
+ 943 0240 3F8D1B3F 		.word	1058770239
+ 944 0244 2FC31B3F 		.word	1058784047
+ 945 0248 2FF91B3F 		.word	1058797871
+ 946 024c 512F1C3F 		.word	1058811729
+ 947 0250 73651C3F 		.word	1058825587
+ 948 0254 B79B1C3F 		.word	1058839479
+ 949 0258 FAD11C3F 		.word	1058853370
+ 950 025c 5F081D3F 		.word	1058867295
+ 951 0260 D53E1D3F 		.word	1058881237
+ 952 0264 5C751D3F 		.word	1058895196
+ 953 0268 04AC1D3F 		.word	1058909188
+ 954 026c ACE21D3F 		.word	1058923180
+ 955 0270 76191E3F 		.word	1058937206
+ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccdFp30O.s 			page 23
+
+
+ 956 0274 40501E3F 		.word	1058951232
+ 957 0278 2B871E3F 		.word	1058965291
+ 958 027c 27BE1E3F 		.word	1058979367
+ 959 0280 34F51E3F 		.word	1058993460
+ 960 0284 522C1F3F 		.word	1059007570
+ 961 0288 80631F3F 		.word	1059021696
+ 962 028c D09A1F3F 		.word	1059035856
+ 963 0290 20D21F3F 		.word	1059050016
+ 964 0294 9109203F 		.word	1059064209
+ 965 0298 1441203F 		.word	1059078420
+ 966 029c A778203F 		.word	1059092647
+ 967 02a0 4BB0203F 		.word	1059106891
+ 968 02a4 10E8203F 		.word	1059121168
+ 969 02a8 D61F213F 		.word	1059135446
+ 970 02ac BC57213F 		.word	1059149756
+ 971 02b0 B48F213F 		.word	1059164084
+ 972 02b4 BDC7213F 		.word	1059178429
+ 973 02b8 D6FF213F 		.word	1059192790
+ 974 02bc 0038223F 		.word	1059207168
+ 975 02c0 3B70223F 		.word	1059221563
+ 976 02c4 97A8223F 		.word	1059235991
+ 977 02c8 05E1223F 		.word	1059250437
+ 978 02cc 8319233F 		.word	1059264899
+ 979 02d0 1152233F 		.word	1059279377
+ 980 02d4 B18A233F 		.word	1059293873
+ 981 02d8 72C3233F 		.word	1059308402
+ 982 02dc 33FC233F 		.word	1059322931
+ 983 02e0 1635243F 		.word	1059337494
+ 984 02e4 096E243F 		.word	1059352073
+ 985 02e8 0DA7243F 		.word	1059366669
+ 986 02ec 22E0243F 		.word	1059381282
+ 987 02f0 5919253F 		.word	1059395929
+ 988 02f4 A052253F 		.word	1059410592
+ 989 02f8 E78B253F 		.word	1059425255
+ 990 02fc 61C5253F 		.word	1059439969
+ 991 0300 DAFE253F 		.word	1059454682
+ 992 0304 6538263F 		.word	1059469413
+ 993 0308 1172263F 		.word	1059484177
+ 994 030c CDAB263F 		.word	1059498957
+ 995 0310 9BE5263F 		.word	1059513755
+ 996 0314 791F273F 		.word	1059528569
+ 997 0318 6859273F 		.word	1059543400
+ 998 031c 7993273F 		.word	1059558265
+ 999 0320 9ACD273F 		.word	1059573146
+ 1000 0324 CC07283F 		.word	1059588044
+ 1001 0328 0F42283F 		.word	1059602959
+ 1002 032c 637C283F 		.word	1059617891
+ 1003 0330 D8B6283F 		.word	1059632856
+ 1004 0334 5EF1283F 		.word	1059647838
+ 1005 0338 F52B293F 		.word	1059662837
+ 1006 033c 9D66293F 		.word	1059677853
+ 1007 0340 55A1293F 		.word	1059692885
+ 1008 0344 2FDC293F 		.word	1059707951
+ 1009 0348 1A172A3F 		.word	1059723034
+ 1010 034c 15522A3F 		.word	1059738133
+ 1011 0350 228D2A3F 		.word	1059753250
+ 1012 0354 50C82A3F 		.word	1059768400
+ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccdFp30O.s 			page 24
+
+
+ 1013 0358 8E032B3F 		.word	1059783566
+ 1014 035c DE3E2B3F 		.word	1059798750
+ 1015 0360 3E7A2B3F 		.word	1059813950
+ 1016 0364 AFB52B3F 		.word	1059829167
+ 1017 0368 41F12B3F 		.word	1059844417
+ 1018 036c E42C2C3F 		.word	1059859684
+ 1019 0370 98682C3F 		.word	1059874968
+ 1020 0374 5DA42C3F 		.word	1059890269
+ 1021 0378 44E02C3F 		.word	1059905604
+ 1022 037c 3B1C2D3F 		.word	1059920955
+ 1023 0380 43582D3F 		.word	1059936323
+ 1024 0384 5B942D3F 		.word	1059951707
+ 1025 0388 96D02D3F 		.word	1059967126
+ 1026 038c D00C2E3F 		.word	1059982544
+ 1027 0390 3D492E3F 		.word	1059998013
+ 1028 0394 A9852E3F 		.word	1060013481
+ 1029 0398 27C22E3F 		.word	1060028967
+ 1030 039c C5FE2E3F 		.word	1060044485
+ 1031 03a0 753B2F3F 		.word	1060060021
+ 1032 03a4 46782F3F 		.word	1060075590
+ 1033 03a8 18B52F3F 		.word	1060091160
+ 1034 03ac 0AF22F3F 		.word	1060106762
+ 1035 03b0 0E2F303F 		.word	1060122382
+ 1036 03b4 226C303F 		.word	1060138018
+ 1037 03b8 58A9303F 		.word	1060153688
+ 1038 03bc 9FE6303F 		.word	1060169375
+ 1039 03c0 F623313F 		.word	1060185078
+ 1040 03c4 5F61313F 		.word	1060200799
+ 1041 03c8 E99E313F 		.word	1060216553
+ 1042 03cc 83DC313F 		.word	1060232323
+ 1043 03d0 2E1A323F 		.word	1060248110
+ 1044 03d4 FB57323F 		.word	1060263931
+ 1045 03d8 C895323F 		.word	1060279752
+ 1046 03dc C8D3323F 		.word	1060295624
+ 1047 03e0 C711333F 		.word	1060311495
+ 1048 03e4 D74F333F 		.word	1060327383
+ 1049 03e8 088E333F 		.word	1060343304
+ 1050 03ec 5CCC333F 		.word	1060359260
+ 1051 03f0 AF0A343F 		.word	1060375215
+ 1052 03f4 2349343F 		.word	1060391203
+ 1053 03f8 A987343F 		.word	1060407209
+ 1054 03fc 3FC6343F 		.word	1060423231
+ 1055 0400 F704353F 		.word	1060439287
+ 1056 0404 BF43353F 		.word	1060455359
+ 1057 0408 9982353F 		.word	1060471449
+ 1058 040c 83C1353F 		.word	1060487555
+ 1059 0410 8F00363F 		.word	1060503695
+ 1060 0414 AB3F363F 		.word	1060519851
+ 1061 0418 E97E363F 		.word	1060536041
+ 1062 041c 38BE363F 		.word	1060552248
+ 1063 0420 97FD363F 		.word	1060568471
+ 1064 0424 083D373F 		.word	1060584712
+ 1065 0428 9A7C373F 		.word	1060600986
+ 1066 042c 3CBC373F 		.word	1060617276
+ 1067 0430 F0FB373F 		.word	1060633584
+ 1068 0434 C53B383F 		.word	1060649925
+ 1069 0438 AB7B383F 		.word	1060666283
+ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccdFp30O.s 			page 25
+
+
+ 1070 043c A1BB383F 		.word	1060682657
+ 1071 0440 A9FB383F 		.word	1060699049
+ 1072 0444 D13B393F 		.word	1060715473
+ 1073 0448 1C7C393F 		.word	1060731932
+ 1074 044c 66BC393F 		.word	1060748390
+ 1075 0450 D2FC393F 		.word	1060764882
+ 1076 0454 4F3D3A3F 		.word	1060781391
+ 1077 0458 ED7D3A3F 		.word	1060797933
+ 1078 045c 9DBE3A3F 		.word	1060814493
+ 1079 0460 5CFF3A3F 		.word	1060831068
+ 1080 0464 2D403B3F 		.word	1060847661
+ 1081 0468 1F813B3F 		.word	1060864287
+ 1082 046c 33C23B3F 		.word	1060880947
+ 1083 0470 47033C3F 		.word	1060897607
+ 1084 0474 7C443C3F 		.word	1060914300
+ 1085 0478 C2853C3F 		.word	1060931010
+ 1086 047c 2AC73C3F 		.word	1060947754
+ 1087 0480 A2083D3F 		.word	1060964514
+ 1088 0484 2C4A3D3F 		.word	1060981292
+ 1089 0488 D68B3D3F 		.word	1060998102
+ 1090 048c 92CD3D3F 		.word	1061014930
+ 1091 0490 6F0F3E3F 		.word	1061031791
+ 1092 0494 4C513E3F 		.word	1061048652
+ 1093 0498 4B933E3F 		.word	1061065547
+ 1094 049c 6BD53E3F 		.word	1061082475
+ 1095 04a0 9C173F3F 		.word	1061099420
+ 1096 04a4 DE593F3F 		.word	1061116382
+ 1097 04a8 419C3F3F 		.word	1061133377
+ 1098 04ac B5DE3F3F 		.word	1061150389
+ 1099 04b0 3A21403F 		.word	1061167418
+ 1100 04b4 E063403F 		.word	1061184480
+ 1101 04b8 98A6403F 		.word	1061201560
+ 1102 04bc 60E9403F 		.word	1061218656
+ 1103 04c0 492C413F 		.word	1061235785
+ 1104 04c4 446F413F 		.word	1061252932
+ 1105 04c8 5FB2413F 		.word	1061270111
+ 1106 04cc 8CF5413F 		.word	1061287308
+ 1107 04d0 DA38423F 		.word	1061304538
+ 1108 04d4 287C423F 		.word	1061321768
+ 1109 04d8 A9BF423F 		.word	1061339049
+ 1110 04dc 2A03433F 		.word	1061356330
+ 1111 04e0 CC46433F 		.word	1061373644
+ 1112 04e4 7E8A433F 		.word	1061390974
+ 1113 04e8 53CE433F 		.word	1061408339
+ 1114 04ec 3812443F 		.word	1061425720
+ 1115 04f0 3F56443F 		.word	1061443135
+ 1116 04f4 569A443F 		.word	1061460566
+ 1117 04f8 7FDE443F 		.word	1061478015
+ 1118 04fc C922453F 		.word	1061495497
+ 1119 0500 2367453F 		.word	1061512995
+ 1120 0504 9FAB453F 		.word	1061530527
+ 1121 0508 2CF0453F 		.word	1061548076
+ 1122 050c DB34463F 		.word	1061565659
+ 1123 0510 8979463F 		.word	1061583241
+ 1124 0514 6ABE463F 		.word	1061600874
+ 1125 0518 4B03473F 		.word	1061618507
+ 1126 051c 5E48473F 		.word	1061636190
+ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccdFp30O.s 			page 26
+
+
+ 1127 0520 718D473F 		.word	1061653873
+ 1128 0524 A6D2473F 		.word	1061671590
+ 1129 0528 FC17483F 		.word	1061689340
+ 1130 052c 645D483F 		.word	1061707108
+ 1131 0530 DBA2483F 		.word	1061724891
+ 1132 0534 75E8483F 		.word	1061742709
+ 1133 0538 1F2E493F 		.word	1061760543
+ 1134 053c DA73493F 		.word	1061778394
+ 1135 0540 B6B9493F 		.word	1061796278
+ 1136 0544 B5FF493F 		.word	1061814197
+ 1137 0548 C3454A3F 		.word	1061832131
+ 1138 054c E38B4A3F 		.word	1061850083
+ 1139 0550 24D24A3F 		.word	1061868068
+ 1140 0554 76184B3F 		.word	1061886070
+ 1141 0558 EA5E4B3F 		.word	1061904106
+ 1142 055c 6EA54B3F 		.word	1061922158
+ 1143 0560 14EC4B3F 		.word	1061940244
+ 1144 0564 CA324C3F 		.word	1061958346
+ 1145 0568 A3794C3F 		.word	1061976483
+ 1146 056c 8BC04C3F 		.word	1061994635
+ 1147 0570 85074D3F 		.word	1062012805
+ 1148 0574 A04E4D3F 		.word	1062031008
+ 1149 0578 DD954D3F 		.word	1062049245
+ 1150 057c 2BDD4D3F 		.word	1062067499
+ 1151 0580 89244E3F 		.word	1062085769
+ 1152 0584 096C4E3F 		.word	1062104073
+ 1153 0588 9AB34E3F 		.word	1062122394
+ 1154 058c 4CFB4E3F 		.word	1062140748
+ 1155 0590 20434F3F 		.word	1062159136
+ 1156 0594 F48A4F3F 		.word	1062177524
+ 1157 0598 FAD24F3F 		.word	1062195962
+ 1158 059c 001B503F 		.word	1062214400
+ 1159 05a0 3963503F 		.word	1062232889
+ 1160 05a4 71AB503F 		.word	1062251377
+ 1161 05a8 DCF3503F 		.word	1062269916
+ 1162 05ac 473C513F 		.word	1062288455
+ 1163 05b0 E484513F 		.word	1062307044
+ 1164 05b4 81CD513F 		.word	1062325633
+ 1165 05b8 5116523F 		.word	1062344273
+ 1166 05bc 205F523F 		.word	1062362912
+ 1167 05c0 22A8523F 		.word	1062381602
+ 1168 05c4 35F1523F 		.word	1062400309
+ 1169 05c8 583A533F 		.word	1062419032
+ 1170 05cc 9D83533F 		.word	1062437789
+ 1171 05d0 F3CC533F 		.word	1062456563
+ 1172 05d4 6A16543F 		.word	1062475370
+ 1173 05d8 F25F543F 		.word	1062494194
+ 1174 05dc 9BA9543F 		.word	1062513051
+ 1175 05e0 56F3543F 		.word	1062531926
+ 1176 05e4 323D553F 		.word	1062550834
+ 1177 05e8 2F87553F 		.word	1062569775
+ 1178 05ec 3DD1553F 		.word	1062588733
+ 1179 05f0 5C1B563F 		.word	1062607708
+ 1180 05f4 9D65563F 		.word	1062626717
+ 1181 05f8 FFAF563F 		.word	1062645759
+ 1182 05fc 72FA563F 		.word	1062664818
+ 1183 0600 F644573F 		.word	1062683894
+ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccdFp30O.s 			page 27
+
+
+ 1184 0604 AC8F573F 		.word	1062703020
+ 1185 0608 62DA573F 		.word	1062722146
+ 1186 060c 4A25583F 		.word	1062741322
+ 1187 0610 3370583F 		.word	1062760499
+ 1188 0614 4DBB583F 		.word	1062779725
+ 1189 0618 7906593F 		.word	1062798969
+ 1190 061c B551593F 		.word	1062818229
+ 1191 0620 139D593F 		.word	1062837523
+ 1192 0624 92E8593F 		.word	1062856850
+ 1193 0628 22345A3F 		.word	1062876194
+ 1194 062c D47F5A3F 		.word	1062895572
+ 1195 0630 96CB5A3F 		.word	1062914966
+ 1196 0634 7A175B3F 		.word	1062934394
+ 1197 0638 6F635B3F 		.word	1062953839
+ 1198 063c 86AF5B3F 		.word	1062973318
+ 1199 0640 BDFB5B3F 		.word	1062992829
+ 1200 0644 06485C3F 		.word	1063012358
+ 1201 0648 60945C3F 		.word	1063031904
+ 1202 064c EBE05C3F 		.word	1063051499
+ 1203 0650 882D5D3F 		.word	1063071112
+ 1204 0654 357A5D3F 		.word	1063090741
+ 1205 0658 04C75D3F 		.word	1063110404
+ 1206 065c F5135E3F 		.word	1063130101
+ 1207 0660 F6605E3F 		.word	1063149814
+ 1208 0664 19AE5E3F 		.word	1063169561
+ 1209 0668 4CFB5E3F 		.word	1063189324
+ 1210 066c A1485F3F 		.word	1063209121
+ 1211 0670 18965F3F 		.word	1063228952
+ 1212 0674 9FE35F3F 		.word	1063248799
+ 1213 0678 4831603F 		.word	1063268680
+ 1214 067c 027F603F 		.word	1063288578
+ 1215 0680 DECC603F 		.word	1063308510
+ 1216 0684 DA1A613F 		.word	1063328474
+ 1217 0688 E868613F 		.word	1063348456
+ 1218 068c 17B7613F 		.word	1063368471
+ 1219 0690 5705623F 		.word	1063388503
+ 1220 0694 B953623F 		.word	1063408569
+ 1221 0698 3CA2623F 		.word	1063428668
+ 1222 069c D0F0623F 		.word	1063448784
+ 1223 06a0 853F633F 		.word	1063468933
+ 1224 06a4 5C8E633F 		.word	1063489116
+ 1225 06a8 44DD633F 		.word	1063509316
+ 1226 06ac 4D2C643F 		.word	1063529549
+ 1227 06b0 677B643F 		.word	1063549799
+ 1228 06b4 A3CA643F 		.word	1063570083
+ 1229 06b8 001A653F 		.word	1063590400
+ 1230 06bc 7F69653F 		.word	1063610751
+ 1231 06c0 0FB9653F 		.word	1063631119
+ 1232 06c4 AF08663F 		.word	1063651503
+ 1233 06c8 8258663F 		.word	1063671938
+ 1234 06cc 54A8663F 		.word	1063692372
+ 1235 06d0 59F8663F 		.word	1063712857
+ 1236 06d4 6F48673F 		.word	1063733359
+ 1237 06d8 A698673F 		.word	1063753894
+ 1238 06dc FFE8673F 		.word	1063774463
+ 1239 06e0 6939683F 		.word	1063795049
+ 1240 06e4 F489683F 		.word	1063815668
+ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccdFp30O.s 			page 28
+
+
+ 1241 06e8 A1DA683F 		.word	1063836321
+ 1242 06ec 5E2B693F 		.word	1063856990
+ 1243 06f0 3D7C693F 		.word	1063877693
+ 1244 06f4 2DCD693F 		.word	1063898413
+ 1245 06f8 4F1E6A3F 		.word	1063919183
+ 1246 06fc 726F6A3F 		.word	1063939954
+ 1247 0700 C6C06A3F 		.word	1063960774
+ 1248 0704 2B126B3F 		.word	1063981611
+ 1249 0708 B2636B3F 		.word	1064002482
+ 1250 070c 5BB56B3F 		.word	1064023387
+ 1251 0710 14076C3F 		.word	1064044308
+ 1252 0714 EF586C3F 		.word	1064065263
+ 1253 0718 EBAA6C3F 		.word	1064086251
+ 1254 071c F8FC6C3F 		.word	1064107256
+ 1255 0720 374F6D3F 		.word	1064128311
+ 1256 0724 77A16D3F 		.word	1064149367
+ 1257 0728 E9F36D3F 		.word	1064170473
+ 1258 072c 6B466E3F 		.word	1064191595
+ 1259 0730 0F996E3F 		.word	1064212751
+ 1260 0734 D5EB6E3F 		.word	1064233941
+ 1261 0738 AB3E6F3F 		.word	1064255147
+ 1262 073c A3916F3F 		.word	1064276387
+ 1263 0740 BDE46F3F 		.word	1064297661
+ 1264 0744 E737703F 		.word	1064318951
+ 1265 0748 448B703F 		.word	1064340292
+ 1266 074c A0DE703F 		.word	1064361632
+ 1267 0750 2F32713F 		.word	1064383023
+ 1268 0754 CF85713F 		.word	1064404431
+ 1269 0758 A1D9713F 		.word	1064425889
+ 1270 075c 732D723F 		.word	1064447347
+ 1271 0760 7781723F 		.word	1064468855
+ 1272 0764 8DD5723F 		.word	1064490381
+ 1273 0768 C329733F 		.word	1064511939
+ 1274 076c 1C7E733F 		.word	1064533532
+ 1275 0770 95D2733F 		.word	1064555157
+ 1276 0774 2027743F 		.word	1064576800
+ 1277 0778 CC7B743F 		.word	1064598476
+ 1278 077c 9AD0743F 		.word	1064620186
+ 1279 0780 7825753F 		.word	1064641912
+ 1280 0784 897A753F 		.word	1064663689
+ 1281 0788 ABCF753F 		.word	1064685483
+ 1282 078c DD24763F 		.word	1064707293
+ 1283 0790 427A763F 		.word	1064729154
+ 1284 0794 B7CF763F 		.word	1064751031
+ 1285 0798 4E25773F 		.word	1064772942
+ 1286 079c 077B773F 		.word	1064794887
+ 1287 07a0 E1D0773F 		.word	1064816865
+ 1288 07a4 CC26783F 		.word	1064838860
+ 1289 07a8 D97C783F 		.word	1064860889
+ 1290 07ac 07D3783F 		.word	1064882951
+ 1291 07b0 5629793F 		.word	1064905046
+ 1292 07b4 C77F793F 		.word	1064927175
+ 1293 07b8 49D6793F 		.word	1064949321
+ 1294 07bc ED2C7A3F 		.word	1064971501
+ 1295 07c0 B2837A3F 		.word	1064993714
+ 1296 07c4 98DA7A3F 		.word	1065015960
+ 1297 07c8 90317B3F 		.word	1065038224
+ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccdFp30O.s 			page 29
+
+
+ 1298 07cc B9887B3F 		.word	1065060537
+ 1299 07d0 F4DF7B3F 		.word	1065082868
+ 1300 07d4 50377C3F 		.word	1065105232
+ 1301 07d8 BD8E7C3F 		.word	1065127613
+ 1302 07dc 5CE67C3F 		.word	1065150044
+ 1303 07e0 0C3E7D3F 		.word	1065172492
+ 1304 07e4 DD957D3F 		.word	1065194973
+ 1305 07e8 D0ED7D3F 		.word	1065217488
+ 1306 07ec E5457E3F 		.word	1065240037
+ 1307 07f0 0A9E7E3F 		.word	1065262602
+ 1308 07f4 62F67E3F 		.word	1065285218
+ 1309 07f8 CA4E7F3F 		.word	1065307850
+ 1310 07fc 54A77F3F 		.word	1065330516
+ 1311 0800 0000803F 		.word	1065353216
+ 1312 0804 772C803F 		.word	1065364599
+ 1313 0808 0859803F 		.word	1065376008
+ 1314 080c A185803F 		.word	1065387425
+ 1315 0810 4AB2803F 		.word	1065398858
+ 1316 0814 FCDE803F 		.word	1065410300
+ 1317 0818 C80B813F 		.word	1065421768
+ 1318 081c 9B38813F 		.word	1065433243
+ 1319 0820 8865813F 		.word	1065444744
+ 1320 0824 7D92813F 		.word	1065456253
+ 1321 0828 83BF813F 		.word	1065467779
+ 1322 082c 9AEC813F 		.word	1065479322
+ 1323 0830 C119823F 		.word	1065490881
+ 1324 0834 F146823F 		.word	1065502449
+ 1325 0838 3A74823F 		.word	1065514042
+ 1326 083c 8CA1823F 		.word	1065525644
+ 1327 0840 EECE823F 		.word	1065537262
+ 1328 0844 69FC823F 		.word	1065548905
+ 1329 0848 ED29833F 		.word	1065560557
+ 1330 084c 8257833F 		.word	1065572226
+ 1331 0850 1F85833F 		.word	1065583903
+ 1332 0854 D5B2833F 		.word	1065595605
+ 1333 0858 9CE0833F 		.word	1065607324
+ 1334 085c 6B0E843F 		.word	1065619051
+ 1335 0860 533C843F 		.word	1065630803
+ 1336 0864 446A843F 		.word	1065642564
+ 1337 0868 4698843F 		.word	1065654342
+ 1338 086c 58C6843F 		.word	1065666136
+ 1339 0870 7BF4843F 		.word	1065677947
+ 1340 0874 AF22853F 		.word	1065689775
+ 1341 0878 F450853F 		.word	1065701620
+ 1342 087c 4A7F853F 		.word	1065713482
+ 1343 0880 A7AD853F 		.word	1065725351
+ 1344 0884 1EDC853F 		.word	1065737246
+ 1345 0888 9E0A863F 		.word	1065749150
+ 1346 088c 3739863F 		.word	1065761079
+ 1347 0890 D767863F 		.word	1065773015
+ 1348 0894 9296863F 		.word	1065784978
+ 1349 0898 54C5863F 		.word	1065796948
+ 1350 089c 28F4863F 		.word	1065808936
+ 1351 08a0 0C23873F 		.word	1065820940
+ 1352 08a4 0052873F 		.word	1065832960
+ 1353 08a8 0681873F 		.word	1065844998
+ 1354 08ac 1DB0873F 		.word	1065857053
+ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccdFp30O.s 			page 30
+
+
+ 1355 08b0 44DF873F 		.word	1065869124
+ 1356 08b4 7C0E883F 		.word	1065881212
+ 1357 08b8 C53D883F 		.word	1065893317
+ 1358 08bc 166D883F 		.word	1065905430
+ 1359 08c0 809C883F 		.word	1065917568
+ 1360 08c4 FBCB883F 		.word	1065929723
+ 1361 08c8 7FFB883F 		.word	1065941887
+ 1362 08cc 1B2B893F 		.word	1065954075
+ 1363 08d0 C95A893F 		.word	1065966281
+ 1364 08d4 7E8A893F 		.word	1065978494
+ 1365 08d8 4DBA893F 		.word	1065990733
+ 1366 08dc 25EA893F 		.word	1066002981
+ 1367 08e0 151A8A3F 		.word	1066015253
+ 1368 08e4 0E4A8A3F 		.word	1066027534
+ 1369 08e8 207A8A3F 		.word	1066039840
+ 1370 08ec 3BAA8A3F 		.word	1066052155
+ 1371 08f0 6EDA8A3F 		.word	1066064494
+ 1372 08f4 AA0A8B3F 		.word	1066076842
+ 1373 08f8 003B8B3F 		.word	1066089216
+ 1374 08fc 5D6B8B3F 		.word	1066101597
+ 1375 0900 D49B8B3F 		.word	1066114004
+ 1376 0904 53CC8B3F 		.word	1066126419
+ 1377 0908 EBFC8B3F 		.word	1066138859
+ 1378 090c 8C2D8C3F 		.word	1066151308
+ 1379 0910 465E8C3F 		.word	1066163782
+ 1380 0914 088F8C3F 		.word	1066176264
+ 1381 0918 E4BF8C3F 		.word	1066188772
+ 1382 091c C7F08C3F 		.word	1066201287
+ 1383 0920 C4218D3F 		.word	1066213828
+ 1384 0924 D2528D3F 		.word	1066226386
+ 1385 0928 E8838D3F 		.word	1066238952
+ 1386 092c 18B58D3F 		.word	1066251544
+ 1387 0930 58E68D3F 		.word	1066264152
+ 1388 0934 A0178E3F 		.word	1066276768
+ 1389 0938 02498E3F 		.word	1066289410
+ 1390 093c 747A8E3F 		.word	1066302068
+ 1391 0940 F7AB8E3F 		.word	1066314743
+ 1392 0944 8BDD8E3F 		.word	1066327435
+ 1393 0948 300F8F3F 		.word	1066340144
+ 1394 094c E6408F3F 		.word	1066352870
+ 1395 0950 AC728F3F 		.word	1066365612
+ 1396 0954 83A48F3F 		.word	1066378371
+ 1397 0958 73D68F3F 		.word	1066391155
+ 1398 095c 6C08903F 		.word	1066403948
+ 1399 0960 753A903F 		.word	1066416757
+ 1400 0964 986C903F 		.word	1066429592
+ 1401 0968 C39E903F 		.word	1066442435
+ 1402 096c 07D1903F 		.word	1066455303
+ 1403 0970 5C03913F 		.word	1066468188
+ 1404 0974 B935913F 		.word	1066481081
+ 1405 0978 3068913F 		.word	1066494000
+ 1406 097c B79A913F 		.word	1066506935
+ 1407 0980 4FCD913F 		.word	1066519887
+ 1408 0984 F8FF913F 		.word	1066532856
+ 1409 0988 BA32923F 		.word	1066545850
+ 1410 098c 8465923F 		.word	1066558852
+ 1411 0990 6798923F 		.word	1066571879
+ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccdFp30O.s 			page 31
+
+
+ 1412 0994 53CB923F 		.word	1066584915
+ 1413 0998 58FE923F 		.word	1066597976
+ 1414 099c 6E31933F 		.word	1066611054
+ 1415 09a0 8C64933F 		.word	1066624140
+ 1416 09a4 C497933F 		.word	1066637252
+ 1417 09a8 14CB933F 		.word	1066650388
+ 1418 09ac 6DFE933F 		.word	1066663533
+ 1419 09b0 D731943F 		.word	1066676695
+ 1420 09b4 5A65943F 		.word	1066689882
+ 1421 09b8 E598943F 		.word	1066703077
+ 1422 09bc 8ACC943F 		.word	1066716298
+ 1423 09c0 3F00953F 		.word	1066729535
+ 1424 09c4 0534953F 		.word	1066742789
+ 1425 09c8 E467953F 		.word	1066756068
+ 1426 09cc CC9B953F 		.word	1066769356
+ 1427 09d0 C4CF953F 		.word	1066782660
+ 1428 09d4 D503963F 		.word	1066795989
+ 1429 09d8 F837963F 		.word	1066809336
+ 1430 09dc 2B6C963F 		.word	1066822699
+ 1431 09e0 6FA0963F 		.word	1066836079
+ 1432 09e4 C3D4963F 		.word	1066849475
+ 1433 09e8 3109973F 		.word	1066862897
+ 1434 09ec B03D973F 		.word	1066876336
+ 1435 09f0 3672973F 		.word	1066889782
+ 1436 09f4 D7A6973F 		.word	1066903255
+ 1437 09f8 90DB973F 		.word	1066916752
+ 1438 09fc 5210983F 		.word	1066930258
+ 1439 0a00 2445983F 		.word	1066943780
+ 1440 0a04 107A983F 		.word	1066957328
+ 1441 0a08 0CAF983F 		.word	1066970892
+ 1442 0a0c 19E4983F 		.word	1066984473
+ 1443 0a10 3F19993F 		.word	1066998079
+ 1444 0a14 6E4E993F 		.word	1067011694
+ 1445 0a18 B683993F 		.word	1067025334
+ 1446 0a1c 0FB9993F 		.word	1067038991
+ 1447 0a20 78EE993F 		.word	1067052664
+ 1448 0a24 F2239A3F 		.word	1067066354
+ 1449 0a28 86599A3F 		.word	1067080070
+ 1450 0a2c 2A8F9A3F 		.word	1067093802
+ 1451 0a30 DFC49A3F 		.word	1067107551
+ 1452 0a34 A4FA9A3F 		.word	1067121316
+ 1453 0a38 7B309B3F 		.word	1067135099
+ 1454 0a3c 6B669B3F 		.word	1067148907
+ 1455 0a40 6B9C9B3F 		.word	1067162731
+ 1456 0a44 7CD29B3F 		.word	1067176572
+ 1457 0a48 A7089C3F 		.word	1067190439
+ 1458 0a4c D93E9C3F 		.word	1067204313
+ 1459 0a50 25759C3F 		.word	1067218213
+ 1460 0a54 82AB9C3F 		.word	1067232130
+ 1461 0a58 F8E19C3F 		.word	1067246072
+ 1462 0a5c 76189D3F 		.word	1067260022
+ 1463 0a60 0E4F9D3F 		.word	1067273998
+ 1464 0a64 BE859D3F 		.word	1067287998
+ 1465 0a68 77BC9D3F 		.word	1067302007
+ 1466 0a6c 49F39D3F 		.word	1067316041
+ 1467 0a70 2C2A9E3F 		.word	1067330092
+ 1468 0a74 20619E3F 		.word	1067344160
+ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccdFp30O.s 			page 32
+
+
+ 1469 0a78 24989E3F 		.word	1067358244
+ 1470 0a7c 42CF9E3F 		.word	1067372354
+ 1471 0a80 70069F3F 		.word	1067386480
+ 1472 0a84 B83D9F3F 		.word	1067400632
+ 1473 0a88 08759F3F 		.word	1067414792
+ 1474 0a8c 71AC9F3F 		.word	1067428977
+ 1475 0a90 F3E39F3F 		.word	1067443187
+ 1476 0a94 7E1BA03F 		.word	1067457406
+ 1477 0a98 2253A03F 		.word	1067471650
+ 1478 0a9c D78AA03F 		.word	1067485911
+ 1479 0aa0 A4C2A03F 		.word	1067500196
+ 1480 0aa4 7BFAA03F 		.word	1067514491
+ 1481 0aa8 7232A13F 		.word	1067528818
+ 1482 0aac 726AA13F 		.word	1067543154
+ 1483 0ab0 8CA2A13F 		.word	1067557516
+ 1484 0ab4 B6DAA13F 		.word	1067571894
+ 1485 0ab8 F112A23F 		.word	1067586289
+ 1486 0abc 454BA23F 		.word	1067600709
+ 1487 0ac0 A983A23F 		.word	1067615145
+ 1488 0ac4 1FBCA23F 		.word	1067629599
+ 1489 0ac8 AEF4A23F 		.word	1067644078
+ 1490 0acc 4D2DA33F 		.word	1067658573
+ 1491 0ad0 FE65A33F 		.word	1067673086
+ 1492 0ad4 C79EA33F 		.word	1067687623
+ 1493 0ad8 A1D7A33F 		.word	1067702177
+ 1494 0adc 9510A43F 		.word	1067716757
+ 1495 0ae0 9949A43F 		.word	1067731353
+ 1496 0ae4 AE82A43F 		.word	1067745966
+ 1497 0ae8 D4BBA43F 		.word	1067760596
+ 1498 0aec 12F5A43F 		.word	1067775250
+ 1499 0af0 622EA53F 		.word	1067789922
+ 1500 0af4 CB67A53F 		.word	1067804619
+ 1501 0af8 45A1A53F 		.word	1067819333
+ 1502 0afc D7DAA53F 		.word	1067834071
+ 1503 0b00 7214A63F 		.word	1067848818
+ 1504 0b04 2F4EA63F 		.word	1067863599
+ 1505 0b08 F487A63F 		.word	1067878388
+ 1506 0b0c D3C1A63F 		.word	1067893203
+ 1507 0b10 CAFBA63F 		.word	1067908042
+ 1508 0b14 CA35A73F 		.word	1067922890
+ 1509 0b18 E36FA73F 		.word	1067937763
+ 1510 0b1c 15AAA73F 		.word	1067952661
+ 1511 0b20 58E4A73F 		.word	1067967576
+ 1512 0b24 AC1EA83F 		.word	1067982508
+ 1513 0b28 1959A83F 		.word	1067997465
+ 1514 0b2c 9693A83F 		.word	1068012438
+ 1515 0b30 2DCEA83F 		.word	1068027437
+ 1516 0b34 D508A93F 		.word	1068042453
+ 1517 0b38 9643A93F 		.word	1068057494
+ 1518 0b3c 677EA93F 		.word	1068072551
+ 1519 0b40 49B9A93F 		.word	1068087625
+ 1520 0b44 45F4A93F 		.word	1068102725
+ 1521 0b48 512FAA3F 		.word	1068117841
+ 1522 0b4c 776AAA3F 		.word	1068132983
+ 1523 0b50 ADA5AA3F 		.word	1068148141
+ 1524 0b54 FCE0AA3F 		.word	1068163324
+ 1525 0b58 5C1CAB3F 		.word	1068178524
+ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccdFp30O.s 			page 33
+
+
+ 1526 0b5c CD57AB3F 		.word	1068193741
+ 1527 0b60 5793AB3F 		.word	1068208983
+ 1528 0b64 FBCEAB3F 		.word	1068224251
+ 1529 0b68 AF0AAC3F 		.word	1068239535
+ 1530 0b6c 7446AC3F 		.word	1068254836
+ 1531 0b70 5182AC3F 		.word	1068270161
+ 1532 0b74 40BEAC3F 		.word	1068285504
+ 1533 0b78 48FAAC3F 		.word	1068300872
+ 1534 0b7c 6936AD3F 		.word	1068316265
+ 1535 0b80 9372AD3F 		.word	1068331667
+ 1536 0b84 DEAEAD3F 		.word	1068347102
+ 1537 0b88 3AEBAD3F 		.word	1068362554
+ 1538 0b8c A627AE3F 		.word	1068378022
+ 1539 0b90 2C64AE3F 		.word	1068393516
+ 1540 0b94 C3A0AE3F 		.word	1068409027
+ 1541 0b98 72DDAE3F 		.word	1068424562
+ 1542 0b9c 331AAF3F 		.word	1068440115
+ 1543 0ba0 0C57AF3F 		.word	1068455692
+ 1544 0ba4 FF93AF3F 		.word	1068471295
+ 1545 0ba8 FAD0AF3F 		.word	1068486906
+ 1546 0bac 170EB03F 		.word	1068502551
+ 1547 0bb0 454BB03F 		.word	1068518213
+ 1548 0bb4 8388B03F 		.word	1068533891
+ 1549 0bb8 DAC5B03F 		.word	1068549594
+ 1550 0bbc 4B03B13F 		.word	1068565323
+ 1551 0bc0 CC40B13F 		.word	1068581068
+ 1552 0bc4 677EB13F 		.word	1068596839
+ 1553 0bc8 12BCB13F 		.word	1068612626
+ 1554 0bcc D7F9B13F 		.word	1068628439
+ 1555 0bd0 AC37B23F 		.word	1068644268
+ 1556 0bd4 9B75B23F 		.word	1068660123
+ 1557 0bd8 A2B3B23F 		.word	1068676002
+ 1558 0bdc BBF1B23F 		.word	1068691899
+ 1559 0be0 E42FB33F 		.word	1068707812
+ 1560 0be4 266EB33F 		.word	1068723750
+ 1561 0be8 82ACB33F 		.word	1068739714
+ 1562 0bec EEEAB33F 		.word	1068755694
+ 1563 0bf0 7429B43F 		.word	1068771700
+ 1564 0bf4 1268B43F 		.word	1068787730
+ 1565 0bf8 C2A6B43F 		.word	1068803778
+ 1566 0bfc 8AE5B43F 		.word	1068819850
+ 1567 0c00 6424B53F 		.word	1068835940
+ 1568 0c04 5663B53F 		.word	1068852054
+ 1569 0c08 59A2B53F 		.word	1068868185
+ 1570 0c0c 7EE1B53F 		.word	1068884350
+ 1571 0c10 AB20B63F 		.word	1068900523
+ 1572 0c14 FA5FB63F 		.word	1068916730
+ 1573 0c18 5A9FB63F 		.word	1068932954
+ 1574 0c1c CADEB63F 		.word	1068949194
+ 1575 0c20 5C1EB73F 		.word	1068965468
+ 1576 0c24 F65DB73F 		.word	1068981750
+ 1577 0c28 B29DB73F 		.word	1068998066
+ 1578 0c2c 7FDDB73F 		.word	1069014399
+ 1579 0c30 651DB83F 		.word	1069030757
+ 1580 0c34 5B5DB83F 		.word	1069047131
+ 1581 0c38 6B9DB83F 		.word	1069063531
+ 1582 0c3c 94DDB83F 		.word	1069079956
+ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccdFp30O.s 			page 34
+
+
+ 1583 0c40 D61DB93F 		.word	1069096406
+ 1584 0c44 295EB93F 		.word	1069112873
+ 1585 0c48 8C9EB93F 		.word	1069129356
+ 1586 0c4c 11DFB93F 		.word	1069145873
+ 1587 0c50 A71FBA3F 		.word	1069162407
+ 1588 0c54 5760BA3F 		.word	1069178967
+ 1589 0c58 16A1BA3F 		.word	1069195542
+ 1590 0c5c EFE1BA3F 		.word	1069212143
+ 1591 0c60 E222BB3F 		.word	1069228770
+ 1592 0c64 E563BB3F 		.word	1069245413
+ 1593 0c68 09A5BB3F 		.word	1069262089
+ 1594 0c6c 36E6BB3F 		.word	1069278774
+ 1595 0c70 8527BC3F 		.word	1069295493
+ 1596 0c74 E468BC3F 		.word	1069312228
+ 1597 0c78 5CAABC3F 		.word	1069328988
+ 1598 0c7c EEEBBC3F 		.word	1069345774
+ 1599 0c80 902DBD3F 		.word	1069362576
+ 1600 0c84 546FBD3F 		.word	1069379412
+ 1601 0c88 21B1BD3F 		.word	1069396257
+ 1602 0c8c 0EF3BD3F 		.word	1069413134
+ 1603 0c90 0D35BE3F 		.word	1069430029
+ 1604 0c94 2577BE3F 		.word	1069446949
+ 1605 0c98 56B9BE3F 		.word	1069463894
+ 1606 0c9c A0FBBE3F 		.word	1069480864
+ 1607 0ca0 FB3DBF3F 		.word	1069497851
+ 1608 0ca4 6F80BF3F 		.word	1069514863
+ 1609 0ca8 FCC2BF3F 		.word	1069531900
+ 1610 0cac 9A05C03F 		.word	1069548954
+ 1611 0cb0 5A48C03F 		.word	1069566042
+ 1612 0cb4 2A8BC03F 		.word	1069583146
+ 1613 0cb8 0CCEC03F 		.word	1069600268
+ 1614 0cbc 0E11C13F 		.word	1069617422
+ 1615 0cc0 2254C13F 		.word	1069634594
+ 1616 0cc4 5797C13F 		.word	1069651799
+ 1617 0cc8 94DAC13F 		.word	1069669012
+ 1618 0ccc F31DC23F 		.word	1069686259
+ 1619 0cd0 6B61C23F 		.word	1069703531
+ 1620 0cd4 F4A4C23F 		.word	1069720820
+ 1621 0cd8 96E8C23F 		.word	1069738134
+ 1622 0cdc 522CC33F 		.word	1069755474
+ 1623 0ce0 2670C33F 		.word	1069772838
+ 1624 0ce4 0BB4C33F 		.word	1069790219
+ 1625 0ce8 12F8C33F 		.word	1069807634
+ 1626 0cec 293CC43F 		.word	1069825065
+ 1627 0cf0 5A80C43F 		.word	1069842522
+ 1628 0cf4 9CC4C43F 		.word	1069859996
+ 1629 0cf8 FF08C53F 		.word	1069877503
+ 1630 0cfc 7B4DC53F 		.word	1069895035
+ 1631 0d00 0892C53F 		.word	1069912584
+ 1632 0d04 AED6C53F 		.word	1069930158
+ 1633 0d08 6D1BC63F 		.word	1069947757
+ 1634 0d0c 4660C63F 		.word	1069965382
+ 1635 0d10 2FA5C63F 		.word	1069983023
+ 1636 0d14 3AEAC63F 		.word	1070000698
+ 1637 0d18 552FC73F 		.word	1070018389
+ 1638 0d1c 9274C73F 		.word	1070036114
+ 1639 0d20 E0B9C73F 		.word	1070053856
+ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccdFp30O.s 			page 35
+
+
+ 1640 0d24 47FFC73F 		.word	1070071623
+ 1641 0d28 C844C83F 		.word	1070089416
+ 1642 0d2c 598AC83F 		.word	1070107225
+ 1643 0d30 0BD0C83F 		.word	1070125067
+ 1644 0d34 CF15C93F 		.word	1070142927
+ 1645 0d38 B45BC93F 		.word	1070160820
+ 1646 0d3c A9A1C93F 		.word	1070178729
+ 1647 0d40 B8E7C93F 		.word	1070196664
+ 1648 0d44 E02DCA3F 		.word	1070214624
+ 1649 0d48 2174CA3F 		.word	1070232609
+ 1650 0d4c 7CBACA3F 		.word	1070250620
+ 1651 0d50 EF00CB3F 		.word	1070268655
+ 1652 0d54 7C47CB3F 		.word	1070286716
+ 1653 0d58 228ECB3F 		.word	1070304802
+ 1654 0d5c D8D4CB3F 		.word	1070322904
+ 1655 0d60 B01BCC3F 		.word	1070341040
+ 1656 0d64 9962CC3F 		.word	1070359193
+ 1657 0d68 A4A9CC3F 		.word	1070377380
+ 1658 0d6c BFF0CC3F 		.word	1070395583
+ 1659 0d70 F437CD3F 		.word	1070413812
+ 1660 0d74 417FCD3F 		.word	1070432065
+ 1661 0d78 B0C6CD3F 		.word	1070450352
+ 1662 0d7c 300ECE3F 		.word	1070468656
+ 1663 0d80 C955CE3F 		.word	1070486985
+ 1664 0d84 7C9DCE3F 		.word	1070505340
+ 1665 0d88 47E5CE3F 		.word	1070523719
+ 1666 0d8c 2C2DCF3F 		.word	1070542124
+ 1667 0d90 2975CF3F 		.word	1070560553
+ 1668 0d94 40BDCF3F 		.word	1070579008
+ 1669 0d98 7105D03F 		.word	1070597489
+ 1670 0d9c BA4DD03F 		.word	1070615994
+ 1671 0da0 1C96D03F 		.word	1070634524
+ 1672 0da4 98DED03F 		.word	1070653080
+ 1673 0da8 2D27D13F 		.word	1070671661
+ 1674 0dac DB6FD13F 		.word	1070690267
+ 1675 0db0 A2B8D13F 		.word	1070708898
+ 1676 0db4 8201D23F 		.word	1070727554
+ 1677 0db8 7B4AD23F 		.word	1070746235
+ 1678 0dbc 8E93D23F 		.word	1070764942
+ 1679 0dc0 BADCD23F 		.word	1070783674
+ 1680 0dc4 FF25D33F 		.word	1070802431
+ 1681 0dc8 5D6FD33F 		.word	1070821213
+ 1682 0dcc D4B8D33F 		.word	1070840020
+ 1683 0dd0 6402D43F 		.word	1070858852
+ 1684 0dd4 164CD43F 		.word	1070877718
+ 1685 0dd8 D995D43F 		.word	1070896601
+ 1686 0ddc B5DFD43F 		.word	1070915509
+ 1687 0de0 B329D53F 		.word	1070934451
+ 1688 0de4 C173D53F 		.word	1070953409
+ 1689 0de8 F1BDD53F 		.word	1070972401
+ 1690 0dec 3108D63F 		.word	1070991409
+ 1691 0df0 9352D63F 		.word	1071010451
+ 1692 0df4 0F9DD63F 		.word	1071029519
+ 1693 0df8 A3E7D63F 		.word	1071048611
+ 1694 0dfc 5132D73F 		.word	1071067729
+ 1695 0e00 187DD73F 		.word	1071086872
+ 1696 0e04 F7C7D73F 		.word	1071106039
+ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccdFp30O.s 			page 36
+
+
+ 1697 0e08 F112D83F 		.word	1071125233
+ 1698 0e0c 035ED83F 		.word	1071144451
+ 1699 0e10 37A9D83F 		.word	1071163703
+ 1700 0e14 7BF4D83F 		.word	1071182971
+ 1701 0e18 E23FD93F 		.word	1071202274
+ 1702 0e1c 618BD93F 		.word	1071221601
+ 1703 0e20 F9D6D93F 		.word	1071240953
+ 1704 0e24 AB22DA3F 		.word	1071260331
+ 1705 0e28 766EDA3F 		.word	1071279734
+ 1706 0e2c 62BADA3F 		.word	1071299170
+ 1707 0e30 6006DB3F 		.word	1071318624
+ 1708 0e34 7E52DB3F 		.word	1071338110
+ 1709 0e38 AE9EDB3F 		.word	1071357614
+ 1710 0e3c FFEADB3F 		.word	1071377151
+ 1711 0e40 7237DC3F 		.word	1071396722
+ 1712 0e44 F583DC3F 		.word	1071416309
+ 1713 0e48 91D0DC3F 		.word	1071435921
+ 1714 0e4c 501DDD3F 		.word	1071455568
+ 1715 0e50 276ADD3F 		.word	1071475239
+ 1716 0e54 17B7DD3F 		.word	1071494935
+ 1717 0e58 2104DE3F 		.word	1071514657
+ 1718 0e5c 4451DE3F 		.word	1071534404
+ 1719 0e60 889EDE3F 		.word	1071554184
+ 1720 0e64 E6EBDE3F 		.word	1071573990
+ 1721 0e68 5439DF3F 		.word	1071593812
+ 1722 0e6c EC86DF3F 		.word	1071613676
+ 1723 0e70 95D4DF3F 		.word	1071633557
+ 1724 0e74 6022E03F 		.word	1071653472
+ 1725 0e78 3B70E03F 		.word	1071673403
+ 1726 0e7c 40BEE03F 		.word	1071693376
+ 1727 0e80 560CE13F 		.word	1071713366
+ 1728 0e84 865AE13F 		.word	1071733382
+ 1729 0e88 D6A8E13F 		.word	1071753430
+ 1730 0e8c 40F7E13F 		.word	1071773504
+ 1731 0e90 C345E23F 		.word	1071793603
+ 1732 0e94 6894E23F 		.word	1071813736
+ 1733 0e98 26E3E23F 		.word	1071833894
+ 1734 0e9c FD31E33F 		.word	1071854077
+ 1735 0ea0 ED80E33F 		.word	1071874285
+ 1736 0ea4 F6CFE33F 		.word	1071894518
+ 1737 0ea8 211FE43F 		.word	1071914785
+ 1738 0eac 656EE43F 		.word	1071935077
+ 1739 0eb0 CBBDE43F 		.word	1071955403
+ 1740 0eb4 410DE53F 		.word	1071975745
+ 1741 0eb8 D95CE53F 		.word	1071996121
+ 1742 0ebc 93ACE53F 		.word	1072016531
+ 1743 0ec0 5DFCE53F 		.word	1072036957
+ 1744 0ec4 494CE63F 		.word	1072057417
+ 1745 0ec8 4E9CE63F 		.word	1072077902
+ 1746 0ecc 74ECE63F 		.word	1072098420
+ 1747 0ed0 B43CE73F 		.word	1072118964
+ 1748 0ed4 0D8DE73F 		.word	1072139533
+ 1749 0ed8 7FDDE73F 		.word	1072160127
+ 1750 0edc 122EE83F 		.word	1072180754
+ 1751 0ee0 BF7EE83F 		.word	1072201407
+ 1752 0ee4 8DCFE83F 		.word	1072222093
+ 1753 0ee8 7520E93F 		.word	1072242805
+ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccdFp30O.s 			page 37
+
+
+ 1754 0eec 7671E93F 		.word	1072263542
+ 1755 0ef0 8FC2E93F 		.word	1072284303
+ 1756 0ef4 CB13EA3F 		.word	1072305099
+ 1757 0ef8 2865EA3F 		.word	1072325928
+ 1758 0efc 95B6EA3F 		.word	1072346773
+ 1759 0f00 2508EB3F 		.word	1072367653
+ 1760 0f04 D559EB3F 		.word	1072388565
+ 1761 0f08 97ABEB3F 		.word	1072409495
+ 1762 0f0c 7AFDEB3F 		.word	1072430458
+ 1763 0f10 7F4FEC3F 		.word	1072451455
+ 1764 0f14 9DA1EC3F 		.word	1072472477
+ 1765 0f18 D4F3EC3F 		.word	1072493524
+ 1766 0f1c 2C46ED3F 		.word	1072514604
+ 1767 0f20 9E98ED3F 		.word	1072535710
+ 1768 0f24 31EBED3F 		.word	1072556849
+ 1769 0f28 DE3DEE3F 		.word	1072578014
+ 1770 0f2c A390EE3F 		.word	1072599203
+ 1771 0f30 8AE3EE3F 		.word	1072620426
+ 1772 0f34 8B36EF3F 		.word	1072641675
+ 1773 0f38 AD89EF3F 		.word	1072662957
+ 1774 0f3c E8DCEF3F 		.word	1072684264
+ 1775 0f40 4430F03F 		.word	1072705604
+ 1776 0f44 BA83F03F 		.word	1072726970
+ 1777 0f48 52D7F03F 		.word	1072748370
+ 1778 0f4c 022BF13F 		.word	1072769794
+ 1779 0f50 CC7EF13F 		.word	1072791244
+ 1780 0f54 B7D2F13F 		.word	1072812727
+ 1781 0f58 BB26F23F 		.word	1072834235
+ 1782 0f5c E17AF23F 		.word	1072855777
+ 1783 0f60 29CFF23F 		.word	1072877353
+ 1784 0f64 8123F33F 		.word	1072898945
+ 1785 0f68 0378F33F 		.word	1072920579
+ 1786 0f6c 9FCCF33F 		.word	1072942239
+ 1787 0f70 5321F43F 		.word	1072963923
+ 1788 0f74 2976F43F 		.word	1072985641
+ 1789 0f78 19CBF43F 		.word	1073007385
+ 1790 0f7c 2920F53F 		.word	1073029161
+ 1791 0f80 5C75F53F 		.word	1073050972
+ 1792 0f84 A7CAF53F 		.word	1073072807
+ 1793 0f88 0C20F63F 		.word	1073094668
+ 1794 0f8c 9275F63F 		.word	1073116562
+ 1795 0f90 3ACBF63F 		.word	1073138490
+ 1796 0f94 FB20F73F 		.word	1073160443
+ 1797 0f98 D576F73F 		.word	1073182421
+ 1798 0f9c D9CCF73F 		.word	1073204441
+ 1799 0fa0 EE22F83F 		.word	1073226478
+ 1800 0fa4 2D79F83F 		.word	1073248557
+ 1801 0fa8 85CFF83F 		.word	1073270661
+ 1802 0fac F625F93F 		.word	1073292790
+ 1803 0fb0 897CF93F 		.word	1073314953
+ 1804 0fb4 3DD3F93F 		.word	1073337149
+ 1805 0fb8 0B2AFA3F 		.word	1073359371
+ 1806 0fbc FA80FA3F 		.word	1073381626
+ 1807 0fc0 0AD8FA3F 		.word	1073403914
+ 1808 0fc4 342FFB3F 		.word	1073426228
+ 1809 0fc8 7786FB3F 		.word	1073448567
+ 1810 0fcc E3DDFB3F 		.word	1073470947
+ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccdFp30O.s 			page 38
+
+
+ 1811 0fd0 6935FC3F 		.word	1073493353
+ 1812 0fd4 098DFC3F 		.word	1073515785
+ 1813 0fd8 C9E4FC3F 		.word	1073538249
+ 1814 0fdc AC3CFD3F 		.word	1073560748
+ 1815 0fe0 AF94FD3F 		.word	1073583279
+ 1816 0fe4 CCECFD3F 		.word	1073605836
+ 1817 0fe8 0245FE3F 		.word	1073628418
+ 1818 0fec 629DFE3F 		.word	1073651042
+ 1819 0ff0 DCF5FE3F 		.word	1073673692
+ 1820 0ff4 774EFF3F 		.word	1073696375
+ 1821 0ff8 2AA7FF3F 		.word	1073719082
+ 1822 0ffc 00000040 		.word	1073741824
+ 1823              		.text
+ 1824              	.Letext0:
+ 1825              		.file 2 "/Users/johannes/Library/Application Support/Code/User/globalStorage/bmd.stm32-for-vscode/
+ 1826              		.file 3 "/Users/johannes/Library/Application Support/Code/User/globalStorage/bmd.stm32-for-vscode/
+ 1827              		.file 4 "Drivers/CMSIS/Device/ST/STM32F4xx/Include/stm32f407xx.h"
+ 1828              		.file 5 "Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_gpio.h"
+ 1829              		.file 6 "Middlewares/ST/STM32_USB_Host_Library/Core/Inc/usbh_def.h"
+ 1830              		.file 7 "Core/Inc/usbh_MIDI.h"
+ 1831              		.file 8 "Core/Inc/MIDI_application.h"
+ 1832              		.file 9 "Core/Inc/MIDI_event.h"
+ 1833              		.file 10 "Core/Inc/MIDI_lut.h"
+ 1834              		.file 11 "Core/Inc/oscillators.h"
+ 1835              		.file 12 "Core/Inc/SEGGER_RTT.h"
+ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccdFp30O.s 			page 39
 
 
 DEFINED SYMBOLS
                             *ABS*:0000000000000000 MIDI_event.c
+/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccdFp30O.s:20     .text.OpSetFreq:0000000000000000 $t
+/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccdFp30O.s:26     .text.OpSetFreq:0000000000000000 OpSetFreq
+/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccdFp30O.s:44     .text.MIDI_eventInit:0000000000000000 $t
+/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccdFp30O.s:50     .text.MIDI_eventInit:0000000000000000 MIDI_eventInit
+/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccdFp30O.s:144    .text.MIDI_eventInit:0000000000000064 $d
+/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccdFp30O.s:154    .rodata.ProcessMIDI.str1.4:0000000000000000 $d
+/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccdFp30O.s:158    .text.ProcessMIDI:0000000000000000 $t
+/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccdFp30O.s:164    .text.ProcessMIDI:0000000000000000 ProcessMIDI
+/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccdFp30O.s:479    .text.ProcessMIDI:0000000000000190 $d
+/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccdFp30O.s:491    .text.USBH_UserProcess_callback:0000000000000000 $t
+/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccdFp30O.s:497    .text.USBH_UserProcess_callback:0000000000000000 USBH_UserProcess_callback
+/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccdFp30O.s:600    .text.USBH_UserProcess_callback:0000000000000074 $d
+/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccdFp30O.s:658    .bss.voice:0000000000000000 voice
+/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccdFp30O.s:638    .bss.mtoinc:0000000000000000 mtoinc
+/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccdFp30O.s:651    .bss.runningStatus:0000000000000000 runningStatus
+/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccdFp30O.s:631    .bss.keyboard:0000000000000000 keyboard
+/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccdFp30O.s:645    .bss.pitchbend:0000000000000000 pitchbend
+/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccdFp30O.s:618    .bss.Appli_state:0000000000000000 Appli_state
+/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccdFp30O.s:624    .bss.hUSBHost:0000000000000000 hUSBHost
+/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccdFp30O.s:798    .rodata.pbend:0000000000000000 pbend
+/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccdFp30O.s:665    .rodata.mtof:0000000000000000 mtof
+/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccdFp30O.s:619    .bss.Appli_state:0000000000000000 $d
+/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccdFp30O.s:621    .bss.hUSBHost:0000000000000000 $d
+/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccdFp30O.s:627    .bss.keyboard:0000000000000000 $d
+/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccdFp30O.s:634    .bss.mtoinc:0000000000000000 $d
+/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccdFp30O.s:641    .bss.pitchbend:0000000000000000 $d
+/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccdFp30O.s:652    .bss.runningStatus:0000000000000000 $d
+/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccdFp30O.s:654    .bss.voice:0000000000000000 $d
+/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccdFp30O.s:661    .rodata.mtof:0000000000000000 $d
+/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccdFp30O.s:795    .rodata.pbend:0000000000000000 $d
 
-NO UNDEFINED SYMBOLS
+UNDEFINED SYMBOLS
+HAL_GPIO_TogglePin
+HAL_GPIO_WritePin
+SEGGER_RTT_printf
+osc1
