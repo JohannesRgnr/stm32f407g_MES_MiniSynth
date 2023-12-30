@@ -71,7 +71,7 @@ void audioBlock(float *output, int32_t samples)
 		// output[i << 1] 			= superSaw_outL;		// LEFT
 		// output[(i << 1) + 1] 	= superSaw_outR;  		// RIGHT
 
-		output[i << 1] 			= osc1.output;		// LEFT
+		output[i << 1] 			= osc1.output;			// LEFT
 		output[(i << 1) + 1] 	= osc1.output;  		// RIGHT
 
 		

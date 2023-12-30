@@ -2,8 +2,8 @@
 
 Final project for the Making Embedded Systems course
 
-Midi Synthesizer
+Midi Synthesizer on STM32F407G_Discovery board.
 - MIDI USB Host mode: connect external USB midi keyboard or controller
-- oscillators: sine, bandlimited sawtooth, bandlimited pulse wave, FM, supersaw
+- Digital oscillators: sine, bandlimited sawtooth, bandlimited pulse wave, FM, Supersaw
 
 WIP....
