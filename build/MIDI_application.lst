@@ -1,0 +1,428 @@
+ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccorCtTR.s 			page 1
+
+
+   1              		.cpu cortex-m4
+   2              		.arch armv7e-m
+   3              		.fpu fpv4-sp-d16
+   4              		.eabi_attribute 27, 1
+   5              		.eabi_attribute 28, 1
+   6              		.eabi_attribute 20, 1
+   7              		.eabi_attribute 21, 1
+   8              		.eabi_attribute 23, 3
+   9              		.eabi_attribute 24, 1
+  10              		.eabi_attribute 25, 1
+  11              		.eabi_attribute 26, 1
+  12              		.eabi_attribute 30, 1
+  13              		.eabi_attribute 34, 1
+  14              		.eabi_attribute 18, 4
+  15              		.file	"MIDI_application.c"
+  16              		.text
+  17              	.Ltext0:
+  18              		.cfi_sections	.debug_frame
+  19              		.section	.text.MIDI_Application,"ax",%progbits
+  20              		.align	1
+  21              		.global	MIDI_Application
+  22              		.syntax unified
+  23              		.thumb
+  24              		.thumb_func
+  26              	MIDI_Application:
+  27              	.LFB133:
+  28              		.file 1 "Core/Src/MIDI_application.c"
+   1:Core/Src/MIDI_application.c **** /*
+   2:Core/Src/MIDI_application.c ****  * MIDI_application.c
+   3:Core/Src/MIDI_application.c ****  *
+   4:Core/Src/MIDI_application.c ****  *  Created on: 6 dec. 2014
+   5:Core/Src/MIDI_application.c ****  *      Author: Xavier Halgand
+   6:Core/Src/MIDI_application.c ****  */
+   7:Core/Src/MIDI_application.c **** 
+   8:Core/Src/MIDI_application.c **** 
+   9:Core/Src/MIDI_application.c **** /* Includes ------------------------------------------------------------------*/
+  10:Core/Src/MIDI_application.c **** 
+  11:Core/Src/MIDI_application.c **** #include "main.h"
+  12:Core/Src/MIDI_application.c **** #include "MIDI_application.h"
+  13:Core/Src/MIDI_application.c **** 
+  14:Core/Src/MIDI_application.c **** extern USBH_HandleTypeDef hUSBHost;
+  15:Core/Src/MIDI_application.c **** extern MIDI_ApplicationTypeDef Appli_state;
+  16:Core/Src/MIDI_application.c **** extern int8_t midi1, midi2;
+  17:Core/Src/MIDI_application.c **** 
+  18:Core/Src/MIDI_application.c **** 
+  19:Core/Src/MIDI_application.c **** 
+  20:Core/Src/MIDI_application.c **** /* Private define ------------------------------------------------------------*/
+  21:Core/Src/MIDI_application.c **** 
+  22:Core/Src/MIDI_application.c **** #define RX_BUFF_SIZE   64  /* Max Received data 64 bytes */
+  23:Core/Src/MIDI_application.c **** 
+  24:Core/Src/MIDI_application.c **** 
+  25:Core/Src/MIDI_application.c **** uint8_t MIDI_RX_Buffer[RX_BUFF_SIZE]; // MIDI reception buffer
+  26:Core/Src/MIDI_application.c **** 
+  27:Core/Src/MIDI_application.c **** /* Private function prototypes -----------------------------------------------*/
+  28:Core/Src/MIDI_application.c **** void ProcessReceivedMidiDatas(void);
+  29:Core/Src/MIDI_application.c **** 
+  30:Core/Src/MIDI_application.c **** 
+ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccorCtTR.s 			page 2
+
+
+  31:Core/Src/MIDI_application.c **** /*-----------------------------------------------------------------------------*/
+  32:Core/Src/MIDI_application.c **** /**
+  33:Core/Src/MIDI_application.c ****  * @brief  Main routine for MIDI application, looped in main.c
+  34:Core/Src/MIDI_application.c ****  * @param  None
+  35:Core/Src/MIDI_application.c ****  * @retval none
+  36:Core/Src/MIDI_application.c ****  */
+  37:Core/Src/MIDI_application.c **** void MIDI_Application(void)
+  38:Core/Src/MIDI_application.c **** {
+  29              		.loc 1 38 1 view -0
+  30              		.cfi_startproc
+  31              		@ args = 0, pretend = 0, frame = 0
+  32              		@ frame_needed = 0, uses_anonymous_args = 0
+  33 0000 08B5     		push	{r3, lr}
+  34              		.cfi_def_cfa_offset 8
+  35              		.cfi_offset 3, -8
+  36              		.cfi_offset 14, -4
+  39:Core/Src/MIDI_application.c **** 	if(Appli_state == MIDI_APPLICATION_READY)
+  37              		.loc 1 39 2 view .LVU1
+  38              		.loc 1 39 17 is_stmt 0 view .LVU2
+  39 0002 0C4B     		ldr	r3, .L7
+  40 0004 1B78     		ldrb	r3, [r3]	@ zero_extendqisi2
+  41              		.loc 1 39 4 view .LVU3
+  42 0006 022B     		cmp	r3, #2
+  43 0008 04D0     		beq	.L5
+  44              	.L2:
+  40:Core/Src/MIDI_application.c **** 	{
+  41:Core/Src/MIDI_application.c **** 		USBH_MIDI_Receive(&hUSBHost, MIDI_RX_Buffer, RX_BUFF_SIZE); // just once at the beginning, start 
+  42:Core/Src/MIDI_application.c **** 		Appli_state = MIDI_APPLICATION_RUNNING;
+  43:Core/Src/MIDI_application.c **** 	}
+  44:Core/Src/MIDI_application.c **** 	if(Appli_state == MIDI_APPLICATION_RUNNING)
+  45              		.loc 1 44 2 is_stmt 1 view .LVU4
+  46              		.loc 1 44 17 is_stmt 0 view .LVU5
+  47 000a 0A4B     		ldr	r3, .L7
+  48 000c 1B78     		ldrb	r3, [r3]	@ zero_extendqisi2
+  45:Core/Src/MIDI_application.c **** 	{
+  46:Core/Src/MIDI_application.c **** 			//....pffff......grrrrr......
+  47:Core/Src/MIDI_application.c **** 	}
+  49              		.loc 1 47 2 is_stmt 1 view .LVU6
+  48:Core/Src/MIDI_application.c **** 
+  49:Core/Src/MIDI_application.c **** 	if(Appli_state == MIDI_APPLICATION_DISCONNECT)
+  50              		.loc 1 49 2 view .LVU7
+  51              		.loc 1 49 4 is_stmt 0 view .LVU8
+  52 000e 042B     		cmp	r3, #4
+  53 0010 09D0     		beq	.L6
+  54              	.L1:
+  50:Core/Src/MIDI_application.c **** 	{
+  51:Core/Src/MIDI_application.c **** 		Appli_state = MIDI_APPLICATION_IDLE;
+  52:Core/Src/MIDI_application.c **** 		USBH_MIDI_Stop(&hUSBHost);
+  53:Core/Src/MIDI_application.c **** 	}
+  54:Core/Src/MIDI_application.c **** 
+  55:Core/Src/MIDI_application.c **** }
+  55              		.loc 1 55 1 view .LVU9
+  56 0012 08BD     		pop	{r3, pc}
+  57              	.L5:
+  41:Core/Src/MIDI_application.c **** 		Appli_state = MIDI_APPLICATION_RUNNING;
+  58              		.loc 1 41 3 is_stmt 1 view .LVU10
+  59 0014 4022     		movs	r2, #64
+ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccorCtTR.s 			page 3
+
+
+  60 0016 0849     		ldr	r1, .L7+4
+  61 0018 0848     		ldr	r0, .L7+8
+  62 001a FFF7FEFF 		bl	USBH_MIDI_Receive
+  63              	.LVL0:
+  42:Core/Src/MIDI_application.c **** 	}
+  64              		.loc 1 42 3 view .LVU11
+  42:Core/Src/MIDI_application.c **** 	}
+  65              		.loc 1 42 15 is_stmt 0 view .LVU12
+  66 001e 054B     		ldr	r3, .L7
+  67 0020 0322     		movs	r2, #3
+  68 0022 1A70     		strb	r2, [r3]
+  69 0024 F1E7     		b	.L2
+  70              	.L6:
+  51:Core/Src/MIDI_application.c **** 		USBH_MIDI_Stop(&hUSBHost);
+  71              		.loc 1 51 3 is_stmt 1 view .LVU13
+  51:Core/Src/MIDI_application.c **** 		USBH_MIDI_Stop(&hUSBHost);
+  72              		.loc 1 51 15 is_stmt 0 view .LVU14
+  73 0026 034B     		ldr	r3, .L7
+  74 0028 0022     		movs	r2, #0
+  75 002a 1A70     		strb	r2, [r3]
+  52:Core/Src/MIDI_application.c **** 	}
+  76              		.loc 1 52 3 is_stmt 1 view .LVU15
+  77 002c 0348     		ldr	r0, .L7+8
+  78 002e FFF7FEFF 		bl	USBH_MIDI_Stop
+  79              	.LVL1:
+  80              		.loc 1 55 1 is_stmt 0 view .LVU16
+  81 0032 EEE7     		b	.L1
+  82              	.L8:
+  83              		.align	2
+  84              	.L7:
+  85 0034 00000000 		.word	Appli_state
+  86 0038 00000000 		.word	.LANCHOR0
+  87 003c 00000000 		.word	hUSBHost
+  88              		.cfi_endproc
+  89              	.LFE133:
+  91              		.section	.text.ProcessReceivedMidiDatas,"ax",%progbits
+  92              		.align	1
+  93              		.global	ProcessReceivedMidiDatas
+  94              		.syntax unified
+  95              		.thumb
+  96              		.thumb_func
+  98              	ProcessReceivedMidiDatas:
+  99              	.LFB134:
+  56:Core/Src/MIDI_application.c **** 
+  57:Core/Src/MIDI_application.c **** 
+  58:Core/Src/MIDI_application.c **** /*-----------------------------------------------------------------------------*/
+  59:Core/Src/MIDI_application.c **** void ProcessReceivedMidiDatas(void)
+  60:Core/Src/MIDI_application.c **** {
+ 100              		.loc 1 60 1 is_stmt 1 view -0
+ 101              		.cfi_startproc
+ 102              		@ args = 0, pretend = 0, frame = 0
+ 103              		@ frame_needed = 0, uses_anonymous_args = 0
+ 104 0000 70B5     		push	{r4, r5, r6, lr}
+ 105              		.cfi_def_cfa_offset 16
+ 106              		.cfi_offset 4, -16
+ 107              		.cfi_offset 5, -12
+ 108              		.cfi_offset 6, -8
+ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccorCtTR.s 			page 4
+
+
+ 109              		.cfi_offset 14, -4
+  61:Core/Src/MIDI_application.c **** 	uint16_t numberOfPackets;
+ 110              		.loc 1 61 2 view .LVU18
+  62:Core/Src/MIDI_application.c **** 	uint8_t *ptr = MIDI_RX_Buffer;
+ 111              		.loc 1 62 2 view .LVU19
+ 112              	.LVL2:
+  63:Core/Src/MIDI_application.c **** 	midi_package_t pack;
+ 113              		.loc 1 63 2 view .LVU20
+  64:Core/Src/MIDI_application.c **** 
+  65:Core/Src/MIDI_application.c **** 	numberOfPackets = USBH_MIDI_GetLastReceivedDataSize(&hUSBHost) / 4; //each USB midi package is 4 b
+ 114              		.loc 1 65 2 view .LVU21
+ 115              		.loc 1 65 20 is_stmt 0 view .LVU22
+ 116 0002 1448     		ldr	r0, .L16
+ 117 0004 FFF7FEFF 		bl	USBH_MIDI_GetLastReceivedDataSize
+ 118              	.LVL3:
+ 119              		.loc 1 65 18 view .LVU23
+ 120 0008 C0F38F02 		ubfx	r2, r0, #2, #16
+ 121              	.LVL4:
+  66:Core/Src/MIDI_application.c **** 	if (numberOfPackets != 0) // seems useless...
+ 122              		.loc 1 66 2 is_stmt 1 view .LVU24
+ 123              		.loc 1 66 5 is_stmt 0 view .LVU25
+ 124 000c 0328     		cmp	r0, #3
+ 125 000e 1ED8     		bhi	.L14
+ 126              	.LVL5:
+ 127              	.L9:
+  67:Core/Src/MIDI_application.c **** 	{
+  68:Core/Src/MIDI_application.c **** 		//BSP_LED_Toggle(LED_Blue);
+  69:Core/Src/MIDI_application.c **** 
+  70:Core/Src/MIDI_application.c **** 		while(numberOfPackets--)
+  71:Core/Src/MIDI_application.c **** 		{
+  72:Core/Src/MIDI_application.c **** 			pack.cin_cable = *ptr ; ptr++ ;
+  73:Core/Src/MIDI_application.c **** 			pack.evnt0 = *ptr ; ptr++ ;
+  74:Core/Src/MIDI_application.c **** 			pack.evnt1 = *ptr ; ptr++ ;
+  75:Core/Src/MIDI_application.c **** 			pack.evnt2 = *ptr ; ptr++ ;
+  76:Core/Src/MIDI_application.c **** 
+  77:Core/Src/MIDI_application.c **** 			if(pack.cin_cable != 0)
+  78:Core/Src/MIDI_application.c **** 				HAL_GPIO_WritePin(GPIOD, 0x8000, GPIO_PIN_SET);
+  79:Core/Src/MIDI_application.c **** 			ProcessMIDI(pack);
+  80:Core/Src/MIDI_application.c **** 
+  81:Core/Src/MIDI_application.c **** 		}
+  82:Core/Src/MIDI_application.c **** 	}
+  83:Core/Src/MIDI_application.c **** }
+ 128              		.loc 1 83 1 view .LVU26
+ 129 0010 70BD     		pop	{r4, r5, r6, pc}
+ 130              	.LVL6:
+ 131              	.L12:
+  79:Core/Src/MIDI_application.c **** 
+ 132              		.loc 1 79 4 is_stmt 1 view .LVU27
+ 133 0012 2846     		mov	r0, r5
+ 134 0014 FFF7FEFF 		bl	ProcessMIDI
+ 135              	.LVL7:
+  70:Core/Src/MIDI_application.c **** 		{
+ 136              		.loc 1 70 24 is_stmt 0 view .LVU28
+ 137 0018 3246     		mov	r2, r6
+ 138              	.LVL8:
+ 139              	.L10:
+  70:Core/Src/MIDI_application.c **** 		{
+ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccorCtTR.s 			page 5
+
+
+ 140              		.loc 1 70 9 is_stmt 1 view .LVU29
+  70:Core/Src/MIDI_application.c **** 		{
+ 141              		.loc 1 70 24 is_stmt 0 view .LVU30
+ 142 001a 531E     		subs	r3, r2, #1
+ 143 001c 9EB2     		uxth	r6, r3
+ 144              	.LVL9:
+  70:Core/Src/MIDI_application.c **** 		{
+ 145              		.loc 1 70 9 view .LVU31
+ 146 001e 002A     		cmp	r2, #0
+ 147 0020 F6D0     		beq	.L9
+  72:Core/Src/MIDI_application.c **** 			pack.evnt0 = *ptr ; ptr++ ;
+ 148              		.loc 1 72 4 is_stmt 1 view .LVU32
+  72:Core/Src/MIDI_application.c **** 			pack.evnt0 = *ptr ; ptr++ ;
+ 149              		.loc 1 72 21 is_stmt 0 view .LVU33
+ 150 0022 2378     		ldrb	r3, [r4]	@ zero_extendqisi2
+  72:Core/Src/MIDI_application.c **** 			pack.evnt0 = *ptr ; ptr++ ;
+ 151              		.loc 1 72 19 view .LVU34
+ 152 0024 63F30705 		bfi	r5, r3, #0, #8
+  72:Core/Src/MIDI_application.c **** 			pack.evnt0 = *ptr ; ptr++ ;
+ 153              		.loc 1 72 28 is_stmt 1 view .LVU35
+ 154              	.LVL10:
+  73:Core/Src/MIDI_application.c **** 			pack.evnt1 = *ptr ; ptr++ ;
+ 155              		.loc 1 73 4 view .LVU36
+  73:Core/Src/MIDI_application.c **** 			pack.evnt1 = *ptr ; ptr++ ;
+ 156              		.loc 1 73 17 is_stmt 0 view .LVU37
+ 157 0028 6278     		ldrb	r2, [r4, #1]	@ zero_extendqisi2
+  73:Core/Src/MIDI_application.c **** 			pack.evnt1 = *ptr ; ptr++ ;
+ 158              		.loc 1 73 15 view .LVU38
+ 159 002a 62F30F25 		bfi	r5, r2, #8, #8
+  73:Core/Src/MIDI_application.c **** 			pack.evnt1 = *ptr ; ptr++ ;
+ 160              		.loc 1 73 24 is_stmt 1 view .LVU39
+ 161              	.LVL11:
+  74:Core/Src/MIDI_application.c **** 			pack.evnt2 = *ptr ; ptr++ ;
+ 162              		.loc 1 74 4 view .LVU40
+  74:Core/Src/MIDI_application.c **** 			pack.evnt2 = *ptr ; ptr++ ;
+ 163              		.loc 1 74 17 is_stmt 0 view .LVU41
+ 164 002e A278     		ldrb	r2, [r4, #2]	@ zero_extendqisi2
+  74:Core/Src/MIDI_application.c **** 			pack.evnt2 = *ptr ; ptr++ ;
+ 165              		.loc 1 74 15 view .LVU42
+ 166 0030 62F31745 		bfi	r5, r2, #16, #8
+  74:Core/Src/MIDI_application.c **** 			pack.evnt2 = *ptr ; ptr++ ;
+ 167              		.loc 1 74 24 is_stmt 1 view .LVU43
+ 168              	.LVL12:
+  75:Core/Src/MIDI_application.c **** 
+ 169              		.loc 1 75 4 view .LVU44
+  75:Core/Src/MIDI_application.c **** 
+ 170              		.loc 1 75 17 is_stmt 0 view .LVU45
+ 171 0034 E278     		ldrb	r2, [r4, #3]	@ zero_extendqisi2
+  75:Core/Src/MIDI_application.c **** 
+ 172              		.loc 1 75 15 view .LVU46
+ 173 0036 62F31F65 		bfi	r5, r2, #24, #8
+  75:Core/Src/MIDI_application.c **** 
+ 174              		.loc 1 75 24 is_stmt 1 view .LVU47
+  75:Core/Src/MIDI_application.c **** 
+ 175              		.loc 1 75 27 is_stmt 0 view .LVU48
+ 176 003a 0434     		adds	r4, r4, #4
+ 177              	.LVL13:
+ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccorCtTR.s 			page 6
+
+
+  77:Core/Src/MIDI_application.c **** 				HAL_GPIO_WritePin(GPIOD, 0x8000, GPIO_PIN_SET);
+ 178              		.loc 1 77 4 is_stmt 1 view .LVU49
+  77:Core/Src/MIDI_application.c **** 				HAL_GPIO_WritePin(GPIOD, 0x8000, GPIO_PIN_SET);
+ 179              		.loc 1 77 6 is_stmt 0 view .LVU50
+ 180 003c 002B     		cmp	r3, #0
+ 181 003e E8D0     		beq	.L12
+  78:Core/Src/MIDI_application.c **** 			ProcessMIDI(pack);
+ 182              		.loc 1 78 5 is_stmt 1 view .LVU51
+ 183 0040 0122     		movs	r2, #1
+ 184 0042 4FF40041 		mov	r1, #32768
+ 185 0046 0448     		ldr	r0, .L16+4
+ 186 0048 FFF7FEFF 		bl	HAL_GPIO_WritePin
+ 187              	.LVL14:
+ 188 004c E1E7     		b	.L12
+ 189              	.LVL15:
+ 190              	.L14:
+  62:Core/Src/MIDI_application.c **** 	midi_package_t pack;
+ 191              		.loc 1 62 11 is_stmt 0 view .LVU52
+ 192 004e 034C     		ldr	r4, .L16+8
+ 193 0050 E3E7     		b	.L10
+ 194              	.L17:
+ 195 0052 00BF     		.align	2
+ 196              	.L16:
+ 197 0054 00000000 		.word	hUSBHost
+ 198 0058 000C0240 		.word	1073875968
+ 199 005c 00000000 		.word	.LANCHOR0
+ 200              		.cfi_endproc
+ 201              	.LFE134:
+ 203              		.section	.text.USBH_MIDI_ReceiveCallback,"ax",%progbits
+ 204              		.align	1
+ 205              		.global	USBH_MIDI_ReceiveCallback
+ 206              		.syntax unified
+ 207              		.thumb
+ 208              		.thumb_func
+ 210              	USBH_MIDI_ReceiveCallback:
+ 211              	.LVL16:
+ 212              	.LFB135:
+  84:Core/Src/MIDI_application.c **** 
+  85:Core/Src/MIDI_application.c **** /*-----------------------------------------------------------------------------*/
+  86:Core/Src/MIDI_application.c **** /**
+  87:Core/Src/MIDI_application.c ****  * @brief  MIDI data receive callback.
+  88:Core/Src/MIDI_application.c ****  * @param  phost: Host handle
+  89:Core/Src/MIDI_application.c ****  * @retval None
+  90:Core/Src/MIDI_application.c ****  */
+  91:Core/Src/MIDI_application.c **** void USBH_MIDI_ReceiveCallback(USBH_HandleTypeDef *phost)
+  92:Core/Src/MIDI_application.c **** {
+ 213              		.loc 1 92 1 is_stmt 1 view -0
+ 214              		.cfi_startproc
+ 215              		@ args = 0, pretend = 0, frame = 0
+ 216              		@ frame_needed = 0, uses_anonymous_args = 0
+ 217              		.loc 1 92 1 is_stmt 0 view .LVU54
+ 218 0000 08B5     		push	{r3, lr}
+ 219              		.cfi_def_cfa_offset 8
+ 220              		.cfi_offset 3, -8
+ 221              		.cfi_offset 14, -4
+  93:Core/Src/MIDI_application.c **** 	ProcessReceivedMidiDatas();
+ 222              		.loc 1 93 2 is_stmt 1 view .LVU55
+ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccorCtTR.s 			page 7
+
+
+ 223 0002 FFF7FEFF 		bl	ProcessReceivedMidiDatas
+ 224              	.LVL17:
+  94:Core/Src/MIDI_application.c **** 
+  95:Core/Src/MIDI_application.c **** 	USBH_MIDI_Receive(&hUSBHost, MIDI_RX_Buffer, RX_BUFF_SIZE); // start a new reception
+ 225              		.loc 1 95 2 view .LVU56
+ 226 0006 4022     		movs	r2, #64
+ 227 0008 0249     		ldr	r1, .L20
+ 228 000a 0348     		ldr	r0, .L20+4
+ 229 000c FFF7FEFF 		bl	USBH_MIDI_Receive
+ 230              	.LVL18:
+  96:Core/Src/MIDI_application.c **** }
+ 231              		.loc 1 96 1 is_stmt 0 view .LVU57
+ 232 0010 08BD     		pop	{r3, pc}
+ 233              	.L21:
+ 234 0012 00BF     		.align	2
+ 235              	.L20:
+ 236 0014 00000000 		.word	.LANCHOR0
+ 237 0018 00000000 		.word	hUSBHost
+ 238              		.cfi_endproc
+ 239              	.LFE135:
+ 241              		.global	MIDI_RX_Buffer
+ 242              		.section	.bss.MIDI_RX_Buffer,"aw",%nobits
+ 243              		.align	2
+ 244              		.set	.LANCHOR0,. + 0
+ 247              	MIDI_RX_Buffer:
+ 248 0000 00000000 		.space	64
+ 248      00000000 
+ 248      00000000 
+ 248      00000000 
+ 248      00000000 
+ 249              		.text
+ 250              	.Letext0:
+ 251              		.file 2 "/Users/johannes/Library/Application Support/Code/User/globalStorage/bmd.stm32-for-vscode/
+ 252              		.file 3 "/Users/johannes/Library/Application Support/Code/User/globalStorage/bmd.stm32-for-vscode/
+ 253              		.file 4 "Drivers/CMSIS/Device/ST/STM32F4xx/Include/stm32f407xx.h"
+ 254              		.file 5 "Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_gpio.h"
+ 255              		.file 6 "Middlewares/ST/STM32_USB_Host_Library/Core/Inc/usbh_def.h"
+ 256              		.file 7 "Core/Inc/usbh_MIDI.h"
+ 257              		.file 8 "Core/Inc/MIDI_application.h"
+ 258              		.file 9 "Core/Inc/main.h"
+ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccorCtTR.s 			page 8
+
+
+DEFINED SYMBOLS
+                            *ABS*:0000000000000000 MIDI_application.c
+/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccorCtTR.s:20     .text.MIDI_Application:0000000000000000 $t
+/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccorCtTR.s:26     .text.MIDI_Application:0000000000000000 MIDI_Application
+/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccorCtTR.s:85     .text.MIDI_Application:0000000000000034 $d
+/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccorCtTR.s:92     .text.ProcessReceivedMidiDatas:0000000000000000 $t
+/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccorCtTR.s:98     .text.ProcessReceivedMidiDatas:0000000000000000 ProcessReceivedMidiDatas
+/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccorCtTR.s:197    .text.ProcessReceivedMidiDatas:0000000000000054 $d
+/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccorCtTR.s:204    .text.USBH_MIDI_ReceiveCallback:0000000000000000 $t
+/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccorCtTR.s:210    .text.USBH_MIDI_ReceiveCallback:0000000000000000 USBH_MIDI_ReceiveCallback
+/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccorCtTR.s:236    .text.USBH_MIDI_ReceiveCallback:0000000000000014 $d
+/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccorCtTR.s:247    .bss.MIDI_RX_Buffer:0000000000000000 MIDI_RX_Buffer
+/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccorCtTR.s:243    .bss.MIDI_RX_Buffer:0000000000000000 $d
+
+UNDEFINED SYMBOLS
+USBH_MIDI_Receive
+USBH_MIDI_Stop
+Appli_state
+hUSBHost
+USBH_MIDI_GetLastReceivedDataSize
+ProcessMIDI
+HAL_GPIO_WritePin

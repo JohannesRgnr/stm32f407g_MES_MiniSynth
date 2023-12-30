@@ -1,0 +1,2333 @@
+ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccM83wL4.s 			page 1
+
+
+   1              		.cpu cortex-m4
+   2              		.arch armv7e-m
+   3              		.fpu fpv4-sp-d16
+   4              		.eabi_attribute 27, 1
+   5              		.eabi_attribute 28, 1
+   6              		.eabi_attribute 20, 1
+   7              		.eabi_attribute 21, 1
+   8              		.eabi_attribute 23, 3
+   9              		.eabi_attribute 24, 1
+  10              		.eabi_attribute 25, 1
+  11              		.eabi_attribute 26, 1
+  12              		.eabi_attribute 30, 1
+  13              		.eabi_attribute 34, 1
+  14              		.eabi_attribute 18, 4
+  15              		.file	"dp83848.c"
+  16              		.text
+  17              	.Ltext0:
+  18              		.cfi_sections	.debug_frame
+  19              		.section	.text.DP83848_RegisterBusIO,"ax",%progbits
+  20              		.align	1
+  21              		.global	DP83848_RegisterBusIO
+  22              		.syntax unified
+  23              		.thumb
+  24              		.thumb_func
+  26              	DP83848_RegisterBusIO:
+  27              	.LVL0:
+  28              	.LFB0:
+  29              		.file 1 "Drivers/BSP/Components/dp83848/dp83848.c"
+   1:Drivers/BSP/Components/dp83848/dp83848.c **** /**
+   2:Drivers/BSP/Components/dp83848/dp83848.c ****   ******************************************************************************
+   3:Drivers/BSP/Components/dp83848/dp83848.c ****   * @file    dp83848.c
+   4:Drivers/BSP/Components/dp83848/dp83848.c ****   * @author  MCD Application Team
+   5:Drivers/BSP/Components/dp83848/dp83848.c ****   * @brief   This file provides a set of functions needed to manage the DP83848
+   6:Drivers/BSP/Components/dp83848/dp83848.c ****   *          PHY devices.
+   7:Drivers/BSP/Components/dp83848/dp83848.c ****   ******************************************************************************
+   8:Drivers/BSP/Components/dp83848/dp83848.c ****   * @attention
+   9:Drivers/BSP/Components/dp83848/dp83848.c ****   *
+  10:Drivers/BSP/Components/dp83848/dp83848.c ****   * <h2><center>&copy; Copyright (c) 2021 STMicroelectronics.
+  11:Drivers/BSP/Components/dp83848/dp83848.c ****   * All rights reserved.</center></h2>
+  12:Drivers/BSP/Components/dp83848/dp83848.c ****   *
+  13:Drivers/BSP/Components/dp83848/dp83848.c ****   * This software component is licensed by ST under BSD 3-Clause license,
+  14:Drivers/BSP/Components/dp83848/dp83848.c ****   * the "License"; You may not use this file except in compliance with the
+  15:Drivers/BSP/Components/dp83848/dp83848.c ****   * License. You may obtain a copy of the License at:
+  16:Drivers/BSP/Components/dp83848/dp83848.c ****   *                        opensource.org/licenses/BSD-3-Clause
+  17:Drivers/BSP/Components/dp83848/dp83848.c ****   *
+  18:Drivers/BSP/Components/dp83848/dp83848.c ****   ******************************************************************************
+  19:Drivers/BSP/Components/dp83848/dp83848.c ****   */
+  20:Drivers/BSP/Components/dp83848/dp83848.c **** 
+  21:Drivers/BSP/Components/dp83848/dp83848.c **** /* Includes ------------------------------------------------------------------*/
+  22:Drivers/BSP/Components/dp83848/dp83848.c **** #include "dp83848.h"
+  23:Drivers/BSP/Components/dp83848/dp83848.c **** 
+  24:Drivers/BSP/Components/dp83848/dp83848.c **** /** @addtogroup BSP
+  25:Drivers/BSP/Components/dp83848/dp83848.c ****   * @{
+  26:Drivers/BSP/Components/dp83848/dp83848.c ****   */
+  27:Drivers/BSP/Components/dp83848/dp83848.c **** 
+  28:Drivers/BSP/Components/dp83848/dp83848.c **** /** @addtogroup Component
+  29:Drivers/BSP/Components/dp83848/dp83848.c ****   * @{
+ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccM83wL4.s 			page 2
+
+
+  30:Drivers/BSP/Components/dp83848/dp83848.c ****   */
+  31:Drivers/BSP/Components/dp83848/dp83848.c **** 
+  32:Drivers/BSP/Components/dp83848/dp83848.c **** /** @defgroup DP83848 DP83848
+  33:Drivers/BSP/Components/dp83848/dp83848.c ****   * @{
+  34:Drivers/BSP/Components/dp83848/dp83848.c ****   */
+  35:Drivers/BSP/Components/dp83848/dp83848.c **** 
+  36:Drivers/BSP/Components/dp83848/dp83848.c **** /* Private typedef -----------------------------------------------------------*/
+  37:Drivers/BSP/Components/dp83848/dp83848.c **** /* Private define ------------------------------------------------------------*/
+  38:Drivers/BSP/Components/dp83848/dp83848.c **** /** @defgroup DP83848_Private_Defines DP83848 Private Defines
+  39:Drivers/BSP/Components/dp83848/dp83848.c ****   * @{
+  40:Drivers/BSP/Components/dp83848/dp83848.c ****   */
+  41:Drivers/BSP/Components/dp83848/dp83848.c **** #define DP83848_SW_RESET_TO    ((uint32_t)500U)
+  42:Drivers/BSP/Components/dp83848/dp83848.c **** #define DP83848_INIT_TO        ((uint32_t)2000U)
+  43:Drivers/BSP/Components/dp83848/dp83848.c **** #define DP83848_MAX_DEV_ADDR   ((uint32_t)31U)
+  44:Drivers/BSP/Components/dp83848/dp83848.c **** /**
+  45:Drivers/BSP/Components/dp83848/dp83848.c ****   * @}
+  46:Drivers/BSP/Components/dp83848/dp83848.c ****   */
+  47:Drivers/BSP/Components/dp83848/dp83848.c **** 
+  48:Drivers/BSP/Components/dp83848/dp83848.c **** /* Private macro -------------------------------------------------------------*/
+  49:Drivers/BSP/Components/dp83848/dp83848.c **** /* Private variables ---------------------------------------------------------*/
+  50:Drivers/BSP/Components/dp83848/dp83848.c **** /* Private function prototypes -----------------------------------------------*/
+  51:Drivers/BSP/Components/dp83848/dp83848.c **** /* Private functions ---------------------------------------------------------*/
+  52:Drivers/BSP/Components/dp83848/dp83848.c **** /** @defgroup DP83848_Private_Functions DP83848 Private Functions
+  53:Drivers/BSP/Components/dp83848/dp83848.c ****   * @{
+  54:Drivers/BSP/Components/dp83848/dp83848.c ****   */
+  55:Drivers/BSP/Components/dp83848/dp83848.c **** 
+  56:Drivers/BSP/Components/dp83848/dp83848.c **** /**
+  57:Drivers/BSP/Components/dp83848/dp83848.c ****   * @brief  Register IO functions to component object
+  58:Drivers/BSP/Components/dp83848/dp83848.c ****   * @param  pObj: device object  of DP83848_Object_t.
+  59:Drivers/BSP/Components/dp83848/dp83848.c ****   * @param  ioctx: holds device IO functions.
+  60:Drivers/BSP/Components/dp83848/dp83848.c ****   * @retval DP83848_STATUS_OK  if OK
+  61:Drivers/BSP/Components/dp83848/dp83848.c ****   *         DP83848_STATUS_ERROR if missing mandatory function
+  62:Drivers/BSP/Components/dp83848/dp83848.c ****   */
+  63:Drivers/BSP/Components/dp83848/dp83848.c **** int32_t  DP83848_RegisterBusIO(dp83848_Object_t *pObj, dp83848_IOCtx_t *ioctx)
+  64:Drivers/BSP/Components/dp83848/dp83848.c **** {
+  30              		.loc 1 64 1 view -0
+  31              		.cfi_startproc
+  32              		@ args = 0, pretend = 0, frame = 0
+  33              		@ frame_needed = 0, uses_anonymous_args = 0
+  34              		@ link register save eliminated.
+  65:Drivers/BSP/Components/dp83848/dp83848.c ****   if(!pObj || !ioctx->ReadReg || !ioctx->WriteReg || !ioctx->GetTick)
+  35              		.loc 1 65 3 view .LVU1
+  36              		.loc 1 65 5 is_stmt 0 view .LVU2
+  37 0000 88B1     		cbz	r0, .L3
+  38              		.loc 1 65 21 discriminator 1 view .LVU3
+  39 0002 CA68     		ldr	r2, [r1, #12]
+  40              		.loc 1 65 12 discriminator 1 view .LVU4
+  41 0004 92B1     		cbz	r2, .L4
+  42              		.loc 1 65 40 discriminator 2 view .LVU5
+  43 0006 8A68     		ldr	r2, [r1, #8]
+  44              		.loc 1 65 31 discriminator 2 view .LVU6
+  45 0008 9AB1     		cbz	r2, .L5
+  46              		.loc 1 65 60 discriminator 3 view .LVU7
+  47 000a 0A69     		ldr	r2, [r1, #16]
+  48              		.loc 1 65 51 discriminator 3 view .LVU8
+  49 000c A2B1     		cbz	r2, .L6
+  66:Drivers/BSP/Components/dp83848/dp83848.c ****   {
+ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccM83wL4.s 			page 3
+
+
+  67:Drivers/BSP/Components/dp83848/dp83848.c ****     return DP83848_STATUS_ERROR;
+  68:Drivers/BSP/Components/dp83848/dp83848.c ****   }
+  69:Drivers/BSP/Components/dp83848/dp83848.c **** 
+  70:Drivers/BSP/Components/dp83848/dp83848.c ****   pObj->IO.Init = ioctx->Init;
+  50              		.loc 1 70 3 is_stmt 1 view .LVU9
+  51              		.loc 1 70 24 is_stmt 0 view .LVU10
+  52 000e 0A68     		ldr	r2, [r1]
+  53              		.loc 1 70 17 view .LVU11
+  54 0010 8260     		str	r2, [r0, #8]
+  71:Drivers/BSP/Components/dp83848/dp83848.c ****   pObj->IO.DeInit = ioctx->DeInit;
+  55              		.loc 1 71 3 is_stmt 1 view .LVU12
+  56              		.loc 1 71 26 is_stmt 0 view .LVU13
+  57 0012 4A68     		ldr	r2, [r1, #4]
+  58              		.loc 1 71 19 view .LVU14
+  59 0014 C260     		str	r2, [r0, #12]
+  72:Drivers/BSP/Components/dp83848/dp83848.c ****   pObj->IO.ReadReg = ioctx->ReadReg;
+  60              		.loc 1 72 3 is_stmt 1 view .LVU15
+  61              		.loc 1 72 27 is_stmt 0 view .LVU16
+  62 0016 CA68     		ldr	r2, [r1, #12]
+  63              		.loc 1 72 20 view .LVU17
+  64 0018 4261     		str	r2, [r0, #20]
+  73:Drivers/BSP/Components/dp83848/dp83848.c ****   pObj->IO.WriteReg = ioctx->WriteReg;
+  65              		.loc 1 73 3 is_stmt 1 view .LVU18
+  66              		.loc 1 73 28 is_stmt 0 view .LVU19
+  67 001a 8A68     		ldr	r2, [r1, #8]
+  68              		.loc 1 73 21 view .LVU20
+  69 001c 0261     		str	r2, [r0, #16]
+  74:Drivers/BSP/Components/dp83848/dp83848.c ****   pObj->IO.GetTick = ioctx->GetTick;
+  70              		.loc 1 74 3 is_stmt 1 view .LVU21
+  71              		.loc 1 74 27 is_stmt 0 view .LVU22
+  72 001e 0A69     		ldr	r2, [r1, #16]
+  73              		.loc 1 74 20 view .LVU23
+  74 0020 8261     		str	r2, [r0, #24]
+  75:Drivers/BSP/Components/dp83848/dp83848.c **** 
+  76:Drivers/BSP/Components/dp83848/dp83848.c ****   return DP83848_STATUS_OK;
+  75              		.loc 1 76 3 is_stmt 1 view .LVU24
+  76              		.loc 1 76 10 is_stmt 0 view .LVU25
+  77 0022 0020     		movs	r0, #0
+  78              	.LVL1:
+  79              		.loc 1 76 10 view .LVU26
+  80 0024 7047     		bx	lr
+  81              	.LVL2:
+  82              	.L3:
+  67:Drivers/BSP/Components/dp83848/dp83848.c ****   }
+  83              		.loc 1 67 12 view .LVU27
+  84 0026 4FF0FF30 		mov	r0, #-1
+  85              	.LVL3:
+  67:Drivers/BSP/Components/dp83848/dp83848.c ****   }
+  86              		.loc 1 67 12 view .LVU28
+  87 002a 7047     		bx	lr
+  88              	.LVL4:
+  89              	.L4:
+  67:Drivers/BSP/Components/dp83848/dp83848.c ****   }
+  90              		.loc 1 67 12 view .LVU29
+  91 002c 4FF0FF30 		mov	r0, #-1
+  92              	.LVL5:
+  67:Drivers/BSP/Components/dp83848/dp83848.c ****   }
+ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccM83wL4.s 			page 4
+
+
+  93              		.loc 1 67 12 view .LVU30
+  94 0030 7047     		bx	lr
+  95              	.LVL6:
+  96              	.L5:
+  67:Drivers/BSP/Components/dp83848/dp83848.c ****   }
+  97              		.loc 1 67 12 view .LVU31
+  98 0032 4FF0FF30 		mov	r0, #-1
+  99              	.LVL7:
+  67:Drivers/BSP/Components/dp83848/dp83848.c ****   }
+ 100              		.loc 1 67 12 view .LVU32
+ 101 0036 7047     		bx	lr
+ 102              	.LVL8:
+ 103              	.L6:
+  67:Drivers/BSP/Components/dp83848/dp83848.c ****   }
+ 104              		.loc 1 67 12 view .LVU33
+ 105 0038 4FF0FF30 		mov	r0, #-1
+ 106              	.LVL9:
+  77:Drivers/BSP/Components/dp83848/dp83848.c **** }
+ 107              		.loc 1 77 1 view .LVU34
+ 108 003c 7047     		bx	lr
+ 109              		.cfi_endproc
+ 110              	.LFE0:
+ 112              		.section	.text.DP83848_Init,"ax",%progbits
+ 113              		.align	1
+ 114              		.global	DP83848_Init
+ 115              		.syntax unified
+ 116              		.thumb
+ 117              		.thumb_func
+ 119              	DP83848_Init:
+ 120              	.LVL10:
+ 121              	.LFB1:
+  78:Drivers/BSP/Components/dp83848/dp83848.c **** 
+  79:Drivers/BSP/Components/dp83848/dp83848.c **** /**
+  80:Drivers/BSP/Components/dp83848/dp83848.c ****   * @brief  Initialize the DP83848 and configure the needed hardware resources
+  81:Drivers/BSP/Components/dp83848/dp83848.c ****   * @param  pObj: device object DP83848_Object_t.
+  82:Drivers/BSP/Components/dp83848/dp83848.c ****   * @retval DP83848_STATUS_OK  if OK
+  83:Drivers/BSP/Components/dp83848/dp83848.c ****   *         DP83848_STATUS_ADDRESS_ERROR if cannot find device address
+  84:Drivers/BSP/Components/dp83848/dp83848.c ****   *         DP83848_STATUS_READ_ERROR if connot read register
+  85:Drivers/BSP/Components/dp83848/dp83848.c ****   *         DP83848_STATUS_WRITE_ERROR if connot write to register
+  86:Drivers/BSP/Components/dp83848/dp83848.c ****   *         DP83848_STATUS_RESET_TIMEOUT if cannot perform a software reset
+  87:Drivers/BSP/Components/dp83848/dp83848.c ****   */
+  88:Drivers/BSP/Components/dp83848/dp83848.c ****  int32_t DP83848_Init(dp83848_Object_t *pObj)
+  89:Drivers/BSP/Components/dp83848/dp83848.c ****  {
+ 122              		.loc 1 89 2 is_stmt 1 view -0
+ 123              		.cfi_startproc
+ 124              		@ args = 0, pretend = 0, frame = 8
+ 125              		@ frame_needed = 0, uses_anonymous_args = 0
+ 126              		.loc 1 89 2 is_stmt 0 view .LVU36
+ 127 0000 70B5     		push	{r4, r5, r6, lr}
+ 128              		.cfi_def_cfa_offset 16
+ 129              		.cfi_offset 4, -16
+ 130              		.cfi_offset 5, -12
+ 131              		.cfi_offset 6, -8
+ 132              		.cfi_offset 14, -4
+ 133 0002 82B0     		sub	sp, sp, #8
+ 134              		.cfi_def_cfa_offset 24
+ 135 0004 0546     		mov	r5, r0
+ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccM83wL4.s 			page 5
+
+
+  90:Drivers/BSP/Components/dp83848/dp83848.c ****    uint32_t tickstart = 0, regvalue = 0, addr = 0;
+ 136              		.loc 1 90 4 is_stmt 1 view .LVU37
+ 137              	.LVL11:
+ 138              		.loc 1 90 28 is_stmt 0 view .LVU38
+ 139 0006 0023     		movs	r3, #0
+ 140 0008 0193     		str	r3, [sp, #4]
+ 141              	.LVL12:
+  91:Drivers/BSP/Components/dp83848/dp83848.c ****    int32_t status = DP83848_STATUS_OK;
+ 142              		.loc 1 91 4 is_stmt 1 view .LVU39
+  92:Drivers/BSP/Components/dp83848/dp83848.c **** 
+  93:Drivers/BSP/Components/dp83848/dp83848.c ****    if(pObj->Is_Initialized == 0)
+ 143              		.loc 1 93 4 view .LVU40
+ 144              		.loc 1 93 11 is_stmt 0 view .LVU41
+ 145 000a 4468     		ldr	r4, [r0, #4]
+ 146              		.loc 1 93 6 view .LVU42
+ 147 000c 002C     		cmp	r4, #0
+ 148 000e 49D1     		bne	.L19
+  94:Drivers/BSP/Components/dp83848/dp83848.c ****    {
+  95:Drivers/BSP/Components/dp83848/dp83848.c ****      if(pObj->IO.Init != 0)
+ 149              		.loc 1 95 6 is_stmt 1 view .LVU43
+ 150              		.loc 1 95 17 is_stmt 0 view .LVU44
+ 151 0010 8368     		ldr	r3, [r0, #8]
+ 152              		.loc 1 95 8 view .LVU45
+ 153 0012 03B1     		cbz	r3, .L9
+  96:Drivers/BSP/Components/dp83848/dp83848.c ****      {
+  97:Drivers/BSP/Components/dp83848/dp83848.c ****        /* GPIO and Clocks initialization */
+  98:Drivers/BSP/Components/dp83848/dp83848.c ****        pObj->IO.Init();
+ 154              		.loc 1 98 8 is_stmt 1 view .LVU46
+ 155 0014 9847     		blx	r3
+ 156              	.LVL13:
+ 157              	.L9:
+  99:Drivers/BSP/Components/dp83848/dp83848.c ****      }
+ 100:Drivers/BSP/Components/dp83848/dp83848.c **** 
+ 101:Drivers/BSP/Components/dp83848/dp83848.c ****      /* for later check */
+ 102:Drivers/BSP/Components/dp83848/dp83848.c ****      pObj->DevAddr = DP83848_MAX_DEV_ADDR + 1;
+ 158              		.loc 1 102 6 view .LVU47
+ 159              		.loc 1 102 20 is_stmt 0 view .LVU48
+ 160 0016 2023     		movs	r3, #32
+ 161 0018 2B60     		str	r3, [r5]
+ 103:Drivers/BSP/Components/dp83848/dp83848.c **** 
+ 104:Drivers/BSP/Components/dp83848/dp83848.c ****      /* Get the device address from special mode register */
+ 105:Drivers/BSP/Components/dp83848/dp83848.c ****      for(addr = 0; addr <= DP83848_MAX_DEV_ADDR; addr ++)
+ 162              		.loc 1 105 6 is_stmt 1 view .LVU49
+  91:Drivers/BSP/Components/dp83848/dp83848.c **** 
+ 163              		.loc 1 91 12 is_stmt 0 view .LVU50
+ 164 001a 0026     		movs	r6, #0
+ 165              		.loc 1 105 6 view .LVU51
+ 166 001c 02E0     		b	.L10
+ 167              	.LVL14:
+ 168              	.L20:
+ 106:Drivers/BSP/Components/dp83848/dp83848.c ****      {
+ 107:Drivers/BSP/Components/dp83848/dp83848.c ****        if(pObj->IO.ReadReg(addr, DP83848_SMR, &regvalue) < 0)
+ 108:Drivers/BSP/Components/dp83848/dp83848.c ****        {
+ 109:Drivers/BSP/Components/dp83848/dp83848.c ****          status = DP83848_STATUS_READ_ERROR;
+ 169              		.loc 1 109 17 view .LVU52
+ 170 001e 6FF00406 		mvn	r6, #4
+ 171              	.LVL15:
+ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccM83wL4.s 			page 6
+
+
+ 172              	.L11:
+ 105:Drivers/BSP/Components/dp83848/dp83848.c ****      {
+ 173              		.loc 1 105 55 is_stmt 1 discriminator 2 view .LVU53
+ 174 0022 0134     		adds	r4, r4, #1
+ 175              	.LVL16:
+ 176              	.L10:
+ 105:Drivers/BSP/Components/dp83848/dp83848.c ****      {
+ 177              		.loc 1 105 25 discriminator 1 view .LVU54
+ 178 0024 1F2C     		cmp	r4, #31
+ 179 0026 0DD8     		bhi	.L12
+ 107:Drivers/BSP/Components/dp83848/dp83848.c ****        {
+ 180              		.loc 1 107 8 view .LVU55
+ 107:Drivers/BSP/Components/dp83848/dp83848.c ****        {
+ 181              		.loc 1 107 19 is_stmt 0 view .LVU56
+ 182 0028 6B69     		ldr	r3, [r5, #20]
+ 107:Drivers/BSP/Components/dp83848/dp83848.c ****        {
+ 183              		.loc 1 107 11 view .LVU57
+ 184 002a 01AA     		add	r2, sp, #4
+ 185 002c 1921     		movs	r1, #25
+ 186 002e 2046     		mov	r0, r4
+ 187 0030 9847     		blx	r3
+ 188              	.LVL17:
+ 107:Drivers/BSP/Components/dp83848/dp83848.c ****        {
+ 189              		.loc 1 107 10 view .LVU58
+ 190 0032 0028     		cmp	r0, #0
+ 191 0034 F3DB     		blt	.L20
+ 110:Drivers/BSP/Components/dp83848/dp83848.c ****          /* Can't read from this device address
+ 111:Drivers/BSP/Components/dp83848/dp83848.c ****             continue with next address */
+ 112:Drivers/BSP/Components/dp83848/dp83848.c ****          continue;
+ 113:Drivers/BSP/Components/dp83848/dp83848.c ****        }
+ 114:Drivers/BSP/Components/dp83848/dp83848.c **** 
+ 115:Drivers/BSP/Components/dp83848/dp83848.c ****        if((regvalue & DP83848_SMR_PHY_ADDR) == addr)
+ 192              		.loc 1 115 8 is_stmt 1 view .LVU59
+ 193              		.loc 1 115 21 is_stmt 0 view .LVU60
+ 194 0036 019B     		ldr	r3, [sp, #4]
+ 195 0038 03F01F03 		and	r3, r3, #31
+ 196              		.loc 1 115 10 view .LVU61
+ 197 003c A342     		cmp	r3, r4
+ 198 003e F0D1     		bne	.L11
+ 116:Drivers/BSP/Components/dp83848/dp83848.c ****        {
+ 117:Drivers/BSP/Components/dp83848/dp83848.c ****          pObj->DevAddr = addr;
+ 199              		.loc 1 117 10 is_stmt 1 view .LVU62
+ 200              		.loc 1 117 24 is_stmt 0 view .LVU63
+ 201 0040 2C60     		str	r4, [r5]
+ 118:Drivers/BSP/Components/dp83848/dp83848.c ****          status = DP83848_STATUS_OK;
+ 202              		.loc 1 118 10 is_stmt 1 view .LVU64
+ 203              	.LVL18:
+ 119:Drivers/BSP/Components/dp83848/dp83848.c ****          break;
+ 204              		.loc 1 119 10 view .LVU65
+ 118:Drivers/BSP/Components/dp83848/dp83848.c ****          status = DP83848_STATUS_OK;
+ 205              		.loc 1 118 17 is_stmt 0 view .LVU66
+ 206 0042 0026     		movs	r6, #0
+ 207              	.LVL19:
+ 208              	.L12:
+ 120:Drivers/BSP/Components/dp83848/dp83848.c ****        }
+ 121:Drivers/BSP/Components/dp83848/dp83848.c ****      }
+ 122:Drivers/BSP/Components/dp83848/dp83848.c **** 
+ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccM83wL4.s 			page 7
+
+
+ 123:Drivers/BSP/Components/dp83848/dp83848.c ****      if(pObj->DevAddr > DP83848_MAX_DEV_ADDR)
+ 209              		.loc 1 123 6 is_stmt 1 view .LVU67
+ 210              		.loc 1 123 13 is_stmt 0 view .LVU68
+ 211 0044 2868     		ldr	r0, [r5]
+ 212              		.loc 1 123 8 view .LVU69
+ 213 0046 1F28     		cmp	r0, #31
+ 214 0048 25D8     		bhi	.L21
+ 124:Drivers/BSP/Components/dp83848/dp83848.c ****      {
+ 125:Drivers/BSP/Components/dp83848/dp83848.c ****        status = DP83848_STATUS_ADDRESS_ERROR;
+ 126:Drivers/BSP/Components/dp83848/dp83848.c ****      }
+ 127:Drivers/BSP/Components/dp83848/dp83848.c **** 
+ 128:Drivers/BSP/Components/dp83848/dp83848.c ****      /* if device address is matched */
+ 129:Drivers/BSP/Components/dp83848/dp83848.c ****      if(status == DP83848_STATUS_OK)
+ 215              		.loc 1 129 6 is_stmt 1 view .LVU70
+ 216              		.loc 1 129 8 is_stmt 0 view .LVU71
+ 217 004a 36BB     		cbnz	r6, .L14
+ 130:Drivers/BSP/Components/dp83848/dp83848.c ****      {
+ 131:Drivers/BSP/Components/dp83848/dp83848.c ****        /* set a software reset  */
+ 132:Drivers/BSP/Components/dp83848/dp83848.c ****        if(pObj->IO.WriteReg(pObj->DevAddr, DP83848_BCR, DP83848_BCR_SOFT_RESET) >= 0)
+ 218              		.loc 1 132 8 is_stmt 1 view .LVU72
+ 219              		.loc 1 132 19 is_stmt 0 view .LVU73
+ 220 004c 2B69     		ldr	r3, [r5, #16]
+ 221              		.loc 1 132 11 view .LVU74
+ 222 004e 4FF40042 		mov	r2, #32768
+ 223 0052 0021     		movs	r1, #0
+ 224 0054 9847     		blx	r3
+ 225              	.LVL20:
+ 226              		.loc 1 132 10 view .LVU75
+ 227 0056 0028     		cmp	r0, #0
+ 228 0058 33DB     		blt	.L22
+ 133:Drivers/BSP/Components/dp83848/dp83848.c ****        {
+ 134:Drivers/BSP/Components/dp83848/dp83848.c ****          /* get software reset status */
+ 135:Drivers/BSP/Components/dp83848/dp83848.c ****          if(pObj->IO.ReadReg(pObj->DevAddr, DP83848_BCR, &regvalue) >= 0)
+ 229              		.loc 1 135 10 is_stmt 1 view .LVU76
+ 230              		.loc 1 135 21 is_stmt 0 view .LVU77
+ 231 005a 6B69     		ldr	r3, [r5, #20]
+ 232              		.loc 1 135 13 view .LVU78
+ 233 005c 01AA     		add	r2, sp, #4
+ 234 005e 0021     		movs	r1, #0
+ 235 0060 2868     		ldr	r0, [r5]
+ 236 0062 9847     		blx	r3
+ 237              	.LVL21:
+ 238              		.loc 1 135 12 view .LVU79
+ 239 0064 0028     		cmp	r0, #0
+ 240 0066 2FDB     		blt	.L23
+ 136:Drivers/BSP/Components/dp83848/dp83848.c ****          {
+ 137:Drivers/BSP/Components/dp83848/dp83848.c ****            tickstart = pObj->IO.GetTick();
+ 241              		.loc 1 137 12 is_stmt 1 view .LVU80
+ 242              		.loc 1 137 32 is_stmt 0 view .LVU81
+ 243 0068 AB69     		ldr	r3, [r5, #24]
+ 244              		.loc 1 137 24 view .LVU82
+ 245 006a 9847     		blx	r3
+ 246              	.LVL22:
+ 247 006c 0446     		mov	r4, r0
+ 248              	.LVL23:
+ 138:Drivers/BSP/Components/dp83848/dp83848.c **** 
+ 139:Drivers/BSP/Components/dp83848/dp83848.c ****            /* wait until software reset is done or timeout occured  */
+ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccM83wL4.s 			page 8
+
+
+ 140:Drivers/BSP/Components/dp83848/dp83848.c ****            while(regvalue & DP83848_BCR_SOFT_RESET)
+ 249              		.loc 1 140 12 is_stmt 1 view .LVU83
+ 250              	.L16:
+ 251              		.loc 1 140 18 view .LVU84
+ 252 006e 019B     		ldr	r3, [sp, #4]
+ 253 0070 13F4004F 		tst	r3, #32768
+ 254 0074 11D0     		beq	.L14
+ 141:Drivers/BSP/Components/dp83848/dp83848.c ****            {
+ 142:Drivers/BSP/Components/dp83848/dp83848.c ****              if((pObj->IO.GetTick() - tickstart) <= DP83848_SW_RESET_TO)
+ 255              		.loc 1 142 14 view .LVU85
+ 256              		.loc 1 142 26 is_stmt 0 view .LVU86
+ 257 0076 AB69     		ldr	r3, [r5, #24]
+ 258              		.loc 1 142 18 view .LVU87
+ 259 0078 9847     		blx	r3
+ 260              	.LVL24:
+ 261              		.loc 1 142 37 view .LVU88
+ 262 007a 001B     		subs	r0, r0, r4
+ 263              		.loc 1 142 16 view .LVU89
+ 264 007c B0F5FA7F 		cmp	r0, #500
+ 265 0080 0DD8     		bhi	.L24
+ 143:Drivers/BSP/Components/dp83848/dp83848.c ****              {
+ 144:Drivers/BSP/Components/dp83848/dp83848.c ****                if(pObj->IO.ReadReg(pObj->DevAddr, DP83848_BCR, &regvalue) < 0)
+ 266              		.loc 1 144 16 is_stmt 1 view .LVU90
+ 267              		.loc 1 144 27 is_stmt 0 view .LVU91
+ 268 0082 6B69     		ldr	r3, [r5, #20]
+ 269              		.loc 1 144 19 view .LVU92
+ 270 0084 01AA     		add	r2, sp, #4
+ 271 0086 0021     		movs	r1, #0
+ 272 0088 2868     		ldr	r0, [r5]
+ 273 008a 9847     		blx	r3
+ 274              	.LVL25:
+ 275              		.loc 1 144 18 view .LVU93
+ 276 008c 0028     		cmp	r0, #0
+ 277 008e EEDA     		bge	.L16
+ 145:Drivers/BSP/Components/dp83848/dp83848.c ****                {
+ 146:Drivers/BSP/Components/dp83848/dp83848.c ****                  status = DP83848_STATUS_READ_ERROR;
+ 278              		.loc 1 146 25 view .LVU94
+ 279 0090 6FF00406 		mvn	r6, #4
+ 280              	.LVL26:
+ 281              		.loc 1 146 25 view .LVU95
+ 282 0094 01E0     		b	.L14
+ 283              	.LVL27:
+ 284              	.L21:
+ 125:Drivers/BSP/Components/dp83848/dp83848.c ****      }
+ 285              		.loc 1 125 15 view .LVU96
+ 286 0096 6FF00206 		mvn	r6, #2
+ 287              	.LVL28:
+ 288              	.L14:
+ 147:Drivers/BSP/Components/dp83848/dp83848.c ****                  break;
+ 148:Drivers/BSP/Components/dp83848/dp83848.c ****                }
+ 149:Drivers/BSP/Components/dp83848/dp83848.c ****              }
+ 150:Drivers/BSP/Components/dp83848/dp83848.c ****              else
+ 151:Drivers/BSP/Components/dp83848/dp83848.c ****              {
+ 152:Drivers/BSP/Components/dp83848/dp83848.c ****                status = DP83848_STATUS_RESET_TIMEOUT;
+ 153:Drivers/BSP/Components/dp83848/dp83848.c ****                break;
+ 154:Drivers/BSP/Components/dp83848/dp83848.c ****              }
+ 155:Drivers/BSP/Components/dp83848/dp83848.c ****            }
+ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccM83wL4.s 			page 9
+
+
+ 156:Drivers/BSP/Components/dp83848/dp83848.c ****          }
+ 157:Drivers/BSP/Components/dp83848/dp83848.c ****          else
+ 158:Drivers/BSP/Components/dp83848/dp83848.c ****          {
+ 159:Drivers/BSP/Components/dp83848/dp83848.c ****            status = DP83848_STATUS_READ_ERROR;
+ 160:Drivers/BSP/Components/dp83848/dp83848.c ****          }
+ 161:Drivers/BSP/Components/dp83848/dp83848.c ****        }
+ 162:Drivers/BSP/Components/dp83848/dp83848.c ****        else
+ 163:Drivers/BSP/Components/dp83848/dp83848.c ****        {
+ 164:Drivers/BSP/Components/dp83848/dp83848.c ****          status = DP83848_STATUS_WRITE_ERROR;
+ 165:Drivers/BSP/Components/dp83848/dp83848.c ****        }
+ 166:Drivers/BSP/Components/dp83848/dp83848.c ****      }
+ 167:Drivers/BSP/Components/dp83848/dp83848.c ****    }
+ 168:Drivers/BSP/Components/dp83848/dp83848.c **** 
+ 169:Drivers/BSP/Components/dp83848/dp83848.c ****    if(status == DP83848_STATUS_OK)
+ 289              		.loc 1 169 4 is_stmt 1 view .LVU97
+ 290              		.loc 1 169 6 is_stmt 0 view .LVU98
+ 291 009a 7EB9     		cbnz	r6, .L7
+ 292 009c 03E0     		b	.L8
+ 293              	.LVL29:
+ 294              	.L24:
+ 152:Drivers/BSP/Components/dp83848/dp83848.c ****                break;
+ 295              		.loc 1 152 23 view .LVU99
+ 296 009e 6FF00106 		mvn	r6, #1
+ 297              	.LVL30:
+ 152:Drivers/BSP/Components/dp83848/dp83848.c ****                break;
+ 298              		.loc 1 152 23 view .LVU100
+ 299 00a2 FAE7     		b	.L14
+ 300              	.LVL31:
+ 301              	.L19:
+  91:Drivers/BSP/Components/dp83848/dp83848.c **** 
+ 302              		.loc 1 91 12 view .LVU101
+ 303 00a4 0026     		movs	r6, #0
+ 304              	.LVL32:
+ 305              	.L8:
+ 170:Drivers/BSP/Components/dp83848/dp83848.c ****    {
+ 171:Drivers/BSP/Components/dp83848/dp83848.c ****      tickstart =  pObj->IO.GetTick();
+ 306              		.loc 1 171 6 is_stmt 1 view .LVU102
+ 307              		.loc 1 171 27 is_stmt 0 view .LVU103
+ 308 00a6 AB69     		ldr	r3, [r5, #24]
+ 309              		.loc 1 171 19 view .LVU104
+ 310 00a8 9847     		blx	r3
+ 311              	.LVL33:
+ 312 00aa 0446     		mov	r4, r0
+ 313              	.LVL34:
+ 172:Drivers/BSP/Components/dp83848/dp83848.c **** 
+ 173:Drivers/BSP/Components/dp83848/dp83848.c ****      /* Wait for 2s to perform initialization */
+ 174:Drivers/BSP/Components/dp83848/dp83848.c ****      while((pObj->IO.GetTick() - tickstart) <= DP83848_INIT_TO)
+ 314              		.loc 1 174 6 is_stmt 1 view .LVU105
+ 315              	.L18:
+ 175:Drivers/BSP/Components/dp83848/dp83848.c ****      {
+ 176:Drivers/BSP/Components/dp83848/dp83848.c ****      }
+ 316              		.loc 1 176 6 discriminator 1 view .LVU106
+ 174:Drivers/BSP/Components/dp83848/dp83848.c ****      {
+ 317              		.loc 1 174 45 discriminator 1 view .LVU107
+ 174:Drivers/BSP/Components/dp83848/dp83848.c ****      {
+ 318              		.loc 1 174 21 is_stmt 0 discriminator 1 view .LVU108
+ 319 00ac AB69     		ldr	r3, [r5, #24]
+ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccM83wL4.s 			page 10
+
+
+ 174:Drivers/BSP/Components/dp83848/dp83848.c ****      {
+ 320              		.loc 1 174 13 discriminator 1 view .LVU109
+ 321 00ae 9847     		blx	r3
+ 322              	.LVL35:
+ 174:Drivers/BSP/Components/dp83848/dp83848.c ****      {
+ 323              		.loc 1 174 32 discriminator 1 view .LVU110
+ 324 00b0 031B     		subs	r3, r0, r4
+ 174:Drivers/BSP/Components/dp83848/dp83848.c ****      {
+ 325              		.loc 1 174 45 discriminator 1 view .LVU111
+ 326 00b2 B3F5FA6F 		cmp	r3, #2000
+ 327 00b6 F9D9     		bls	.L18
+ 177:Drivers/BSP/Components/dp83848/dp83848.c ****      pObj->Is_Initialized = 1;
+ 328              		.loc 1 177 6 is_stmt 1 view .LVU112
+ 329              		.loc 1 177 27 is_stmt 0 view .LVU113
+ 330 00b8 0123     		movs	r3, #1
+ 331 00ba 6B60     		str	r3, [r5, #4]
+ 332              	.LVL36:
+ 333              	.L7:
+ 178:Drivers/BSP/Components/dp83848/dp83848.c ****    }
+ 179:Drivers/BSP/Components/dp83848/dp83848.c **** 
+ 180:Drivers/BSP/Components/dp83848/dp83848.c ****    return status;
+ 181:Drivers/BSP/Components/dp83848/dp83848.c ****  }
+ 334              		.loc 1 181 2 view .LVU114
+ 335 00bc 3046     		mov	r0, r6
+ 336 00be 02B0     		add	sp, sp, #8
+ 337              		.cfi_remember_state
+ 338              		.cfi_def_cfa_offset 16
+ 339              		@ sp needed
+ 340 00c0 70BD     		pop	{r4, r5, r6, pc}
+ 341              	.LVL37:
+ 342              	.L22:
+ 343              		.cfi_restore_state
+ 164:Drivers/BSP/Components/dp83848/dp83848.c ****        }
+ 344              		.loc 1 164 17 view .LVU115
+ 345 00c2 6FF00306 		mvn	r6, #3
+ 346              	.LVL38:
+ 164:Drivers/BSP/Components/dp83848/dp83848.c ****        }
+ 347              		.loc 1 164 17 view .LVU116
+ 348 00c6 F9E7     		b	.L7
+ 349              	.LVL39:
+ 350              	.L23:
+ 159:Drivers/BSP/Components/dp83848/dp83848.c ****          }
+ 351              		.loc 1 159 19 view .LVU117
+ 352 00c8 6FF00406 		mvn	r6, #4
+ 353              	.LVL40:
+ 180:Drivers/BSP/Components/dp83848/dp83848.c ****  }
+ 354              		.loc 1 180 4 is_stmt 1 view .LVU118
+ 180:Drivers/BSP/Components/dp83848/dp83848.c ****  }
+ 355              		.loc 1 180 11 is_stmt 0 view .LVU119
+ 356 00cc F6E7     		b	.L7
+ 357              		.cfi_endproc
+ 358              	.LFE1:
+ 360              		.section	.text.DP83848_DeInit,"ax",%progbits
+ 361              		.align	1
+ 362              		.global	DP83848_DeInit
+ 363              		.syntax unified
+ 364              		.thumb
+ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccM83wL4.s 			page 11
+
+
+ 365              		.thumb_func
+ 367              	DP83848_DeInit:
+ 368              	.LVL41:
+ 369              	.LFB2:
+ 182:Drivers/BSP/Components/dp83848/dp83848.c **** 
+ 183:Drivers/BSP/Components/dp83848/dp83848.c **** /**
+ 184:Drivers/BSP/Components/dp83848/dp83848.c ****   * @brief  De-Initialize the dp83848 and it's hardware resources
+ 185:Drivers/BSP/Components/dp83848/dp83848.c ****   * @param  pObj: device object DP83848_Object_t.
+ 186:Drivers/BSP/Components/dp83848/dp83848.c ****   * @retval None
+ 187:Drivers/BSP/Components/dp83848/dp83848.c ****   */
+ 188:Drivers/BSP/Components/dp83848/dp83848.c **** int32_t DP83848_DeInit(dp83848_Object_t *pObj)
+ 189:Drivers/BSP/Components/dp83848/dp83848.c **** {
+ 370              		.loc 1 189 1 is_stmt 1 view -0
+ 371              		.cfi_startproc
+ 372              		@ args = 0, pretend = 0, frame = 0
+ 373              		@ frame_needed = 0, uses_anonymous_args = 0
+ 190:Drivers/BSP/Components/dp83848/dp83848.c ****   if(pObj->Is_Initialized)
+ 374              		.loc 1 190 3 view .LVU121
+ 375              		.loc 1 190 10 is_stmt 0 view .LVU122
+ 376 0000 4368     		ldr	r3, [r0, #4]
+ 377              		.loc 1 190 5 view .LVU123
+ 378 0002 4BB1     		cbz	r3, .L30
+ 189:Drivers/BSP/Components/dp83848/dp83848.c ****   if(pObj->Is_Initialized)
+ 379              		.loc 1 189 1 view .LVU124
+ 380 0004 10B5     		push	{r4, lr}
+ 381              		.cfi_def_cfa_offset 8
+ 382              		.cfi_offset 4, -8
+ 383              		.cfi_offset 14, -4
+ 384 0006 0446     		mov	r4, r0
+ 191:Drivers/BSP/Components/dp83848/dp83848.c ****   {
+ 192:Drivers/BSP/Components/dp83848/dp83848.c ****     if(pObj->IO.DeInit != 0)
+ 385              		.loc 1 192 5 is_stmt 1 view .LVU125
+ 386              		.loc 1 192 16 is_stmt 0 view .LVU126
+ 387 0008 C368     		ldr	r3, [r0, #12]
+ 388              		.loc 1 192 7 view .LVU127
+ 389 000a 13B1     		cbz	r3, .L29
+ 193:Drivers/BSP/Components/dp83848/dp83848.c ****     {
+ 194:Drivers/BSP/Components/dp83848/dp83848.c ****       if(pObj->IO.DeInit() < 0)
+ 390              		.loc 1 194 7 is_stmt 1 view .LVU128
+ 391              		.loc 1 194 10 is_stmt 0 view .LVU129
+ 392 000c 9847     		blx	r3
+ 393              	.LVL42:
+ 394              		.loc 1 194 9 view .LVU130
+ 395 000e 0028     		cmp	r0, #0
+ 396 0010 04DB     		blt	.L31
+ 397              	.L29:
+ 195:Drivers/BSP/Components/dp83848/dp83848.c ****       {
+ 196:Drivers/BSP/Components/dp83848/dp83848.c ****         return DP83848_STATUS_ERROR;
+ 197:Drivers/BSP/Components/dp83848/dp83848.c ****       }
+ 198:Drivers/BSP/Components/dp83848/dp83848.c ****     }
+ 199:Drivers/BSP/Components/dp83848/dp83848.c **** 
+ 200:Drivers/BSP/Components/dp83848/dp83848.c ****     pObj->Is_Initialized = 0;
+ 398              		.loc 1 200 5 is_stmt 1 view .LVU131
+ 399              		.loc 1 200 26 is_stmt 0 view .LVU132
+ 400 0012 0020     		movs	r0, #0
+ 401 0014 6060     		str	r0, [r4, #4]
+ 402              	.L27:
+ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccM83wL4.s 			page 12
+
+
+ 201:Drivers/BSP/Components/dp83848/dp83848.c ****   }
+ 202:Drivers/BSP/Components/dp83848/dp83848.c **** 
+ 203:Drivers/BSP/Components/dp83848/dp83848.c ****   return DP83848_STATUS_OK;
+ 204:Drivers/BSP/Components/dp83848/dp83848.c **** }
+ 403              		.loc 1 204 1 view .LVU133
+ 404 0016 10BD     		pop	{r4, pc}
+ 405              	.LVL43:
+ 406              	.L30:
+ 407              		.cfi_def_cfa_offset 0
+ 408              		.cfi_restore 4
+ 409              		.cfi_restore 14
+ 203:Drivers/BSP/Components/dp83848/dp83848.c **** }
+ 410              		.loc 1 203 10 view .LVU134
+ 411 0018 0020     		movs	r0, #0
+ 412              	.LVL44:
+ 413              		.loc 1 204 1 view .LVU135
+ 414 001a 7047     		bx	lr
+ 415              	.LVL45:
+ 416              	.L31:
+ 417              		.cfi_def_cfa_offset 8
+ 418              		.cfi_offset 4, -8
+ 419              		.cfi_offset 14, -4
+ 196:Drivers/BSP/Components/dp83848/dp83848.c ****       }
+ 420              		.loc 1 196 16 view .LVU136
+ 421 001c 4FF0FF30 		mov	r0, #-1
+ 422 0020 F9E7     		b	.L27
+ 423              		.cfi_endproc
+ 424              	.LFE2:
+ 426              		.section	.text.DP83848_DisablePowerDownMode,"ax",%progbits
+ 427              		.align	1
+ 428              		.global	DP83848_DisablePowerDownMode
+ 429              		.syntax unified
+ 430              		.thumb
+ 431              		.thumb_func
+ 433              	DP83848_DisablePowerDownMode:
+ 434              	.LVL46:
+ 435              	.LFB3:
+ 205:Drivers/BSP/Components/dp83848/dp83848.c **** 
+ 206:Drivers/BSP/Components/dp83848/dp83848.c **** /**
+ 207:Drivers/BSP/Components/dp83848/dp83848.c ****   * @brief  Disable the DP83848 power down mode.
+ 208:Drivers/BSP/Components/dp83848/dp83848.c ****   * @param  pObj: device object DP83848_Object_t.
+ 209:Drivers/BSP/Components/dp83848/dp83848.c ****   * @retval DP83848_STATUS_OK  if OK
+ 210:Drivers/BSP/Components/dp83848/dp83848.c ****   *         DP83848_STATUS_READ_ERROR if connot read register
+ 211:Drivers/BSP/Components/dp83848/dp83848.c ****   *         DP83848_STATUS_WRITE_ERROR if connot write to register
+ 212:Drivers/BSP/Components/dp83848/dp83848.c ****   */
+ 213:Drivers/BSP/Components/dp83848/dp83848.c **** int32_t DP83848_DisablePowerDownMode(dp83848_Object_t *pObj)
+ 214:Drivers/BSP/Components/dp83848/dp83848.c **** {
+ 436              		.loc 1 214 1 is_stmt 1 view -0
+ 437              		.cfi_startproc
+ 438              		@ args = 0, pretend = 0, frame = 8
+ 439              		@ frame_needed = 0, uses_anonymous_args = 0
+ 440              		.loc 1 214 1 is_stmt 0 view .LVU138
+ 441 0000 10B5     		push	{r4, lr}
+ 442              		.cfi_def_cfa_offset 8
+ 443              		.cfi_offset 4, -8
+ 444              		.cfi_offset 14, -4
+ 445 0002 82B0     		sub	sp, sp, #8
+ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccM83wL4.s 			page 13
+
+
+ 446              		.cfi_def_cfa_offset 16
+ 447 0004 0446     		mov	r4, r0
+ 215:Drivers/BSP/Components/dp83848/dp83848.c ****   uint32_t readval = 0;
+ 448              		.loc 1 215 3 is_stmt 1 view .LVU139
+ 449              		.loc 1 215 12 is_stmt 0 view .LVU140
+ 450 0006 0021     		movs	r1, #0
+ 451 0008 0191     		str	r1, [sp, #4]
+ 216:Drivers/BSP/Components/dp83848/dp83848.c ****   int32_t status = DP83848_STATUS_OK;
+ 452              		.loc 1 216 3 is_stmt 1 view .LVU141
+ 453              	.LVL47:
+ 217:Drivers/BSP/Components/dp83848/dp83848.c **** 
+ 218:Drivers/BSP/Components/dp83848/dp83848.c ****   if(pObj->IO.ReadReg(pObj->DevAddr, DP83848_BCR, &readval) >= 0)
+ 454              		.loc 1 218 3 view .LVU142
+ 455              		.loc 1 218 14 is_stmt 0 view .LVU143
+ 456 000a 4369     		ldr	r3, [r0, #20]
+ 457              		.loc 1 218 6 view .LVU144
+ 458 000c 01AA     		add	r2, sp, #4
+ 459 000e 0068     		ldr	r0, [r0]
+ 460              	.LVL48:
+ 461              		.loc 1 218 6 view .LVU145
+ 462 0010 9847     		blx	r3
+ 463              	.LVL49:
+ 464              		.loc 1 218 5 view .LVU146
+ 465 0012 0028     		cmp	r0, #0
+ 466 0014 0CDB     		blt	.L38
+ 219:Drivers/BSP/Components/dp83848/dp83848.c ****   {
+ 220:Drivers/BSP/Components/dp83848/dp83848.c ****     readval &= ~DP83848_BCR_POWER_DOWN;
+ 467              		.loc 1 220 5 is_stmt 1 view .LVU147
+ 468              		.loc 1 220 13 is_stmt 0 view .LVU148
+ 469 0016 019A     		ldr	r2, [sp, #4]
+ 470 0018 22F40062 		bic	r2, r2, #2048
+ 471 001c 0192     		str	r2, [sp, #4]
+ 221:Drivers/BSP/Components/dp83848/dp83848.c **** 
+ 222:Drivers/BSP/Components/dp83848/dp83848.c ****     /* Apply configuration */
+ 223:Drivers/BSP/Components/dp83848/dp83848.c ****     if(pObj->IO.WriteReg(pObj->DevAddr, DP83848_BCR, readval) < 0)
+ 472              		.loc 1 223 5 is_stmt 1 view .LVU149
+ 473              		.loc 1 223 16 is_stmt 0 view .LVU150
+ 474 001e 2369     		ldr	r3, [r4, #16]
+ 475              		.loc 1 223 8 view .LVU151
+ 476 0020 0021     		movs	r1, #0
+ 477 0022 2068     		ldr	r0, [r4]
+ 478 0024 9847     		blx	r3
+ 479              	.LVL50:
+ 480              		.loc 1 223 7 view .LVU152
+ 481 0026 0028     		cmp	r0, #0
+ 482 0028 05DB     		blt	.L39
+ 216:Drivers/BSP/Components/dp83848/dp83848.c **** 
+ 483              		.loc 1 216 11 view .LVU153
+ 484 002a 0020     		movs	r0, #0
+ 485              	.LVL51:
+ 486              	.L36:
+ 224:Drivers/BSP/Components/dp83848/dp83848.c ****     {
+ 225:Drivers/BSP/Components/dp83848/dp83848.c ****       status =  DP83848_STATUS_WRITE_ERROR;
+ 226:Drivers/BSP/Components/dp83848/dp83848.c ****     }
+ 227:Drivers/BSP/Components/dp83848/dp83848.c ****   }
+ 228:Drivers/BSP/Components/dp83848/dp83848.c ****   else
+ 229:Drivers/BSP/Components/dp83848/dp83848.c ****   {
+ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccM83wL4.s 			page 14
+
+
+ 230:Drivers/BSP/Components/dp83848/dp83848.c ****     status = DP83848_STATUS_READ_ERROR;
+ 231:Drivers/BSP/Components/dp83848/dp83848.c ****   }
+ 232:Drivers/BSP/Components/dp83848/dp83848.c **** 
+ 233:Drivers/BSP/Components/dp83848/dp83848.c ****   return status;
+ 234:Drivers/BSP/Components/dp83848/dp83848.c **** }
+ 487              		.loc 1 234 1 view .LVU154
+ 488 002c 02B0     		add	sp, sp, #8
+ 489              		.cfi_remember_state
+ 490              		.cfi_def_cfa_offset 8
+ 491              		@ sp needed
+ 492 002e 10BD     		pop	{r4, pc}
+ 493              	.LVL52:
+ 494              	.L38:
+ 495              		.cfi_restore_state
+ 230:Drivers/BSP/Components/dp83848/dp83848.c ****   }
+ 496              		.loc 1 230 12 view .LVU155
+ 497 0030 6FF00400 		mvn	r0, #4
+ 498 0034 FAE7     		b	.L36
+ 499              	.L39:
+ 225:Drivers/BSP/Components/dp83848/dp83848.c ****     }
+ 500              		.loc 1 225 14 view .LVU156
+ 501 0036 6FF00300 		mvn	r0, #3
+ 502              	.LVL53:
+ 233:Drivers/BSP/Components/dp83848/dp83848.c **** }
+ 503              		.loc 1 233 3 is_stmt 1 view .LVU157
+ 233:Drivers/BSP/Components/dp83848/dp83848.c **** }
+ 504              		.loc 1 233 10 is_stmt 0 view .LVU158
+ 505 003a F7E7     		b	.L36
+ 506              		.cfi_endproc
+ 507              	.LFE3:
+ 509              		.section	.text.DP83848_EnablePowerDownMode,"ax",%progbits
+ 510              		.align	1
+ 511              		.global	DP83848_EnablePowerDownMode
+ 512              		.syntax unified
+ 513              		.thumb
+ 514              		.thumb_func
+ 516              	DP83848_EnablePowerDownMode:
+ 517              	.LVL54:
+ 518              	.LFB4:
+ 235:Drivers/BSP/Components/dp83848/dp83848.c **** 
+ 236:Drivers/BSP/Components/dp83848/dp83848.c **** /**
+ 237:Drivers/BSP/Components/dp83848/dp83848.c ****   * @brief  Enable the DP83848 power down mode.
+ 238:Drivers/BSP/Components/dp83848/dp83848.c ****   * @param  pObj: device object DP83848_Object_t.
+ 239:Drivers/BSP/Components/dp83848/dp83848.c ****   * @retval DP83848_STATUS_OK  if OK
+ 240:Drivers/BSP/Components/dp83848/dp83848.c ****   *         DP83848_STATUS_READ_ERROR if connot read register
+ 241:Drivers/BSP/Components/dp83848/dp83848.c ****   *         DP83848_STATUS_WRITE_ERROR if connot write to register
+ 242:Drivers/BSP/Components/dp83848/dp83848.c ****   */
+ 243:Drivers/BSP/Components/dp83848/dp83848.c **** int32_t DP83848_EnablePowerDownMode(dp83848_Object_t *pObj)
+ 244:Drivers/BSP/Components/dp83848/dp83848.c **** {
+ 519              		.loc 1 244 1 is_stmt 1 view -0
+ 520              		.cfi_startproc
+ 521              		@ args = 0, pretend = 0, frame = 8
+ 522              		@ frame_needed = 0, uses_anonymous_args = 0
+ 523              		.loc 1 244 1 is_stmt 0 view .LVU160
+ 524 0000 10B5     		push	{r4, lr}
+ 525              		.cfi_def_cfa_offset 8
+ 526              		.cfi_offset 4, -8
+ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccM83wL4.s 			page 15
+
+
+ 527              		.cfi_offset 14, -4
+ 528 0002 82B0     		sub	sp, sp, #8
+ 529              		.cfi_def_cfa_offset 16
+ 530 0004 0446     		mov	r4, r0
+ 245:Drivers/BSP/Components/dp83848/dp83848.c ****   uint32_t readval = 0;
+ 531              		.loc 1 245 3 is_stmt 1 view .LVU161
+ 532              		.loc 1 245 12 is_stmt 0 view .LVU162
+ 533 0006 0021     		movs	r1, #0
+ 534 0008 0191     		str	r1, [sp, #4]
+ 246:Drivers/BSP/Components/dp83848/dp83848.c ****   int32_t status = DP83848_STATUS_OK;
+ 535              		.loc 1 246 3 is_stmt 1 view .LVU163
+ 536              	.LVL55:
+ 247:Drivers/BSP/Components/dp83848/dp83848.c **** 
+ 248:Drivers/BSP/Components/dp83848/dp83848.c ****   if(pObj->IO.ReadReg(pObj->DevAddr, DP83848_BCR, &readval) >= 0)
+ 537              		.loc 1 248 3 view .LVU164
+ 538              		.loc 1 248 14 is_stmt 0 view .LVU165
+ 539 000a 4369     		ldr	r3, [r0, #20]
+ 540              		.loc 1 248 6 view .LVU166
+ 541 000c 01AA     		add	r2, sp, #4
+ 542 000e 0068     		ldr	r0, [r0]
+ 543              	.LVL56:
+ 544              		.loc 1 248 6 view .LVU167
+ 545 0010 9847     		blx	r3
+ 546              	.LVL57:
+ 547              		.loc 1 248 5 view .LVU168
+ 548 0012 0028     		cmp	r0, #0
+ 549 0014 0CDB     		blt	.L43
+ 249:Drivers/BSP/Components/dp83848/dp83848.c ****   {
+ 250:Drivers/BSP/Components/dp83848/dp83848.c ****     readval |= DP83848_BCR_POWER_DOWN;
+ 550              		.loc 1 250 5 is_stmt 1 view .LVU169
+ 551              		.loc 1 250 13 is_stmt 0 view .LVU170
+ 552 0016 019A     		ldr	r2, [sp, #4]
+ 553 0018 42F40062 		orr	r2, r2, #2048
+ 554 001c 0192     		str	r2, [sp, #4]
+ 251:Drivers/BSP/Components/dp83848/dp83848.c **** 
+ 252:Drivers/BSP/Components/dp83848/dp83848.c ****     /* Apply configuration */
+ 253:Drivers/BSP/Components/dp83848/dp83848.c ****     if(pObj->IO.WriteReg(pObj->DevAddr, DP83848_BCR, readval) < 0)
+ 555              		.loc 1 253 5 is_stmt 1 view .LVU171
+ 556              		.loc 1 253 16 is_stmt 0 view .LVU172
+ 557 001e 2369     		ldr	r3, [r4, #16]
+ 558              		.loc 1 253 8 view .LVU173
+ 559 0020 0021     		movs	r1, #0
+ 560 0022 2068     		ldr	r0, [r4]
+ 561 0024 9847     		blx	r3
+ 562              	.LVL58:
+ 563              		.loc 1 253 7 view .LVU174
+ 564 0026 0028     		cmp	r0, #0
+ 565 0028 05DB     		blt	.L44
+ 246:Drivers/BSP/Components/dp83848/dp83848.c **** 
+ 566              		.loc 1 246 11 view .LVU175
+ 567 002a 0020     		movs	r0, #0
+ 568              	.LVL59:
+ 569              	.L41:
+ 254:Drivers/BSP/Components/dp83848/dp83848.c ****     {
+ 255:Drivers/BSP/Components/dp83848/dp83848.c ****       status =  DP83848_STATUS_WRITE_ERROR;
+ 256:Drivers/BSP/Components/dp83848/dp83848.c ****     }
+ 257:Drivers/BSP/Components/dp83848/dp83848.c ****   }
+ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccM83wL4.s 			page 16
+
+
+ 258:Drivers/BSP/Components/dp83848/dp83848.c ****   else
+ 259:Drivers/BSP/Components/dp83848/dp83848.c ****   {
+ 260:Drivers/BSP/Components/dp83848/dp83848.c ****     status = DP83848_STATUS_READ_ERROR;
+ 261:Drivers/BSP/Components/dp83848/dp83848.c ****   }
+ 262:Drivers/BSP/Components/dp83848/dp83848.c **** 
+ 263:Drivers/BSP/Components/dp83848/dp83848.c ****   return status;
+ 264:Drivers/BSP/Components/dp83848/dp83848.c **** }
+ 570              		.loc 1 264 1 view .LVU176
+ 571 002c 02B0     		add	sp, sp, #8
+ 572              		.cfi_remember_state
+ 573              		.cfi_def_cfa_offset 8
+ 574              		@ sp needed
+ 575 002e 10BD     		pop	{r4, pc}
+ 576              	.LVL60:
+ 577              	.L43:
+ 578              		.cfi_restore_state
+ 260:Drivers/BSP/Components/dp83848/dp83848.c ****   }
+ 579              		.loc 1 260 12 view .LVU177
+ 580 0030 6FF00400 		mvn	r0, #4
+ 581 0034 FAE7     		b	.L41
+ 582              	.L44:
+ 255:Drivers/BSP/Components/dp83848/dp83848.c ****     }
+ 583              		.loc 1 255 14 view .LVU178
+ 584 0036 6FF00300 		mvn	r0, #3
+ 585              	.LVL61:
+ 263:Drivers/BSP/Components/dp83848/dp83848.c **** }
+ 586              		.loc 1 263 3 is_stmt 1 view .LVU179
+ 263:Drivers/BSP/Components/dp83848/dp83848.c **** }
+ 587              		.loc 1 263 10 is_stmt 0 view .LVU180
+ 588 003a F7E7     		b	.L41
+ 589              		.cfi_endproc
+ 590              	.LFE4:
+ 592              		.section	.text.DP83848_StartAutoNego,"ax",%progbits
+ 593              		.align	1
+ 594              		.global	DP83848_StartAutoNego
+ 595              		.syntax unified
+ 596              		.thumb
+ 597              		.thumb_func
+ 599              	DP83848_StartAutoNego:
+ 600              	.LVL62:
+ 601              	.LFB5:
+ 265:Drivers/BSP/Components/dp83848/dp83848.c **** 
+ 266:Drivers/BSP/Components/dp83848/dp83848.c **** /**
+ 267:Drivers/BSP/Components/dp83848/dp83848.c ****   * @brief  Start the auto negotiation process.
+ 268:Drivers/BSP/Components/dp83848/dp83848.c ****   * @param  pObj: device object DP83848_Object_t.
+ 269:Drivers/BSP/Components/dp83848/dp83848.c ****   * @retval DP83848_STATUS_OK  if OK
+ 270:Drivers/BSP/Components/dp83848/dp83848.c ****   *         DP83848_STATUS_READ_ERROR if connot read register
+ 271:Drivers/BSP/Components/dp83848/dp83848.c ****   *         DP83848_STATUS_WRITE_ERROR if connot write to register
+ 272:Drivers/BSP/Components/dp83848/dp83848.c ****   */
+ 273:Drivers/BSP/Components/dp83848/dp83848.c **** int32_t DP83848_StartAutoNego(dp83848_Object_t *pObj)
+ 274:Drivers/BSP/Components/dp83848/dp83848.c **** {
+ 602              		.loc 1 274 1 is_stmt 1 view -0
+ 603              		.cfi_startproc
+ 604              		@ args = 0, pretend = 0, frame = 8
+ 605              		@ frame_needed = 0, uses_anonymous_args = 0
+ 606              		.loc 1 274 1 is_stmt 0 view .LVU182
+ 607 0000 10B5     		push	{r4, lr}
+ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccM83wL4.s 			page 17
+
+
+ 608              		.cfi_def_cfa_offset 8
+ 609              		.cfi_offset 4, -8
+ 610              		.cfi_offset 14, -4
+ 611 0002 82B0     		sub	sp, sp, #8
+ 612              		.cfi_def_cfa_offset 16
+ 613 0004 0446     		mov	r4, r0
+ 275:Drivers/BSP/Components/dp83848/dp83848.c ****   uint32_t readval = 0;
+ 614              		.loc 1 275 3 is_stmt 1 view .LVU183
+ 615              		.loc 1 275 12 is_stmt 0 view .LVU184
+ 616 0006 0021     		movs	r1, #0
+ 617 0008 0191     		str	r1, [sp, #4]
+ 276:Drivers/BSP/Components/dp83848/dp83848.c ****   int32_t status = DP83848_STATUS_OK;
+ 618              		.loc 1 276 3 is_stmt 1 view .LVU185
+ 619              	.LVL63:
+ 277:Drivers/BSP/Components/dp83848/dp83848.c **** 
+ 278:Drivers/BSP/Components/dp83848/dp83848.c ****   if(pObj->IO.ReadReg(pObj->DevAddr, DP83848_BCR, &readval) >= 0)
+ 620              		.loc 1 278 3 view .LVU186
+ 621              		.loc 1 278 14 is_stmt 0 view .LVU187
+ 622 000a 4369     		ldr	r3, [r0, #20]
+ 623              		.loc 1 278 6 view .LVU188
+ 624 000c 01AA     		add	r2, sp, #4
+ 625 000e 0068     		ldr	r0, [r0]
+ 626              	.LVL64:
+ 627              		.loc 1 278 6 view .LVU189
+ 628 0010 9847     		blx	r3
+ 629              	.LVL65:
+ 630              		.loc 1 278 5 view .LVU190
+ 631 0012 0028     		cmp	r0, #0
+ 632 0014 0CDB     		blt	.L48
+ 279:Drivers/BSP/Components/dp83848/dp83848.c ****   {
+ 280:Drivers/BSP/Components/dp83848/dp83848.c ****     readval |= DP83848_BCR_AUTONEGO_EN;
+ 633              		.loc 1 280 5 is_stmt 1 view .LVU191
+ 634              		.loc 1 280 13 is_stmt 0 view .LVU192
+ 635 0016 019A     		ldr	r2, [sp, #4]
+ 636 0018 42F48052 		orr	r2, r2, #4096
+ 637 001c 0192     		str	r2, [sp, #4]
+ 281:Drivers/BSP/Components/dp83848/dp83848.c **** 
+ 282:Drivers/BSP/Components/dp83848/dp83848.c ****     /* Apply configuration */
+ 283:Drivers/BSP/Components/dp83848/dp83848.c ****     if(pObj->IO.WriteReg(pObj->DevAddr, DP83848_BCR, readval) < 0)
+ 638              		.loc 1 283 5 is_stmt 1 view .LVU193
+ 639              		.loc 1 283 16 is_stmt 0 view .LVU194
+ 640 001e 2369     		ldr	r3, [r4, #16]
+ 641              		.loc 1 283 8 view .LVU195
+ 642 0020 0021     		movs	r1, #0
+ 643 0022 2068     		ldr	r0, [r4]
+ 644 0024 9847     		blx	r3
+ 645              	.LVL66:
+ 646              		.loc 1 283 7 view .LVU196
+ 647 0026 0028     		cmp	r0, #0
+ 648 0028 05DB     		blt	.L49
+ 276:Drivers/BSP/Components/dp83848/dp83848.c **** 
+ 649              		.loc 1 276 11 view .LVU197
+ 650 002a 0020     		movs	r0, #0
+ 651              	.LVL67:
+ 652              	.L46:
+ 284:Drivers/BSP/Components/dp83848/dp83848.c ****     {
+ 285:Drivers/BSP/Components/dp83848/dp83848.c ****       status =  DP83848_STATUS_WRITE_ERROR;
+ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccM83wL4.s 			page 18
+
+
+ 286:Drivers/BSP/Components/dp83848/dp83848.c ****     }
+ 287:Drivers/BSP/Components/dp83848/dp83848.c ****   }
+ 288:Drivers/BSP/Components/dp83848/dp83848.c ****   else
+ 289:Drivers/BSP/Components/dp83848/dp83848.c ****   {
+ 290:Drivers/BSP/Components/dp83848/dp83848.c ****     status = DP83848_STATUS_READ_ERROR;
+ 291:Drivers/BSP/Components/dp83848/dp83848.c ****   }
+ 292:Drivers/BSP/Components/dp83848/dp83848.c **** 
+ 293:Drivers/BSP/Components/dp83848/dp83848.c ****   return status;
+ 294:Drivers/BSP/Components/dp83848/dp83848.c **** }
+ 653              		.loc 1 294 1 view .LVU198
+ 654 002c 02B0     		add	sp, sp, #8
+ 655              		.cfi_remember_state
+ 656              		.cfi_def_cfa_offset 8
+ 657              		@ sp needed
+ 658 002e 10BD     		pop	{r4, pc}
+ 659              	.LVL68:
+ 660              	.L48:
+ 661              		.cfi_restore_state
+ 290:Drivers/BSP/Components/dp83848/dp83848.c ****   }
+ 662              		.loc 1 290 12 view .LVU199
+ 663 0030 6FF00400 		mvn	r0, #4
+ 664 0034 FAE7     		b	.L46
+ 665              	.L49:
+ 285:Drivers/BSP/Components/dp83848/dp83848.c ****     }
+ 666              		.loc 1 285 14 view .LVU200
+ 667 0036 6FF00300 		mvn	r0, #3
+ 668              	.LVL69:
+ 293:Drivers/BSP/Components/dp83848/dp83848.c **** }
+ 669              		.loc 1 293 3 is_stmt 1 view .LVU201
+ 293:Drivers/BSP/Components/dp83848/dp83848.c **** }
+ 670              		.loc 1 293 10 is_stmt 0 view .LVU202
+ 671 003a F7E7     		b	.L46
+ 672              		.cfi_endproc
+ 673              	.LFE5:
+ 675              		.section	.text.DP83848_GetLinkState,"ax",%progbits
+ 676              		.align	1
+ 677              		.global	DP83848_GetLinkState
+ 678              		.syntax unified
+ 679              		.thumb
+ 680              		.thumb_func
+ 682              	DP83848_GetLinkState:
+ 683              	.LVL70:
+ 684              	.LFB6:
+ 295:Drivers/BSP/Components/dp83848/dp83848.c **** 
+ 296:Drivers/BSP/Components/dp83848/dp83848.c **** /**
+ 297:Drivers/BSP/Components/dp83848/dp83848.c ****   * @brief  Get the link state of DP83848 device.
+ 298:Drivers/BSP/Components/dp83848/dp83848.c ****   * @param  pObj: Pointer to device object.
+ 299:Drivers/BSP/Components/dp83848/dp83848.c ****   * @param  pLinkState: Pointer to link state
+ 300:Drivers/BSP/Components/dp83848/dp83848.c ****   * @retval DP83848_STATUS_LINK_DOWN  if link is down
+ 301:Drivers/BSP/Components/dp83848/dp83848.c ****   *         DP83848_STATUS_AUTONEGO_NOTDONE if Auto nego not completed
+ 302:Drivers/BSP/Components/dp83848/dp83848.c ****   *         DP83848_STATUS_100MBITS_FULLDUPLEX if 100Mb/s FD
+ 303:Drivers/BSP/Components/dp83848/dp83848.c ****   *         DP83848_STATUS_100MBITS_HALFDUPLEX if 100Mb/s HD
+ 304:Drivers/BSP/Components/dp83848/dp83848.c ****   *         DP83848_STATUS_10MBITS_FULLDUPLEX  if 10Mb/s FD
+ 305:Drivers/BSP/Components/dp83848/dp83848.c ****   *         DP83848_STATUS_10MBITS_HALFDUPLEX  if 10Mb/s HD
+ 306:Drivers/BSP/Components/dp83848/dp83848.c ****   *         DP83848_STATUS_READ_ERROR if connot read register
+ 307:Drivers/BSP/Components/dp83848/dp83848.c ****   *         DP83848_STATUS_WRITE_ERROR if connot write to register
+ 308:Drivers/BSP/Components/dp83848/dp83848.c ****   */
+ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccM83wL4.s 			page 19
+
+
+ 309:Drivers/BSP/Components/dp83848/dp83848.c **** int32_t DP83848_GetLinkState(dp83848_Object_t *pObj)
+ 310:Drivers/BSP/Components/dp83848/dp83848.c **** {
+ 685              		.loc 1 310 1 is_stmt 1 view -0
+ 686              		.cfi_startproc
+ 687              		@ args = 0, pretend = 0, frame = 8
+ 688              		@ frame_needed = 0, uses_anonymous_args = 0
+ 689              		.loc 1 310 1 is_stmt 0 view .LVU204
+ 690 0000 10B5     		push	{r4, lr}
+ 691              		.cfi_def_cfa_offset 8
+ 692              		.cfi_offset 4, -8
+ 693              		.cfi_offset 14, -4
+ 694 0002 82B0     		sub	sp, sp, #8
+ 695              		.cfi_def_cfa_offset 16
+ 696 0004 0446     		mov	r4, r0
+ 311:Drivers/BSP/Components/dp83848/dp83848.c ****   uint32_t readval = 0;
+ 697              		.loc 1 311 3 is_stmt 1 view .LVU205
+ 698              		.loc 1 311 12 is_stmt 0 view .LVU206
+ 699 0006 0023     		movs	r3, #0
+ 700 0008 0193     		str	r3, [sp, #4]
+ 312:Drivers/BSP/Components/dp83848/dp83848.c **** 
+ 313:Drivers/BSP/Components/dp83848/dp83848.c ****   /* Read Status register  */
+ 314:Drivers/BSP/Components/dp83848/dp83848.c ****   if(pObj->IO.ReadReg(pObj->DevAddr, DP83848_BSR, &readval) < 0)
+ 701              		.loc 1 314 3 is_stmt 1 view .LVU207
+ 702              		.loc 1 314 14 is_stmt 0 view .LVU208
+ 703 000a 4369     		ldr	r3, [r0, #20]
+ 704              		.loc 1 314 6 view .LVU209
+ 705 000c 01AA     		add	r2, sp, #4
+ 706 000e 0121     		movs	r1, #1
+ 707 0010 0068     		ldr	r0, [r0]
+ 708              	.LVL71:
+ 709              		.loc 1 314 6 view .LVU210
+ 710 0012 9847     		blx	r3
+ 711              	.LVL72:
+ 712              		.loc 1 314 5 view .LVU211
+ 713 0014 0028     		cmp	r0, #0
+ 714 0016 38DB     		blt	.L54
+ 315:Drivers/BSP/Components/dp83848/dp83848.c ****   {
+ 316:Drivers/BSP/Components/dp83848/dp83848.c ****     return DP83848_STATUS_READ_ERROR;
+ 317:Drivers/BSP/Components/dp83848/dp83848.c ****   }
+ 318:Drivers/BSP/Components/dp83848/dp83848.c **** 
+ 319:Drivers/BSP/Components/dp83848/dp83848.c ****   /* Read Status register again */
+ 320:Drivers/BSP/Components/dp83848/dp83848.c ****   if(pObj->IO.ReadReg(pObj->DevAddr, DP83848_BSR, &readval) < 0)
+ 715              		.loc 1 320 3 is_stmt 1 view .LVU212
+ 716              		.loc 1 320 14 is_stmt 0 view .LVU213
+ 717 0018 6369     		ldr	r3, [r4, #20]
+ 718              		.loc 1 320 6 view .LVU214
+ 719 001a 01AA     		add	r2, sp, #4
+ 720 001c 0121     		movs	r1, #1
+ 721 001e 2068     		ldr	r0, [r4]
+ 722 0020 9847     		blx	r3
+ 723              	.LVL73:
+ 724              		.loc 1 320 5 view .LVU215
+ 725 0022 0028     		cmp	r0, #0
+ 726 0024 34DB     		blt	.L55
+ 321:Drivers/BSP/Components/dp83848/dp83848.c ****   {
+ 322:Drivers/BSP/Components/dp83848/dp83848.c ****     return DP83848_STATUS_READ_ERROR;
+ 323:Drivers/BSP/Components/dp83848/dp83848.c ****   }
+ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccM83wL4.s 			page 20
+
+
+ 324:Drivers/BSP/Components/dp83848/dp83848.c **** 
+ 325:Drivers/BSP/Components/dp83848/dp83848.c ****   if((readval & DP83848_BSR_LINK_STATUS) == 0)
+ 727              		.loc 1 325 3 is_stmt 1 view .LVU216
+ 728              		.loc 1 325 5 is_stmt 0 view .LVU217
+ 729 0026 019B     		ldr	r3, [sp, #4]
+ 730 0028 13F0040F 		tst	r3, #4
+ 731 002c 33D0     		beq	.L56
+ 326:Drivers/BSP/Components/dp83848/dp83848.c ****   {
+ 327:Drivers/BSP/Components/dp83848/dp83848.c ****     /* Return Link Down status */
+ 328:Drivers/BSP/Components/dp83848/dp83848.c ****     return DP83848_STATUS_LINK_DOWN;
+ 329:Drivers/BSP/Components/dp83848/dp83848.c ****   }
+ 330:Drivers/BSP/Components/dp83848/dp83848.c **** 
+ 331:Drivers/BSP/Components/dp83848/dp83848.c ****   /* Check Auto negotiaition */
+ 332:Drivers/BSP/Components/dp83848/dp83848.c ****   if(pObj->IO.ReadReg(pObj->DevAddr, DP83848_BCR, &readval) < 0)
+ 732              		.loc 1 332 3 is_stmt 1 view .LVU218
+ 733              		.loc 1 332 14 is_stmt 0 view .LVU219
+ 734 002e 6369     		ldr	r3, [r4, #20]
+ 735              		.loc 1 332 6 view .LVU220
+ 736 0030 01AA     		add	r2, sp, #4
+ 737 0032 0021     		movs	r1, #0
+ 738 0034 2068     		ldr	r0, [r4]
+ 739 0036 9847     		blx	r3
+ 740              	.LVL74:
+ 741              		.loc 1 332 5 view .LVU221
+ 742 0038 0028     		cmp	r0, #0
+ 743 003a 2FDB     		blt	.L57
+ 333:Drivers/BSP/Components/dp83848/dp83848.c ****   {
+ 334:Drivers/BSP/Components/dp83848/dp83848.c ****     return DP83848_STATUS_READ_ERROR;
+ 335:Drivers/BSP/Components/dp83848/dp83848.c ****   }
+ 336:Drivers/BSP/Components/dp83848/dp83848.c **** 
+ 337:Drivers/BSP/Components/dp83848/dp83848.c ****   if((readval & DP83848_BCR_AUTONEGO_EN) != DP83848_BCR_AUTONEGO_EN)
+ 744              		.loc 1 337 3 is_stmt 1 view .LVU222
+ 745              		.loc 1 337 15 is_stmt 0 view .LVU223
+ 746 003c 019B     		ldr	r3, [sp, #4]
+ 747              		.loc 1 337 5 view .LVU224
+ 748 003e 13F4805F 		tst	r3, #4096
+ 749 0042 0CD1     		bne	.L53
+ 338:Drivers/BSP/Components/dp83848/dp83848.c ****   {
+ 339:Drivers/BSP/Components/dp83848/dp83848.c ****     if(((readval & DP83848_BCR_SPEED_SELECT) == DP83848_BCR_SPEED_SELECT) && ((readval & DP83848_BC
+ 750              		.loc 1 339 5 is_stmt 1 view .LVU225
+ 751              		.loc 1 339 75 is_stmt 0 view .LVU226
+ 752 0044 03F40452 		and	r2, r3, #8448
+ 753              		.loc 1 339 7 view .LVU227
+ 754 0048 B2F5045F 		cmp	r2, #8448
+ 755 004c 29D0     		beq	.L58
+ 340:Drivers/BSP/Components/dp83848/dp83848.c ****     {
+ 341:Drivers/BSP/Components/dp83848/dp83848.c ****       return DP83848_STATUS_100MBITS_FULLDUPLEX;
+ 342:Drivers/BSP/Components/dp83848/dp83848.c ****     }
+ 343:Drivers/BSP/Components/dp83848/dp83848.c ****     else if ((readval & DP83848_BCR_SPEED_SELECT) == DP83848_BCR_SPEED_SELECT)
+ 756              		.loc 1 343 10 is_stmt 1 view .LVU228
+ 757              		.loc 1 343 13 is_stmt 0 view .LVU229
+ 758 004e 13F4005F 		tst	r3, #8192
+ 759 0052 28D1     		bne	.L59
+ 344:Drivers/BSP/Components/dp83848/dp83848.c ****     {
+ 345:Drivers/BSP/Components/dp83848/dp83848.c ****       return DP83848_STATUS_100MBITS_HALFDUPLEX;
+ 346:Drivers/BSP/Components/dp83848/dp83848.c ****     }
+ 347:Drivers/BSP/Components/dp83848/dp83848.c ****     else if ((readval & DP83848_BCR_DUPLEX_MODE) == DP83848_BCR_DUPLEX_MODE)
+ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccM83wL4.s 			page 21
+
+
+ 760              		.loc 1 347 10 is_stmt 1 view .LVU230
+ 761              		.loc 1 347 13 is_stmt 0 view .LVU231
+ 762 0054 13F4807F 		tst	r3, #256
+ 763 0058 27D0     		beq	.L60
+ 348:Drivers/BSP/Components/dp83848/dp83848.c ****     {
+ 349:Drivers/BSP/Components/dp83848/dp83848.c ****       return DP83848_STATUS_10MBITS_FULLDUPLEX;
+ 764              		.loc 1 349 14 view .LVU232
+ 765 005a 0420     		movs	r0, #4
+ 766 005c 1CE0     		b	.L51
+ 767              	.L53:
+ 350:Drivers/BSP/Components/dp83848/dp83848.c ****     }
+ 351:Drivers/BSP/Components/dp83848/dp83848.c ****     else
+ 352:Drivers/BSP/Components/dp83848/dp83848.c ****     {
+ 353:Drivers/BSP/Components/dp83848/dp83848.c ****       return DP83848_STATUS_10MBITS_HALFDUPLEX;
+ 354:Drivers/BSP/Components/dp83848/dp83848.c ****     }
+ 355:Drivers/BSP/Components/dp83848/dp83848.c ****   }
+ 356:Drivers/BSP/Components/dp83848/dp83848.c ****   else /* Auto Nego enabled */
+ 357:Drivers/BSP/Components/dp83848/dp83848.c ****   {
+ 358:Drivers/BSP/Components/dp83848/dp83848.c ****     if(pObj->IO.ReadReg(pObj->DevAddr, DP83848_PHYSCSR, &readval) < 0)
+ 768              		.loc 1 358 5 is_stmt 1 view .LVU233
+ 769              		.loc 1 358 16 is_stmt 0 view .LVU234
+ 770 005e 6369     		ldr	r3, [r4, #20]
+ 771              		.loc 1 358 8 view .LVU235
+ 772 0060 01AA     		add	r2, sp, #4
+ 773 0062 1021     		movs	r1, #16
+ 774 0064 2068     		ldr	r0, [r4]
+ 775 0066 9847     		blx	r3
+ 776              	.LVL75:
+ 777              		.loc 1 358 7 view .LVU236
+ 778 0068 0028     		cmp	r0, #0
+ 779 006a 20DB     		blt	.L61
+ 359:Drivers/BSP/Components/dp83848/dp83848.c ****     {
+ 360:Drivers/BSP/Components/dp83848/dp83848.c ****       return DP83848_STATUS_READ_ERROR;
+ 361:Drivers/BSP/Components/dp83848/dp83848.c ****     }
+ 362:Drivers/BSP/Components/dp83848/dp83848.c **** 
+ 363:Drivers/BSP/Components/dp83848/dp83848.c ****     /* Check if auto nego not done */
+ 364:Drivers/BSP/Components/dp83848/dp83848.c ****     if((readval & DP83848_PHYSCSR_AUTONEGO_DONE) == 0)
+ 780              		.loc 1 364 5 is_stmt 1 view .LVU237
+ 781              		.loc 1 364 17 is_stmt 0 view .LVU238
+ 782 006c 019B     		ldr	r3, [sp, #4]
+ 783              		.loc 1 364 7 view .LVU239
+ 784 006e 13F4807F 		tst	r3, #256
+ 785 0072 1FD0     		beq	.L62
+ 365:Drivers/BSP/Components/dp83848/dp83848.c ****     {
+ 366:Drivers/BSP/Components/dp83848/dp83848.c ****       return DP83848_STATUS_AUTONEGO_NOTDONE;
+ 367:Drivers/BSP/Components/dp83848/dp83848.c ****     }
+ 368:Drivers/BSP/Components/dp83848/dp83848.c **** 
+ 369:Drivers/BSP/Components/dp83848/dp83848.c ****     if((readval & DP83848_PHYSCSR_HCDSPEEDMASK) == DP83848_PHYSCSR_100BTX_FD)
+ 786              		.loc 1 369 5 is_stmt 1 view .LVU240
+ 787              		.loc 1 369 17 is_stmt 0 view .LVU241
+ 788 0074 03F00603 		and	r3, r3, #6
+ 789              		.loc 1 369 7 view .LVU242
+ 790 0078 042B     		cmp	r3, #4
+ 791 007a 1DD0     		beq	.L63
+ 370:Drivers/BSP/Components/dp83848/dp83848.c ****     {
+ 371:Drivers/BSP/Components/dp83848/dp83848.c ****       return DP83848_STATUS_100MBITS_FULLDUPLEX;
+ 372:Drivers/BSP/Components/dp83848/dp83848.c ****     }
+ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccM83wL4.s 			page 22
+
+
+ 373:Drivers/BSP/Components/dp83848/dp83848.c ****     else if ((readval & DP83848_PHYSCSR_HCDSPEEDMASK) == DP83848_PHYSCSR_100BTX_HD)
+ 792              		.loc 1 373 10 is_stmt 1 view .LVU243
+ 793              		.loc 1 373 13 is_stmt 0 view .LVU244
+ 794 007c F3B1     		cbz	r3, .L64
+ 374:Drivers/BSP/Components/dp83848/dp83848.c ****     {
+ 375:Drivers/BSP/Components/dp83848/dp83848.c ****       return DP83848_STATUS_100MBITS_HALFDUPLEX;
+ 376:Drivers/BSP/Components/dp83848/dp83848.c ****     }
+ 377:Drivers/BSP/Components/dp83848/dp83848.c ****     else if ((readval & DP83848_PHYSCSR_HCDSPEEDMASK) == DP83848_PHYSCSR_10BT_FD)
+ 795              		.loc 1 377 10 is_stmt 1 view .LVU245
+ 796              		.loc 1 377 13 is_stmt 0 view .LVU246
+ 797 007e 062B     		cmp	r3, #6
+ 798 0080 01D0     		beq	.L67
+ 378:Drivers/BSP/Components/dp83848/dp83848.c ****     {
+ 379:Drivers/BSP/Components/dp83848/dp83848.c ****       return DP83848_STATUS_10MBITS_FULLDUPLEX;
+ 380:Drivers/BSP/Components/dp83848/dp83848.c ****     }
+ 381:Drivers/BSP/Components/dp83848/dp83848.c ****     else
+ 382:Drivers/BSP/Components/dp83848/dp83848.c ****     {
+ 383:Drivers/BSP/Components/dp83848/dp83848.c ****       return DP83848_STATUS_10MBITS_HALFDUPLEX;
+ 799              		.loc 1 383 14 view .LVU247
+ 800 0082 0520     		movs	r0, #5
+ 801 0084 08E0     		b	.L51
+ 802              	.L67:
+ 379:Drivers/BSP/Components/dp83848/dp83848.c ****     }
+ 803              		.loc 1 379 14 view .LVU248
+ 804 0086 0420     		movs	r0, #4
+ 805 0088 06E0     		b	.L51
+ 806              	.L54:
+ 316:Drivers/BSP/Components/dp83848/dp83848.c ****   }
+ 807              		.loc 1 316 12 view .LVU249
+ 808 008a 6FF00400 		mvn	r0, #4
+ 809 008e 03E0     		b	.L51
+ 810              	.L55:
+ 322:Drivers/BSP/Components/dp83848/dp83848.c ****   }
+ 811              		.loc 1 322 12 view .LVU250
+ 812 0090 6FF00400 		mvn	r0, #4
+ 813 0094 00E0     		b	.L51
+ 814              	.L56:
+ 328:Drivers/BSP/Components/dp83848/dp83848.c ****   }
+ 815              		.loc 1 328 12 view .LVU251
+ 816 0096 0120     		movs	r0, #1
+ 817              	.L51:
+ 384:Drivers/BSP/Components/dp83848/dp83848.c ****     }
+ 385:Drivers/BSP/Components/dp83848/dp83848.c ****   }
+ 386:Drivers/BSP/Components/dp83848/dp83848.c **** }
+ 818              		.loc 1 386 1 view .LVU252
+ 819 0098 02B0     		add	sp, sp, #8
+ 820              		.cfi_remember_state
+ 821              		.cfi_def_cfa_offset 8
+ 822              		@ sp needed
+ 823 009a 10BD     		pop	{r4, pc}
+ 824              	.LVL76:
+ 825              	.L57:
+ 826              		.cfi_restore_state
+ 334:Drivers/BSP/Components/dp83848/dp83848.c ****   }
+ 827              		.loc 1 334 12 view .LVU253
+ 828 009c 6FF00400 		mvn	r0, #4
+ 829 00a0 FAE7     		b	.L51
+ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccM83wL4.s 			page 23
+
+
+ 830              	.L58:
+ 341:Drivers/BSP/Components/dp83848/dp83848.c ****     }
+ 831              		.loc 1 341 14 view .LVU254
+ 832 00a2 0220     		movs	r0, #2
+ 833 00a4 F8E7     		b	.L51
+ 834              	.L59:
+ 345:Drivers/BSP/Components/dp83848/dp83848.c ****     }
+ 835              		.loc 1 345 14 view .LVU255
+ 836 00a6 0320     		movs	r0, #3
+ 837 00a8 F6E7     		b	.L51
+ 838              	.L60:
+ 353:Drivers/BSP/Components/dp83848/dp83848.c ****     }
+ 839              		.loc 1 353 14 view .LVU256
+ 840 00aa 0520     		movs	r0, #5
+ 841 00ac F4E7     		b	.L51
+ 842              	.L61:
+ 360:Drivers/BSP/Components/dp83848/dp83848.c ****     }
+ 843              		.loc 1 360 14 view .LVU257
+ 844 00ae 6FF00400 		mvn	r0, #4
+ 845 00b2 F1E7     		b	.L51
+ 846              	.L62:
+ 366:Drivers/BSP/Components/dp83848/dp83848.c ****     }
+ 847              		.loc 1 366 14 view .LVU258
+ 848 00b4 0620     		movs	r0, #6
+ 849 00b6 EFE7     		b	.L51
+ 850              	.L63:
+ 371:Drivers/BSP/Components/dp83848/dp83848.c ****     }
+ 851              		.loc 1 371 14 view .LVU259
+ 852 00b8 0220     		movs	r0, #2
+ 853 00ba EDE7     		b	.L51
+ 854              	.L64:
+ 375:Drivers/BSP/Components/dp83848/dp83848.c ****     }
+ 855              		.loc 1 375 14 view .LVU260
+ 856 00bc 0320     		movs	r0, #3
+ 857 00be EBE7     		b	.L51
+ 858              		.cfi_endproc
+ 859              	.LFE6:
+ 861              		.section	.text.DP83848_SetLinkState,"ax",%progbits
+ 862              		.align	1
+ 863              		.global	DP83848_SetLinkState
+ 864              		.syntax unified
+ 865              		.thumb
+ 866              		.thumb_func
+ 868              	DP83848_SetLinkState:
+ 869              	.LVL77:
+ 870              	.LFB7:
+ 387:Drivers/BSP/Components/dp83848/dp83848.c **** 
+ 388:Drivers/BSP/Components/dp83848/dp83848.c **** /**
+ 389:Drivers/BSP/Components/dp83848/dp83848.c ****   * @brief  Set the link state of DP83848 device.
+ 390:Drivers/BSP/Components/dp83848/dp83848.c ****   * @param  pObj: Pointer to device object.
+ 391:Drivers/BSP/Components/dp83848/dp83848.c ****   * @param  pLinkState: link state can be one of the following
+ 392:Drivers/BSP/Components/dp83848/dp83848.c ****   *         DP83848_STATUS_100MBITS_FULLDUPLEX if 100Mb/s FD
+ 393:Drivers/BSP/Components/dp83848/dp83848.c ****   *         DP83848_STATUS_100MBITS_HALFDUPLEX if 100Mb/s HD
+ 394:Drivers/BSP/Components/dp83848/dp83848.c ****   *         DP83848_STATUS_10MBITS_FULLDUPLEX  if 10Mb/s FD
+ 395:Drivers/BSP/Components/dp83848/dp83848.c ****   *         DP83848_STATUS_10MBITS_HALFDUPLEX  if 10Mb/s HD
+ 396:Drivers/BSP/Components/dp83848/dp83848.c ****   * @retval DP83848_STATUS_OK  if OK
+ 397:Drivers/BSP/Components/dp83848/dp83848.c ****   *         DP83848_STATUS_ERROR  if parameter error
+ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccM83wL4.s 			page 24
+
+
+ 398:Drivers/BSP/Components/dp83848/dp83848.c ****   *         DP83848_STATUS_READ_ERROR if connot read register
+ 399:Drivers/BSP/Components/dp83848/dp83848.c ****   *         DP83848_STATUS_WRITE_ERROR if connot write to register
+ 400:Drivers/BSP/Components/dp83848/dp83848.c ****   */
+ 401:Drivers/BSP/Components/dp83848/dp83848.c **** int32_t DP83848_SetLinkState(dp83848_Object_t *pObj, uint32_t LinkState)
+ 402:Drivers/BSP/Components/dp83848/dp83848.c **** {
+ 871              		.loc 1 402 1 is_stmt 1 view -0
+ 872              		.cfi_startproc
+ 873              		@ args = 0, pretend = 0, frame = 8
+ 874              		@ frame_needed = 0, uses_anonymous_args = 0
+ 875              		.loc 1 402 1 is_stmt 0 view .LVU262
+ 876 0000 30B5     		push	{r4, r5, lr}
+ 877              		.cfi_def_cfa_offset 12
+ 878              		.cfi_offset 4, -12
+ 879              		.cfi_offset 5, -8
+ 880              		.cfi_offset 14, -4
+ 881 0002 83B0     		sub	sp, sp, #12
+ 882              		.cfi_def_cfa_offset 24
+ 883 0004 0446     		mov	r4, r0
+ 884 0006 0D46     		mov	r5, r1
+ 403:Drivers/BSP/Components/dp83848/dp83848.c ****   uint32_t bcrvalue = 0;
+ 885              		.loc 1 403 3 is_stmt 1 view .LVU263
+ 886              		.loc 1 403 12 is_stmt 0 view .LVU264
+ 887 0008 0021     		movs	r1, #0
+ 888              	.LVL78:
+ 889              		.loc 1 403 12 view .LVU265
+ 890 000a 0191     		str	r1, [sp, #4]
+ 404:Drivers/BSP/Components/dp83848/dp83848.c ****   int32_t status = DP83848_STATUS_OK;
+ 891              		.loc 1 404 3 is_stmt 1 view .LVU266
+ 892              	.LVL79:
+ 405:Drivers/BSP/Components/dp83848/dp83848.c **** 
+ 406:Drivers/BSP/Components/dp83848/dp83848.c ****   if(pObj->IO.ReadReg(pObj->DevAddr, DP83848_BCR, &bcrvalue) >= 0)
+ 893              		.loc 1 406 3 view .LVU267
+ 894              		.loc 1 406 14 is_stmt 0 view .LVU268
+ 895 000c 4369     		ldr	r3, [r0, #20]
+ 896              		.loc 1 406 6 view .LVU269
+ 897 000e 01AA     		add	r2, sp, #4
+ 898 0010 0068     		ldr	r0, [r0]
+ 899              	.LVL80:
+ 900              		.loc 1 406 6 view .LVU270
+ 901 0012 9847     		blx	r3
+ 902              	.LVL81:
+ 903              		.loc 1 406 5 view .LVU271
+ 904 0014 0028     		cmp	r0, #0
+ 905 0016 1EDB     		blt	.L73
+ 407:Drivers/BSP/Components/dp83848/dp83848.c ****   {
+ 408:Drivers/BSP/Components/dp83848/dp83848.c ****     /* Disable link config (Auto nego, speed and duplex) */
+ 409:Drivers/BSP/Components/dp83848/dp83848.c ****     bcrvalue &= ~(DP83848_BCR_AUTONEGO_EN | DP83848_BCR_SPEED_SELECT | DP83848_BCR_DUPLEX_MODE);
+ 906              		.loc 1 409 5 is_stmt 1 view .LVU272
+ 907              		.loc 1 409 14 is_stmt 0 view .LVU273
+ 908 0018 019B     		ldr	r3, [sp, #4]
+ 909 001a 23F44453 		bic	r3, r3, #12544
+ 910 001e 0193     		str	r3, [sp, #4]
+ 410:Drivers/BSP/Components/dp83848/dp83848.c **** 
+ 411:Drivers/BSP/Components/dp83848/dp83848.c ****     if(LinkState == DP83848_STATUS_100MBITS_FULLDUPLEX)
+ 911              		.loc 1 411 5 is_stmt 1 view .LVU274
+ 912              		.loc 1 411 7 is_stmt 0 view .LVU275
+ 913 0020 022D     		cmp	r5, #2
+ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccM83wL4.s 			page 25
+
+
+ 914 0022 10D0     		beq	.L77
+ 412:Drivers/BSP/Components/dp83848/dp83848.c ****     {
+ 413:Drivers/BSP/Components/dp83848/dp83848.c ****       bcrvalue |= (DP83848_BCR_SPEED_SELECT | DP83848_BCR_DUPLEX_MODE);
+ 414:Drivers/BSP/Components/dp83848/dp83848.c ****     }
+ 415:Drivers/BSP/Components/dp83848/dp83848.c ****     else if (LinkState == DP83848_STATUS_100MBITS_HALFDUPLEX)
+ 915              		.loc 1 415 10 is_stmt 1 view .LVU276
+ 916              		.loc 1 415 13 is_stmt 0 view .LVU277
+ 917 0024 032D     		cmp	r5, #3
+ 918 0026 12D0     		beq	.L78
+ 416:Drivers/BSP/Components/dp83848/dp83848.c ****     {
+ 417:Drivers/BSP/Components/dp83848/dp83848.c ****       bcrvalue |= DP83848_BCR_SPEED_SELECT;
+ 418:Drivers/BSP/Components/dp83848/dp83848.c ****     }
+ 419:Drivers/BSP/Components/dp83848/dp83848.c ****     else if (LinkState == DP83848_STATUS_10MBITS_FULLDUPLEX)
+ 919              		.loc 1 419 10 is_stmt 1 view .LVU278
+ 920              		.loc 1 419 13 is_stmt 0 view .LVU279
+ 921 0028 042D     		cmp	r5, #4
+ 922 002a 17D1     		bne	.L74
+ 420:Drivers/BSP/Components/dp83848/dp83848.c ****     {
+ 421:Drivers/BSP/Components/dp83848/dp83848.c ****       bcrvalue |= DP83848_BCR_DUPLEX_MODE;
+ 923              		.loc 1 421 7 is_stmt 1 view .LVU280
+ 924              		.loc 1 421 16 is_stmt 0 view .LVU281
+ 925 002c 43F48073 		orr	r3, r3, #256
+ 926 0030 0193     		str	r3, [sp, #4]
+ 422:Drivers/BSP/Components/dp83848/dp83848.c ****     }
+ 423:Drivers/BSP/Components/dp83848/dp83848.c ****     else
+ 424:Drivers/BSP/Components/dp83848/dp83848.c ****     {
+ 425:Drivers/BSP/Components/dp83848/dp83848.c ****       /* Wrong link status parameter */
+ 426:Drivers/BSP/Components/dp83848/dp83848.c ****       status = DP83848_STATUS_ERROR;
+ 427:Drivers/BSP/Components/dp83848/dp83848.c ****     }
+ 428:Drivers/BSP/Components/dp83848/dp83848.c ****   }
+ 429:Drivers/BSP/Components/dp83848/dp83848.c ****   else
+ 430:Drivers/BSP/Components/dp83848/dp83848.c ****   {
+ 431:Drivers/BSP/Components/dp83848/dp83848.c ****     status = DP83848_STATUS_READ_ERROR;
+ 432:Drivers/BSP/Components/dp83848/dp83848.c ****   }
+ 433:Drivers/BSP/Components/dp83848/dp83848.c **** 
+ 434:Drivers/BSP/Components/dp83848/dp83848.c ****   if(status == DP83848_STATUS_OK)
+ 927              		.loc 1 434 3 is_stmt 1 view .LVU282
+ 928              	.L71:
+ 435:Drivers/BSP/Components/dp83848/dp83848.c ****   {
+ 436:Drivers/BSP/Components/dp83848/dp83848.c ****     /* Apply configuration */
+ 437:Drivers/BSP/Components/dp83848/dp83848.c ****     if(pObj->IO.WriteReg(pObj->DevAddr, DP83848_BCR, bcrvalue) < 0)
+ 929              		.loc 1 437 5 view .LVU283
+ 930              		.loc 1 437 16 is_stmt 0 view .LVU284
+ 931 0032 2369     		ldr	r3, [r4, #16]
+ 932              		.loc 1 437 8 view .LVU285
+ 933 0034 019A     		ldr	r2, [sp, #4]
+ 934 0036 0021     		movs	r1, #0
+ 935 0038 2068     		ldr	r0, [r4]
+ 936 003a 9847     		blx	r3
+ 937              	.LVL82:
+ 938              		.loc 1 437 7 view .LVU286
+ 939 003c 0028     		cmp	r0, #0
+ 940 003e 10DB     		blt	.L75
+ 941 0040 0020     		movs	r0, #0
+ 942              	.LVL83:
+ 943              	.L68:
+ 438:Drivers/BSP/Components/dp83848/dp83848.c ****     {
+ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccM83wL4.s 			page 26
+
+
+ 439:Drivers/BSP/Components/dp83848/dp83848.c ****       status = DP83848_STATUS_WRITE_ERROR;
+ 440:Drivers/BSP/Components/dp83848/dp83848.c ****     }
+ 441:Drivers/BSP/Components/dp83848/dp83848.c ****   }
+ 442:Drivers/BSP/Components/dp83848/dp83848.c **** 
+ 443:Drivers/BSP/Components/dp83848/dp83848.c ****   return status;
+ 444:Drivers/BSP/Components/dp83848/dp83848.c **** }
+ 944              		.loc 1 444 1 view .LVU287
+ 945 0042 03B0     		add	sp, sp, #12
+ 946              		.cfi_remember_state
+ 947              		.cfi_def_cfa_offset 12
+ 948              		@ sp needed
+ 949 0044 30BD     		pop	{r4, r5, pc}
+ 950              	.LVL84:
+ 951              	.L77:
+ 952              		.cfi_restore_state
+ 413:Drivers/BSP/Components/dp83848/dp83848.c ****     }
+ 953              		.loc 1 413 7 is_stmt 1 view .LVU288
+ 413:Drivers/BSP/Components/dp83848/dp83848.c ****     }
+ 954              		.loc 1 413 16 is_stmt 0 view .LVU289
+ 955 0046 43F40453 		orr	r3, r3, #8448
+ 956 004a 0193     		str	r3, [sp, #4]
+ 434:Drivers/BSP/Components/dp83848/dp83848.c ****   {
+ 957              		.loc 1 434 3 is_stmt 1 view .LVU290
+ 958 004c F1E7     		b	.L71
+ 959              	.L78:
+ 417:Drivers/BSP/Components/dp83848/dp83848.c ****     }
+ 960              		.loc 1 417 7 view .LVU291
+ 417:Drivers/BSP/Components/dp83848/dp83848.c ****     }
+ 961              		.loc 1 417 16 is_stmt 0 view .LVU292
+ 962 004e 43F40053 		orr	r3, r3, #8192
+ 963 0052 0193     		str	r3, [sp, #4]
+ 434:Drivers/BSP/Components/dp83848/dp83848.c ****   {
+ 964              		.loc 1 434 3 is_stmt 1 view .LVU293
+ 965 0054 EDE7     		b	.L71
+ 966              	.L73:
+ 431:Drivers/BSP/Components/dp83848/dp83848.c ****   }
+ 967              		.loc 1 431 12 is_stmt 0 view .LVU294
+ 968 0056 6FF00400 		mvn	r0, #4
+ 969 005a F2E7     		b	.L68
+ 970              	.L74:
+ 426:Drivers/BSP/Components/dp83848/dp83848.c ****     }
+ 971              		.loc 1 426 14 view .LVU295
+ 972 005c 4FF0FF30 		mov	r0, #-1
+ 973 0060 EFE7     		b	.L68
+ 974              	.L75:
+ 439:Drivers/BSP/Components/dp83848/dp83848.c ****     }
+ 975              		.loc 1 439 14 view .LVU296
+ 976 0062 6FF00300 		mvn	r0, #3
+ 977              	.LVL85:
+ 443:Drivers/BSP/Components/dp83848/dp83848.c **** }
+ 978              		.loc 1 443 3 is_stmt 1 view .LVU297
+ 443:Drivers/BSP/Components/dp83848/dp83848.c **** }
+ 979              		.loc 1 443 10 is_stmt 0 view .LVU298
+ 980 0066 ECE7     		b	.L68
+ 981              		.cfi_endproc
+ 982              	.LFE7:
+ 984              		.section	.text.DP83848_EnableLoopbackMode,"ax",%progbits
+ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccM83wL4.s 			page 27
+
+
+ 985              		.align	1
+ 986              		.global	DP83848_EnableLoopbackMode
+ 987              		.syntax unified
+ 988              		.thumb
+ 989              		.thumb_func
+ 991              	DP83848_EnableLoopbackMode:
+ 992              	.LVL86:
+ 993              	.LFB8:
+ 445:Drivers/BSP/Components/dp83848/dp83848.c **** 
+ 446:Drivers/BSP/Components/dp83848/dp83848.c **** /**
+ 447:Drivers/BSP/Components/dp83848/dp83848.c ****   * @brief  Enable loopback mode.
+ 448:Drivers/BSP/Components/dp83848/dp83848.c ****   * @param  pObj: Pointer to device object.
+ 449:Drivers/BSP/Components/dp83848/dp83848.c ****   * @retval DP83848_STATUS_OK  if OK
+ 450:Drivers/BSP/Components/dp83848/dp83848.c ****   *         DP83848_STATUS_READ_ERROR if connot read register
+ 451:Drivers/BSP/Components/dp83848/dp83848.c ****   *         DP83848_STATUS_WRITE_ERROR if connot write to register
+ 452:Drivers/BSP/Components/dp83848/dp83848.c ****   */
+ 453:Drivers/BSP/Components/dp83848/dp83848.c **** int32_t DP83848_EnableLoopbackMode(dp83848_Object_t *pObj)
+ 454:Drivers/BSP/Components/dp83848/dp83848.c **** {
+ 994              		.loc 1 454 1 is_stmt 1 view -0
+ 995              		.cfi_startproc
+ 996              		@ args = 0, pretend = 0, frame = 8
+ 997              		@ frame_needed = 0, uses_anonymous_args = 0
+ 998              		.loc 1 454 1 is_stmt 0 view .LVU300
+ 999 0000 10B5     		push	{r4, lr}
+ 1000              		.cfi_def_cfa_offset 8
+ 1001              		.cfi_offset 4, -8
+ 1002              		.cfi_offset 14, -4
+ 1003 0002 82B0     		sub	sp, sp, #8
+ 1004              		.cfi_def_cfa_offset 16
+ 1005 0004 0446     		mov	r4, r0
+ 455:Drivers/BSP/Components/dp83848/dp83848.c ****   uint32_t readval = 0;
+ 1006              		.loc 1 455 3 is_stmt 1 view .LVU301
+ 1007              		.loc 1 455 12 is_stmt 0 view .LVU302
+ 1008 0006 0021     		movs	r1, #0
+ 1009 0008 0191     		str	r1, [sp, #4]
+ 456:Drivers/BSP/Components/dp83848/dp83848.c ****   int32_t status = DP83848_STATUS_OK;
+ 1010              		.loc 1 456 3 is_stmt 1 view .LVU303
+ 1011              	.LVL87:
+ 457:Drivers/BSP/Components/dp83848/dp83848.c **** 
+ 458:Drivers/BSP/Components/dp83848/dp83848.c ****   if(pObj->IO.ReadReg(pObj->DevAddr, DP83848_BCR, &readval) >= 0)
+ 1012              		.loc 1 458 3 view .LVU304
+ 1013              		.loc 1 458 14 is_stmt 0 view .LVU305
+ 1014 000a 4369     		ldr	r3, [r0, #20]
+ 1015              		.loc 1 458 6 view .LVU306
+ 1016 000c 01AA     		add	r2, sp, #4
+ 1017 000e 0068     		ldr	r0, [r0]
+ 1018              	.LVL88:
+ 1019              		.loc 1 458 6 view .LVU307
+ 1020 0010 9847     		blx	r3
+ 1021              	.LVL89:
+ 1022              		.loc 1 458 5 view .LVU308
+ 1023 0012 0028     		cmp	r0, #0
+ 1024 0014 0CDB     		blt	.L81
+ 459:Drivers/BSP/Components/dp83848/dp83848.c ****   {
+ 460:Drivers/BSP/Components/dp83848/dp83848.c ****     readval |= DP83848_BCR_LOOPBACK;
+ 1025              		.loc 1 460 5 is_stmt 1 view .LVU309
+ 1026              		.loc 1 460 13 is_stmt 0 view .LVU310
+ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccM83wL4.s 			page 28
+
+
+ 1027 0016 019A     		ldr	r2, [sp, #4]
+ 1028 0018 42F48042 		orr	r2, r2, #16384
+ 1029 001c 0192     		str	r2, [sp, #4]
+ 461:Drivers/BSP/Components/dp83848/dp83848.c **** 
+ 462:Drivers/BSP/Components/dp83848/dp83848.c ****     /* Apply configuration */
+ 463:Drivers/BSP/Components/dp83848/dp83848.c ****     if(pObj->IO.WriteReg(pObj->DevAddr, DP83848_BCR, readval) < 0)
+ 1030              		.loc 1 463 5 is_stmt 1 view .LVU311
+ 1031              		.loc 1 463 16 is_stmt 0 view .LVU312
+ 1032 001e 2369     		ldr	r3, [r4, #16]
+ 1033              		.loc 1 463 8 view .LVU313
+ 1034 0020 0021     		movs	r1, #0
+ 1035 0022 2068     		ldr	r0, [r4]
+ 1036 0024 9847     		blx	r3
+ 1037              	.LVL90:
+ 1038              		.loc 1 463 7 view .LVU314
+ 1039 0026 0028     		cmp	r0, #0
+ 1040 0028 05DB     		blt	.L82
+ 456:Drivers/BSP/Components/dp83848/dp83848.c **** 
+ 1041              		.loc 1 456 11 view .LVU315
+ 1042 002a 0020     		movs	r0, #0
+ 1043              	.LVL91:
+ 1044              	.L79:
+ 464:Drivers/BSP/Components/dp83848/dp83848.c ****     {
+ 465:Drivers/BSP/Components/dp83848/dp83848.c ****       status = DP83848_STATUS_WRITE_ERROR;
+ 466:Drivers/BSP/Components/dp83848/dp83848.c ****     }
+ 467:Drivers/BSP/Components/dp83848/dp83848.c ****   }
+ 468:Drivers/BSP/Components/dp83848/dp83848.c ****   else
+ 469:Drivers/BSP/Components/dp83848/dp83848.c ****   {
+ 470:Drivers/BSP/Components/dp83848/dp83848.c ****     status = DP83848_STATUS_READ_ERROR;
+ 471:Drivers/BSP/Components/dp83848/dp83848.c ****   }
+ 472:Drivers/BSP/Components/dp83848/dp83848.c **** 
+ 473:Drivers/BSP/Components/dp83848/dp83848.c ****   return status;
+ 474:Drivers/BSP/Components/dp83848/dp83848.c **** }
+ 1045              		.loc 1 474 1 view .LVU316
+ 1046 002c 02B0     		add	sp, sp, #8
+ 1047              		.cfi_remember_state
+ 1048              		.cfi_def_cfa_offset 8
+ 1049              		@ sp needed
+ 1050 002e 10BD     		pop	{r4, pc}
+ 1051              	.LVL92:
+ 1052              	.L81:
+ 1053              		.cfi_restore_state
+ 470:Drivers/BSP/Components/dp83848/dp83848.c ****   }
+ 1054              		.loc 1 470 12 view .LVU317
+ 1055 0030 6FF00400 		mvn	r0, #4
+ 1056 0034 FAE7     		b	.L79
+ 1057              	.L82:
+ 465:Drivers/BSP/Components/dp83848/dp83848.c ****     }
+ 1058              		.loc 1 465 14 view .LVU318
+ 1059 0036 6FF00300 		mvn	r0, #3
+ 1060              	.LVL93:
+ 473:Drivers/BSP/Components/dp83848/dp83848.c **** }
+ 1061              		.loc 1 473 3 is_stmt 1 view .LVU319
+ 473:Drivers/BSP/Components/dp83848/dp83848.c **** }
+ 1062              		.loc 1 473 10 is_stmt 0 view .LVU320
+ 1063 003a F7E7     		b	.L79
+ 1064              		.cfi_endproc
+ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccM83wL4.s 			page 29
+
+
+ 1065              	.LFE8:
+ 1067              		.section	.text.DP83848_DisableLoopbackMode,"ax",%progbits
+ 1068              		.align	1
+ 1069              		.global	DP83848_DisableLoopbackMode
+ 1070              		.syntax unified
+ 1071              		.thumb
+ 1072              		.thumb_func
+ 1074              	DP83848_DisableLoopbackMode:
+ 1075              	.LVL94:
+ 1076              	.LFB9:
+ 475:Drivers/BSP/Components/dp83848/dp83848.c **** 
+ 476:Drivers/BSP/Components/dp83848/dp83848.c **** /**
+ 477:Drivers/BSP/Components/dp83848/dp83848.c ****   * @brief  Disable loopback mode.
+ 478:Drivers/BSP/Components/dp83848/dp83848.c ****   * @param  pObj: Pointer to device object.
+ 479:Drivers/BSP/Components/dp83848/dp83848.c ****   * @retval DP83848_STATUS_OK  if OK
+ 480:Drivers/BSP/Components/dp83848/dp83848.c ****   *         DP83848_STATUS_READ_ERROR if connot read register
+ 481:Drivers/BSP/Components/dp83848/dp83848.c ****   *         DP83848_STATUS_WRITE_ERROR if connot write to register
+ 482:Drivers/BSP/Components/dp83848/dp83848.c ****   */
+ 483:Drivers/BSP/Components/dp83848/dp83848.c **** int32_t DP83848_DisableLoopbackMode(dp83848_Object_t *pObj)
+ 484:Drivers/BSP/Components/dp83848/dp83848.c **** {
+ 1077              		.loc 1 484 1 is_stmt 1 view -0
+ 1078              		.cfi_startproc
+ 1079              		@ args = 0, pretend = 0, frame = 8
+ 1080              		@ frame_needed = 0, uses_anonymous_args = 0
+ 1081              		.loc 1 484 1 is_stmt 0 view .LVU322
+ 1082 0000 10B5     		push	{r4, lr}
+ 1083              		.cfi_def_cfa_offset 8
+ 1084              		.cfi_offset 4, -8
+ 1085              		.cfi_offset 14, -4
+ 1086 0002 82B0     		sub	sp, sp, #8
+ 1087              		.cfi_def_cfa_offset 16
+ 1088 0004 0446     		mov	r4, r0
+ 485:Drivers/BSP/Components/dp83848/dp83848.c ****   uint32_t readval = 0;
+ 1089              		.loc 1 485 3 is_stmt 1 view .LVU323
+ 1090              		.loc 1 485 12 is_stmt 0 view .LVU324
+ 1091 0006 0021     		movs	r1, #0
+ 1092 0008 0191     		str	r1, [sp, #4]
+ 486:Drivers/BSP/Components/dp83848/dp83848.c ****   int32_t status = DP83848_STATUS_OK;
+ 1093              		.loc 1 486 3 is_stmt 1 view .LVU325
+ 1094              	.LVL95:
+ 487:Drivers/BSP/Components/dp83848/dp83848.c **** 
+ 488:Drivers/BSP/Components/dp83848/dp83848.c ****   if(pObj->IO.ReadReg(pObj->DevAddr, DP83848_BCR, &readval) >= 0)
+ 1095              		.loc 1 488 3 view .LVU326
+ 1096              		.loc 1 488 14 is_stmt 0 view .LVU327
+ 1097 000a 4369     		ldr	r3, [r0, #20]
+ 1098              		.loc 1 488 6 view .LVU328
+ 1099 000c 01AA     		add	r2, sp, #4
+ 1100 000e 0068     		ldr	r0, [r0]
+ 1101              	.LVL96:
+ 1102              		.loc 1 488 6 view .LVU329
+ 1103 0010 9847     		blx	r3
+ 1104              	.LVL97:
+ 1105              		.loc 1 488 5 view .LVU330
+ 1106 0012 0028     		cmp	r0, #0
+ 1107 0014 0CDB     		blt	.L86
+ 489:Drivers/BSP/Components/dp83848/dp83848.c ****   {
+ 490:Drivers/BSP/Components/dp83848/dp83848.c ****     readval &= ~DP83848_BCR_LOOPBACK;
+ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccM83wL4.s 			page 30
+
+
+ 1108              		.loc 1 490 5 is_stmt 1 view .LVU331
+ 1109              		.loc 1 490 13 is_stmt 0 view .LVU332
+ 1110 0016 019A     		ldr	r2, [sp, #4]
+ 1111 0018 22F48042 		bic	r2, r2, #16384
+ 1112 001c 0192     		str	r2, [sp, #4]
+ 491:Drivers/BSP/Components/dp83848/dp83848.c **** 
+ 492:Drivers/BSP/Components/dp83848/dp83848.c ****     /* Apply configuration */
+ 493:Drivers/BSP/Components/dp83848/dp83848.c ****     if(pObj->IO.WriteReg(pObj->DevAddr, DP83848_BCR, readval) < 0)
+ 1113              		.loc 1 493 5 is_stmt 1 view .LVU333
+ 1114              		.loc 1 493 16 is_stmt 0 view .LVU334
+ 1115 001e 2369     		ldr	r3, [r4, #16]
+ 1116              		.loc 1 493 8 view .LVU335
+ 1117 0020 0021     		movs	r1, #0
+ 1118 0022 2068     		ldr	r0, [r4]
+ 1119 0024 9847     		blx	r3
+ 1120              	.LVL98:
+ 1121              		.loc 1 493 7 view .LVU336
+ 1122 0026 0028     		cmp	r0, #0
+ 1123 0028 05DB     		blt	.L87
+ 486:Drivers/BSP/Components/dp83848/dp83848.c **** 
+ 1124              		.loc 1 486 11 view .LVU337
+ 1125 002a 0020     		movs	r0, #0
+ 1126              	.LVL99:
+ 1127              	.L84:
+ 494:Drivers/BSP/Components/dp83848/dp83848.c ****     {
+ 495:Drivers/BSP/Components/dp83848/dp83848.c ****       status =  DP83848_STATUS_WRITE_ERROR;
+ 496:Drivers/BSP/Components/dp83848/dp83848.c ****     }
+ 497:Drivers/BSP/Components/dp83848/dp83848.c ****   }
+ 498:Drivers/BSP/Components/dp83848/dp83848.c ****   else
+ 499:Drivers/BSP/Components/dp83848/dp83848.c ****   {
+ 500:Drivers/BSP/Components/dp83848/dp83848.c ****     status = DP83848_STATUS_READ_ERROR;
+ 501:Drivers/BSP/Components/dp83848/dp83848.c ****   }
+ 502:Drivers/BSP/Components/dp83848/dp83848.c **** 
+ 503:Drivers/BSP/Components/dp83848/dp83848.c ****   return status;
+ 504:Drivers/BSP/Components/dp83848/dp83848.c **** }
+ 1128              		.loc 1 504 1 view .LVU338
+ 1129 002c 02B0     		add	sp, sp, #8
+ 1130              		.cfi_remember_state
+ 1131              		.cfi_def_cfa_offset 8
+ 1132              		@ sp needed
+ 1133 002e 10BD     		pop	{r4, pc}
+ 1134              	.LVL100:
+ 1135              	.L86:
+ 1136              		.cfi_restore_state
+ 500:Drivers/BSP/Components/dp83848/dp83848.c ****   }
+ 1137              		.loc 1 500 12 view .LVU339
+ 1138 0030 6FF00400 		mvn	r0, #4
+ 1139 0034 FAE7     		b	.L84
+ 1140              	.L87:
+ 495:Drivers/BSP/Components/dp83848/dp83848.c ****     }
+ 1141              		.loc 1 495 14 view .LVU340
+ 1142 0036 6FF00300 		mvn	r0, #3
+ 1143              	.LVL101:
+ 503:Drivers/BSP/Components/dp83848/dp83848.c **** }
+ 1144              		.loc 1 503 3 is_stmt 1 view .LVU341
+ 503:Drivers/BSP/Components/dp83848/dp83848.c **** }
+ 1145              		.loc 1 503 10 is_stmt 0 view .LVU342
+ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccM83wL4.s 			page 31
+
+
+ 1146 003a F7E7     		b	.L84
+ 1147              		.cfi_endproc
+ 1148              	.LFE9:
+ 1150              		.section	.text.DP83848_EnableIT,"ax",%progbits
+ 1151              		.align	1
+ 1152              		.global	DP83848_EnableIT
+ 1153              		.syntax unified
+ 1154              		.thumb
+ 1155              		.thumb_func
+ 1157              	DP83848_EnableIT:
+ 1158              	.LVL102:
+ 1159              	.LFB10:
+ 505:Drivers/BSP/Components/dp83848/dp83848.c **** 
+ 506:Drivers/BSP/Components/dp83848/dp83848.c **** /**
+ 507:Drivers/BSP/Components/dp83848/dp83848.c ****   * @brief  Enable IT source.
+ 508:Drivers/BSP/Components/dp83848/dp83848.c ****   * @param  pObj: Pointer to device object.
+ 509:Drivers/BSP/Components/dp83848/dp83848.c ****   * @param  Interrupt: IT source to be enabled
+ 510:Drivers/BSP/Components/dp83848/dp83848.c ****   *         should be a value or a combination of the following:
+ 511:Drivers/BSP/Components/dp83848/dp83848.c ****   *         DP83848_WOL_IT
+ 512:Drivers/BSP/Components/dp83848/dp83848.c ****   *         DP83848_ENERGYON_IT
+ 513:Drivers/BSP/Components/dp83848/dp83848.c ****   *         DP83848_AUTONEGO_COMPLETE_IT
+ 514:Drivers/BSP/Components/dp83848/dp83848.c ****   *         DP83848_REMOTE_FAULT_IT
+ 515:Drivers/BSP/Components/dp83848/dp83848.c ****   *         DP83848_LINK_DOWN_IT
+ 516:Drivers/BSP/Components/dp83848/dp83848.c ****   *         DP83848_AUTONEGO_LP_ACK_IT
+ 517:Drivers/BSP/Components/dp83848/dp83848.c ****   *         DP83848_PARALLEL_DETECTION_FAULT_IT
+ 518:Drivers/BSP/Components/dp83848/dp83848.c ****   *         DP83848_AUTONEGO_PAGE_RECEIVED_IT
+ 519:Drivers/BSP/Components/dp83848/dp83848.c ****   * @retval DP83848_STATUS_OK  if OK
+ 520:Drivers/BSP/Components/dp83848/dp83848.c ****   *         DP83848_STATUS_READ_ERROR if connot read register
+ 521:Drivers/BSP/Components/dp83848/dp83848.c ****   *         DP83848_STATUS_WRITE_ERROR if connot write to register
+ 522:Drivers/BSP/Components/dp83848/dp83848.c ****   */
+ 523:Drivers/BSP/Components/dp83848/dp83848.c **** int32_t DP83848_EnableIT(dp83848_Object_t *pObj, uint32_t Interrupt)
+ 524:Drivers/BSP/Components/dp83848/dp83848.c **** {
+ 1160              		.loc 1 524 1 is_stmt 1 view -0
+ 1161              		.cfi_startproc
+ 1162              		@ args = 0, pretend = 0, frame = 8
+ 1163              		@ frame_needed = 0, uses_anonymous_args = 0
+ 1164              		.loc 1 524 1 is_stmt 0 view .LVU344
+ 1165 0000 30B5     		push	{r4, r5, lr}
+ 1166              		.cfi_def_cfa_offset 12
+ 1167              		.cfi_offset 4, -12
+ 1168              		.cfi_offset 5, -8
+ 1169              		.cfi_offset 14, -4
+ 1170 0002 83B0     		sub	sp, sp, #12
+ 1171              		.cfi_def_cfa_offset 24
+ 1172 0004 0446     		mov	r4, r0
+ 1173 0006 0D46     		mov	r5, r1
+ 525:Drivers/BSP/Components/dp83848/dp83848.c ****   uint32_t readval = 0;
+ 1174              		.loc 1 525 3 is_stmt 1 view .LVU345
+ 1175              		.loc 1 525 12 is_stmt 0 view .LVU346
+ 1176 0008 0023     		movs	r3, #0
+ 1177 000a 0193     		str	r3, [sp, #4]
+ 526:Drivers/BSP/Components/dp83848/dp83848.c ****   int32_t status = DP83848_STATUS_OK;
+ 1178              		.loc 1 526 3 is_stmt 1 view .LVU347
+ 1179              	.LVL103:
+ 527:Drivers/BSP/Components/dp83848/dp83848.c **** 
+ 528:Drivers/BSP/Components/dp83848/dp83848.c ****   if(pObj->IO.ReadReg(pObj->DevAddr, DP83848_IMR, &readval) >= 0)
+ 1180              		.loc 1 528 3 view .LVU348
+ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccM83wL4.s 			page 32
+
+
+ 1181              		.loc 1 528 14 is_stmt 0 view .LVU349
+ 1182 000c 4369     		ldr	r3, [r0, #20]
+ 1183              		.loc 1 528 6 view .LVU350
+ 1184 000e 01AA     		add	r2, sp, #4
+ 1185 0010 1121     		movs	r1, #17
+ 1186              	.LVL104:
+ 1187              		.loc 1 528 6 view .LVU351
+ 1188 0012 0068     		ldr	r0, [r0]
+ 1189              	.LVL105:
+ 1190              		.loc 1 528 6 view .LVU352
+ 1191 0014 9847     		blx	r3
+ 1192              	.LVL106:
+ 1193              		.loc 1 528 5 view .LVU353
+ 1194 0016 0028     		cmp	r0, #0
+ 1195 0018 0CDB     		blt	.L91
+ 529:Drivers/BSP/Components/dp83848/dp83848.c ****   {
+ 530:Drivers/BSP/Components/dp83848/dp83848.c ****     readval |= Interrupt;
+ 1196              		.loc 1 530 5 is_stmt 1 view .LVU354
+ 1197              		.loc 1 530 13 is_stmt 0 view .LVU355
+ 1198 001a 019B     		ldr	r3, [sp, #4]
+ 1199 001c 45EA0302 		orr	r2, r5, r3
+ 1200 0020 0192     		str	r2, [sp, #4]
+ 531:Drivers/BSP/Components/dp83848/dp83848.c **** 
+ 532:Drivers/BSP/Components/dp83848/dp83848.c ****     /* Apply configuration */
+ 533:Drivers/BSP/Components/dp83848/dp83848.c ****     if(pObj->IO.WriteReg(pObj->DevAddr, DP83848_IMR, readval) < 0)
+ 1201              		.loc 1 533 5 is_stmt 1 view .LVU356
+ 1202              		.loc 1 533 16 is_stmt 0 view .LVU357
+ 1203 0022 2369     		ldr	r3, [r4, #16]
+ 1204              		.loc 1 533 8 view .LVU358
+ 1205 0024 1121     		movs	r1, #17
+ 1206 0026 2068     		ldr	r0, [r4]
+ 1207 0028 9847     		blx	r3
+ 1208              	.LVL107:
+ 1209              		.loc 1 533 7 view .LVU359
+ 1210 002a 0028     		cmp	r0, #0
+ 1211 002c 05DB     		blt	.L92
+ 526:Drivers/BSP/Components/dp83848/dp83848.c **** 
+ 1212              		.loc 1 526 11 view .LVU360
+ 1213 002e 0020     		movs	r0, #0
+ 1214              	.LVL108:
+ 1215              	.L89:
+ 534:Drivers/BSP/Components/dp83848/dp83848.c ****     {
+ 535:Drivers/BSP/Components/dp83848/dp83848.c ****       status =  DP83848_STATUS_WRITE_ERROR;
+ 536:Drivers/BSP/Components/dp83848/dp83848.c ****     }
+ 537:Drivers/BSP/Components/dp83848/dp83848.c ****   }
+ 538:Drivers/BSP/Components/dp83848/dp83848.c ****   else
+ 539:Drivers/BSP/Components/dp83848/dp83848.c ****   {
+ 540:Drivers/BSP/Components/dp83848/dp83848.c ****     status = DP83848_STATUS_READ_ERROR;
+ 541:Drivers/BSP/Components/dp83848/dp83848.c ****   }
+ 542:Drivers/BSP/Components/dp83848/dp83848.c **** 
+ 543:Drivers/BSP/Components/dp83848/dp83848.c ****   return status;
+ 544:Drivers/BSP/Components/dp83848/dp83848.c **** }
+ 1216              		.loc 1 544 1 view .LVU361
+ 1217 0030 03B0     		add	sp, sp, #12
+ 1218              		.cfi_remember_state
+ 1219              		.cfi_def_cfa_offset 12
+ 1220              		@ sp needed
+ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccM83wL4.s 			page 33
+
+
+ 1221 0032 30BD     		pop	{r4, r5, pc}
+ 1222              	.LVL109:
+ 1223              	.L91:
+ 1224              		.cfi_restore_state
+ 540:Drivers/BSP/Components/dp83848/dp83848.c ****   }
+ 1225              		.loc 1 540 12 view .LVU362
+ 1226 0034 6FF00400 		mvn	r0, #4
+ 1227 0038 FAE7     		b	.L89
+ 1228              	.L92:
+ 535:Drivers/BSP/Components/dp83848/dp83848.c ****     }
+ 1229              		.loc 1 535 14 view .LVU363
+ 1230 003a 6FF00300 		mvn	r0, #3
+ 1231              	.LVL110:
+ 543:Drivers/BSP/Components/dp83848/dp83848.c **** }
+ 1232              		.loc 1 543 3 is_stmt 1 view .LVU364
+ 543:Drivers/BSP/Components/dp83848/dp83848.c **** }
+ 1233              		.loc 1 543 10 is_stmt 0 view .LVU365
+ 1234 003e F7E7     		b	.L89
+ 1235              		.cfi_endproc
+ 1236              	.LFE10:
+ 1238              		.section	.text.DP83848_DisableIT,"ax",%progbits
+ 1239              		.align	1
+ 1240              		.global	DP83848_DisableIT
+ 1241              		.syntax unified
+ 1242              		.thumb
+ 1243              		.thumb_func
+ 1245              	DP83848_DisableIT:
+ 1246              	.LVL111:
+ 1247              	.LFB11:
+ 545:Drivers/BSP/Components/dp83848/dp83848.c **** 
+ 546:Drivers/BSP/Components/dp83848/dp83848.c **** /**
+ 547:Drivers/BSP/Components/dp83848/dp83848.c ****   * @brief  Disable IT source.
+ 548:Drivers/BSP/Components/dp83848/dp83848.c ****   * @param  pObj: Pointer to device object.
+ 549:Drivers/BSP/Components/dp83848/dp83848.c ****   * @param  Interrupt: IT source to be disabled
+ 550:Drivers/BSP/Components/dp83848/dp83848.c ****   *         should be a value or a combination of the following:
+ 551:Drivers/BSP/Components/dp83848/dp83848.c ****   *         DP83848_WOL_IT
+ 552:Drivers/BSP/Components/dp83848/dp83848.c ****   *         DP83848_ENERGYON_IT
+ 553:Drivers/BSP/Components/dp83848/dp83848.c ****   *         DP83848_AUTONEGO_COMPLETE_IT
+ 554:Drivers/BSP/Components/dp83848/dp83848.c ****   *         DP83848_REMOTE_FAULT_IT
+ 555:Drivers/BSP/Components/dp83848/dp83848.c ****   *         DP83848_LINK_DOWN_IT
+ 556:Drivers/BSP/Components/dp83848/dp83848.c ****   *         DP83848_AUTONEGO_LP_ACK_IT
+ 557:Drivers/BSP/Components/dp83848/dp83848.c ****   *         DP83848_PARALLEL_DETECTION_FAULT_IT
+ 558:Drivers/BSP/Components/dp83848/dp83848.c ****   *         DP83848_AUTONEGO_PAGE_RECEIVED_IT
+ 559:Drivers/BSP/Components/dp83848/dp83848.c ****   * @retval DP83848_STATUS_OK  if OK
+ 560:Drivers/BSP/Components/dp83848/dp83848.c ****   *         DP83848_STATUS_READ_ERROR if connot read register
+ 561:Drivers/BSP/Components/dp83848/dp83848.c ****   *         DP83848_STATUS_WRITE_ERROR if connot write to register
+ 562:Drivers/BSP/Components/dp83848/dp83848.c ****   */
+ 563:Drivers/BSP/Components/dp83848/dp83848.c **** int32_t DP83848_DisableIT(dp83848_Object_t *pObj, uint32_t Interrupt)
+ 564:Drivers/BSP/Components/dp83848/dp83848.c **** {
+ 1248              		.loc 1 564 1 is_stmt 1 view -0
+ 1249              		.cfi_startproc
+ 1250              		@ args = 0, pretend = 0, frame = 8
+ 1251              		@ frame_needed = 0, uses_anonymous_args = 0
+ 1252              		.loc 1 564 1 is_stmt 0 view .LVU367
+ 1253 0000 30B5     		push	{r4, r5, lr}
+ 1254              		.cfi_def_cfa_offset 12
+ 1255              		.cfi_offset 4, -12
+ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccM83wL4.s 			page 34
+
+
+ 1256              		.cfi_offset 5, -8
+ 1257              		.cfi_offset 14, -4
+ 1258 0002 83B0     		sub	sp, sp, #12
+ 1259              		.cfi_def_cfa_offset 24
+ 1260 0004 0446     		mov	r4, r0
+ 1261 0006 0D46     		mov	r5, r1
+ 565:Drivers/BSP/Components/dp83848/dp83848.c ****   uint32_t readval = 0;
+ 1262              		.loc 1 565 3 is_stmt 1 view .LVU368
+ 1263              		.loc 1 565 12 is_stmt 0 view .LVU369
+ 1264 0008 0023     		movs	r3, #0
+ 1265 000a 0193     		str	r3, [sp, #4]
+ 566:Drivers/BSP/Components/dp83848/dp83848.c ****   int32_t status = DP83848_STATUS_OK;
+ 1266              		.loc 1 566 3 is_stmt 1 view .LVU370
+ 1267              	.LVL112:
+ 567:Drivers/BSP/Components/dp83848/dp83848.c **** 
+ 568:Drivers/BSP/Components/dp83848/dp83848.c ****   if(pObj->IO.ReadReg(pObj->DevAddr, DP83848_IMR, &readval) >= 0)
+ 1268              		.loc 1 568 3 view .LVU371
+ 1269              		.loc 1 568 14 is_stmt 0 view .LVU372
+ 1270 000c 4369     		ldr	r3, [r0, #20]
+ 1271              		.loc 1 568 6 view .LVU373
+ 1272 000e 01AA     		add	r2, sp, #4
+ 1273 0010 1121     		movs	r1, #17
+ 1274              	.LVL113:
+ 1275              		.loc 1 568 6 view .LVU374
+ 1276 0012 0068     		ldr	r0, [r0]
+ 1277              	.LVL114:
+ 1278              		.loc 1 568 6 view .LVU375
+ 1279 0014 9847     		blx	r3
+ 1280              	.LVL115:
+ 1281              		.loc 1 568 5 view .LVU376
+ 1282 0016 0028     		cmp	r0, #0
+ 1283 0018 0CDB     		blt	.L96
+ 569:Drivers/BSP/Components/dp83848/dp83848.c ****   {
+ 570:Drivers/BSP/Components/dp83848/dp83848.c ****     readval &= ~Interrupt;
+ 1284              		.loc 1 570 5 is_stmt 1 view .LVU377
+ 1285              		.loc 1 570 13 is_stmt 0 view .LVU378
+ 1286 001a 019A     		ldr	r2, [sp, #4]
+ 1287 001c 22EA0502 		bic	r2, r2, r5
+ 1288 0020 0192     		str	r2, [sp, #4]
+ 571:Drivers/BSP/Components/dp83848/dp83848.c **** 
+ 572:Drivers/BSP/Components/dp83848/dp83848.c ****     /* Apply configuration */
+ 573:Drivers/BSP/Components/dp83848/dp83848.c ****     if(pObj->IO.WriteReg(pObj->DevAddr, DP83848_IMR, readval) < 0)
+ 1289              		.loc 1 573 5 is_stmt 1 view .LVU379
+ 1290              		.loc 1 573 16 is_stmt 0 view .LVU380
+ 1291 0022 2369     		ldr	r3, [r4, #16]
+ 1292              		.loc 1 573 8 view .LVU381
+ 1293 0024 1121     		movs	r1, #17
+ 1294 0026 2068     		ldr	r0, [r4]
+ 1295 0028 9847     		blx	r3
+ 1296              	.LVL116:
+ 1297              		.loc 1 573 7 view .LVU382
+ 1298 002a 0028     		cmp	r0, #0
+ 1299 002c 05DB     		blt	.L97
+ 566:Drivers/BSP/Components/dp83848/dp83848.c **** 
+ 1300              		.loc 1 566 11 view .LVU383
+ 1301 002e 0020     		movs	r0, #0
+ 1302              	.LVL117:
+ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccM83wL4.s 			page 35
+
+
+ 1303              	.L94:
+ 574:Drivers/BSP/Components/dp83848/dp83848.c ****     {
+ 575:Drivers/BSP/Components/dp83848/dp83848.c ****       status = DP83848_STATUS_WRITE_ERROR;
+ 576:Drivers/BSP/Components/dp83848/dp83848.c ****     }
+ 577:Drivers/BSP/Components/dp83848/dp83848.c ****   }
+ 578:Drivers/BSP/Components/dp83848/dp83848.c ****   else
+ 579:Drivers/BSP/Components/dp83848/dp83848.c ****   {
+ 580:Drivers/BSP/Components/dp83848/dp83848.c ****     status = DP83848_STATUS_READ_ERROR;
+ 581:Drivers/BSP/Components/dp83848/dp83848.c ****   }
+ 582:Drivers/BSP/Components/dp83848/dp83848.c **** 
+ 583:Drivers/BSP/Components/dp83848/dp83848.c ****   return status;
+ 584:Drivers/BSP/Components/dp83848/dp83848.c **** }
+ 1304              		.loc 1 584 1 view .LVU384
+ 1305 0030 03B0     		add	sp, sp, #12
+ 1306              		.cfi_remember_state
+ 1307              		.cfi_def_cfa_offset 12
+ 1308              		@ sp needed
+ 1309 0032 30BD     		pop	{r4, r5, pc}
+ 1310              	.LVL118:
+ 1311              	.L96:
+ 1312              		.cfi_restore_state
+ 580:Drivers/BSP/Components/dp83848/dp83848.c ****   }
+ 1313              		.loc 1 580 12 view .LVU385
+ 1314 0034 6FF00400 		mvn	r0, #4
+ 1315 0038 FAE7     		b	.L94
+ 1316              	.L97:
+ 575:Drivers/BSP/Components/dp83848/dp83848.c ****     }
+ 1317              		.loc 1 575 14 view .LVU386
+ 1318 003a 6FF00300 		mvn	r0, #3
+ 1319              	.LVL119:
+ 583:Drivers/BSP/Components/dp83848/dp83848.c **** }
+ 1320              		.loc 1 583 3 is_stmt 1 view .LVU387
+ 583:Drivers/BSP/Components/dp83848/dp83848.c **** }
+ 1321              		.loc 1 583 10 is_stmt 0 view .LVU388
+ 1322 003e F7E7     		b	.L94
+ 1323              		.cfi_endproc
+ 1324              	.LFE11:
+ 1326              		.section	.text.DP83848_ClearIT,"ax",%progbits
+ 1327              		.align	1
+ 1328              		.global	DP83848_ClearIT
+ 1329              		.syntax unified
+ 1330              		.thumb
+ 1331              		.thumb_func
+ 1333              	DP83848_ClearIT:
+ 1334              	.LVL120:
+ 1335              	.LFB12:
+ 585:Drivers/BSP/Components/dp83848/dp83848.c **** 
+ 586:Drivers/BSP/Components/dp83848/dp83848.c **** /**
+ 587:Drivers/BSP/Components/dp83848/dp83848.c ****   * @brief  Clear IT flag.
+ 588:Drivers/BSP/Components/dp83848/dp83848.c ****   * @param  pObj: Pointer to device object.
+ 589:Drivers/BSP/Components/dp83848/dp83848.c ****   * @param  Interrupt: IT flag to be cleared
+ 590:Drivers/BSP/Components/dp83848/dp83848.c ****   *         should be a value or a combination of the following:
+ 591:Drivers/BSP/Components/dp83848/dp83848.c ****   *         DP83848_WOL_IT
+ 592:Drivers/BSP/Components/dp83848/dp83848.c ****   *         DP83848_ENERGYON_IT
+ 593:Drivers/BSP/Components/dp83848/dp83848.c ****   *         DP83848_AUTONEGO_COMPLETE_IT
+ 594:Drivers/BSP/Components/dp83848/dp83848.c ****   *         DP83848_REMOTE_FAULT_IT
+ 595:Drivers/BSP/Components/dp83848/dp83848.c ****   *         DP83848_LINK_DOWN_IT
+ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccM83wL4.s 			page 36
+
+
+ 596:Drivers/BSP/Components/dp83848/dp83848.c ****   *         DP83848_AUTONEGO_LP_ACK_IT
+ 597:Drivers/BSP/Components/dp83848/dp83848.c ****   *         DP83848_PARALLEL_DETECTION_FAULT_IT
+ 598:Drivers/BSP/Components/dp83848/dp83848.c ****   *         DP83848_AUTONEGO_PAGE_RECEIVED_IT
+ 599:Drivers/BSP/Components/dp83848/dp83848.c ****   * @retval DP83848_STATUS_OK  if OK
+ 600:Drivers/BSP/Components/dp83848/dp83848.c ****   *         DP83848_STATUS_READ_ERROR if connot read register
+ 601:Drivers/BSP/Components/dp83848/dp83848.c ****   */
+ 602:Drivers/BSP/Components/dp83848/dp83848.c **** int32_t  DP83848_ClearIT(dp83848_Object_t *pObj, uint32_t Interrupt)
+ 603:Drivers/BSP/Components/dp83848/dp83848.c **** {
+ 1336              		.loc 1 603 1 is_stmt 1 view -0
+ 1337              		.cfi_startproc
+ 1338              		@ args = 0, pretend = 0, frame = 8
+ 1339              		@ frame_needed = 0, uses_anonymous_args = 0
+ 1340              		.loc 1 603 1 is_stmt 0 view .LVU390
+ 1341 0000 00B5     		push	{lr}
+ 1342              		.cfi_def_cfa_offset 4
+ 1343              		.cfi_offset 14, -4
+ 1344 0002 83B0     		sub	sp, sp, #12
+ 1345              		.cfi_def_cfa_offset 16
+ 604:Drivers/BSP/Components/dp83848/dp83848.c ****   uint32_t readval = 0;
+ 1346              		.loc 1 604 3 is_stmt 1 view .LVU391
+ 1347              		.loc 1 604 12 is_stmt 0 view .LVU392
+ 1348 0004 0023     		movs	r3, #0
+ 1349 0006 0193     		str	r3, [sp, #4]
+ 605:Drivers/BSP/Components/dp83848/dp83848.c ****   int32_t status = DP83848_STATUS_OK;
+ 1350              		.loc 1 605 3 is_stmt 1 view .LVU393
+ 1351              	.LVL121:
+ 606:Drivers/BSP/Components/dp83848/dp83848.c **** 
+ 607:Drivers/BSP/Components/dp83848/dp83848.c ****   if(pObj->IO.ReadReg(pObj->DevAddr, DP83848_ISFR, &readval) < 0)
+ 1352              		.loc 1 607 3 view .LVU394
+ 1353              		.loc 1 607 14 is_stmt 0 view .LVU395
+ 1354 0008 4369     		ldr	r3, [r0, #20]
+ 1355              		.loc 1 607 6 view .LVU396
+ 1356 000a 01AA     		add	r2, sp, #4
+ 1357 000c 1221     		movs	r1, #18
+ 1358              	.LVL122:
+ 1359              		.loc 1 607 6 view .LVU397
+ 1360 000e 0068     		ldr	r0, [r0]
+ 1361              	.LVL123:
+ 1362              		.loc 1 607 6 view .LVU398
+ 1363 0010 9847     		blx	r3
+ 1364              	.LVL124:
+ 1365              		.loc 1 607 5 view .LVU399
+ 1366 0012 0028     		cmp	r0, #0
+ 1367 0014 03DB     		blt	.L101
+ 605:Drivers/BSP/Components/dp83848/dp83848.c ****   int32_t status = DP83848_STATUS_OK;
+ 1368              		.loc 1 605 11 view .LVU400
+ 1369 0016 0020     		movs	r0, #0
+ 1370              	.LVL125:
+ 1371              	.L99:
+ 608:Drivers/BSP/Components/dp83848/dp83848.c ****   {
+ 609:Drivers/BSP/Components/dp83848/dp83848.c ****     status =  DP83848_STATUS_READ_ERROR;
+ 610:Drivers/BSP/Components/dp83848/dp83848.c ****   }
+ 611:Drivers/BSP/Components/dp83848/dp83848.c **** 
+ 612:Drivers/BSP/Components/dp83848/dp83848.c ****   return status;
+ 613:Drivers/BSP/Components/dp83848/dp83848.c **** }
+ 1372              		.loc 1 613 1 view .LVU401
+ 1373 0018 03B0     		add	sp, sp, #12
+ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccM83wL4.s 			page 37
+
+
+ 1374              		.cfi_remember_state
+ 1375              		.cfi_def_cfa_offset 4
+ 1376              		@ sp needed
+ 1377 001a 5DF804FB 		ldr	pc, [sp], #4
+ 1378              	.LVL126:
+ 1379              	.L101:
+ 1380              		.cfi_restore_state
+ 609:Drivers/BSP/Components/dp83848/dp83848.c ****   }
+ 1381              		.loc 1 609 12 view .LVU402
+ 1382 001e 6FF00400 		mvn	r0, #4
+ 1383              	.LVL127:
+ 612:Drivers/BSP/Components/dp83848/dp83848.c **** }
+ 1384              		.loc 1 612 3 is_stmt 1 view .LVU403
+ 612:Drivers/BSP/Components/dp83848/dp83848.c **** }
+ 1385              		.loc 1 612 10 is_stmt 0 view .LVU404
+ 1386 0022 F9E7     		b	.L99
+ 1387              		.cfi_endproc
+ 1388              	.LFE12:
+ 1390              		.section	.text.DP83848_GetITStatus,"ax",%progbits
+ 1391              		.align	1
+ 1392              		.global	DP83848_GetITStatus
+ 1393              		.syntax unified
+ 1394              		.thumb
+ 1395              		.thumb_func
+ 1397              	DP83848_GetITStatus:
+ 1398              	.LVL128:
+ 1399              	.LFB13:
+ 614:Drivers/BSP/Components/dp83848/dp83848.c **** 
+ 615:Drivers/BSP/Components/dp83848/dp83848.c **** /**
+ 616:Drivers/BSP/Components/dp83848/dp83848.c ****   * @brief  Get IT Flag status.
+ 617:Drivers/BSP/Components/dp83848/dp83848.c ****   * @param  pObj: Pointer to device object.
+ 618:Drivers/BSP/Components/dp83848/dp83848.c ****   * @param  Interrupt: IT Flag to be checked,
+ 619:Drivers/BSP/Components/dp83848/dp83848.c ****   *         should be a value or a combination of the following:
+ 620:Drivers/BSP/Components/dp83848/dp83848.c ****   *         DP83848_WOL_IT
+ 621:Drivers/BSP/Components/dp83848/dp83848.c ****   *         DP83848_ENERGYON_IT
+ 622:Drivers/BSP/Components/dp83848/dp83848.c ****   *         DP83848_AUTONEGO_COMPLETE_IT
+ 623:Drivers/BSP/Components/dp83848/dp83848.c ****   *         DP83848_REMOTE_FAULT_IT
+ 624:Drivers/BSP/Components/dp83848/dp83848.c ****   *         DP83848_LINK_DOWN_IT
+ 625:Drivers/BSP/Components/dp83848/dp83848.c ****   *         DP83848_AUTONEGO_LP_ACK_IT
+ 626:Drivers/BSP/Components/dp83848/dp83848.c ****   *         DP83848_PARALLEL_DETECTION_FAULT_IT
+ 627:Drivers/BSP/Components/dp83848/dp83848.c ****   *         DP83848_AUTONEGO_PAGE_RECEIVED_IT
+ 628:Drivers/BSP/Components/dp83848/dp83848.c ****   * @retval 1 IT flag is SET
+ 629:Drivers/BSP/Components/dp83848/dp83848.c ****   *         0 IT flag is RESET
+ 630:Drivers/BSP/Components/dp83848/dp83848.c ****   *         DP83848_STATUS_READ_ERROR if connot read register
+ 631:Drivers/BSP/Components/dp83848/dp83848.c ****   */
+ 632:Drivers/BSP/Components/dp83848/dp83848.c **** int32_t DP83848_GetITStatus(dp83848_Object_t *pObj, uint32_t Interrupt)
+ 633:Drivers/BSP/Components/dp83848/dp83848.c **** {
+ 1400              		.loc 1 633 1 is_stmt 1 view -0
+ 1401              		.cfi_startproc
+ 1402              		@ args = 0, pretend = 0, frame = 8
+ 1403              		@ frame_needed = 0, uses_anonymous_args = 0
+ 1404              		.loc 1 633 1 is_stmt 0 view .LVU406
+ 1405 0000 10B5     		push	{r4, lr}
+ 1406              		.cfi_def_cfa_offset 8
+ 1407              		.cfi_offset 4, -8
+ 1408              		.cfi_offset 14, -4
+ 1409 0002 82B0     		sub	sp, sp, #8
+ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccM83wL4.s 			page 38
+
+
+ 1410              		.cfi_def_cfa_offset 16
+ 1411 0004 0C46     		mov	r4, r1
+ 634:Drivers/BSP/Components/dp83848/dp83848.c ****   uint32_t readval = 0;
+ 1412              		.loc 1 634 3 is_stmt 1 view .LVU407
+ 1413              		.loc 1 634 12 is_stmt 0 view .LVU408
+ 1414 0006 0023     		movs	r3, #0
+ 1415 0008 0193     		str	r3, [sp, #4]
+ 635:Drivers/BSP/Components/dp83848/dp83848.c ****   int32_t status = 0;
+ 1416              		.loc 1 635 3 is_stmt 1 view .LVU409
+ 1417              	.LVL129:
+ 636:Drivers/BSP/Components/dp83848/dp83848.c **** 
+ 637:Drivers/BSP/Components/dp83848/dp83848.c ****   if(pObj->IO.ReadReg(pObj->DevAddr, DP83848_ISFR, &readval) >= 0)
+ 1418              		.loc 1 637 3 view .LVU410
+ 1419              		.loc 1 637 14 is_stmt 0 view .LVU411
+ 1420 000a 4369     		ldr	r3, [r0, #20]
+ 1421              		.loc 1 637 6 view .LVU412
+ 1422 000c 01AA     		add	r2, sp, #4
+ 1423 000e 1221     		movs	r1, #18
+ 1424              	.LVL130:
+ 1425              		.loc 1 637 6 view .LVU413
+ 1426 0010 0068     		ldr	r0, [r0]
+ 1427              	.LVL131:
+ 1428              		.loc 1 637 6 view .LVU414
+ 1429 0012 9847     		blx	r3
+ 1430              	.LVL132:
+ 1431              		.loc 1 637 5 view .LVU415
+ 1432 0014 0028     		cmp	r0, #0
+ 1433 0016 07DB     		blt	.L105
+ 638:Drivers/BSP/Components/dp83848/dp83848.c ****   {
+ 639:Drivers/BSP/Components/dp83848/dp83848.c ****     status = ((readval & Interrupt) == Interrupt);
+ 1434              		.loc 1 639 5 is_stmt 1 view .LVU416
+ 1435              		.loc 1 639 37 is_stmt 0 view .LVU417
+ 1436 0018 019B     		ldr	r3, [sp, #4]
+ 1437 001a 34EA0301 		bics	r1, r4, r3
+ 1438 001e 0CBF     		ite	eq
+ 1439 0020 0120     		moveq	r0, #1
+ 1440 0022 0020     		movne	r0, #0
+ 1441              	.LVL133:
+ 1442              	.L103:
+ 640:Drivers/BSP/Components/dp83848/dp83848.c ****   }
+ 641:Drivers/BSP/Components/dp83848/dp83848.c ****   else
+ 642:Drivers/BSP/Components/dp83848/dp83848.c ****   {
+ 643:Drivers/BSP/Components/dp83848/dp83848.c ****     status = DP83848_STATUS_READ_ERROR;
+ 644:Drivers/BSP/Components/dp83848/dp83848.c ****   }
+ 645:Drivers/BSP/Components/dp83848/dp83848.c **** 
+ 646:Drivers/BSP/Components/dp83848/dp83848.c ****   return status;
+ 647:Drivers/BSP/Components/dp83848/dp83848.c **** }
+ 1443              		.loc 1 647 1 view .LVU418
+ 1444 0024 02B0     		add	sp, sp, #8
+ 1445              		.cfi_remember_state
+ 1446              		.cfi_def_cfa_offset 8
+ 1447              		@ sp needed
+ 1448 0026 10BD     		pop	{r4, pc}
+ 1449              	.LVL134:
+ 1450              	.L105:
+ 1451              		.cfi_restore_state
+ 643:Drivers/BSP/Components/dp83848/dp83848.c ****   }
+ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccM83wL4.s 			page 39
+
+
+ 1452              		.loc 1 643 12 view .LVU419
+ 1453 0028 6FF00400 		mvn	r0, #4
+ 1454              	.LVL135:
+ 646:Drivers/BSP/Components/dp83848/dp83848.c **** }
+ 1455              		.loc 1 646 3 is_stmt 1 view .LVU420
+ 646:Drivers/BSP/Components/dp83848/dp83848.c **** }
+ 1456              		.loc 1 646 10 is_stmt 0 view .LVU421
+ 1457 002c FAE7     		b	.L103
+ 1458              		.cfi_endproc
+ 1459              	.LFE13:
+ 1461              		.text
+ 1462              	.Letext0:
+ 1463              		.file 2 "/Users/johannes/Library/Application Support/Code/User/globalStorage/bmd.stm32-for-vscode/
+ 1464              		.file 3 "/Users/johannes/Library/Application Support/Code/User/globalStorage/bmd.stm32-for-vscode/
+ 1465              		.file 4 "Drivers/BSP/Components/dp83848/dp83848.h"
+ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccM83wL4.s 			page 40
+
+
+DEFINED SYMBOLS
+                            *ABS*:0000000000000000 dp83848.c
+/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccM83wL4.s:20     .text.DP83848_RegisterBusIO:0000000000000000 $t
+/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccM83wL4.s:26     .text.DP83848_RegisterBusIO:0000000000000000 DP83848_RegisterBusIO
+/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccM83wL4.s:113    .text.DP83848_Init:0000000000000000 $t
+/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccM83wL4.s:119    .text.DP83848_Init:0000000000000000 DP83848_Init
+/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccM83wL4.s:361    .text.DP83848_DeInit:0000000000000000 $t
+/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccM83wL4.s:367    .text.DP83848_DeInit:0000000000000000 DP83848_DeInit
+/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccM83wL4.s:427    .text.DP83848_DisablePowerDownMode:0000000000000000 $t
+/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccM83wL4.s:433    .text.DP83848_DisablePowerDownMode:0000000000000000 DP83848_DisablePowerDownMode
+/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccM83wL4.s:510    .text.DP83848_EnablePowerDownMode:0000000000000000 $t
+/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccM83wL4.s:516    .text.DP83848_EnablePowerDownMode:0000000000000000 DP83848_EnablePowerDownMode
+/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccM83wL4.s:593    .text.DP83848_StartAutoNego:0000000000000000 $t
+/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccM83wL4.s:599    .text.DP83848_StartAutoNego:0000000000000000 DP83848_StartAutoNego
+/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccM83wL4.s:676    .text.DP83848_GetLinkState:0000000000000000 $t
+/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccM83wL4.s:682    .text.DP83848_GetLinkState:0000000000000000 DP83848_GetLinkState
+/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccM83wL4.s:862    .text.DP83848_SetLinkState:0000000000000000 $t
+/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccM83wL4.s:868    .text.DP83848_SetLinkState:0000000000000000 DP83848_SetLinkState
+/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccM83wL4.s:985    .text.DP83848_EnableLoopbackMode:0000000000000000 $t
+/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccM83wL4.s:991    .text.DP83848_EnableLoopbackMode:0000000000000000 DP83848_EnableLoopbackMode
+/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccM83wL4.s:1068   .text.DP83848_DisableLoopbackMode:0000000000000000 $t
+/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccM83wL4.s:1074   .text.DP83848_DisableLoopbackMode:0000000000000000 DP83848_DisableLoopbackMode
+/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccM83wL4.s:1151   .text.DP83848_EnableIT:0000000000000000 $t
+/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccM83wL4.s:1157   .text.DP83848_EnableIT:0000000000000000 DP83848_EnableIT
+/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccM83wL4.s:1239   .text.DP83848_DisableIT:0000000000000000 $t
+/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccM83wL4.s:1245   .text.DP83848_DisableIT:0000000000000000 DP83848_DisableIT
+/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccM83wL4.s:1327   .text.DP83848_ClearIT:0000000000000000 $t
+/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccM83wL4.s:1333   .text.DP83848_ClearIT:0000000000000000 DP83848_ClearIT
+/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccM83wL4.s:1391   .text.DP83848_GetITStatus:0000000000000000 $t
+/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccM83wL4.s:1397   .text.DP83848_GetITStatus:0000000000000000 DP83848_GetITStatus
+
+NO UNDEFINED SYMBOLS

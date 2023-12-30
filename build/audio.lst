@@ -1,0 +1,702 @@
+ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccAZtPTk.s 			page 1
+
+
+   1              		.cpu cortex-m4
+   2              		.arch armv7e-m
+   3              		.fpu fpv4-sp-d16
+   4              		.eabi_attribute 27, 1
+   5              		.eabi_attribute 28, 1
+   6              		.eabi_attribute 20, 1
+   7              		.eabi_attribute 21, 1
+   8              		.eabi_attribute 23, 3
+   9              		.eabi_attribute 24, 1
+  10              		.eabi_attribute 25, 1
+  11              		.eabi_attribute 26, 1
+  12              		.eabi_attribute 30, 1
+  13              		.eabi_attribute 34, 1
+  14              		.eabi_attribute 18, 4
+  15              		.file	"audio.c"
+  16              		.text
+  17              	.Ltext0:
+  18              		.cfi_sections	.debug_frame
+  19              		.section	.text.AUDIO_Init,"ax",%progbits
+  20              		.align	1
+  21              		.global	AUDIO_Init
+  22              		.syntax unified
+  23              		.thumb
+  24              		.thumb_func
+  26              	AUDIO_Init:
+  27              	.LFB131:
+  28              		.file 1 "Core/Src/audio.c"
+   1:Core/Src/audio.c **** /**
+   2:Core/Src/audio.c ****  * @file audio.c
+   3:Core/Src/audio.c ****  * @author johannes regnier
+   4:Core/Src/audio.c ****  * @brief Functions to make sound! 
+   5:Core/Src/audio.c ****  *  Most of it from Tom Erbe:
+   6:Core/Src/audio.c ****  *  http://synthnotes.ucsd.edu/wp4/index.php/2019/09/24/setting-up-the-stmf4-to-connect-to-the-code
+   7:Core/Src/audio.c ****  * @version 0.1
+   8:Core/Src/audio.c ****  * @date 2023-12-12
+   9:Core/Src/audio.c ****  * 
+  10:Core/Src/audio.c ****  * @copyright Copyright (c) 2023
+  11:Core/Src/audio.c ****  * 
+  12:Core/Src/audio.c ****  */
+  13:Core/Src/audio.c **** 
+  14:Core/Src/audio.c **** 
+  15:Core/Src/audio.c **** #include<stdint.h>
+  16:Core/Src/audio.c **** #include "audio.h"
+  17:Core/Src/audio.c **** #include "oscillators.h"
+  18:Core/Src/audio.c **** 
+  19:Core/Src/audio.c **** 
+  20:Core/Src/audio.c **** 
+  21:Core/Src/audio.c **** 
+  22:Core/Src/audio.c **** int16_t audioBuffer[BUFFER_SIZE_DIV_2]; // 32 samples X 2 channels
+  23:Core/Src/audio.c **** float outputBuffer[BUFFER_SIZE_DIV_4];
+  24:Core/Src/audio.c **** 
+  25:Core/Src/audio.c **** 
+  26:Core/Src/audio.c **** 
+  27:Core/Src/audio.c **** extern oscillator_t osc1, osc2, osc3, osc4, osc5, osc6, osc7;
+  28:Core/Src/audio.c **** 
+  29:Core/Src/audio.c **** /**
+  30:Core/Src/audio.c ****  * @brief Initialize audio
+ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccAZtPTk.s 			page 2
+
+
+  31:Core/Src/audio.c ****  * 
+  32:Core/Src/audio.c ****  */
+  33:Core/Src/audio.c **** void AUDIO_Init()
+  34:Core/Src/audio.c **** {
+  29              		.loc 1 34 1 view -0
+  30              		.cfi_startproc
+  31              		@ args = 0, pretend = 0, frame = 0
+  32              		@ frame_needed = 0, uses_anonymous_args = 0
+  33 0000 08B5     		push	{r3, lr}
+  34              		.cfi_def_cfa_offset 8
+  35              		.cfi_offset 3, -8
+  36              		.cfi_offset 14, -4
+  37 0002 2DED028B 		vpush.64	{d8}
+  38              		.cfi_def_cfa_offset 16
+  39              		.cfi_offset 80, -16
+  40              		.cfi_offset 81, -12
+  35:Core/Src/audio.c ****     BSP_AUDIO_OUT_Init(OUTPUT_DEVICE_HEADPHONE, INITIAL_VOLUME, FS);
+  41              		.loc 1 35 5 view .LVU1
+  42 0006 4BF68032 		movw	r2, #48000
+  43 000a 4121     		movs	r1, #65
+  44 000c 0220     		movs	r0, #2
+  45 000e FFF7FEFF 		bl	BSP_AUDIO_OUT_Init
+  46              	.LVL0:
+  36:Core/Src/audio.c **** 	BSP_AUDIO_OUT_Play((uint16_t *)audioBuffer, BUFFER_SIZE);
+  47              		.loc 1 36 2 view .LVU2
+  48 0012 8021     		movs	r1, #128
+  49 0014 3248     		ldr	r0, .L3
+  50 0016 FFF7FEFF 		bl	BSP_AUDIO_OUT_Play
+  51              	.LVL1:
+  37:Core/Src/audio.c **** 
+  38:Core/Src/audio.c **** 	
+  39:Core/Src/audio.c **** 	
+  40:Core/Src/audio.c **** 	osc_init(&osc1, 0.5, 1000, 0, 0, 0.5);
+  52              		.loc 1 40 2 view .LVU3
+  53 001a 9FED328A 		vldr.32	s16, .L3+4
+  54 001e B6EE002A 		vmov.f32	s4, #5.0e-1
+  55 0022 F0EE481A 		vmov.f32	s3, s16
+  56 0026 B0EE481A 		vmov.f32	s2, s16
+  57 002a DFED2F0A 		vldr.32	s1, .L3+8
+  58 002e B0EE420A 		vmov.f32	s0, s4
+  59 0032 2E48     		ldr	r0, .L3+12
+  60 0034 FFF7FEFF 		bl	osc_init
+  61              	.LVL2:
+  41:Core/Src/audio.c **** 	osc_init(&osc2, 0.5, 440, 0, 0, 0.5);
+  62              		.loc 1 41 2 view .LVU4
+  63 0038 DFED2D8A 		vldr.32	s17, .L3+16
+  64 003c B6EE002A 		vmov.f32	s4, #5.0e-1
+  65 0040 F0EE481A 		vmov.f32	s3, s16
+  66 0044 B0EE481A 		vmov.f32	s2, s16
+  67 0048 F0EE680A 		vmov.f32	s1, s17
+  68 004c B0EE420A 		vmov.f32	s0, s4
+  69 0050 2848     		ldr	r0, .L3+20
+  70 0052 FFF7FEFF 		bl	osc_init
+  71              	.LVL3:
+  42:Core/Src/audio.c **** 	osc_init(&osc3, 0.5, 440, 0, 0, 0.5);
+  72              		.loc 1 42 2 view .LVU5
+  73 0056 B6EE002A 		vmov.f32	s4, #5.0e-1
+ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccAZtPTk.s 			page 3
+
+
+  74 005a F0EE481A 		vmov.f32	s3, s16
+  75 005e B0EE481A 		vmov.f32	s2, s16
+  76 0062 F0EE680A 		vmov.f32	s1, s17
+  77 0066 B0EE420A 		vmov.f32	s0, s4
+  78 006a 2348     		ldr	r0, .L3+24
+  79 006c FFF7FEFF 		bl	osc_init
+  80              	.LVL4:
+  43:Core/Src/audio.c **** 	osc_init(&osc4, 0.5, 440, 0, 0, 0.5);
+  81              		.loc 1 43 2 view .LVU6
+  82 0070 B6EE002A 		vmov.f32	s4, #5.0e-1
+  83 0074 F0EE481A 		vmov.f32	s3, s16
+  84 0078 B0EE481A 		vmov.f32	s2, s16
+  85 007c F0EE680A 		vmov.f32	s1, s17
+  86 0080 B0EE420A 		vmov.f32	s0, s4
+  87 0084 1D48     		ldr	r0, .L3+28
+  88 0086 FFF7FEFF 		bl	osc_init
+  89              	.LVL5:
+  44:Core/Src/audio.c **** 	osc_init(&osc5, 0.5, 440, 0, 0, 0.5);
+  90              		.loc 1 44 2 view .LVU7
+  91 008a B6EE002A 		vmov.f32	s4, #5.0e-1
+  92 008e F0EE481A 		vmov.f32	s3, s16
+  93 0092 B0EE481A 		vmov.f32	s2, s16
+  94 0096 F0EE680A 		vmov.f32	s1, s17
+  95 009a B0EE420A 		vmov.f32	s0, s4
+  96 009e 1848     		ldr	r0, .L3+32
+  97 00a0 FFF7FEFF 		bl	osc_init
+  98              	.LVL6:
+  45:Core/Src/audio.c **** 	osc_init(&osc6, 0.5, 440, 0, 0, 0.5);
+  99              		.loc 1 45 2 view .LVU8
+ 100 00a4 B6EE002A 		vmov.f32	s4, #5.0e-1
+ 101 00a8 F0EE481A 		vmov.f32	s3, s16
+ 102 00ac B0EE481A 		vmov.f32	s2, s16
+ 103 00b0 F0EE680A 		vmov.f32	s1, s17
+ 104 00b4 B0EE420A 		vmov.f32	s0, s4
+ 105 00b8 1248     		ldr	r0, .L3+36
+ 106 00ba FFF7FEFF 		bl	osc_init
+ 107              	.LVL7:
+  46:Core/Src/audio.c **** 	osc_init(&osc7, 0.5, 440, 0, 0, 0.5);
+ 108              		.loc 1 46 2 view .LVU9
+ 109 00be B6EE002A 		vmov.f32	s4, #5.0e-1
+ 110 00c2 F0EE481A 		vmov.f32	s3, s16
+ 111 00c6 B0EE481A 		vmov.f32	s2, s16
+ 112 00ca F0EE680A 		vmov.f32	s1, s17
+ 113 00ce B0EE420A 		vmov.f32	s0, s4
+ 114 00d2 0D48     		ldr	r0, .L3+40
+ 115 00d4 FFF7FEFF 		bl	osc_init
+ 116              	.LVL8:
+  47:Core/Src/audio.c **** 	
+  48:Core/Src/audio.c **** 	
+  49:Core/Src/audio.c **** }
+ 117              		.loc 1 49 1 is_stmt 0 view .LVU10
+ 118 00d8 BDEC028B 		vldm	sp!, {d8}
+ 119              		.cfi_restore 80
+ 120              		.cfi_restore 81
+ 121              		.cfi_def_cfa_offset 8
+ 122 00dc 08BD     		pop	{r3, pc}
+ 123              	.L4:
+ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccAZtPTk.s 			page 4
+
+
+ 124 00de 00BF     		.align	2
+ 125              	.L3:
+ 126 00e0 00000000 		.word	.LANCHOR0
+ 127 00e4 00000000 		.word	0
+ 128 00e8 00007A44 		.word	1148846080
+ 129 00ec 00000000 		.word	osc1
+ 130 00f0 0000DC43 		.word	1138491392
+ 131 00f4 00000000 		.word	osc2
+ 132 00f8 00000000 		.word	osc3
+ 133 00fc 00000000 		.word	osc4
+ 134 0100 00000000 		.word	osc5
+ 135 0104 00000000 		.word	osc6
+ 136 0108 00000000 		.word	osc7
+ 137              		.cfi_endproc
+ 138              	.LFE131:
+ 140              		.section	.text.audioBlock,"ax",%progbits
+ 141              		.align	1
+ 142              		.global	audioBlock
+ 143              		.syntax unified
+ 144              		.thumb
+ 145              		.thumb_func
+ 147              	audioBlock:
+ 148              	.LVL9:
+ 149              	.LFB132:
+  50:Core/Src/audio.c **** 
+  51:Core/Src/audio.c **** float superSaw_outL, superSaw_outR;
+  52:Core/Src/audio.c **** 
+  53:Core/Src/audio.c **** 
+  54:Core/Src/audio.c **** void audioBlock(float *output, int32_t samples)
+  55:Core/Src/audio.c **** {
+ 150              		.loc 1 55 1 is_stmt 1 view -0
+ 151              		.cfi_startproc
+ 152              		@ args = 0, pretend = 0, frame = 0
+ 153              		@ frame_needed = 0, uses_anonymous_args = 0
+ 154              		.loc 1 55 1 is_stmt 0 view .LVU12
+ 155 0000 F8B5     		push	{r3, r4, r5, r6, r7, lr}
+ 156              		.cfi_def_cfa_offset 24
+ 157              		.cfi_offset 3, -24
+ 158              		.cfi_offset 4, -20
+ 159              		.cfi_offset 5, -16
+ 160              		.cfi_offset 6, -12
+ 161              		.cfi_offset 7, -8
+ 162              		.cfi_offset 14, -4
+ 163 0002 0646     		mov	r6, r0
+ 164 0004 0F46     		mov	r7, r1
+  56:Core/Src/audio.c **** 	//osc1.freq = 440.f;
+  57:Core/Src/audio.c **** 	//osc2.freq = 110;
+  58:Core/Src/audio.c **** 
+  59:Core/Src/audio.c **** 	
+  60:Core/Src/audio.c **** 	for (uint16_t i = 0; i < samples; i++)
+ 165              		.loc 1 60 2 is_stmt 1 view .LVU13
+ 166              	.LBB2:
+ 167              		.loc 1 60 7 view .LVU14
+ 168              	.LVL10:
+ 169              		.loc 1 60 16 is_stmt 0 view .LVU15
+ 170 0006 0024     		movs	r4, #0
+ 171              		.loc 1 60 2 view .LVU16
+ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccAZtPTk.s 			page 5
+
+
+ 172 0008 0EE0     		b	.L6
+ 173              	.LVL11:
+ 174              	.L7:
+  61:Core/Src/audio.c **** 	{
+  62:Core/Src/audio.c **** 		//osc_polyblepSaw(&osc1);
+  63:Core/Src/audio.c **** 		//osc_polyblepSaw(&osc2);
+  64:Core/Src/audio.c **** 		//osc_Sine(&osc1);
+  65:Core/Src/audio.c **** 		osc_Sine(&osc1);
+ 175              		.loc 1 65 3 is_stmt 1 discriminator 3 view .LVU17
+ 176 000a 094D     		ldr	r5, .L9
+ 177 000c 2846     		mov	r0, r5
+ 178 000e FFF7FEFF 		bl	osc_Sine
+ 179              	.LVL12:
+  66:Core/Src/audio.c **** 		// osc_superSaw(50, 0.3, &superSaw_outL, &superSaw_outR);
+  67:Core/Src/audio.c **** 		// output[i << 1] 			= superSaw_outL;		// LEFT
+  68:Core/Src/audio.c **** 		// output[(i << 1) + 1] 	= superSaw_outR;  		// RIGHT
+  69:Core/Src/audio.c **** 
+  70:Core/Src/audio.c **** 		output[i << 1] 			= osc1.output;		// LEFT
+ 180              		.loc 1 70 3 discriminator 3 view .LVU18
+ 181              		.loc 1 70 12 is_stmt 0 discriminator 3 view .LVU19
+ 182 0012 6300     		lsls	r3, r4, #1
+ 183              		.loc 1 70 9 discriminator 3 view .LVU20
+ 184 0014 06EBC401 		add	r1, r6, r4, lsl #3
+ 185              		.loc 1 70 27 discriminator 3 view .LVU21
+ 186 0018 AA69     		ldr	r2, [r5, #24]	@ float
+ 187              		.loc 1 70 21 discriminator 3 view .LVU22
+ 188 001a 0A60     		str	r2, [r1]	@ float
+  71:Core/Src/audio.c **** 		output[(i << 1) + 1] 	= osc1.output;  		// RIGHT
+ 189              		.loc 1 71 3 is_stmt 1 discriminator 3 view .LVU23
+ 190              		.loc 1 71 9 is_stmt 0 discriminator 3 view .LVU24
+ 191 001c 0133     		adds	r3, r3, #1
+ 192 001e 06EB8303 		add	r3, r6, r3, lsl #2
+ 193              		.loc 1 71 25 discriminator 3 view .LVU25
+ 194 0022 1A60     		str	r2, [r3]	@ float
+  60:Core/Src/audio.c **** 	{
+ 195              		.loc 1 60 37 is_stmt 1 discriminator 3 view .LVU26
+ 196 0024 0134     		adds	r4, r4, #1
+ 197              	.LVL13:
+  60:Core/Src/audio.c **** 	{
+ 198              		.loc 1 60 37 is_stmt 0 discriminator 3 view .LVU27
+ 199 0026 A4B2     		uxth	r4, r4
+ 200              	.LVL14:
+ 201              	.L6:
+  60:Core/Src/audio.c **** 	{
+ 202              		.loc 1 60 25 is_stmt 1 discriminator 1 view .LVU28
+ 203 0028 BC42     		cmp	r4, r7
+ 204 002a EEDB     		blt	.L7
+ 205              	.LBE2:
+  72:Core/Src/audio.c **** 
+  73:Core/Src/audio.c **** 		
+  74:Core/Src/audio.c **** 	}
+  75:Core/Src/audio.c **** }
+ 206              		.loc 1 75 1 is_stmt 0 view .LVU29
+ 207 002c F8BD     		pop	{r3, r4, r5, r6, r7, pc}
+ 208              	.LVL15:
+ 209              	.L10:
+ 210              		.loc 1 75 1 view .LVU30
+ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccAZtPTk.s 			page 6
+
+
+ 211 002e 00BF     		.align	2
+ 212              	.L9:
+ 213 0030 00000000 		.word	osc1
+ 214              		.cfi_endproc
+ 215              	.LFE132:
+ 217              		.section	.text.BSP_AUDIO_OUT_HalfTransfer_CallBack,"ax",%progbits
+ 218              		.align	1
+ 219              		.global	BSP_AUDIO_OUT_HalfTransfer_CallBack
+ 220              		.syntax unified
+ 221              		.thumb
+ 222              		.thumb_func
+ 224              	BSP_AUDIO_OUT_HalfTransfer_CallBack:
+ 225              	.LFB133:
+  76:Core/Src/audio.c **** 
+  77:Core/Src/audio.c **** 
+  78:Core/Src/audio.c **** 
+  79:Core/Src/audio.c **** void BSP_AUDIO_OUT_HalfTransfer_CallBack(void)
+  80:Core/Src/audio.c **** {
+ 226              		.loc 1 80 1 is_stmt 1 view -0
+ 227              		.cfi_startproc
+ 228              		@ args = 0, pretend = 0, frame = 0
+ 229              		@ frame_needed = 0, uses_anonymous_args = 0
+ 230 0000 08B5     		push	{r3, lr}
+ 231              		.cfi_def_cfa_offset 8
+ 232              		.cfi_offset 3, -8
+ 233              		.cfi_offset 14, -4
+  81:Core/Src/audio.c **** 	audioBlock(outputBuffer, 16);
+ 234              		.loc 1 81 2 view .LVU32
+ 235 0002 1021     		movs	r1, #16
+ 236 0004 1248     		ldr	r0, .L15
+ 237 0006 FFF7FEFF 		bl	audioBlock
+ 238              	.LVL16:
+  82:Core/Src/audio.c **** 	for (int i = 0; i < 32; i += 2)
+ 239              		.loc 1 82 2 view .LVU33
+ 240              	.LBB3:
+ 241              		.loc 1 82 7 view .LVU34
+ 242              		.loc 1 82 11 is_stmt 0 view .LVU35
+ 243 000a 0023     		movs	r3, #0
+ 244              		.loc 1 82 2 view .LVU36
+ 245 000c 1DE0     		b	.L12
+ 246              	.LVL17:
+ 247              	.L13:
+  83:Core/Src/audio.c **** 	{
+  84:Core/Src/audio.c **** 		audioBuffer[i + 0] = (int16_t)((outputBuffer[i]) * 32767.0f);
+ 248              		.loc 1 84 3 is_stmt 1 discriminator 3 view .LVU37
+ 249              		.loc 1 84 47 is_stmt 0 discriminator 3 view .LVU38
+ 250 000e 104A     		ldr	r2, .L15
+ 251 0010 02EB8301 		add	r1, r2, r3, lsl #2
+ 252 0014 D1ED007A 		vldr.32	s15, [r1]
+ 253              		.loc 1 84 52 discriminator 3 view .LVU39
+ 254 0018 9FED0E7A 		vldr.32	s14, .L15+4
+ 255 001c 67EE877A 		vmul.f32	s15, s15, s14
+ 256              		.loc 1 84 24 discriminator 3 view .LVU40
+ 257 0020 FDEEE77A 		vcvt.s32.f32	s15, s15
+ 258              		.loc 1 84 22 discriminator 3 view .LVU41
+ 259 0024 0C49     		ldr	r1, .L15+8
+ 260 0026 17EE900A 		vmov	r0, s15	@ int
+ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccAZtPTk.s 			page 7
+
+
+ 261 002a 21F81300 		strh	r0, [r1, r3, lsl #1]	@ movhi
+  85:Core/Src/audio.c **** 		audioBuffer[i + 1] = (int16_t)((outputBuffer[i + 1]) * 32767.0f);
+ 262              		.loc 1 85 3 is_stmt 1 discriminator 3 view .LVU42
+ 263              		.loc 1 85 50 is_stmt 0 discriminator 3 view .LVU43
+ 264 002e 581C     		adds	r0, r3, #1
+ 265              		.loc 1 85 47 discriminator 3 view .LVU44
+ 266 0030 02EB8002 		add	r2, r2, r0, lsl #2
+ 267 0034 D2ED007A 		vldr.32	s15, [r2]
+ 268              		.loc 1 85 56 discriminator 3 view .LVU45
+ 269 0038 67EE877A 		vmul.f32	s15, s15, s14
+ 270              		.loc 1 85 24 discriminator 3 view .LVU46
+ 271 003c FDEEE77A 		vcvt.s32.f32	s15, s15
+ 272              		.loc 1 85 22 discriminator 3 view .LVU47
+ 273 0040 17EE902A 		vmov	r2, s15	@ int
+ 274 0044 21F81020 		strh	r2, [r1, r0, lsl #1]	@ movhi
+  82:Core/Src/audio.c **** 	for (int i = 0; i < 32; i += 2)
+ 275              		.loc 1 82 28 is_stmt 1 discriminator 3 view .LVU48
+ 276 0048 0233     		adds	r3, r3, #2
+ 277              	.LVL18:
+ 278              	.L12:
+  82:Core/Src/audio.c **** 	for (int i = 0; i < 32; i += 2)
+ 279              		.loc 1 82 20 discriminator 1 view .LVU49
+ 280 004a 1F2B     		cmp	r3, #31
+ 281 004c DFDD     		ble	.L13
+ 282              	.LBE3:
+  86:Core/Src/audio.c **** 	}
+  87:Core/Src/audio.c **** }
+ 283              		.loc 1 87 1 is_stmt 0 view .LVU50
+ 284 004e 08BD     		pop	{r3, pc}
+ 285              	.LVL19:
+ 286              	.L16:
+ 287              		.loc 1 87 1 view .LVU51
+ 288              		.align	2
+ 289              	.L15:
+ 290 0050 00000000 		.word	.LANCHOR1
+ 291 0054 00FEFF46 		.word	1191181824
+ 292 0058 00000000 		.word	.LANCHOR0
+ 293              		.cfi_endproc
+ 294              	.LFE133:
+ 296              		.section	.text.BSP_AUDIO_OUT_TransferComplete_CallBack,"ax",%progbits
+ 297              		.align	1
+ 298              		.global	BSP_AUDIO_OUT_TransferComplete_CallBack
+ 299              		.syntax unified
+ 300              		.thumb
+ 301              		.thumb_func
+ 303              	BSP_AUDIO_OUT_TransferComplete_CallBack:
+ 304              	.LFB134:
+  88:Core/Src/audio.c **** 
+  89:Core/Src/audio.c **** void BSP_AUDIO_OUT_TransferComplete_CallBack(void)
+  90:Core/Src/audio.c **** {
+ 305              		.loc 1 90 1 is_stmt 1 view -0
+ 306              		.cfi_startproc
+ 307              		@ args = 0, pretend = 0, frame = 0
+ 308              		@ frame_needed = 0, uses_anonymous_args = 0
+ 309 0000 08B5     		push	{r3, lr}
+ 310              		.cfi_def_cfa_offset 8
+ 311              		.cfi_offset 3, -8
+ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccAZtPTk.s 			page 8
+
+
+ 312              		.cfi_offset 14, -4
+  91:Core/Src/audio.c **** 	BSP_AUDIO_OUT_ChangeBuffer((uint16_t *)audioBuffer, 64);
+ 313              		.loc 1 91 2 view .LVU53
+ 314 0002 4021     		movs	r1, #64
+ 315 0004 1648     		ldr	r0, .L21
+ 316 0006 FFF7FEFF 		bl	BSP_AUDIO_OUT_ChangeBuffer
+ 317              	.LVL20:
+  92:Core/Src/audio.c **** 	audioBlock(outputBuffer, 16);
+ 318              		.loc 1 92 2 view .LVU54
+ 319 000a 1021     		movs	r1, #16
+ 320 000c 1548     		ldr	r0, .L21+4
+ 321 000e FFF7FEFF 		bl	audioBlock
+ 322              	.LVL21:
+  93:Core/Src/audio.c **** 	for (int i = 0; i < 32; i += 2)
+ 323              		.loc 1 93 2 view .LVU55
+ 324              	.LBB4:
+ 325              		.loc 1 93 7 view .LVU56
+ 326              		.loc 1 93 11 is_stmt 0 view .LVU57
+ 327 0012 0023     		movs	r3, #0
+ 328              		.loc 1 93 2 view .LVU58
+ 329 0014 21E0     		b	.L18
+ 330              	.LVL22:
+ 331              	.L19:
+  94:Core/Src/audio.c **** 	{
+  95:Core/Src/audio.c **** 		audioBuffer[i + 32] = (int16_t)((outputBuffer[i]) * 32767.0f);
+ 332              		.loc 1 95 3 is_stmt 1 discriminator 3 view .LVU59
+ 333              		.loc 1 95 48 is_stmt 0 discriminator 3 view .LVU60
+ 334 0016 134A     		ldr	r2, .L21+4
+ 335 0018 02EB8301 		add	r1, r2, r3, lsl #2
+ 336 001c D1ED007A 		vldr.32	s15, [r1]
+ 337              		.loc 1 95 53 discriminator 3 view .LVU61
+ 338 0020 9FED117A 		vldr.32	s14, .L21+8
+ 339 0024 67EE877A 		vmul.f32	s15, s15, s14
+ 340              		.loc 1 95 17 discriminator 3 view .LVU62
+ 341 0028 03F12000 		add	r0, r3, #32
+ 342              		.loc 1 95 25 discriminator 3 view .LVU63
+ 343 002c FDEEE77A 		vcvt.s32.f32	s15, s15
+ 344              		.loc 1 95 23 discriminator 3 view .LVU64
+ 345 0030 0B49     		ldr	r1, .L21
+ 346 0032 17EE90CA 		vmov	ip, s15	@ int
+ 347 0036 21F810C0 		strh	ip, [r1, r0, lsl #1]	@ movhi
+  96:Core/Src/audio.c **** 		audioBuffer[i + 33] = (int16_t)((outputBuffer[i + 1]) * 32767.0f);
+ 348              		.loc 1 96 3 is_stmt 1 discriminator 3 view .LVU65
+ 349              		.loc 1 96 51 is_stmt 0 discriminator 3 view .LVU66
+ 350 003a 581C     		adds	r0, r3, #1
+ 351              		.loc 1 96 48 discriminator 3 view .LVU67
+ 352 003c 02EB8002 		add	r2, r2, r0, lsl #2
+ 353 0040 D2ED007A 		vldr.32	s15, [r2]
+ 354              		.loc 1 96 57 discriminator 3 view .LVU68
+ 355 0044 67EE877A 		vmul.f32	s15, s15, s14
+ 356              		.loc 1 96 17 discriminator 3 view .LVU69
+ 357 0048 03F12102 		add	r2, r3, #33
+ 358              		.loc 1 96 25 discriminator 3 view .LVU70
+ 359 004c FDEEE77A 		vcvt.s32.f32	s15, s15
+ 360              		.loc 1 96 23 discriminator 3 view .LVU71
+ 361 0050 17EE900A 		vmov	r0, s15	@ int
+ 362 0054 21F81200 		strh	r0, [r1, r2, lsl #1]	@ movhi
+ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccAZtPTk.s 			page 9
+
+
+  93:Core/Src/audio.c **** 	for (int i = 0; i < 32; i += 2)
+ 363              		.loc 1 93 28 is_stmt 1 discriminator 3 view .LVU72
+ 364 0058 0233     		adds	r3, r3, #2
+ 365              	.LVL23:
+ 366              	.L18:
+  93:Core/Src/audio.c **** 	for (int i = 0; i < 32; i += 2)
+ 367              		.loc 1 93 20 discriminator 1 view .LVU73
+ 368 005a 1F2B     		cmp	r3, #31
+ 369 005c DBDD     		ble	.L19
+ 370              	.LBE4:
+  97:Core/Src/audio.c **** 	}
+  98:Core/Src/audio.c **** }
+ 371              		.loc 1 98 1 is_stmt 0 view .LVU74
+ 372 005e 08BD     		pop	{r3, pc}
+ 373              	.LVL24:
+ 374              	.L22:
+ 375              		.loc 1 98 1 view .LVU75
+ 376              		.align	2
+ 377              	.L21:
+ 378 0060 00000000 		.word	.LANCHOR0
+ 379 0064 00000000 		.word	.LANCHOR1
+ 380 0068 00FEFF46 		.word	1191181824
+ 381              		.cfi_endproc
+ 382              	.LFE134:
+ 384              		.section	.text.BSP_AUDIO_OUT_Error_CallBack,"ax",%progbits
+ 385              		.align	1
+ 386              		.global	BSP_AUDIO_OUT_Error_CallBack
+ 387              		.syntax unified
+ 388              		.thumb
+ 389              		.thumb_func
+ 391              	BSP_AUDIO_OUT_Error_CallBack:
+ 392              	.LFB135:
+  99:Core/Src/audio.c **** 
+ 100:Core/Src/audio.c **** void BSP_AUDIO_OUT_Error_CallBack(void)
+ 101:Core/Src/audio.c **** {
+ 393              		.loc 1 101 1 is_stmt 1 view -0
+ 394              		.cfi_startproc
+ 395              		@ Volatile: function does not return.
+ 396              		@ args = 0, pretend = 0, frame = 0
+ 397              		@ frame_needed = 0, uses_anonymous_args = 0
+ 398              		@ link register save eliminated.
+ 399              	.L24:
+ 102:Core/Src/audio.c **** 	/* Stop the program with an infinite loop */
+ 103:Core/Src/audio.c **** 	while (1)
+ 400              		.loc 1 103 2 discriminator 1 view .LVU77
+ 104:Core/Src/audio.c **** 	{
+ 105:Core/Src/audio.c **** 	}
+ 401              		.loc 1 105 2 discriminator 1 view .LVU78
+ 103:Core/Src/audio.c **** 	{
+ 402              		.loc 1 103 8 discriminator 1 view .LVU79
+ 403 0000 FEE7     		b	.L24
+ 404              		.cfi_endproc
+ 405              	.LFE135:
+ 407              		.section	.text.DMA1_Stream7_IRQHandler,"ax",%progbits
+ 408              		.align	1
+ 409              		.global	DMA1_Stream7_IRQHandler
+ 410              		.syntax unified
+ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccAZtPTk.s 			page 10
+
+
+ 411              		.thumb
+ 412              		.thumb_func
+ 414              	DMA1_Stream7_IRQHandler:
+ 415              	.LFB136:
+ 106:Core/Src/audio.c **** }
+ 107:Core/Src/audio.c **** 
+ 108:Core/Src/audio.c **** 
+ 109:Core/Src/audio.c **** void I2S3_IRQHandler(void)
+ 110:Core/Src/audio.c **** {
+ 416              		.loc 1 110 1 view -0
+ 417              		.cfi_startproc
+ 418              		@ args = 0, pretend = 0, frame = 0
+ 419              		@ frame_needed = 0, uses_anonymous_args = 0
+ 420 0000 08B5     		push	{r3, lr}
+ 421              		.cfi_def_cfa_offset 8
+ 422              		.cfi_offset 3, -8
+ 423              		.cfi_offset 14, -4
+ 111:Core/Src/audio.c **** 	HAL_DMA_IRQHandler(hAudioOutI2s.hdmatx);
+ 424              		.loc 1 111 2 view .LVU81
+ 425 0002 024B     		ldr	r3, .L27
+ 426 0004 986B     		ldr	r0, [r3, #56]
+ 427 0006 FFF7FEFF 		bl	HAL_DMA_IRQHandler
+ 428              	.LVL25:
+ 112:Core/Src/audio.c **** }
+ 429              		.loc 1 112 1 is_stmt 0 view .LVU82
+ 430 000a 08BD     		pop	{r3, pc}
+ 431              	.L28:
+ 432              		.align	2
+ 433              	.L27:
+ 434 000c 00000000 		.word	hAudioOutI2s
+ 435              		.cfi_endproc
+ 436              	.LFE136:
+ 438              		.section	.text.DMA1_Stream3_IRQHandler,"ax",%progbits
+ 439              		.align	1
+ 440              		.global	DMA1_Stream3_IRQHandler
+ 441              		.syntax unified
+ 442              		.thumb
+ 443              		.thumb_func
+ 445              	DMA1_Stream3_IRQHandler:
+ 446              	.LFB137:
+ 113:Core/Src/audio.c **** void I2S2_IRQHandler(void)
+ 114:Core/Src/audio.c **** {
+ 447              		.loc 1 114 1 is_stmt 1 view -0
+ 448              		.cfi_startproc
+ 449              		@ args = 0, pretend = 0, frame = 0
+ 450              		@ frame_needed = 0, uses_anonymous_args = 0
+ 451 0000 08B5     		push	{r3, lr}
+ 452              		.cfi_def_cfa_offset 8
+ 453              		.cfi_offset 3, -8
+ 454              		.cfi_offset 14, -4
+ 115:Core/Src/audio.c **** 	HAL_DMA_IRQHandler(hAudioInI2s.hdmarx);
+ 455              		.loc 1 115 2 view .LVU84
+ 456 0002 024B     		ldr	r3, .L31
+ 457 0004 D86B     		ldr	r0, [r3, #60]
+ 458 0006 FFF7FEFF 		bl	HAL_DMA_IRQHandler
+ 459              	.LVL26:
+ 116:Core/Src/audio.c **** }...
+ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccAZtPTk.s 			page 11
+
+
+ 460              		.loc 1 116 1 is_stmt 0 view .LVU85
+ 461 000a 08BD     		pop	{r3, pc}
+ 462              	.L32:
+ 463              		.align	2
+ 464              	.L31:
+ 465 000c 00000000 		.word	hAudioInI2s
+ 466              		.cfi_endproc
+ 467              	.LFE137:
+ 469              		.global	superSaw_outR
+ 470              		.global	superSaw_outL
+ 471              		.global	outputBuffer
+ 472              		.global	audioBuffer
+ 473              		.section	.bss.audioBuffer,"aw",%nobits
+ 474              		.align	2
+ 475              		.set	.LANCHOR0,. + 0
+ 478              	audioBuffer:
+ 479 0000 00000000 		.space	128
+ 479      00000000 
+ 479      00000000 
+ 479      00000000 
+ 479      00000000 
+ 480              		.section	.bss.outputBuffer,"aw",%nobits
+ 481              		.align	2
+ 482              		.set	.LANCHOR1,. + 0
+ 485              	outputBuffer:
+ 486 0000 00000000 		.space	128
+ 486      00000000 
+ 486      00000000 
+ 486      00000000 
+ 486      00000000 
+ 487              		.section	.bss.superSaw_outL,"aw",%nobits
+ 488              		.align	2
+ 491              	superSaw_outL:
+ 492 0000 00000000 		.space	4
+ 493              		.section	.bss.superSaw_outR,"aw",%nobits
+ 494              		.align	2
+ 497              	superSaw_outR:
+ 498 0000 00000000 		.space	4
+ 499              		.text
+ 500              	.Letext0:
+ 501              		.file 2 "/Users/johannes/Library/Application Support/Code/User/globalStorage/bmd.stm32-for-vscode/
+ 502              		.file 3 "/Users/johannes/Library/Application Support/Code/User/globalStorage/bmd.stm32-for-vscode/
+ 503              		.file 4 "Drivers/CMSIS/Device/ST/STM32F4xx/Include/stm32f407xx.h"
+ 504              		.file 5 "Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_def.h"
+ 505              		.file 6 "Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_dma.h"
+ 506              		.file 7 "Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_i2s.h"
+ 507              		.file 8 "Core/Inc/audio.h"
+ 508              		.file 9 "Core/Inc/oscillators.h"
+ 509              		.file 10 "Core/Inc/../../Drivers/BSP/STM32F4-Discovery/stm32f4_discovery_audio.h"
+ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccAZtPTk.s 			page 12
+
+
+DEFINED SYMBOLS
+                            *ABS*:0000000000000000 audio.c
+/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccAZtPTk.s:20     .text.AUDIO_Init:0000000000000000 $t
+/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccAZtPTk.s:26     .text.AUDIO_Init:0000000000000000 AUDIO_Init
+/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccAZtPTk.s:126    .text.AUDIO_Init:00000000000000e0 $d
+/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccAZtPTk.s:141    .text.audioBlock:0000000000000000 $t
+/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccAZtPTk.s:147    .text.audioBlock:0000000000000000 audioBlock
+/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccAZtPTk.s:213    .text.audioBlock:0000000000000030 $d
+/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccAZtPTk.s:218    .text.BSP_AUDIO_OUT_HalfTransfer_CallBack:0000000000000000 $t
+/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccAZtPTk.s:224    .text.BSP_AUDIO_OUT_HalfTransfer_CallBack:0000000000000000 BSP_AUDIO_OUT_HalfTransfer_CallBack
+/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccAZtPTk.s:290    .text.BSP_AUDIO_OUT_HalfTransfer_CallBack:0000000000000050 $d
+/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccAZtPTk.s:297    .text.BSP_AUDIO_OUT_TransferComplete_CallBack:0000000000000000 $t
+/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccAZtPTk.s:303    .text.BSP_AUDIO_OUT_TransferComplete_CallBack:0000000000000000 BSP_AUDIO_OUT_TransferComplete_CallBack
+/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccAZtPTk.s:378    .text.BSP_AUDIO_OUT_TransferComplete_CallBack:0000000000000060 $d
+/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccAZtPTk.s:385    .text.BSP_AUDIO_OUT_Error_CallBack:0000000000000000 $t
+/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccAZtPTk.s:391    .text.BSP_AUDIO_OUT_Error_CallBack:0000000000000000 BSP_AUDIO_OUT_Error_CallBack
+/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccAZtPTk.s:408    .text.DMA1_Stream7_IRQHandler:0000000000000000 $t
+/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccAZtPTk.s:414    .text.DMA1_Stream7_IRQHandler:0000000000000000 DMA1_Stream7_IRQHandler
+/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccAZtPTk.s:434    .text.DMA1_Stream7_IRQHandler:000000000000000c $d
+/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccAZtPTk.s:439    .text.DMA1_Stream3_IRQHandler:0000000000000000 $t
+/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccAZtPTk.s:445    .text.DMA1_Stream3_IRQHandler:0000000000000000 DMA1_Stream3_IRQHandler
+/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccAZtPTk.s:465    .text.DMA1_Stream3_IRQHandler:000000000000000c $d
+/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccAZtPTk.s:497    .bss.superSaw_outR:0000000000000000 superSaw_outR
+/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccAZtPTk.s:491    .bss.superSaw_outL:0000000000000000 superSaw_outL
+/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccAZtPTk.s:485    .bss.outputBuffer:0000000000000000 outputBuffer
+/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccAZtPTk.s:478    .bss.audioBuffer:0000000000000000 audioBuffer
+/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccAZtPTk.s:474    .bss.audioBuffer:0000000000000000 $d
+/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccAZtPTk.s:481    .bss.outputBuffer:0000000000000000 $d
+/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccAZtPTk.s:488    .bss.superSaw_outL:0000000000000000 $d
+/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccAZtPTk.s:494    .bss.superSaw_outR:0000000000000000 $d
+
+UNDEFINED SYMBOLS
+BSP_AUDIO_OUT_Init
+BSP_AUDIO_OUT_Play
+osc_init
+osc1
+osc2
+osc3
+osc4
+osc5
+osc6
+osc7
+osc_Sine
+BSP_AUDIO_OUT_ChangeBuffer
+HAL_DMA_IRQHandler
+hAudioOutI2s
+hAudioInI2s
