@@ -14,7 +14,8 @@
 
 #include "../../Drivers/BSP/STM32F4-Discovery/stm32f4_discovery_audio.h"
 #include "CONSTS.h"
-#include "envelope.h"
+#include "ADSR_envelope.h"
+#include <stdint.h>
 
 
 
@@ -37,7 +38,7 @@ void AUDIO_Init();
  * @param output 
  * @param samples 
  */
-void audioBlock(float *output, int32_t samples);
+void audioBlock(uint16_t *output, uint16_t samples);
 
 
 #endif // !AUDIO_H

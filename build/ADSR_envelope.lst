@@ -1,0 +1,2182 @@
+ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccpRnkdN.s 			page 1
+
+
+   1              		.cpu cortex-m4
+   2              		.arch armv7e-m
+   3              		.fpu fpv4-sp-d16
+   4              		.eabi_attribute 27, 1
+   5              		.eabi_attribute 28, 1
+   6              		.eabi_attribute 20, 1
+   7              		.eabi_attribute 21, 1
+   8              		.eabi_attribute 23, 3
+   9              		.eabi_attribute 24, 1
+  10              		.eabi_attribute 25, 1
+  11              		.eabi_attribute 26, 1
+  12              		.eabi_attribute 30, 1
+  13              		.eabi_attribute 34, 1
+  14              		.eabi_attribute 18, 4
+  15              		.file	"ADSR_envelope.c"
+  16              		.text
+  17              	.Ltext0:
+  18              		.cfi_sections	.debug_frame
+  19              		.section	.text.ADSR_keyOn,"ax",%progbits
+  20              		.align	1
+  21              		.global	ADSR_keyOn
+  22              		.syntax unified
+  23              		.thumb
+  24              		.thumb_func
+  26              	ADSR_keyOn:
+  27              	.LVL0:
+  28              	.LFB4:
+  29              		.file 1 "Core/Src/ADSR_envelope.c"
+   1:Core/Src/ADSR_envelope.c **** /**
+   2:Core/Src/ADSR_envelope.c ****  * @file ADSR_envelope.c
+   3:Core/Src/ADSR_envelope.c ****  * @author modified by johannes regnier
+   4:Core/Src/ADSR_envelope.c ****  * @brief Exponential ADSR envelope generator
+   5:Core/Src/ADSR_envelope.c ****  * @note Modification of Perry R. Cook and Gary P. Scavone Envelope subclass (which has linear segm
+   6:Core/Src/ADSR_envelope.c ****  * @note  https://ccrma.stanford.edu/software/stk/classstk_1_1ADSR.html 
+   7:Core/Src/ADSR_envelope.c ****  * @note Exponential curve multiplier from https://www.martin-finke.de/articles/audio-plugins-011-e
+   8:Core/Src/ADSR_envelope.c ****  * @version 0.1
+   9:Core/Src/ADSR_envelope.c ****  * @date 2023-12-31
+  10:Core/Src/ADSR_envelope.c ****  * 
+  11:Core/Src/ADSR_envelope.c ****  * @copyright Copyright (c) 2023
+  12:Core/Src/ADSR_envelope.c ****  * 
+  13:Core/Src/ADSR_envelope.c ****  */
+  14:Core/Src/ADSR_envelope.c **** 
+  15:Core/Src/ADSR_envelope.c **** 
+  16:Core/Src/ADSR_envelope.c **** 
+  17:Core/Src/ADSR_envelope.c **** 
+  18:Core/Src/ADSR_envelope.c **** 
+  19:Core/Src/ADSR_envelope.c **** /***************************************************/
+  20:Core/Src/ADSR_envelope.c **** /*
+  21:Core/Src/ADSR_envelope.c ****     This Envelope subclass implements a
+  22:Core/Src/ADSR_envelope.c ****     traditional ADSR (Attack, Decay,
+  23:Core/Src/ADSR_envelope.c ****     Sustain, Release) envelope.  It
+  24:Core/Src/ADSR_envelope.c ****     responds to simple keyOn and keyOff
+  25:Core/Src/ADSR_envelope.c ****     messages, keeping track of its state.
+  26:Core/Src/ADSR_envelope.c ****     The \e state = ADSR::DONE after the
+  27:Core/Src/ADSR_envelope.c ****     envelope value reaches 0.0 in the
+  28:Core/Src/ADSR_envelope.c ****     ADSR::RELEASE state.
+  29:Core/Src/ADSR_envelope.c **** 
+ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccpRnkdN.s 			page 2
+
+
+  30:Core/Src/ADSR_envelope.c ****     by Perry R. Cook and Gary P. Scavone, 1995 - 2005.
+  31:Core/Src/ADSR_envelope.c **** */
+  32:Core/Src/ADSR_envelope.c **** /*
+  33:Core/Src/ADSR_envelope.c **** * This program is free software; you can redistribute it and/or modify
+  34:Core/Src/ADSR_envelope.c **** * it under the terms of the GNU General Public License as published by
+  35:Core/Src/ADSR_envelope.c **** * the Free Software Foundation; either version 2 of the License, or
+  36:Core/Src/ADSR_envelope.c **** * (at your option) any later version.
+  37:Core/Src/ADSR_envelope.c **** *
+  38:Core/Src/ADSR_envelope.c **** * This program is distributed in the hope that it will be useful,
+  39:Core/Src/ADSR_envelope.c **** * but WITHOUT ANY WARRANTY; without even the implied warranty of
+  40:Core/Src/ADSR_envelope.c **** * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+  41:Core/Src/ADSR_envelope.c **** * GNU General Public License for more details.
+  42:Core/Src/ADSR_envelope.c **** *
+  43:Core/Src/ADSR_envelope.c **** * You should have received a copy of the GNU General Public License
+  44:Core/Src/ADSR_envelope.c **** * along with this program; if not, write to the Free Software
+  45:Core/Src/ADSR_envelope.c **** * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+  46:Core/Src/ADSR_envelope.c **** *
+  47:Core/Src/ADSR_envelope.c **** */
+  48:Core/Src/ADSR_envelope.c **** /***************************************************/
+  49:Core/Src/ADSR_envelope.c **** 
+  50:Core/Src/ADSR_envelope.c **** #include "ADSR_envelope.h"
+  51:Core/Src/ADSR_envelope.c **** #include <stdint.h>
+  52:Core/Src/ADSR_envelope.c **** #include "lut_log.h"
+  53:Core/Src/ADSR_envelope.c **** #include "helper_functions.h"
+  54:Core/Src/ADSR_envelope.c **** 
+  55:Core/Src/ADSR_envelope.c **** /*---------------------------------------------------------------------------*/
+  56:Core/Src/ADSR_envelope.c **** 
+  57:Core/Src/ADSR_envelope.c **** ADSR_t			adsr;
+  58:Core/Src/ADSR_envelope.c **** 
+  59:Core/Src/ADSR_envelope.c **** /*---------------------------------------------------------------------------*/
+  60:Core/Src/ADSR_envelope.c **** 
+  61:Core/Src/ADSR_envelope.c **** 
+  62:Core/Src/ADSR_envelope.c **** 
+  63:Core/Src/ADSR_envelope.c **** void ADSR_init(ADSR_t *env)
+  64:Core/Src/ADSR_envelope.c **** {
+  65:Core/Src/ADSR_envelope.c ****     env->target = 1.0;
+  66:Core/Src/ADSR_envelope.c ****     env->value = 0.0;
+  67:Core/Src/ADSR_envelope.c ****     env->state = OFF;
+  68:Core/Src/ADSR_envelope.c ****     env->atk_time = 0.01;
+  69:Core/Src/ADSR_envelope.c ****     env->dcy_time = 0.1;
+  70:Core/Src/ADSR_envelope.c ****     env->sust_level = 0.8;
+  71:Core/Src/ADSR_envelope.c ****     env->rel_time = 1; 
+  72:Core/Src/ADSR_envelope.c ****     env->atk_mult = ADSR_calculateMultiplier(ADSR_MIN_LEVEL, env->target, env->atk_time); 
+  73:Core/Src/ADSR_envelope.c ****     env->dcy_mult = ADSR_calculateMultiplier(env->target, env->sust_level, env->dcy_time); 
+  74:Core/Src/ADSR_envelope.c ****     env->rel_mult = ADSR_calculateMultiplier(env->sust_level, ADSR_MIN_LEVEL, env->rel_time);
+  75:Core/Src/ADSR_envelope.c **** }
+  76:Core/Src/ADSR_envelope.c **** 
+  77:Core/Src/ADSR_envelope.c **** void ADSR_keyOn(ADSR_t *env)
+  78:Core/Src/ADSR_envelope.c **** {
+  30              		.loc 1 78 1 view -0
+  31              		.cfi_startproc
+  32              		@ args = 0, pretend = 0, frame = 0
+  33              		@ frame_needed = 0, uses_anonymous_args = 0
+  34              		@ link register save eliminated.
+  79:Core/Src/ADSR_envelope.c **** 	env->target = 1.0f;
+  35              		.loc 1 79 2 view .LVU1
+  36              		.loc 1 79 14 is_stmt 0 view .LVU2
+ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccpRnkdN.s 			page 3
+
+
+  37 0000 4FF07E53 		mov	r3, #1065353216
+  38 0004 4360     		str	r3, [r0, #4]	@ float
+  80:Core/Src/ADSR_envelope.c ****     env->value = ADSR_MIN_LEVEL; // start at very low value != 0, if not, multiplier does nothing
+  39              		.loc 1 80 5 is_stmt 1 view .LVU3
+  40              		.loc 1 80 16 is_stmt 0 view .LVU4
+  41 0006 024B     		ldr	r3, .L2
+  42 0008 0360     		str	r3, [r0]	@ float
+  81:Core/Src/ADSR_envelope.c ****     env->state = ATTACK;
+  43              		.loc 1 81 5 is_stmt 1 view .LVU5
+  44              		.loc 1 81 16 is_stmt 0 view .LVU6
+  45 000a 0023     		movs	r3, #0
+  46 000c 8360     		str	r3, [r0, #8]
+  82:Core/Src/ADSR_envelope.c **** }
+  47              		.loc 1 82 1 view .LVU7
+  48 000e 7047     		bx	lr
+  49              	.L3:
+  50              		.align	2
+  51              	.L2:
+  52 0010 17B7D138 		.word	953267991
+  53              		.cfi_endproc
+  54              	.LFE4:
+  56              		.section	.text.ADSR_keyOff,"ax",%progbits
+  57              		.align	1
+  58              		.global	ADSR_keyOff
+  59              		.syntax unified
+  60              		.thumb
+  61              		.thumb_func
+  63              	ADSR_keyOff:
+  64              	.LVL1:
+  65              	.LFB5:
+  83:Core/Src/ADSR_envelope.c **** 
+  84:Core/Src/ADSR_envelope.c **** void ADSR_keyOff(ADSR_t *env)
+  85:Core/Src/ADSR_envelope.c **** {
+  66              		.loc 1 85 1 is_stmt 1 view -0
+  67              		.cfi_startproc
+  68              		@ args = 0, pretend = 0, frame = 0
+  69              		@ frame_needed = 0, uses_anonymous_args = 0
+  70              		@ link register save eliminated.
+  86:Core/Src/ADSR_envelope.c **** 	env->target = 0.0;
+  71              		.loc 1 86 2 view .LVU9
+  72              		.loc 1 86 14 is_stmt 0 view .LVU10
+  73 0000 0023     		movs	r3, #0
+  74 0002 4360     		str	r3, [r0, #4]	@ float
+  87:Core/Src/ADSR_envelope.c **** 	env->state = RELEASE;
+  75              		.loc 1 87 2 is_stmt 1 view .LVU11
+  76              		.loc 1 87 13 is_stmt 0 view .LVU12
+  77 0004 0323     		movs	r3, #3
+  78 0006 8360     		str	r3, [r0, #8]
+  88:Core/Src/ADSR_envelope.c **** }
+  79              		.loc 1 88 1 view .LVU13
+  80 0008 7047     		bx	lr
+  81              		.cfi_endproc
+  82              	.LFE5:
+  84              		.section	.text.ADSR_setSustainLevel,"ax",%progbits
+  85              		.align	1
+  86              		.global	ADSR_setSustainLevel
+  87              		.syntax unified
+ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccpRnkdN.s 			page 4
+
+
+  88              		.thumb
+  89              		.thumb_func
+  91              	ADSR_setSustainLevel:
+  92              	.LVL2:
+  93              	.LFB8:
+  89:Core/Src/ADSR_envelope.c **** 
+  90:Core/Src/ADSR_envelope.c **** 
+  91:Core/Src/ADSR_envelope.c **** 
+  92:Core/Src/ADSR_envelope.c **** 
+  93:Core/Src/ADSR_envelope.c **** 
+  94:Core/Src/ADSR_envelope.c **** void ADSR_setAttackTime(ADSR_t *env, float time)
+  95:Core/Src/ADSR_envelope.c **** {
+  96:Core/Src/ADSR_envelope.c ****     env->atk_mult = ADSR_calculateMultiplier(ADSR_MIN_LEVEL, env->target, env->atk_time);
+  97:Core/Src/ADSR_envelope.c **** }
+  98:Core/Src/ADSR_envelope.c **** 
+  99:Core/Src/ADSR_envelope.c **** void ADSR_setDecayTime(ADSR_t *env, float time)
+ 100:Core/Src/ADSR_envelope.c **** {
+ 101:Core/Src/ADSR_envelope.c **** 	env->dcy_mult = ADSR_calculateMultiplier(env->target, env->sust_level, env->dcy_time); 
+ 102:Core/Src/ADSR_envelope.c **** }
+ 103:Core/Src/ADSR_envelope.c **** 
+ 104:Core/Src/ADSR_envelope.c **** void ADSR_setSustainLevel(ADSR_t *env, float level)
+ 105:Core/Src/ADSR_envelope.c **** {
+  94              		.loc 1 105 1 is_stmt 1 view -0
+  95              		.cfi_startproc
+  96              		@ args = 0, pretend = 0, frame = 0
+  97              		@ frame_needed = 0, uses_anonymous_args = 0
+  98              		@ link register save eliminated.
+ 106:Core/Src/ADSR_envelope.c **** 	env->sust_level = level;
+  99              		.loc 1 106 2 view .LVU15
+ 100              		.loc 1 106 18 is_stmt 0 view .LVU16
+ 101 0000 80ED050A 		vstr.32	s0, [r0, #20]
+ 107:Core/Src/ADSR_envelope.c **** }
+ 102              		.loc 1 107 1 view .LVU17
+ 103 0004 7047     		bx	lr
+ 104              		.cfi_endproc
+ 105              	.LFE8:
+ 107              		.section	.text.ADSR_calculateMultiplier,"ax",%progbits
+ 108              		.align	1
+ 109              		.global	ADSR_calculateMultiplier
+ 110              		.syntax unified
+ 111              		.thumb
+ 112              		.thumb_func
+ 114              	ADSR_calculateMultiplier:
+ 115              	.LVL3:
+ 116              	.LFB10:
+ 108:Core/Src/ADSR_envelope.c **** 
+ 109:Core/Src/ADSR_envelope.c **** void ADSR_setReleaseTime(ADSR_t *env, float time)
+ 110:Core/Src/ADSR_envelope.c **** {
+ 111:Core/Src/ADSR_envelope.c ****     env->rel_mult = ADSR_calculateMultiplier(env->sust_level, ADSR_MIN_LEVEL, env->rel_time);
+ 112:Core/Src/ADSR_envelope.c **** }
+ 113:Core/Src/ADSR_envelope.c **** 
+ 114:Core/Src/ADSR_envelope.c **** /**
+ 115:Core/Src/ADSR_envelope.c ****  * @brief Compute multiplier to achieve exponential curve between 2 values in specified time
+ 116:Core/Src/ADSR_envelope.c ****  * @note uses lookup table for log instead of math log function
+ 117:Core/Src/ADSR_envelope.c ****  * @note formula comes from https://www.martin-finke.de/articles/audio-plugins-011-envelopes/  
+ 118:Core/Src/ADSR_envelope.c ****  * @param start_level 
+ 119:Core/Src/ADSR_envelope.c ****  * @param end_level 
+ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccpRnkdN.s 			page 5
+
+
+ 120:Core/Src/ADSR_envelope.c ****  * @param time
+ 121:Core/Src/ADSR_envelope.c ****  * @return float 
+ 122:Core/Src/ADSR_envelope.c ****  */
+ 123:Core/Src/ADSR_envelope.c **** float ADSR_calculateMultiplier(float start_level, float end_level, float time){
+ 117              		.loc 1 123 79 is_stmt 1 view -0
+ 118              		.cfi_startproc
+ 119              		@ args = 0, pretend = 0, frame = 0
+ 120              		@ frame_needed = 0, uses_anonymous_args = 0
+ 121              		.loc 1 123 79 is_stmt 0 view .LVU19
+ 122 0000 10B5     		push	{r4, lr}
+ 123              		.cfi_def_cfa_offset 8
+ 124              		.cfi_offset 4, -8
+ 125              		.cfi_offset 14, -4
+ 126 0002 2DED048B 		vpush.64	{d8, d9}
+ 127              		.cfi_def_cfa_offset 24
+ 128              		.cfi_offset 80, -24
+ 129              		.cfi_offset 81, -20
+ 130              		.cfi_offset 82, -16
+ 131              		.cfi_offset 83, -12
+ 132 0006 B0EE409A 		vmov.f32	s18, s0
+ 133 000a B0EE418A 		vmov.f32	s16, s2
+ 124:Core/Src/ADSR_envelope.c ****     return  1.0 + (interp_lin_lut(LUT_LOG_SIZE * (end_level), LUT_LOG_SIZE, log_lut) - interp_lin_l
+ 134              		.loc 1 124 5 is_stmt 1 view .LVU20
+ 135              		.loc 1 124 20 is_stmt 0 view .LVU21
+ 136 000e 114C     		ldr	r4, .L8
+ 137 0010 DFED119A 		vldr.32	s19, .L8+4
+ 138 0014 2146     		mov	r1, r4
+ 139 0016 4FF48060 		mov	r0, #1024
+ 140 001a 20EEA90A 		vmul.f32	s0, s1, s19
+ 141              	.LVL4:
+ 142              		.loc 1 124 20 view .LVU22
+ 143 001e FFF7FEFF 		bl	interp_lin_lut
+ 144              	.LVL5:
+ 145              		.loc 1 124 20 view .LVU23
+ 146 0022 F0EE408A 		vmov.f32	s17, s0
+ 147              		.loc 1 124 88 view .LVU24
+ 148 0026 2146     		mov	r1, r4
+ 149 0028 4FF48060 		mov	r0, #1024
+ 150 002c 29EE290A 		vmul.f32	s0, s18, s19
+ 151 0030 FFF7FEFF 		bl	interp_lin_lut
+ 152              	.LVL6:
+ 153              		.loc 1 124 86 view .LVU25
+ 154 0034 78EEC08A 		vsub.f32	s17, s17, s0
+ 155              		.loc 1 124 165 view .LVU26
+ 156 0038 DFED087A 		vldr.32	s15, .L8+8
+ 157 003c 28EE278A 		vmul.f32	s16, s16, s15
+ 158              	.LVL7:
+ 159              		.loc 1 124 157 view .LVU27
+ 160 0040 88EE880A 		vdiv.f32	s0, s17, s16
+ 125:Core/Src/ADSR_envelope.c **** }
+ 161              		.loc 1 125 1 view .LVU28
+ 162 0044 F7EE007A 		vmov.f32	s15, #1.0e+0
+ 163 0048 30EE270A 		vadd.f32	s0, s0, s15
+ 164 004c BDEC048B 		vldm	sp!, {d8-d9}
+ 165              		.cfi_restore 82
+ 166              		.cfi_restore 83
+ 167              		.cfi_restore 80
+ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccpRnkdN.s 			page 6
+
+
+ 168              		.cfi_restore 81
+ 169              		.cfi_def_cfa_offset 8
+ 170              	.LVL8:
+ 171              		.loc 1 125 1 view .LVU29
+ 172 0050 10BD     		pop	{r4, pc}
+ 173              	.L9:
+ 174 0052 00BF     		.align	2
+ 175              	.L8:
+ 176 0054 00000000 		.word	log_lut
+ 177 0058 00008044 		.word	1149239296
+ 178 005c 00803B47 		.word	1195081728
+ 179              		.cfi_endproc
+ 180              	.LFE10:
+ 182              		.section	.text.ADSR_init,"ax",%progbits
+ 183              		.align	1
+ 184              		.global	ADSR_init
+ 185              		.syntax unified
+ 186              		.thumb
+ 187              		.thumb_func
+ 189              	ADSR_init:
+ 190              	.LVL9:
+ 191              	.LFB3:
+  64:Core/Src/ADSR_envelope.c ****     env->target = 1.0;
+ 192              		.loc 1 64 1 is_stmt 1 view -0
+ 193              		.cfi_startproc
+ 194              		@ args = 0, pretend = 0, frame = 0
+ 195              		@ frame_needed = 0, uses_anonymous_args = 0
+  64:Core/Src/ADSR_envelope.c ****     env->target = 1.0;
+ 196              		.loc 1 64 1 is_stmt 0 view .LVU31
+ 197 0000 10B5     		push	{r4, lr}
+ 198              		.cfi_def_cfa_offset 8
+ 199              		.cfi_offset 4, -8
+ 200              		.cfi_offset 14, -4
+ 201 0002 2DED028B 		vpush.64	{d8}
+ 202              		.cfi_def_cfa_offset 16
+ 203              		.cfi_offset 80, -16
+ 204              		.cfi_offset 81, -12
+ 205 0006 0446     		mov	r4, r0
+  65:Core/Src/ADSR_envelope.c ****     env->value = 0.0;
+ 206              		.loc 1 65 5 is_stmt 1 view .LVU32
+  65:Core/Src/ADSR_envelope.c ****     env->value = 0.0;
+ 207              		.loc 1 65 17 is_stmt 0 view .LVU33
+ 208 0008 F7EE000A 		vmov.f32	s1, #1.0e+0
+ 209 000c C0ED010A 		vstr.32	s1, [r0, #4]
+  66:Core/Src/ADSR_envelope.c ****     env->state = OFF;
+ 210              		.loc 1 66 5 is_stmt 1 view .LVU34
+  66:Core/Src/ADSR_envelope.c ****     env->state = OFF;
+ 211              		.loc 1 66 16 is_stmt 0 view .LVU35
+ 212 0010 0023     		movs	r3, #0
+ 213 0012 0360     		str	r3, [r0]	@ float
+  67:Core/Src/ADSR_envelope.c ****     env->atk_time = 0.01;
+ 214              		.loc 1 67 5 is_stmt 1 view .LVU36
+  67:Core/Src/ADSR_envelope.c ****     env->atk_time = 0.01;
+ 215              		.loc 1 67 16 is_stmt 0 view .LVU37
+ 216 0014 0423     		movs	r3, #4
+ 217 0016 8360     		str	r3, [r0, #8]
+  68:Core/Src/ADSR_envelope.c ****     env->dcy_time = 0.1;
+ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccpRnkdN.s 			page 7
+
+
+ 218              		.loc 1 68 5 is_stmt 1 view .LVU38
+  68:Core/Src/ADSR_envelope.c ****     env->dcy_time = 0.1;
+ 219              		.loc 1 68 19 is_stmt 0 view .LVU39
+ 220 0018 9FED141A 		vldr.32	s2, .L12
+ 221 001c 80ED031A 		vstr.32	s2, [r0, #12]
+  69:Core/Src/ADSR_envelope.c ****     env->sust_level = 0.8;
+ 222              		.loc 1 69 5 is_stmt 1 view .LVU40
+  69:Core/Src/ADSR_envelope.c ****     env->sust_level = 0.8;
+ 223              		.loc 1 69 19 is_stmt 0 view .LVU41
+ 224 0020 134B     		ldr	r3, .L12+4
+ 225 0022 0361     		str	r3, [r0, #16]	@ float
+  70:Core/Src/ADSR_envelope.c ****     env->rel_time = 1; 
+ 226              		.loc 1 70 5 is_stmt 1 view .LVU42
+  70:Core/Src/ADSR_envelope.c ****     env->rel_time = 1; 
+ 227              		.loc 1 70 21 is_stmt 0 view .LVU43
+ 228 0024 134B     		ldr	r3, .L12+8
+ 229 0026 4361     		str	r3, [r0, #20]	@ float
+  71:Core/Src/ADSR_envelope.c ****     env->atk_mult = ADSR_calculateMultiplier(ADSR_MIN_LEVEL, env->target, env->atk_time); 
+ 230              		.loc 1 71 5 is_stmt 1 view .LVU44
+  71:Core/Src/ADSR_envelope.c ****     env->atk_mult = ADSR_calculateMultiplier(ADSR_MIN_LEVEL, env->target, env->atk_time); 
+ 231              		.loc 1 71 19 is_stmt 0 view .LVU45
+ 232 0028 C0ED060A 		vstr.32	s1, [r0, #24]
+  72:Core/Src/ADSR_envelope.c ****     env->dcy_mult = ADSR_calculateMultiplier(env->target, env->sust_level, env->dcy_time); 
+ 233              		.loc 1 72 5 is_stmt 1 view .LVU46
+  72:Core/Src/ADSR_envelope.c ****     env->dcy_mult = ADSR_calculateMultiplier(env->target, env->sust_level, env->dcy_time); 
+ 234              		.loc 1 72 21 is_stmt 0 view .LVU47
+ 235 002c 9FED128A 		vldr.32	s16, .L12+12
+ 236 0030 B0EE480A 		vmov.f32	s0, s16
+ 237 0034 FFF7FEFF 		bl	ADSR_calculateMultiplier
+ 238              	.LVL10:
+  72:Core/Src/ADSR_envelope.c ****     env->dcy_mult = ADSR_calculateMultiplier(env->target, env->sust_level, env->dcy_time); 
+ 239              		.loc 1 72 19 view .LVU48
+ 240 0038 84ED070A 		vstr.32	s0, [r4, #28]
+  73:Core/Src/ADSR_envelope.c ****     env->rel_mult = ADSR_calculateMultiplier(env->sust_level, ADSR_MIN_LEVEL, env->rel_time);
+ 241              		.loc 1 73 5 is_stmt 1 view .LVU49
+  73:Core/Src/ADSR_envelope.c ****     env->rel_mult = ADSR_calculateMultiplier(env->sust_level, ADSR_MIN_LEVEL, env->rel_time);
+ 242              		.loc 1 73 21 is_stmt 0 view .LVU50
+ 243 003c 94ED041A 		vldr.32	s2, [r4, #16]
+ 244 0040 D4ED050A 		vldr.32	s1, [r4, #20]
+ 245 0044 94ED010A 		vldr.32	s0, [r4, #4]
+ 246 0048 FFF7FEFF 		bl	ADSR_calculateMultiplier
+ 247              	.LVL11:
+  73:Core/Src/ADSR_envelope.c ****     env->rel_mult = ADSR_calculateMultiplier(env->sust_level, ADSR_MIN_LEVEL, env->rel_time);
+ 248              		.loc 1 73 19 view .LVU51
+ 249 004c 84ED080A 		vstr.32	s0, [r4, #32]
+  74:Core/Src/ADSR_envelope.c **** }
+ 250              		.loc 1 74 5 is_stmt 1 view .LVU52
+  74:Core/Src/ADSR_envelope.c **** }
+ 251              		.loc 1 74 21 is_stmt 0 view .LVU53
+ 252 0050 94ED061A 		vldr.32	s2, [r4, #24]
+ 253 0054 F0EE480A 		vmov.f32	s1, s16
+ 254 0058 94ED050A 		vldr.32	s0, [r4, #20]
+ 255 005c FFF7FEFF 		bl	ADSR_calculateMultiplier
+ 256              	.LVL12:
+  74:Core/Src/ADSR_envelope.c **** }
+ 257              		.loc 1 74 19 view .LVU54
+ 258 0060 84ED090A 		vstr.32	s0, [r4, #36]
+ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccpRnkdN.s 			page 8
+
+
+  75:Core/Src/ADSR_envelope.c **** 
+ 259              		.loc 1 75 1 view .LVU55
+ 260 0064 BDEC028B 		vldm	sp!, {d8}
+ 261              		.cfi_restore 80
+ 262              		.cfi_restore 81
+ 263              		.cfi_def_cfa_offset 8
+ 264 0068 10BD     		pop	{r4, pc}
+ 265              	.LVL13:
+ 266              	.L13:
+  75:Core/Src/ADSR_envelope.c **** 
+ 267              		.loc 1 75 1 view .LVU56
+ 268 006a 00BF     		.align	2
+ 269              	.L12:
+ 270 006c 0AD7233C 		.word	1008981770
+ 271 0070 CDCCCC3D 		.word	1036831949
+ 272 0074 CDCC4C3F 		.word	1061997773
+ 273 0078 17B7D138 		.word	953267991
+ 274              		.cfi_endproc
+ 275              	.LFE3:
+ 277              		.section	.text.ADSR_setAttackTime,"ax",%progbits
+ 278              		.align	1
+ 279              		.global	ADSR_setAttackTime
+ 280              		.syntax unified
+ 281              		.thumb
+ 282              		.thumb_func
+ 284              	ADSR_setAttackTime:
+ 285              	.LVL14:
+ 286              	.LFB6:
+  95:Core/Src/ADSR_envelope.c ****     env->atk_mult = ADSR_calculateMultiplier(ADSR_MIN_LEVEL, env->target, env->atk_time);
+ 287              		.loc 1 95 1 is_stmt 1 view -0
+ 288              		.cfi_startproc
+ 289              		@ args = 0, pretend = 0, frame = 0
+ 290              		@ frame_needed = 0, uses_anonymous_args = 0
+  95:Core/Src/ADSR_envelope.c ****     env->atk_mult = ADSR_calculateMultiplier(ADSR_MIN_LEVEL, env->target, env->atk_time);
+ 291              		.loc 1 95 1 is_stmt 0 view .LVU58
+ 292 0000 10B5     		push	{r4, lr}
+ 293              		.cfi_def_cfa_offset 8
+ 294              		.cfi_offset 4, -8
+ 295              		.cfi_offset 14, -4
+ 296 0002 0446     		mov	r4, r0
+  96:Core/Src/ADSR_envelope.c **** }
+ 297              		.loc 1 96 5 is_stmt 1 view .LVU59
+  96:Core/Src/ADSR_envelope.c **** }
+ 298              		.loc 1 96 21 is_stmt 0 view .LVU60
+ 299 0004 90ED031A 		vldr.32	s2, [r0, #12]
+ 300 0008 D0ED010A 		vldr.32	s1, [r0, #4]
+ 301 000c 9FED030A 		vldr.32	s0, .L16
+ 302              	.LVL15:
+  96:Core/Src/ADSR_envelope.c **** }
+ 303              		.loc 1 96 21 view .LVU61
+ 304 0010 FFF7FEFF 		bl	ADSR_calculateMultiplier
+ 305              	.LVL16:
+  96:Core/Src/ADSR_envelope.c **** }
+ 306              		.loc 1 96 19 view .LVU62
+ 307 0014 84ED070A 		vstr.32	s0, [r4, #28]
+  97:Core/Src/ADSR_envelope.c **** 
+ 308              		.loc 1 97 1 view .LVU63
+ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccpRnkdN.s 			page 9
+
+
+ 309 0018 10BD     		pop	{r4, pc}
+ 310              	.LVL17:
+ 311              	.L17:
+  97:Core/Src/ADSR_envelope.c **** 
+ 312              		.loc 1 97 1 view .LVU64
+ 313 001a 00BF     		.align	2
+ 314              	.L16:
+ 315 001c 17B7D138 		.word	953267991
+ 316              		.cfi_endproc
+ 317              	.LFE6:
+ 319              		.section	.text.ADSR_setDecayTime,"ax",%progbits
+ 320              		.align	1
+ 321              		.global	ADSR_setDecayTime
+ 322              		.syntax unified
+ 323              		.thumb
+ 324              		.thumb_func
+ 326              	ADSR_setDecayTime:
+ 327              	.LVL18:
+ 328              	.LFB7:
+ 100:Core/Src/ADSR_envelope.c **** 	env->dcy_mult = ADSR_calculateMultiplier(env->target, env->sust_level, env->dcy_time); 
+ 329              		.loc 1 100 1 is_stmt 1 view -0
+ 330              		.cfi_startproc
+ 331              		@ args = 0, pretend = 0, frame = 0
+ 332              		@ frame_needed = 0, uses_anonymous_args = 0
+ 100:Core/Src/ADSR_envelope.c **** 	env->dcy_mult = ADSR_calculateMultiplier(env->target, env->sust_level, env->dcy_time); 
+ 333              		.loc 1 100 1 is_stmt 0 view .LVU66
+ 334 0000 10B5     		push	{r4, lr}
+ 335              		.cfi_def_cfa_offset 8
+ 336              		.cfi_offset 4, -8
+ 337              		.cfi_offset 14, -4
+ 338 0002 0446     		mov	r4, r0
+ 101:Core/Src/ADSR_envelope.c **** }
+ 339              		.loc 1 101 2 is_stmt 1 view .LVU67
+ 101:Core/Src/ADSR_envelope.c **** }
+ 340              		.loc 1 101 18 is_stmt 0 view .LVU68
+ 341 0004 90ED041A 		vldr.32	s2, [r0, #16]
+ 342 0008 D0ED050A 		vldr.32	s1, [r0, #20]
+ 343 000c 90ED010A 		vldr.32	s0, [r0, #4]
+ 344              	.LVL19:
+ 101:Core/Src/ADSR_envelope.c **** }
+ 345              		.loc 1 101 18 view .LVU69
+ 346 0010 FFF7FEFF 		bl	ADSR_calculateMultiplier
+ 347              	.LVL20:
+ 101:Core/Src/ADSR_envelope.c **** }
+ 348              		.loc 1 101 16 view .LVU70
+ 349 0014 84ED080A 		vstr.32	s0, [r4, #32]
+ 102:Core/Src/ADSR_envelope.c **** 
+ 350              		.loc 1 102 1 view .LVU71
+ 351 0018 10BD     		pop	{r4, pc}
+ 102:Core/Src/ADSR_envelope.c **** 
+ 352              		.loc 1 102 1 view .LVU72
+ 353              		.cfi_endproc
+ 354              	.LFE7:
+ 356              		.section	.text.ADSR_setReleaseTime,"ax",%progbits
+ 357              		.align	1
+ 358              		.global	ADSR_setReleaseTime
+ 359              		.syntax unified
+ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccpRnkdN.s 			page 10
+
+
+ 360              		.thumb
+ 361              		.thumb_func
+ 363              	ADSR_setReleaseTime:
+ 364              	.LVL21:
+ 365              	.LFB9:
+ 110:Core/Src/ADSR_envelope.c ****     env->rel_mult = ADSR_calculateMultiplier(env->sust_level, ADSR_MIN_LEVEL, env->rel_time);
+ 366              		.loc 1 110 1 is_stmt 1 view -0
+ 367              		.cfi_startproc
+ 368              		@ args = 0, pretend = 0, frame = 0
+ 369              		@ frame_needed = 0, uses_anonymous_args = 0
+ 110:Core/Src/ADSR_envelope.c ****     env->rel_mult = ADSR_calculateMultiplier(env->sust_level, ADSR_MIN_LEVEL, env->rel_time);
+ 370              		.loc 1 110 1 is_stmt 0 view .LVU74
+ 371 0000 10B5     		push	{r4, lr}
+ 372              		.cfi_def_cfa_offset 8
+ 373              		.cfi_offset 4, -8
+ 374              		.cfi_offset 14, -4
+ 375 0002 0446     		mov	r4, r0
+ 111:Core/Src/ADSR_envelope.c **** }
+ 376              		.loc 1 111 5 is_stmt 1 view .LVU75
+ 111:Core/Src/ADSR_envelope.c **** }
+ 377              		.loc 1 111 21 is_stmt 0 view .LVU76
+ 378 0004 90ED061A 		vldr.32	s2, [r0, #24]
+ 379 0008 DFED040A 		vldr.32	s1, .L22
+ 380 000c 90ED050A 		vldr.32	s0, [r0, #20]
+ 381              	.LVL22:
+ 111:Core/Src/ADSR_envelope.c **** }
+ 382              		.loc 1 111 21 view .LVU77
+ 383 0010 FFF7FEFF 		bl	ADSR_calculateMultiplier
+ 384              	.LVL23:
+ 111:Core/Src/ADSR_envelope.c **** }
+ 385              		.loc 1 111 19 view .LVU78
+ 386 0014 84ED090A 		vstr.32	s0, [r4, #36]
+ 112:Core/Src/ADSR_envelope.c **** 
+ 387              		.loc 1 112 1 view .LVU79
+ 388 0018 10BD     		pop	{r4, pc}
+ 389              	.LVL24:
+ 390              	.L23:
+ 112:Core/Src/ADSR_envelope.c **** 
+ 391              		.loc 1 112 1 view .LVU80
+ 392 001a 00BF     		.align	2
+ 393              	.L22:
+ 394 001c 17B7D138 		.word	953267991
+ 395              		.cfi_endproc
+ 396              	.LFE9:
+ 398              		.section	.text.ADSR_setAllTimes,"ax",%progbits
+ 399              		.align	1
+ 400              		.global	ADSR_setAllTimes
+ 401              		.syntax unified
+ 402              		.thumb
+ 403              		.thumb_func
+ 405              	ADSR_setAllTimes:
+ 406              	.LVL25:
+ 407              	.LFB11:
+ 126:Core/Src/ADSR_envelope.c **** 
+ 127:Core/Src/ADSR_envelope.c **** void ADSR_setAllTimes(ADSR_t *env, float aTime, float dTime, float sLevel, float rTime)
+ 128:Core/Src/ADSR_envelope.c **** {
+ 408              		.loc 1 128 1 is_stmt 1 view -0
+ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccpRnkdN.s 			page 11
+
+
+ 409              		.cfi_startproc
+ 410              		@ args = 0, pretend = 0, frame = 0
+ 411              		@ frame_needed = 0, uses_anonymous_args = 0
+ 412              		.loc 1 128 1 is_stmt 0 view .LVU82
+ 413 0000 10B5     		push	{r4, lr}
+ 414              		.cfi_def_cfa_offset 8
+ 415              		.cfi_offset 4, -8
+ 416              		.cfi_offset 14, -4
+ 417 0002 2DED048B 		vpush.64	{d8, d9}
+ 418              		.cfi_def_cfa_offset 24
+ 419              		.cfi_offset 80, -24
+ 420              		.cfi_offset 81, -20
+ 421              		.cfi_offset 82, -16
+ 422              		.cfi_offset 83, -12
+ 423 0006 0446     		mov	r4, r0
+ 424 0008 B0EE609A 		vmov.f32	s18, s1
+ 425 000c F0EE418A 		vmov.f32	s17, s2
+ 426 0010 B0EE618A 		vmov.f32	s16, s3
+ 129:Core/Src/ADSR_envelope.c ****   ADSR_setAttackTime(env, aTime);
+ 427              		.loc 1 129 3 is_stmt 1 view .LVU83
+ 428 0014 FFF7FEFF 		bl	ADSR_setAttackTime
+ 429              	.LVL26:
+ 130:Core/Src/ADSR_envelope.c ****   ADSR_setDecayTime(env, dTime);
+ 430              		.loc 1 130 3 view .LVU84
+ 431 0018 B0EE490A 		vmov.f32	s0, s18
+ 432 001c 2046     		mov	r0, r4
+ 433 001e FFF7FEFF 		bl	ADSR_setDecayTime
+ 434              	.LVL27:
+ 131:Core/Src/ADSR_envelope.c ****   ADSR_setSustainLevel(env, sLevel);
+ 435              		.loc 1 131 3 view .LVU85
+ 436 0022 B0EE680A 		vmov.f32	s0, s17
+ 437 0026 2046     		mov	r0, r4
+ 438 0028 FFF7FEFF 		bl	ADSR_setSustainLevel
+ 439              	.LVL28:
+ 132:Core/Src/ADSR_envelope.c ****   ADSR_setReleaseTime(env, rTime);
+ 440              		.loc 1 132 3 view .LVU86
+ 441 002c B0EE480A 		vmov.f32	s0, s16
+ 442 0030 2046     		mov	r0, r4
+ 443 0032 FFF7FEFF 		bl	ADSR_setReleaseTime
+ 444              	.LVL29:
+ 133:Core/Src/ADSR_envelope.c **** }
+ 445              		.loc 1 133 1 is_stmt 0 view .LVU87
+ 446 0036 BDEC048B 		vldm	sp!, {d8-d9}
+ 447              		.cfi_restore 82
+ 448              		.cfi_restore 83
+ 449              		.cfi_restore 80
+ 450              		.cfi_restore 81
+ 451              		.cfi_def_cfa_offset 8
+ 452              	.LVL30:
+ 453              		.loc 1 133 1 view .LVU88
+ 454 003a 10BD     		pop	{r4, pc}
+ 455              		.loc 1 133 1 view .LVU89
+ 456              		.cfi_endproc
+ 457              	.LFE11:
+ 459              		.section	.text.ADSR_setTarget,"ax",%progbits
+ 460              		.align	1
+ 461              		.global	ADSR_setTarget
+ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccpRnkdN.s 			page 12
+
+
+ 462              		.syntax unified
+ 463              		.thumb
+ 464              		.thumb_func
+ 466              	ADSR_setTarget:
+ 467              	.LVL31:
+ 468              	.LFB12:
+ 134:Core/Src/ADSR_envelope.c **** 
+ 135:Core/Src/ADSR_envelope.c **** void ADSR_setTarget(ADSR_t *env, float target)
+ 136:Core/Src/ADSR_envelope.c **** {
+ 469              		.loc 1 136 1 is_stmt 1 view -0
+ 470              		.cfi_startproc
+ 471              		@ args = 0, pretend = 0, frame = 0
+ 472              		@ frame_needed = 0, uses_anonymous_args = 0
+ 473              		.loc 1 136 1 is_stmt 0 view .LVU91
+ 474 0000 10B5     		push	{r4, lr}
+ 475              		.cfi_def_cfa_offset 8
+ 476              		.cfi_offset 4, -8
+ 477              		.cfi_offset 14, -4
+ 478 0002 0446     		mov	r4, r0
+ 137:Core/Src/ADSR_envelope.c **** 	env->target = target;
+ 479              		.loc 1 137 2 is_stmt 1 view .LVU92
+ 480              		.loc 1 137 14 is_stmt 0 view .LVU93
+ 481 0004 80ED010A 		vstr.32	s0, [r0, #4]
+ 138:Core/Src/ADSR_envelope.c ****   if (env->value < env->target) {
+ 482              		.loc 1 138 3 is_stmt 1 view .LVU94
+ 483              		.loc 1 138 10 is_stmt 0 view .LVU95
+ 484 0008 D0ED007A 		vldr.32	s15, [r0]
+ 485              		.loc 1 138 6 view .LVU96
+ 486 000c F4EEC07A 		vcmpe.f32	s15, s0
+ 487 0010 F1EE10FA 		vmrs	APSR_nzcv, FPSCR
+ 488 0014 09D4     		bmi	.L34
+ 489              	.LVL32:
+ 490              	.L27:
+ 139:Core/Src/ADSR_envelope.c **** 	  env->state = ATTACK;
+ 140:Core/Src/ADSR_envelope.c **** 	  ADSR_setSustainLevel(env, env->target);
+ 141:Core/Src/ADSR_envelope.c ****     
+ 142:Core/Src/ADSR_envelope.c ****   }
+ 143:Core/Src/ADSR_envelope.c ****   if (env->value > env->target) {
+ 491              		.loc 1 143 3 is_stmt 1 view .LVU97
+ 492              		.loc 1 143 10 is_stmt 0 view .LVU98
+ 493 0016 D4ED007A 		vldr.32	s15, [r4]
+ 494              		.loc 1 143 23 view .LVU99
+ 495 001a 94ED010A 		vldr.32	s0, [r4, #4]
+ 496              		.loc 1 143 6 view .LVU100
+ 497 001e F4EEC07A 		vcmpe.f32	s15, s0
+ 498 0022 F1EE10FA 		vmrs	APSR_nzcv, FPSCR
+ 499 0026 05DC     		bgt	.L35
+ 500              	.L26:
+ 144:Core/Src/ADSR_envelope.c **** 	  ADSR_setSustainLevel(env, env->target);
+ 145:Core/Src/ADSR_envelope.c ****     env->state = DECAY;
+ 146:Core/Src/ADSR_envelope.c ****   }
+ 147:Core/Src/ADSR_envelope.c **** }
+ 501              		.loc 1 147 1 view .LVU101
+ 502 0028 10BD     		pop	{r4, pc}
+ 503              	.LVL33:
+ 504              	.L34:
+ 139:Core/Src/ADSR_envelope.c **** 	  env->state = ATTACK;
+ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccpRnkdN.s 			page 13
+
+
+ 505              		.loc 1 139 4 is_stmt 1 view .LVU102
+ 139:Core/Src/ADSR_envelope.c **** 	  env->state = ATTACK;
+ 506              		.loc 1 139 15 is_stmt 0 view .LVU103
+ 507 002a 0023     		movs	r3, #0
+ 508 002c 8360     		str	r3, [r0, #8]
+ 140:Core/Src/ADSR_envelope.c ****     
+ 509              		.loc 1 140 4 is_stmt 1 view .LVU104
+ 510 002e FFF7FEFF 		bl	ADSR_setSustainLevel
+ 511              	.LVL34:
+ 140:Core/Src/ADSR_envelope.c ****     
+ 512              		.loc 1 140 4 is_stmt 0 view .LVU105
+ 513 0032 F0E7     		b	.L27
+ 514              	.L35:
+ 144:Core/Src/ADSR_envelope.c **** 	  ADSR_setSustainLevel(env, env->target);
+ 515              		.loc 1 144 4 is_stmt 1 view .LVU106
+ 516 0034 2046     		mov	r0, r4
+ 517 0036 FFF7FEFF 		bl	ADSR_setSustainLevel
+ 518              	.LVL35:
+ 145:Core/Src/ADSR_envelope.c ****   }
+ 519              		.loc 1 145 5 view .LVU107
+ 145:Core/Src/ADSR_envelope.c ****   }
+ 520              		.loc 1 145 16 is_stmt 0 view .LVU108
+ 521 003a 0123     		movs	r3, #1
+ 522 003c A360     		str	r3, [r4, #8]
+ 523              		.loc 1 147 1 view .LVU109
+ 524 003e F3E7     		b	.L26
+ 525              		.cfi_endproc
+ 526              	.LFE12:
+ 528              		.section	.text.ADSR_setValue,"ax",%progbits
+ 529              		.align	1
+ 530              		.global	ADSR_setValue
+ 531              		.syntax unified
+ 532              		.thumb
+ 533              		.thumb_func
+ 535              	ADSR_setValue:
+ 536              	.LVL36:
+ 537              	.LFB13:
+ 148:Core/Src/ADSR_envelope.c **** 
+ 149:Core/Src/ADSR_envelope.c **** void ADSR_setValue(ADSR_t *env, float value)
+ 150:Core/Src/ADSR_envelope.c **** {
+ 538              		.loc 1 150 1 is_stmt 1 view -0
+ 539              		.cfi_startproc
+ 540              		@ args = 0, pretend = 0, frame = 0
+ 541              		@ frame_needed = 0, uses_anonymous_args = 0
+ 542              		.loc 1 150 1 is_stmt 0 view .LVU111
+ 543 0000 08B5     		push	{r3, lr}
+ 544              		.cfi_def_cfa_offset 8
+ 545              		.cfi_offset 3, -8
+ 546              		.cfi_offset 14, -4
+ 151:Core/Src/ADSR_envelope.c **** 	env->state = SUSTAIN;
+ 547              		.loc 1 151 2 is_stmt 1 view .LVU112
+ 548              		.loc 1 151 13 is_stmt 0 view .LVU113
+ 549 0002 0221     		movs	r1, #2
+ 550 0004 8160     		str	r1, [r0, #8]
+ 152:Core/Src/ADSR_envelope.c **** 	env->target = value;
+ 551              		.loc 1 152 2 is_stmt 1 view .LVU114
+ 552              		.loc 1 152 14 is_stmt 0 view .LVU115
+ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccpRnkdN.s 			page 14
+
+
+ 553 0006 80ED010A 		vstr.32	s0, [r0, #4]
+ 153:Core/Src/ADSR_envelope.c **** 	env->value = value;
+ 554              		.loc 1 153 2 is_stmt 1 view .LVU116
+ 555              		.loc 1 153 13 is_stmt 0 view .LVU117
+ 556 000a 80ED000A 		vstr.32	s0, [r0]
+ 154:Core/Src/ADSR_envelope.c **** 	ADSR_setSustainLevel(env, value);
+ 557              		.loc 1 154 2 is_stmt 1 view .LVU118
+ 558 000e FFF7FEFF 		bl	ADSR_setSustainLevel
+ 559              	.LVL37:
+ 155:Core/Src/ADSR_envelope.c **** }
+ 560              		.loc 1 155 1 is_stmt 0 view .LVU119
+ 561 0012 08BD     		pop	{r3, pc}
+ 562              		.cfi_endproc
+ 563              	.LFE13:
+ 565              		.section	.text.ADSR_getState,"ax",%progbits
+ 566              		.align	1
+ 567              		.global	ADSR_getState
+ 568              		.syntax unified
+ 569              		.thumb
+ 570              		.thumb_func
+ 572              	ADSR_getState:
+ 573              	.LVL38:
+ 574              	.LFB14:
+ 156:Core/Src/ADSR_envelope.c **** 
+ 157:Core/Src/ADSR_envelope.c **** int ADSR_getState(ADSR_t *env)
+ 158:Core/Src/ADSR_envelope.c **** {
+ 575              		.loc 1 158 1 is_stmt 1 view -0
+ 576              		.cfi_startproc
+ 577              		@ args = 0, pretend = 0, frame = 0
+ 578              		@ frame_needed = 0, uses_anonymous_args = 0
+ 579              		@ link register save eliminated.
+ 159:Core/Src/ADSR_envelope.c ****   return env->state;
+ 580              		.loc 1 159 3 view .LVU121
+ 160:Core/Src/ADSR_envelope.c **** }
+ 581              		.loc 1 160 1 is_stmt 0 view .LVU122
+ 582 0000 8068     		ldr	r0, [r0, #8]
+ 583              	.LVL39:
+ 584              		.loc 1 160 1 view .LVU123
+ 585 0002 7047     		bx	lr
+ 586              		.cfi_endproc
+ 587              	.LFE14:
+ 589              		.global	__aeabi_f2d
+ 590              		.global	__aeabi_dcmple
+ 591              		.section	.text.ADSR_compute,"ax",%progbits
+ 592              		.align	1
+ 593              		.global	ADSR_compute
+ 594              		.syntax unified
+ 595              		.thumb
+ 596              		.thumb_func
+ 598              	ADSR_compute:
+ 599              	.LVL40:
+ 600              	.LFB15:
+ 161:Core/Src/ADSR_envelope.c **** 
+ 162:Core/Src/ADSR_envelope.c **** /*--------------------------------------------------------------------------------------*/
+ 163:Core/Src/ADSR_envelope.c **** 
+ 164:Core/Src/ADSR_envelope.c **** 
+ 165:Core/Src/ADSR_envelope.c **** 
+ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccpRnkdN.s 			page 15
+
+
+ 166:Core/Src/ADSR_envelope.c **** 
+ 167:Core/Src/ADSR_envelope.c **** float ADSR_compute(ADSR_t *env)
+ 168:Core/Src/ADSR_envelope.c **** {
+ 601              		.loc 1 168 1 is_stmt 1 view -0
+ 602              		.cfi_startproc
+ 603              		@ args = 0, pretend = 0, frame = 0
+ 604              		@ frame_needed = 0, uses_anonymous_args = 0
+ 605              		.loc 1 168 1 is_stmt 0 view .LVU125
+ 606 0000 10B5     		push	{r4, lr}
+ 607              		.cfi_def_cfa_offset 8
+ 608              		.cfi_offset 4, -8
+ 609              		.cfi_offset 14, -4
+ 610 0002 0446     		mov	r4, r0
+ 169:Core/Src/ADSR_envelope.c ****     switch (env->state)
+ 611              		.loc 1 169 5 is_stmt 1 view .LVU126
+ 612              		.loc 1 169 16 is_stmt 0 view .LVU127
+ 613 0004 8368     		ldr	r3, [r0, #8]
+ 614              		.loc 1 169 5 view .LVU128
+ 615 0006 012B     		cmp	r3, #1
+ 616 0008 1BD0     		beq	.L40
+ 617 000a 032B     		cmp	r3, #3
+ 618 000c 2DD0     		beq	.L41
+ 619 000e 13B1     		cbz	r3, .L50
+ 620              	.LVL41:
+ 621              	.L42:
+ 170:Core/Src/ADSR_envelope.c ****     {
+ 171:Core/Src/ADSR_envelope.c **** 
+ 172:Core/Src/ADSR_envelope.c ****     case ATTACK:
+ 173:Core/Src/ADSR_envelope.c ****         env->value *= env->atk_mult;
+ 174:Core/Src/ADSR_envelope.c ****         if (env->value >= env->target)
+ 175:Core/Src/ADSR_envelope.c ****         {
+ 176:Core/Src/ADSR_envelope.c ****             env->value = env->target;
+ 177:Core/Src/ADSR_envelope.c ****             env->target = env->sust_level;
+ 178:Core/Src/ADSR_envelope.c ****             env->state = DECAY;
+ 179:Core/Src/ADSR_envelope.c ****         }
+ 180:Core/Src/ADSR_envelope.c ****         break;
+ 181:Core/Src/ADSR_envelope.c **** 
+ 182:Core/Src/ADSR_envelope.c ****     case DECAY:
+ 183:Core/Src/ADSR_envelope.c ****         env->value *= env->dcy_mult;
+ 184:Core/Src/ADSR_envelope.c ****         if (env->value <= env->sust_level)
+ 185:Core/Src/ADSR_envelope.c ****         {
+ 186:Core/Src/ADSR_envelope.c ****             env->value = env->sust_level;
+ 187:Core/Src/ADSR_envelope.c ****             env->state = SUSTAIN;
+ 188:Core/Src/ADSR_envelope.c ****         }
+ 189:Core/Src/ADSR_envelope.c ****         break;
+ 190:Core/Src/ADSR_envelope.c **** 
+ 191:Core/Src/ADSR_envelope.c ****     case RELEASE:
+ 192:Core/Src/ADSR_envelope.c ****         env->value *= env->rel_mult;
+ 193:Core/Src/ADSR_envelope.c ****         if (env->value <= ADSR_MIN_LEVEL)
+ 194:Core/Src/ADSR_envelope.c ****         {
+ 195:Core/Src/ADSR_envelope.c ****             env->value = 0.0f;
+ 196:Core/Src/ADSR_envelope.c ****             env->state = OFF;
+ 197:Core/Src/ADSR_envelope.c ****         }
+ 198:Core/Src/ADSR_envelope.c ****     }
+ 199:Core/Src/ADSR_envelope.c ****   return env->value;
+ 622              		.loc 1 199 3 is_stmt 1 view .LVU129
+ 200:Core/Src/ADSR_envelope.c **** }
+ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccpRnkdN.s 			page 16
+
+
+ 623              		.loc 1 200 1 is_stmt 0 view .LVU130
+ 624 0010 94ED000A 		vldr.32	s0, [r4]
+ 625 0014 10BD     		pop	{r4, pc}
+ 626              	.LVL42:
+ 627              	.L50:
+ 173:Core/Src/ADSR_envelope.c ****         if (env->value >= env->target)
+ 628              		.loc 1 173 9 is_stmt 1 view .LVU131
+ 173:Core/Src/ADSR_envelope.c ****         if (env->value >= env->target)
+ 629              		.loc 1 173 26 is_stmt 0 view .LVU132
+ 630 0016 D0ED077A 		vldr.32	s15, [r0, #28]
+ 173:Core/Src/ADSR_envelope.c ****         if (env->value >= env->target)
+ 631              		.loc 1 173 20 view .LVU133
+ 632 001a 90ED007A 		vldr.32	s14, [r0]
+ 633 001e 67EE877A 		vmul.f32	s15, s15, s14
+ 634 0022 C0ED007A 		vstr.32	s15, [r0]
+ 174:Core/Src/ADSR_envelope.c ****         {
+ 635              		.loc 1 174 9 is_stmt 1 view .LVU134
+ 174:Core/Src/ADSR_envelope.c ****         {
+ 636              		.loc 1 174 30 is_stmt 0 view .LVU135
+ 637 0026 90ED017A 		vldr.32	s14, [r0, #4]
+ 174:Core/Src/ADSR_envelope.c ****         {
+ 638              		.loc 1 174 12 view .LVU136
+ 639 002a F4EEC77A 		vcmpe.f32	s15, s14
+ 640 002e F1EE10FA 		vmrs	APSR_nzcv, FPSCR
+ 641 0032 EDDB     		blt	.L42
+ 176:Core/Src/ADSR_envelope.c ****             env->target = env->sust_level;
+ 642              		.loc 1 176 13 is_stmt 1 view .LVU137
+ 176:Core/Src/ADSR_envelope.c ****             env->target = env->sust_level;
+ 643              		.loc 1 176 24 is_stmt 0 view .LVU138
+ 644 0034 80ED007A 		vstr.32	s14, [r0]
+ 177:Core/Src/ADSR_envelope.c ****             env->state = DECAY;
+ 645              		.loc 1 177 13 is_stmt 1 view .LVU139
+ 177:Core/Src/ADSR_envelope.c ****             env->state = DECAY;
+ 646              		.loc 1 177 30 is_stmt 0 view .LVU140
+ 647 0038 4369     		ldr	r3, [r0, #20]	@ float
+ 177:Core/Src/ADSR_envelope.c ****             env->state = DECAY;
+ 648              		.loc 1 177 25 view .LVU141
+ 649 003a 4360     		str	r3, [r0, #4]	@ float
+ 178:Core/Src/ADSR_envelope.c ****         }
+ 650              		.loc 1 178 13 is_stmt 1 view .LVU142
+ 178:Core/Src/ADSR_envelope.c ****         }
+ 651              		.loc 1 178 24 is_stmt 0 view .LVU143
+ 652 003c 0123     		movs	r3, #1
+ 653 003e 8360     		str	r3, [r0, #8]
+ 654 0040 E6E7     		b	.L42
+ 655              	.L40:
+ 183:Core/Src/ADSR_envelope.c ****         if (env->value <= env->sust_level)
+ 656              		.loc 1 183 9 is_stmt 1 view .LVU144
+ 183:Core/Src/ADSR_envelope.c ****         if (env->value <= env->sust_level)
+ 657              		.loc 1 183 26 is_stmt 0 view .LVU145
+ 658 0042 D0ED087A 		vldr.32	s15, [r0, #32]
+ 183:Core/Src/ADSR_envelope.c ****         if (env->value <= env->sust_level)
+ 659              		.loc 1 183 20 view .LVU146
+ 660 0046 90ED007A 		vldr.32	s14, [r0]
+ 661 004a 67EE877A 		vmul.f32	s15, s15, s14
+ 662 004e C0ED007A 		vstr.32	s15, [r0]
+ 184:Core/Src/ADSR_envelope.c ****         {
+ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccpRnkdN.s 			page 17
+
+
+ 663              		.loc 1 184 9 is_stmt 1 view .LVU147
+ 184:Core/Src/ADSR_envelope.c ****         {
+ 664              		.loc 1 184 30 is_stmt 0 view .LVU148
+ 665 0052 90ED057A 		vldr.32	s14, [r0, #20]
+ 184:Core/Src/ADSR_envelope.c ****         {
+ 666              		.loc 1 184 12 view .LVU149
+ 667 0056 F4EEC77A 		vcmpe.f32	s15, s14
+ 668 005a F1EE10FA 		vmrs	APSR_nzcv, FPSCR
+ 669 005e D7D8     		bhi	.L42
+ 186:Core/Src/ADSR_envelope.c ****             env->state = SUSTAIN;
+ 670              		.loc 1 186 13 is_stmt 1 view .LVU150
+ 186:Core/Src/ADSR_envelope.c ****             env->state = SUSTAIN;
+ 671              		.loc 1 186 24 is_stmt 0 view .LVU151
+ 672 0060 80ED007A 		vstr.32	s14, [r0]
+ 187:Core/Src/ADSR_envelope.c ****         }
+ 673              		.loc 1 187 13 is_stmt 1 view .LVU152
+ 187:Core/Src/ADSR_envelope.c ****         }
+ 674              		.loc 1 187 24 is_stmt 0 view .LVU153
+ 675 0064 0223     		movs	r3, #2
+ 676 0066 8360     		str	r3, [r0, #8]
+ 677 0068 D2E7     		b	.L42
+ 678              	.L41:
+ 192:Core/Src/ADSR_envelope.c ****         if (env->value <= ADSR_MIN_LEVEL)
+ 679              		.loc 1 192 9 is_stmt 1 view .LVU154
+ 192:Core/Src/ADSR_envelope.c ****         if (env->value <= ADSR_MIN_LEVEL)
+ 680              		.loc 1 192 26 is_stmt 0 view .LVU155
+ 681 006a D0ED097A 		vldr.32	s15, [r0, #36]
+ 192:Core/Src/ADSR_envelope.c ****         if (env->value <= ADSR_MIN_LEVEL)
+ 682              		.loc 1 192 20 view .LVU156
+ 683 006e 90ED007A 		vldr.32	s14, [r0]
+ 684 0072 67EE877A 		vmul.f32	s15, s15, s14
+ 685 0076 C0ED007A 		vstr.32	s15, [r0]
+ 193:Core/Src/ADSR_envelope.c ****         {
+ 686              		.loc 1 193 9 is_stmt 1 view .LVU157
+ 193:Core/Src/ADSR_envelope.c ****         {
+ 687              		.loc 1 193 16 is_stmt 0 view .LVU158
+ 688 007a 17EE900A 		vmov	r0, s15
+ 689              	.LVL43:
+ 193:Core/Src/ADSR_envelope.c ****         {
+ 690              		.loc 1 193 16 view .LVU159
+ 691 007e FFF7FEFF 		bl	__aeabi_f2d
+ 692              	.LVL44:
+ 193:Core/Src/ADSR_envelope.c ****         {
+ 693              		.loc 1 193 12 view .LVU160
+ 694 0082 07A3     		adr	r3, .L51
+ 695 0084 D3E90023 		ldrd	r2, [r3]
+ 696 0088 FFF7FEFF 		bl	__aeabi_dcmple
+ 697              	.LVL45:
+ 698 008c 0028     		cmp	r0, #0
+ 699 008e BFD0     		beq	.L42
+ 195:Core/Src/ADSR_envelope.c ****             env->state = OFF;
+ 700              		.loc 1 195 13 is_stmt 1 view .LVU161
+ 195:Core/Src/ADSR_envelope.c ****             env->state = OFF;
+ 701              		.loc 1 195 24 is_stmt 0 view .LVU162
+ 702 0090 0023     		movs	r3, #0
+ 703 0092 2360     		str	r3, [r4]	@ float
+ 196:Core/Src/ADSR_envelope.c ****         }
+ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccpRnkdN.s 			page 18
+
+
+ 704              		.loc 1 196 13 is_stmt 1 view .LVU163
+ 196:Core/Src/ADSR_envelope.c ****         }
+ 705              		.loc 1 196 24 is_stmt 0 view .LVU164
+ 706 0094 0423     		movs	r3, #4
+ 707 0096 A360     		str	r3, [r4, #8]
+ 708 0098 BAE7     		b	.L42
+ 709              	.L52:
+ 710 009a 00BFAFF3 		.align	3
+ 710      0080
+ 711              	.L51:
+ 712 00a0 2D431CEB 		.word	-350469331
+ 713 00a4 E2361A3F 		.word	1058682594
+ 714              		.cfi_endproc
+ 715              	.LFE15:
+ 717              		.global	adsr
+ 718              		.global	log_lut
+ 719              		.section	.bss.adsr,"aw",%nobits
+ 720              		.align	2
+ 723              	adsr:
+ 724 0000 00000000 		.space	40
+ 724      00000000 
+ 724      00000000 
+ 724      00000000 
+ 724      00000000 
+ 725              		.section	.rodata.log_lut,"a"
+ 726              		.align	2
+ 729              	log_lut:
+ 730 0000 8D5D13C1 		.word	-1055695475
+ 731 0004 FBAFDAC0 		.word	-1059409925
+ 732 0008 4F07C6C0 		.word	-1060763825
+ 733 000c D593B9C0 		.word	-1061579819
+ 734 0010 05A3B0C0 		.word	-1062165755
+ 735 0014 07A8A9C0 		.word	-1062623225
+ 736 0018 E5EDA3C0 		.word	-1062998555
+ 737 001c C0129FC0 		.word	-1063316800
+ 738 0020 A3DB9AC0 		.word	-1063593053
+ 739 0024 462297C0 		.word	-1063837114
+ 740 0028 62CC93C0 		.word	-1064055710
+ 741 002c 28C790C0 		.word	-1064253656
+ 742 0030 A7048EC0 		.word	-1064434521
+ 743 0034 467A8BC0 		.word	-1064601018
+ 744 0038 C31F89C0 		.word	-1064755261
+ 745 003c 89EE86C0 		.word	-1064898935
+ 746 0040 4EE184C0 		.word	-1065033394
+ 747 0044 BDF382C0 		.word	-1065159747
+ 748 0048 382281C0 		.word	-1065278920
+ 749 004c 7CD37EC0 		.word	-1065430148
+ 750 0050 7E8F7BC0 		.word	-1065644162
+ 751 0054 157478C0 		.word	-1065847787
+ 752 0058 857D75C0 		.word	-1066041979
+ 753 005c 82A872C0 		.word	-1066227582
+ 754 0060 3DF26FC0 		.word	-1066405315
+ 755 0064 32586DC0 		.word	-1066575822
+ 756 0068 30D86AC0 		.word	-1066739664
+ 757 006c 3B7068C0 		.word	-1066897349
+ 758 0070 971E66C0 		.word	-1067049321
+ 759 0074 B5E163C0 		.word	-1067195979
+ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccpRnkdN.s 			page 19
+
+
+ 760 0078 30B861C0 		.word	-1067337680
+ 761 007c C3A05FC0 		.word	-1067474749
+ 762 0080 469A5DC0 		.word	-1067607482
+ 763 0084 B1A35BC0 		.word	-1067736143
+ 764 0088 12BC59C0 		.word	-1067860974
+ 765 008c 8BE257C0 		.word	-1067982197
+ 766 0090 511656C0 		.word	-1068100015
+ 767 0094 AC5654C0 		.word	-1068214612
+ 768 0098 F0A252C0 		.word	-1068326160
+ 769 009c 7BFA50C0 		.word	-1068434821
+ 770 00a0 C05C4FC0 		.word	-1068540736
+ 771 00a4 32C94DC0 		.word	-1068644046
+ 772 00a8 5B3F4CC0 		.word	-1068744869
+ 773 00ac C2BE4AC0 		.word	-1068843326
+ 774 00b0 FE4649C0 		.word	-1068939522
+ 775 00b4 A1D747C0 		.word	-1069033567
+ 776 00b8 587046C0 		.word	-1069125544
+ 777 00bc C31045C0 		.word	-1069215549
+ 778 00c0 91B843C0 		.word	-1069303663
+ 779 00c4 736742C0 		.word	-1069389965
+ 780 00c8 211D41C0 		.word	-1069474527
+ 781 00cc 55D93FC0 		.word	-1069557419
+ 782 00d0 D49B3EC0 		.word	-1069638700
+ 783 00d4 5A643DC0 		.word	-1069718438
+ 784 00d8 AD323CC0 		.word	-1069796691
+ 785 00dc 9E063BC0 		.word	-1069873506
+ 786 00e0 F0DF39C0 		.word	-1069948944
+ 787 00e4 7BBE38C0 		.word	-1070023045
+ 788 00e8 0AA237C0 		.word	-1070095862
+ 789 00ec 728A36C0 		.word	-1070167438
+ 790 00f0 8E7735C0 		.word	-1070237810
+ 791 00f4 346934C0 		.word	-1070307020
+ 792 00f8 395F33C0 		.word	-1070375111
+ 793 00fc 815932C0 		.word	-1070442111
+ 794 0100 E65731C0 		.word	-1070508058
+ 795 0104 475A30C0 		.word	-1070572985
+ 796 0108 89602FC0 		.word	-1070636919
+ 797 010c 876A2EC0 		.word	-1070699897
+ 798 0110 29782DC0 		.word	-1070761943
+ 799 0114 55892CC0 		.word	-1070823083
+ 800 0118 F19D2BC0 		.word	-1070883343
+ 801 011c E1B52AC0 		.word	-1070942751
+ 802 0120 0BD129C0 		.word	-1071001333
+ 803 0124 63EF28C0 		.word	-1071059101
+ 804 0128 C71028C0 		.word	-1071116089
+ 805 012c 263527C0 		.word	-1071172314
+ 806 0130 705C26C0 		.word	-1071227792
+ 807 0134 8C8625C0 		.word	-1071282548
+ 808 0138 6CB324C0 		.word	-1071336596
+ 809 013c FCE223C0 		.word	-1071389956
+ 810 0140 271523C0 		.word	-1071442649
+ 811 0144 E04922C0 		.word	-1071494688
+ 812 0148 1B8121C0 		.word	-1071546085
+ 813 014c BFBA20C0 		.word	-1071596865
+ 814 0150 C7F61FC0 		.word	-1071647033
+ 815 0154 1E351FC0 		.word	-1071696610
+ 816 0158 B8751EC0 		.word	-1071745608
+ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccpRnkdN.s 			page 20
+
+
+ 817 015c 84B81DC0 		.word	-1071794044
+ 818 0160 7EFD1CC0 		.word	-1071841922
+ 819 0164 95441CC0 		.word	-1071889259
+ 820 0168 B98D1BC0 		.word	-1071936071
+ 821 016c E4D81AC0 		.word	-1071982364
+ 822 0170 07261AC0 		.word	-1072028153
+ 823 0174 197519C0 		.word	-1072073447
+ 824 0178 0DC618C0 		.word	-1072118259
+ 825 017c DF1818C0 		.word	-1072162593
+ 826 0180 7F6D17C0 		.word	-1072206465
+ 827 0184 E3C316C0 		.word	-1072249885
+ 828 0188 041C16C0 		.word	-1072292860
+ 829 018c DA7515C0 		.word	-1072335398
+ 830 0190 5BD114C0 		.word	-1072377509
+ 831 0194 7F2E14C0 		.word	-1072419201
+ 832 0198 3F8D13C0 		.word	-1072460481
+ 833 019c 8DED12C0 		.word	-1072501363
+ 834 01a0 6A4F12C0 		.word	-1072541846
+ 835 01a4 C8B211C0 		.word	-1072581944
+ 836 01a8 A01711C0 		.word	-1072621664
+ 837 01ac ED7D10C0 		.word	-1072661011
+ 838 01b0 ACE50FC0 		.word	-1072699988
+ 839 01b4 CF4E0FC0 		.word	-1072738609
+ 840 01b8 52B90EC0 		.word	-1072776878
+ 841 01bc 31250EC0 		.word	-1072814799
+ 842 01c0 60920DC0 		.word	-1072852384
+ 843 01c4 DE000DC0 		.word	-1072889634
+ 844 01c8 A8700CC0 		.word	-1072926552
+ 845 01cc B1E10BC0 		.word	-1072963151
+ 846 01d0 F4530BC0 		.word	-1072999436
+ 847 01d4 71C70AC0 		.word	-1073035407
+ 848 01d8 213C0AC0 		.word	-1073071071
+ 849 01dc FBB109C0 		.word	-1073106437
+ 850 01e0 FE2809C0 		.word	-1073141506
+ 851 01e4 23A108C0 		.word	-1073176285
+ 852 01e8 691A08C0 		.word	-1073210775
+ 853 01ec C49407C0 		.word	-1073244988
+ 854 01f0 381007C0 		.word	-1073278920
+ 855 01f4 B98C06C0 		.word	-1073312583
+ 856 01f8 4A0A06C0 		.word	-1073345974
+ 857 01fc DF8805C0 		.word	-1073379105
+ 858 0200 780805C0 		.word	-1073411976
+ 859 0204 128904C0 		.word	-1073444590
+ 860 0208 A60A04C0 		.word	-1073476954
+ 861 020c 338D03C0 		.word	-1073509069
+ 862 0210 B21003C0 		.word	-1073540942
+ 863 0214 259502C0 		.word	-1073572571
+ 864 0218 821A02C0 		.word	-1073603966
+ 865 021c CBA001C0 		.word	-1073635125
+ 866 0220 F62701C0 		.word	-1073666058
+ 867 0224 08B000C0 		.word	-1073696760
+ 868 0228 F33800C0 		.word	-1073727245
+ 869 022c 7B85FFBF 		.word	-1073773189
+ 870 0230 C39AFEBF 		.word	-1073833277
+ 871 0234 B8B1FDBF 		.word	-1073892936
+ 872 0238 4FCAFCBF 		.word	-1073952177
+ 873 023c 82E4FBBF 		.word	-1074011006
+ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccpRnkdN.s 			page 21
+
+
+ 874 0240 5800FBBF 		.word	-1074069416
+ 875 0244 B81DFABF 		.word	-1074127432
+ 876 0248 AC3CF9BF 		.word	-1074185044
+ 877 024c 295DF8BF 		.word	-1074242263
+ 878 0250 287FF7BF 		.word	-1074299096
+ 879 0254 A1A2F6BF 		.word	-1074355551
+ 880 0258 9BC7F5BF 		.word	-1074411621
+ 881 025c 07EEF4BF 		.word	-1074467321
+ 882 0260 E415F4BF 		.word	-1074522652
+ 883 0264 293FF3BF 		.word	-1074577623
+ 884 0268 CF69F2BF 		.word	-1074632241
+ 885 026c DD95F1BF 		.word	-1074686499
+ 886 0270 4CC3F0BF 		.word	-1074740404
+ 887 0274 0AF2EFBF 		.word	-1074793974
+ 888 0278 2122EFBF 		.word	-1074847199
+ 889 027c 8753EEBF 		.word	-1074900089
+ 890 0280 3486EDBF 		.word	-1074952652
+ 891 0284 30BAECBF 		.word	-1075004880
+ 892 0288 6BEFEBBF 		.word	-1075056789
+ 893 028c E525EBBF 		.word	-1075108379
+ 894 0290 965DEABF 		.word	-1075159658
+ 895 0294 8596E9BF 		.word	-1075210619
+ 896 0298 A2D0E8BF 		.word	-1075261278
+ 897 029c F60BE8BF 		.word	-1075311626
+ 898 02a0 6F48E7BF 		.word	-1075361681
+ 899 02a4 1686E6BF 		.word	-1075411434
+ 900 02a8 E3C4E5BF 		.word	-1075460893
+ 901 02ac D504E5BF 		.word	-1075510059
+ 902 02b0 DD45E4BF 		.word	-1075558947
+ 903 02b4 0188E3BF 		.word	-1075607551
+ 904 02b8 43CBE2BF 		.word	-1075655869
+ 905 02bc 990FE2BF 		.word	-1075703911
+ 906 02c0 FC54E1BF 		.word	-1075751684
+ 907 02c4 749BE0BF 		.word	-1075799180
+ 908 02c8 EFE2DFBF 		.word	-1075846417
+ 909 02cc 772BDFBF 		.word	-1075893385
+ 910 02d0 0475DEBF 		.word	-1075940092
+ 911 02d4 94BFDDBF 		.word	-1075986540
+ 912 02d8 280BDDBF 		.word	-1076032728
+ 913 02dc B057DCBF 		.word	-1076078672
+ 914 02e0 3CA5DBBF 		.word	-1076124356
+ 915 02e4 BAF3DABF 		.word	-1076169798
+ 916 02e8 2D43DABF 		.word	-1076214995
+ 917 02ec 9293D9BF 		.word	-1076259950
+ 918 02f0 E2E4D8BF 		.word	-1076304670
+ 919 02f4 2637D8BF 		.word	-1076349146
+ 920 02f8 558AD7BF 		.word	-1076393387
+ 921 02fc 65DED6BF 		.word	-1076437403
+ 922 0300 6133D6BF 		.word	-1076481183
+ 923 0304 4089D5BF 		.word	-1076524736
+ 924 0308 01E0D4BF 		.word	-1076568063
+ 925 030c 9B37D4BF 		.word	-1076611173
+ 926 0310 1990D3BF 		.word	-1076654055
+ 927 0314 68E9D2BF 		.word	-1076696728
+ 928 0318 9A43D2BF 		.word	-1076739174
+ 929 031c 9D9ED1BF 		.word	-1076781411
+ 930 0320 72FAD0BF 		.word	-1076823438
+ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccpRnkdN.s 			page 22
+
+
+ 931 0324 1957D0BF 		.word	-1076865255
+ 932 0328 89B4CFBF 		.word	-1076906871
+ 933 032c D312CFBF 		.word	-1076948269
+ 934 0330 DE71CEBF 		.word	-1076989474
+ 935 0334 B3D1CDBF 		.word	-1077030477
+ 936 0338 5932CDBF 		.word	-1077071271
+ 937 033c B893CCBF 		.word	-1077111880
+ 938 0340 E8F5CBBF 		.word	-1077152280
+ 939 0344 D158CBBF 		.word	-1077192495
+ 940 0348 7BBCCABF 		.word	-1077232517
+ 941 034c DE20CABF 		.word	-1077272354
+ 942 0350 0A86C9BF 		.word	-1077311990
+ 943 0354 E6EBC8BF 		.word	-1077351450
+ 944 0358 7A52C8BF 		.word	-1077390726
+ 945 035c D0B9C7BF 		.word	-1077429808
+ 946 0360 CD21C7BF 		.word	-1077468723
+ 947 0364 8B8AC6BF 		.word	-1077507445
+ 948 0368 F1F3C5BF 		.word	-1077545999
+ 949 036c 0F5EC5BF 		.word	-1077584369
+ 950 0370 D6C8C4BF 		.word	-1077622570
+ 951 0374 4C34C4BF 		.word	-1077660596
+ 952 0378 6AA0C3BF 		.word	-1077698454
+ 953 037c 390DC3BF 		.word	-1077736135
+ 954 0380 AF7AC2BF 		.word	-1077773649
+ 955 0384 C4E8C1BF 		.word	-1077811004
+ 956 0388 8A57C1BF 		.word	-1077848182
+ 957 038c EFC6C0BF 		.word	-1077885201
+ 958 0390 F436C0BF 		.word	-1077922060
+ 959 0394 A0A7BFBF 		.word	-1077958752
+ 960 0398 E318BFBF 		.word	-1077995293
+ 961 039c CE8ABEBF 		.word	-1078031666
+ 962 03a0 50FDBDBF 		.word	-1078067888
+ 963 03a4 7270BDBF 		.word	-1078103950
+ 964 03a8 2AE4BCBF 		.word	-1078139862
+ 965 03ac 8258BCBF 		.word	-1078175614
+ 966 03b0 68CDBBBF 		.word	-1078211224
+ 967 03b4 EE42BBBF 		.word	-1078246674
+ 968 03b8 02B9BABF 		.word	-1078281982
+ 969 03bc AD2FBABF 		.word	-1078317139
+ 970 03c0 E7A6B9BF 		.word	-1078352153
+ 971 03c4 B81EB9BF 		.word	-1078387016
+ 972 03c8 1897B8BF 		.word	-1078421736
+ 973 03cc 0610B8BF 		.word	-1078456314
+ 974 03d0 8389B7BF 		.word	-1078490749
+ 975 03d4 8E03B7BF 		.word	-1078525042
+ 976 03d8 207EB6BF 		.word	-1078559200
+ 977 03dc 40F9B5BF 		.word	-1078593216
+ 978 03e0 E674B5BF 		.word	-1078627098
+ 979 03e4 1BF1B4BF 		.word	-1078660837
+ 980 03e8 CE6DB4BF 		.word	-1078694450
+ 981 03ec 10EBB3BF 		.word	-1078727920
+ 982 03f0 CF68B3BF 		.word	-1078761265
+ 983 03f4 1DE7B2BF 		.word	-1078794467
+ 984 03f8 E065B2BF 		.word	-1078827552
+ 985 03fc 32E5B1BF 		.word	-1078860494
+ 986 0400 F964B1BF 		.word	-1078893319
+ 987 0404 47E5B0BF 		.word	-1078926009
+ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccpRnkdN.s 			page 23
+
+
+ 988 0408 1366B0BF 		.word	-1078958573
+ 989 040c 5CE7AFBF 		.word	-1078991012
+ 990 0410 2369AFBF 		.word	-1079023325
+ 991 0414 68EBAEBF 		.word	-1079055512
+ 992 0418 2B6EAEBF 		.word	-1079087573
+ 993 041c 5AF1ADBF 		.word	-1079119526
+ 994 0420 1075ADBF 		.word	-1079151344
+ 995 0424 3CF9ACBF 		.word	-1079183044
+ 996 0428 DD7DACBF 		.word	-1079214627
+ 997 042c F302ACBF 		.word	-1079246093
+ 998 0430 7F88ABBF 		.word	-1079277441
+ 999 0434 800EABBF 		.word	-1079308672
+ 1000 0438 F794AABF 		.word	-1079339785
+ 1001 043c DA1BAABF 		.word	-1079370790
+ 1002 0440 33A3A9BF 		.word	-1079401677
+ 1003 0444 022BA9BF 		.word	-1079432446
+ 1004 0448 3EB3A8BF 		.word	-1079463106
+ 1005 044c E63BA8BF 		.word	-1079493658
+ 1006 0450 05C5A7BF 		.word	-1079524091
+ 1007 0454 904EA7BF 		.word	-1079554416
+ 1008 0458 80D8A6BF 		.word	-1079584640
+ 1009 045c E562A6BF 		.word	-1079614747
+ 1010 0460 B7EDA5BF 		.word	-1079644745
+ 1011 0464 EE78A5BF 		.word	-1079674642
+ 1012 0468 9204A5BF 		.word	-1079704430
+ 1013 046c 9B90A4BF 		.word	-1079734117
+ 1014 0470 111DA4BF 		.word	-1079763695
+ 1015 0474 EBA9A3BF 		.word	-1079793173
+ 1016 0478 3337A3BF 		.word	-1079822541
+ 1017 047c DFC4A2BF 		.word	-1079851809
+ 1018 0480 F052A2BF 		.word	-1079880976
+ 1019 0484 65E1A1BF 		.word	-1079910043
+ 1020 0488 3F70A1BF 		.word	-1079939009
+ 1021 048c 7EFFA0BF 		.word	-1079967874
+ 1022 0490 198FA0BF 		.word	-1079996647
+ 1023 0494 211FA0BF 		.word	-1080025311
+ 1024 0498 86AF9FBF 		.word	-1080053882
+ 1025 049c 46409FBF 		.word	-1080082362
+ 1026 04a0 6CD19EBF 		.word	-1080110740
+ 1027 04a4 F6629EBF 		.word	-1080139018
+ 1028 04a8 DCF49DBF 		.word	-1080167204
+ 1029 04ac 1E879DBF 		.word	-1080195298
+ 1030 04b0 BD199DBF 		.word	-1080223299
+ 1031 04b4 B8AC9CBF 		.word	-1080251208
+ 1032 04b8 18409CBF 		.word	-1080279016
+ 1033 04bc CCD39BBF 		.word	-1080306740
+ 1034 04c0 DC679BBF 		.word	-1080334372
+ 1035 04c4 48FC9ABF 		.word	-1080361912
+ 1036 04c8 10919ABF 		.word	-1080389360
+ 1037 04cc 35269ABF 		.word	-1080416715
+ 1038 04d0 AEBB99BF 		.word	-1080443986
+ 1039 04d4 7A5199BF 		.word	-1080471174
+ 1040 04d8 A3E798BF 		.word	-1080498269
+ 1041 04dc 287E98BF 		.word	-1080525272
+ 1042 04e0 F91498BF 		.word	-1080552199
+ 1043 04e4 2EAC97BF 		.word	-1080579026
+ 1044 04e8 AF4397BF 		.word	-1080605777
+ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccpRnkdN.s 			page 24
+
+
+ 1045 04ec 83DB96BF 		.word	-1080632445
+ 1046 04f0 B47396BF 		.word	-1080659020
+ 1047 04f4 310C96BF 		.word	-1080685519
+ 1048 04f8 01A595BF 		.word	-1080711935
+ 1049 04fc 2D3E95BF 		.word	-1080738259
+ 1050 0500 A5D794BF 		.word	-1080764507
+ 1051 0504 717194BF 		.word	-1080790671
+ 1052 0508 890B94BF 		.word	-1080816759
+ 1053 050c FCA593BF 		.word	-1080842756
+ 1054 0510 B34093BF 		.word	-1080868685
+ 1055 0514 C6DB92BF 		.word	-1080894522
+ 1056 0518 1D7792BF 		.word	-1080920291
+ 1057 051c CF1292BF 		.word	-1080945969
+ 1058 0520 C5AE91BF 		.word	-1080971579
+ 1059 0524 0E4B91BF 		.word	-1080997106
+ 1060 0528 A3E790BF 		.word	-1081022557
+ 1061 052c 848490BF 		.word	-1081047932
+ 1062 0530 AF2190BF 		.word	-1081073233
+ 1063 0534 2FBF8FBF 		.word	-1081098449
+ 1064 0538 F25C8FBF 		.word	-1081123598
+ 1065 053c 09FB8EBF 		.word	-1081148663
+ 1066 0540 63998EBF 		.word	-1081173661
+ 1067 0544 09388EBF 		.word	-1081198583
+ 1068 0548 F9D68DBF 		.word	-1081223431
+ 1069 054c 36768DBF 		.word	-1081248202
+ 1070 0550 B5158DBF 		.word	-1081272907
+ 1071 0554 80B58CBF 		.word	-1081297536
+ 1072 0558 97558CBF 		.word	-1081322089
+ 1073 055c F1F58BBF 		.word	-1081346575
+ 1074 0560 96968BBF 		.word	-1081370986
+ 1075 0564 7E378BBF 		.word	-1081395330
+ 1076 0568 A9D88ABF 		.word	-1081419607
+ 1077 056c 207A8ABF 		.word	-1081443808
+ 1078 0570 DA1B8ABF 		.word	-1081467942
+ 1079 0574 E0BD89BF 		.word	-1081492000
+ 1080 0578 206089BF 		.word	-1081516000
+ 1081 057c AC0289BF 		.word	-1081539924
+ 1082 0580 7AA588BF 		.word	-1081563782
+ 1083 0584 8C4888BF 		.word	-1081587572
+ 1084 0588 E1EB87BF 		.word	-1081611295
+ 1085 058c 7A8F87BF 		.word	-1081634950
+ 1086 0590 4C3387BF 		.word	-1081658548
+ 1087 0594 6BD786BF 		.word	-1081682069
+ 1088 0598 CC7B86BF 		.word	-1081705524
+ 1089 059c 682086BF 		.word	-1081728920
+ 1090 05a0 48C585BF 		.word	-1081752248
+ 1091 05a4 6A6A85BF 		.word	-1081775510
+ 1092 05a8 D00F85BF 		.word	-1081798704
+ 1093 05ac 70B584BF 		.word	-1081821840
+ 1094 05b0 535B84BF 		.word	-1081844909
+ 1095 05b4 710184BF 		.word	-1081867919
+ 1096 05b8 D2A783BF 		.word	-1081890862
+ 1097 05bc 6E4E83BF 		.word	-1081913746
+ 1098 05c0 4DF582BF 		.word	-1081936563
+ 1099 05c4 679C82BF 		.word	-1081959321
+ 1100 05c8 BB4382BF 		.word	-1081982021
+ 1101 05cc 53EB81BF 		.word	-1082004653
+ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccpRnkdN.s 			page 25
+
+
+ 1102 05d0 259381BF 		.word	-1082027227
+ 1103 05d4 323B81BF 		.word	-1082049742
+ 1104 05d8 7AE380BF 		.word	-1082072198
+ 1105 05dc 058C80BF 		.word	-1082094587
+ 1106 05e0 C23480BF 		.word	-1082116926
+ 1107 05e4 84BB7FBF 		.word	-1082147964
+ 1108 05e8 FA0D7FBF 		.word	-1082192390
+ 1109 05ec D4607EBF 		.word	-1082236716
+ 1110 05f0 35B47DBF 		.word	-1082280907
+ 1111 05f4 0B087DBF 		.word	-1082324981
+ 1112 05f8 465C7CBF 		.word	-1082368954
+ 1113 05fc F7B07BBF 		.word	-1082412809
+ 1114 0600 2D067BBF 		.word	-1082456531
+ 1115 0604 C85B7ABF 		.word	-1082500152
+ 1116 0608 C8B179BF 		.word	-1082543672
+ 1117 060c 4F0879BF 		.word	-1082587057
+ 1118 0610 395F78BF 		.word	-1082630343
+ 1119 0614 89B677BF 		.word	-1082673527
+ 1120 0618 5E0E77BF 		.word	-1082716578
+ 1121 061c 886676BF 		.word	-1082759544
+ 1122 0620 38BF75BF 		.word	-1082802376
+ 1123 0624 4C1875BF 		.word	-1082845108
+ 1124 0628 C57174BF 		.word	-1082887739
+ 1125 062c B4CB73BF 		.word	-1082930252
+ 1126 0630 072673BF 		.word	-1082972665
+ 1127 0634 D08072BF 		.word	-1083014960
+ 1128 0638 FDDB71BF 		.word	-1083057155
+ 1129 063c 8F3771BF 		.word	-1083099249
+ 1130 0640 869370BF 		.word	-1083141242
+ 1131 0644 F2EF6FBF 		.word	-1083183118
+ 1132 0648 C24C6FBF 		.word	-1083224894
+ 1133 064c F8A96EBF 		.word	-1083266568
+ 1134 0650 92076EBF 		.word	-1083308142
+ 1135 0654 A1656DBF 		.word	-1083349599
+ 1136 0658 05C46CBF 		.word	-1083390971
+ 1137 065c DD226CBF 		.word	-1083432227
+ 1138 0660 1B826BBF 		.word	-1083473381
+ 1139 0664 ACE16ABF 		.word	-1083514452
+ 1140 0668 B3416ABF 		.word	-1083555405
+ 1141 066c 0EA269BF 		.word	-1083596274
+ 1142 0670 DE0269BF 		.word	-1083637026
+ 1143 0674 026468BF 		.word	-1083677694
+ 1144 0678 9CC567BF 		.word	-1083718244
+ 1145 067c 892767BF 		.word	-1083758711
+ 1146 0680 CA8966BF 		.word	-1083799094
+ 1147 0684 81EC65BF 		.word	-1083839359
+ 1148 0688 8B4F65BF 		.word	-1083879541
+ 1149 068c 0BB364BF 		.word	-1083919605
+ 1150 0690 CE1664BF 		.word	-1083959602
+ 1151 0694 077B63BF 		.word	-1083999481
+ 1152 0698 93DF62BF 		.word	-1084039277
+ 1153 069c 854462BF 		.word	-1084078971
+ 1154 06a0 CAA961BF 		.word	-1084118582
+ 1155 06a4 730F61BF 		.word	-1084158093
+ 1156 06a8 717560BF 		.word	-1084197519
+ 1157 06ac D3DB5FBF 		.word	-1084236845
+ 1158 06b0 89425FBF 		.word	-1084276087
+ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccpRnkdN.s 			page 26
+
+
+ 1159 06b4 A4A95EBF 		.word	-1084315228
+ 1160 06b8 12115EBF 		.word	-1084354286
+ 1161 06bc E6785DBF 		.word	-1084393242
+ 1162 06c0 0DE15CBF 		.word	-1084432115
+ 1163 06c4 99495CBF 		.word	-1084470887
+ 1164 06c8 68B25BBF 		.word	-1084509592
+ 1165 06cc 9B1B5BBF 		.word	-1084548197
+ 1166 06d0 34855ABF 		.word	-1084586700
+ 1167 06d4 0FEF59BF 		.word	-1084625137
+ 1168 06d8 4F5959BF 		.word	-1084663473
+ 1169 06dc E3C358BF 		.word	-1084701725
+ 1170 06e0 CB2E58BF 		.word	-1084739893
+ 1171 06e4 179A57BF 		.word	-1084777961
+ 1172 06e8 A70557BF 		.word	-1084815961
+ 1173 06ec 9B7156BF 		.word	-1084853861
+ 1174 06f0 E3DD55BF 		.word	-1084891677
+ 1175 06f4 6F4A55BF 		.word	-1084929425
+ 1176 06f8 5FB754BF 		.word	-1084967073
+ 1177 06fc A22454BF 		.word	-1085004638
+ 1178 0700 3A9253BF 		.word	-1085042118
+ 1179 0704 260053BF 		.word	-1085079514
+ 1180 0708 656E52BF 		.word	-1085116827
+ 1181 070c E8DC51BF 		.word	-1085154072
+ 1182 0710 CF4B51BF 		.word	-1085191217
+ 1183 0714 0ABB50BF 		.word	-1085228278
+ 1184 0718 882A50BF 		.word	-1085265272
+ 1185 071c 5B9A4FBF 		.word	-1085302181
+ 1186 0720 810A4FBF 		.word	-1085339007
+ 1187 0724 FA7A4EBF 		.word	-1085375750
+ 1188 0728 C8EB4DBF 		.word	-1085412408
+ 1189 072c EA5C4DBF 		.word	-1085448982
+ 1190 0730 4FCE4CBF 		.word	-1085485489
+ 1191 0734 07404CBF 		.word	-1085521913
+ 1192 0738 03B24BBF 		.word	-1085558269
+ 1193 073c 64244BBF 		.word	-1085594524
+ 1194 0740 07974ABF 		.word	-1085630713
+ 1195 0744 EE094ABF 		.word	-1085666834
+ 1196 0748 287D49BF 		.word	-1085702872
+ 1197 074c B7F048BF 		.word	-1085738825
+ 1198 0750 996448BF 		.word	-1085774695
+ 1199 0754 BED847BF 		.word	-1085810498
+ 1200 0758 274D47BF 		.word	-1085846233
+ 1201 075c E3C146BF 		.word	-1085881885
+ 1202 0760 F43646BF 		.word	-1085917452
+ 1203 0764 47AC45BF 		.word	-1085952953
+ 1204 0768 DE2145BF 		.word	-1085988386
+ 1205 076c C89744BF 		.word	-1086023736
+ 1206 0770 060E44BF 		.word	-1086059002
+ 1207 0774 888443BF 		.word	-1086094200
+ 1208 0778 4CFB42BF 		.word	-1086129332
+ 1209 077c 547242BF 		.word	-1086164396
+ 1210 0780 AFE941BF 		.word	-1086199377
+ 1211 0784 5F6141BF 		.word	-1086234273
+ 1212 0788 40D940BF 		.word	-1086269120
+ 1213 078c 765140BF 		.word	-1086303882
+ 1214 0790 EFC93FBF 		.word	-1086338577
+ 1215 0794 BB423FBF 		.word	-1086373189
+ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccpRnkdN.s 			page 27
+
+
+ 1216 0798 CBBB3EBF 		.word	-1086407733
+ 1217 079c 0D353EBF 		.word	-1086442227
+ 1218 07a0 B4AE3DBF 		.word	-1086476620
+ 1219 07a4 8D283DBF 		.word	-1086510963
+ 1220 07a8 A9A23CBF 		.word	-1086545239
+ 1221 07ac 191D3CBF 		.word	-1086579431
+ 1222 07b0 CC973BBF 		.word	-1086613556
+ 1223 07b4 C2123BBF 		.word	-1086647614
+ 1224 07b8 FC8D3ABF 		.word	-1086681604
+ 1225 07bc 78093ABF 		.word	-1086715528
+ 1226 07c0 388539BF 		.word	-1086749384
+ 1227 07c4 4B0139BF 		.word	-1086783157
+ 1228 07c8 917D38BF 		.word	-1086816879
+ 1229 07cc 2BFA37BF 		.word	-1086850517
+ 1230 07d0 F77637BF 		.word	-1086884105
+ 1231 07d4 06F436BF 		.word	-1086917626
+ 1232 07d8 697136BF 		.word	-1086951063
+ 1233 07dc FEEE35BF 		.word	-1086984450
+ 1234 07e0 D76C35BF 		.word	-1087017769
+ 1235 07e4 03EB34BF 		.word	-1087051005
+ 1236 07e8 626934BF 		.word	-1087084190
+ 1237 07ec 04E833BF 		.word	-1087117308
+ 1238 07f0 E86633BF 		.word	-1087150360
+ 1239 07f4 10E632BF 		.word	-1087183344
+ 1240 07f8 6B6532BF 		.word	-1087216277
+ 1241 07fc 19E531BF 		.word	-1087249127
+ 1242 0800 F96431BF 		.word	-1087281927
+ 1243 0804 1DE530BF 		.word	-1087314659
+ 1244 0808 846530BF 		.word	-1087347324
+ 1245 080c 2EE62FBF 		.word	-1087379922
+ 1246 0810 1B672FBF 		.word	-1087412453
+ 1247 0814 3AE82EBF 		.word	-1087444934
+ 1248 0818 9C692EBF 		.word	-1087477348
+ 1249 081c 42EB2DBF 		.word	-1087509694
+ 1250 0820 1A6D2DBF 		.word	-1087541990
+ 1251 0824 35EF2CBF 		.word	-1087574219
+ 1252 0828 93712CBF 		.word	-1087606381
+ 1253 082c 34F42BBF 		.word	-1087638476
+ 1254 0830 08772BBF 		.word	-1087670520
+ 1255 0834 1EFA2ABF 		.word	-1087702498
+ 1256 0838 677D2ABF 		.word	-1087734425
+ 1257 083c F3002ABF 		.word	-1087766285
+ 1258 0840 C28429BF 		.word	-1087798078
+ 1259 0844 C40829BF 		.word	-1087829820
+ 1260 0848 098D28BF 		.word	-1087861495
+ 1261 084c 801128BF 		.word	-1087893120
+ 1262 0850 3A9627BF 		.word	-1087924678
+ 1263 0854 261B27BF 		.word	-1087956186
+ 1264 0858 55A026BF 		.word	-1087987627
+ 1265 085c C82526BF 		.word	-1088019000
+ 1266 0860 6DAB25BF 		.word	-1088050323
+ 1267 0864 443125BF 		.word	-1088081596
+ 1268 0868 5FB724BF 		.word	-1088112801
+ 1269 086c AB3D24BF 		.word	-1088143957
+ 1270 0870 3BC423BF 		.word	-1088175045
+ 1271 0874 FD4A23BF 		.word	-1088206083
+ 1272 0878 03D222BF 		.word	-1088237053
+ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccpRnkdN.s 			page 28
+
+
+ 1273 087c 3A5922BF 		.word	-1088267974
+ 1274 0880 A4E021BF 		.word	-1088298844
+ 1275 0884 516821BF 		.word	-1088329647
+ 1276 0888 30F020BF 		.word	-1088360400
+ 1277 088c 537820BF 		.word	-1088391085
+ 1278 0890 A80020BF 		.word	-1088421720
+ 1279 0894 2F891FBF 		.word	-1088452305
+ 1280 0898 E8111FBF 		.word	-1088482840
+ 1281 089c E59A1EBF 		.word	-1088513307
+ 1282 08a0 14241EBF 		.word	-1088543724
+ 1283 08a4 86AD1DBF 		.word	-1088574074
+ 1284 08a8 19371DBF 		.word	-1088604391
+ 1285 08ac F0C01CBF 		.word	-1088634640
+ 1286 08b0 F94A1CBF 		.word	-1088664839
+ 1287 08b4 45D51BBF 		.word	-1088694971
+ 1288 08b8 B35F1BBF 		.word	-1088725069
+ 1289 08bc 64EA1ABF 		.word	-1088755100
+ 1290 08c0 47751ABF 		.word	-1088785081
+ 1291 08c4 5C001ABF 		.word	-1088815012
+ 1292 08c8 B58B19BF 		.word	-1088844875
+ 1293 08cc 2F1719BF 		.word	-1088874705
+ 1294 08d0 ECA218BF 		.word	-1088904468
+ 1295 08d4 DC2E18BF 		.word	-1088934180
+ 1296 08d8 FEBA17BF 		.word	-1088963842
+ 1297 08dc 524717BF 		.word	-1088993454
+ 1298 08e0 D8D316BF 		.word	-1089023016
+ 1299 08e4 916016BF 		.word	-1089052527
+ 1300 08e8 8DED15BF 		.word	-1089081971
+ 1301 08ec AB7A15BF 		.word	-1089111381
+ 1302 08f0 0B0815BF 		.word	-1089140725
+ 1303 08f4 8E9514BF 		.word	-1089170034
+ 1304 08f8 532314BF 		.word	-1089199277
+ 1305 08fc 4BB113BF 		.word	-1089228469
+ 1306 0900 643F13BF 		.word	-1089257628
+ 1307 0904 C0CD12BF 		.word	-1089286720
+ 1308 0908 4F5C12BF 		.word	-1089315761
+ 1309 090c FFEA11BF 		.word	-1089344769
+ 1310 0910 F27911BF 		.word	-1089373710
+ 1311 0914 180911BF 		.word	-1089402600
+ 1312 0918 5F9810BF 		.word	-1089431457
+ 1313 091c E92710BF 		.word	-1089460247
+ 1314 0920 95B70FBF 		.word	-1089489003
+ 1315 0924 84470FBF 		.word	-1089517692
+ 1316 0928 95D70EBF 		.word	-1089546347
+ 1317 092c E8670EBF 		.word	-1089574936
+ 1318 0930 5DF80DBF 		.word	-1089603491
+ 1319 0934 05890DBF 		.word	-1089631995
+ 1320 0938 DF190DBF 		.word	-1089660449
+ 1321 093c EBAA0CBF 		.word	-1089688853
+ 1322 0940 193C0CBF 		.word	-1089717223
+ 1323 0944 8ACD0BBF 		.word	-1089745526
+ 1324 0948 1C5F0BBF 		.word	-1089773796
+ 1325 094c E1F00ABF 		.word	-1089802015
+ 1326 0950 D8820ABF 		.word	-1089830184
+ 1327 0954 01150ABF 		.word	-1089858303
+ 1328 0958 5DA709BF 		.word	-1089886371
+ 1329 095c DA3909BF 		.word	-1089914406
+ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccpRnkdN.s 			page 29
+
+
+ 1330 0960 8ACC08BF 		.word	-1089942390
+ 1331 0964 7C5F08BF 		.word	-1089970308
+ 1332 0968 80F207BF 		.word	-1089998208
+ 1333 096c C68507BF 		.word	-1090026042
+ 1334 0970 2F1907BF 		.word	-1090053841
+ 1335 0974 C9AC06BF 		.word	-1090081591
+ 1336 0978 964006BF 		.word	-1090109290
+ 1337 097c 84D405BF 		.word	-1090136956
+ 1338 0980 B66805BF 		.word	-1090164554
+ 1339 0984 F8FC04BF 		.word	-1090192136
+ 1340 0988 7D9104BF 		.word	-1090219651
+ 1341 098c 242604BF 		.word	-1090247132
+ 1342 0990 FEBA03BF 		.word	-1090274562
+ 1343 0994 095003BF 		.word	-1090301943
+ 1344 0998 36E502BF 		.word	-1090329290
+ 1345 099c 967A02BF 		.word	-1090356586
+ 1346 09a0 281002BF 		.word	-1090383832
+ 1347 09a4 DBA501BF 		.word	-1090411045
+ 1348 09a8 C13B01BF 		.word	-1090438207
+ 1349 09ac C8D100BF 		.word	-1090465336
+ 1350 09b0 016800BF 		.word	-1090492415
+ 1351 09b4 DBFCFFBE 		.word	-1090519845
+ 1352 09b8 F629FFBE 		.word	-1090573834
+ 1353 09bc 7557FEBE 		.word	-1090627723
+ 1354 09c0 3885FDBE 		.word	-1090681544
+ 1355 09c4 5FB3FCBE 		.word	-1090735265
+ 1356 09c8 EBE1FBBE 		.word	-1090788885
+ 1357 09cc BA10FBBE 		.word	-1090842438
+ 1358 09d0 EE3FFABE 		.word	-1090895890
+ 1359 09d4 656FF9BE 		.word	-1090949275
+ 1360 09d8 1F9FF8BE 		.word	-1091002593
+ 1361 09dc 5FCFF7BE 		.word	-1091055777
+ 1362 09e0 C1FFF6BE 		.word	-1091108927
+ 1363 09e4 A930F6BE 		.word	-1091161943
+ 1364 09e8 B361F5BE 		.word	-1091214925
+ 1365 09ec 4293F4BE 		.word	-1091267774
+ 1366 09f0 F4C4F3BE 		.word	-1091320588
+ 1367 09f4 0AF7F2BE 		.word	-1091373302
+ 1368 09f8 8429F2BE 		.word	-1091425916
+ 1369 09fc 425CF1BE 		.word	-1091478462
+ 1370 0a00 658FF0BE 		.word	-1091530907
+ 1371 0a04 CAC2EFBE 		.word	-1091583286
+ 1372 0a08 73F6EEBE 		.word	-1091635597
+ 1373 0a0c 802AEEBE 		.word	-1091687808
+ 1374 0a10 D05EEDBE 		.word	-1091739952
+ 1375 0a14 8693ECBE 		.word	-1091791994
+ 1376 0a18 7EC8EBBE 		.word	-1091843970
+ 1377 0a1c B9FDEABE 		.word	-1091895879
+ 1378 0a20 5933EABE 		.word	-1091947687
+ 1379 0a24 3C69E9BE 		.word	-1091999428
+ 1380 0a28 849FE8BE 		.word	-1092051068
+ 1381 0a2c 0FD6E7BE 		.word	-1092102641
+ 1382 0a30 DD0CE7BE 		.word	-1092154147
+ 1383 0a34 0F44E6BE 		.word	-1092205553
+ 1384 0a38 857BE5BE 		.word	-1092256891
+ 1385 0a3c 3EB3E4BE 		.word	-1092308162
+ 1386 0a40 5BEBE3BE 		.word	-1092359333
+ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccpRnkdN.s 			page 30
+
+
+ 1387 0a44 BC23E3BE 		.word	-1092410436
+ 1388 0a48 5F5CE2BE 		.word	-1092461473
+ 1389 0a4c 6895E1BE 		.word	-1092512408
+ 1390 0a50 B3CEE0BE 		.word	-1092563277
+ 1391 0a54 4208E0BE 		.word	-1092614078
+ 1392 0a58 3542DFBE 		.word	-1092664779
+ 1393 0a5c 4A7CDEBE 		.word	-1092715446
+ 1394 0a60 C3B6DDBE 		.word	-1092766013
+ 1395 0a64 A2F1DCBE 		.word	-1092816478
+ 1396 0a68 A12CDCBE 		.word	-1092866911
+ 1397 0a6c 0668DBBE 		.word	-1092917242
+ 1398 0a70 ADA3DABE 		.word	-1092967507
+ 1399 0a74 B9DFD9BE 		.word	-1093017671
+ 1400 0a78 E71BD9BE 		.word	-1093067801
+ 1401 0a7c 7958D8BE 		.word	-1093117831
+ 1402 0a80 4F95D7BE 		.word	-1093167793
+ 1403 0a84 67D2D6BE 		.word	-1093217689
+ 1404 0a88 E40FD6BE 		.word	-1093267484
+ 1405 0a8c 834DD5BE 		.word	-1093317245
+ 1406 0a90 878BD4BE 		.word	-1093366905
+ 1407 0a94 CDC9D3BE 		.word	-1093416499
+ 1408 0a98 5708D3BE 		.word	-1093466025
+ 1409 0a9c 4547D2BE 		.word	-1093515451
+ 1410 0aa0 5586D1BE 		.word	-1093564843
+ 1411 0aa4 CAC5D0BE 		.word	-1093614134
+ 1412 0aa8 8105D0BE 		.word	-1093663359
+ 1413 0aac 7C45CFBE 		.word	-1093712516
+ 1414 0ab0 BA85CEBE 		.word	-1093761606
+ 1415 0ab4 3BC6CDBE 		.word	-1093810629
+ 1416 0ab8 2107CDBE 		.word	-1093859551
+ 1417 0abc 2848CCBE 		.word	-1093908440
+ 1418 0ac0 9489CBBE 		.word	-1093957228
+ 1419 0ac4 43CBCABE 		.word	-1094005949
+ 1420 0ac8 350DCABE 		.word	-1094054603
+ 1421 0acc 6A4FC9BE 		.word	-1094103190
+ 1422 0ad0 E291C8BE 		.word	-1094151710
+ 1423 0ad4 9DD4C7BE 		.word	-1094200163
+ 1424 0ad8 9C17C7BE 		.word	-1094248548
+ 1425 0adc FF5AC6BE 		.word	-1094296833
+ 1426 0ae0 849EC5BE 		.word	-1094345084
+ 1427 0ae4 4CE2C4BE 		.word	-1094393268
+ 1428 0ae8 7826C4BE 		.word	-1094441352
+ 1429 0aec E86AC3BE 		.word	-1094489368
+ 1430 0af0 79AFC2BE 		.word	-1094537351
+ 1431 0af4 6FF4C1BE 		.word	-1094585233
+ 1432 0af8 A839C1BE 		.word	-1094633048
+ 1433 0afc 027FC0BE 		.word	-1094680830
+ 1434 0b00 C1C4BFBE 		.word	-1094728511
+ 1435 0b04 C40ABFBE 		.word	-1094776124
+ 1436 0b08 0951BEBE 		.word	-1094823671
+ 1437 0b0c 7097BDBE 		.word	-1094871184
+ 1438 0b10 3CDEBCBE 		.word	-1094918596
+ 1439 0b14 4A25BCBE 		.word	-1094965942
+ 1440 0b18 9C6CBBBE 		.word	-1095013220
+ 1441 0b1c 0FB4BABE 		.word	-1095060465
+ 1442 0b20 E7FBB9BE 		.word	-1095107609
+ 1443 0b24 0344B9BE 		.word	-1095154685
+ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccpRnkdN.s 			page 31
+
+
+ 1444 0b28 3F8CB8BE 		.word	-1095201729
+ 1445 0b2c E1D4B7BE 		.word	-1095248671
+ 1446 0b30 C51DB7BE 		.word	-1095295547
+ 1447 0b34 CB66B6BE 		.word	-1095342389
+ 1448 0b38 36B0B5BE 		.word	-1095389130
+ 1449 0b3c C2F9B4BE 		.word	-1095435838
+ 1450 0b40 9143B4BE 		.word	-1095482479
+ 1451 0b44 C58DB3BE 		.word	-1095529019
+ 1452 0b48 1BD8B2BE 		.word	-1095575525
+ 1453 0b4c B422B2BE 		.word	-1095621964
+ 1454 0b50 8F6DB1BE 		.word	-1095668337
+ 1455 0b54 AEB8B0BE 		.word	-1095714642
+ 1456 0b58 1004B0BE 		.word	-1095760880
+ 1457 0b5c 944FAFBE 		.word	-1095807084
+ 1458 0b60 7C9BAEBE 		.word	-1095853188
+ 1459 0b64 A7E7ADBE 		.word	-1095899225
+ 1460 0b68 F433ADBE 		.word	-1095945228
+ 1461 0b6c 8480ACBE 		.word	-1095991164
+ 1462 0b70 57CDABBE 		.word	-1096037033
+ 1463 0b74 6D1AABBE 		.word	-1096082835
+ 1464 0b78 C767AABE 		.word	-1096128569
+ 1465 0b7c 63B5A9BE 		.word	-1096174237
+ 1466 0b80 4303A9BE 		.word	-1096219837
+ 1467 0b84 4451A8BE 		.word	-1096265404
+ 1468 0b88 889FA7BE 		.word	-1096310904
+ 1469 0b8c 0FEEA6BE 		.word	-1096356337
+ 1470 0b90 DA3CA6BE 		.word	-1096401702
+ 1471 0b94 E78BA5BE 		.word	-1096447001
+ 1472 0b98 38DBA4BE 		.word	-1096492232
+ 1473 0b9c AA2AA4BE 		.word	-1096537430
+ 1474 0ba0 5F7AA3BE 		.word	-1096582561
+ 1475 0ba4 58CAA2BE 		.word	-1096627624
+ 1476 0ba8 931AA2BE 		.word	-1096672621
+ 1477 0bac 126BA1BE 		.word	-1096717550
+ 1478 0bb0 B2BBA0BE 		.word	-1096762446
+ 1479 0bb4 950CA0BE 		.word	-1096807275
+ 1480 0bb8 BC5D9FBE 		.word	-1096852036
+ 1481 0bbc 25AF9EBE 		.word	-1096896731
+ 1482 0bc0 B0009EBE 		.word	-1096941392
+ 1483 0bc4 A0529DBE 		.word	-1096985952
+ 1484 0bc8 B1A49CBE 		.word	-1097030479
+ 1485 0bcc E4F69BBE 		.word	-1097074972
+ 1486 0bd0 7B499BBE 		.word	-1097119365
+ 1487 0bd4 349C9ABE 		.word	-1097163724
+ 1488 0bd8 31EF99BE 		.word	-1097208015
+ 1489 0bdc 704299BE 		.word	-1097252240
+ 1490 0be0 F29598BE 		.word	-1097296398
+ 1491 0be4 96E997BE 		.word	-1097340522
+ 1492 0be8 7D3D97BE 		.word	-1097384579
+ 1493 0bec A79196BE 		.word	-1097428569
+ 1494 0bf0 F3E595BE 		.word	-1097472525
+ 1495 0bf4 823A95BE 		.word	-1097516414
+ 1496 0bf8 548F94BE 		.word	-1097560236
+ 1497 0bfc 69E493BE 		.word	-1097603991
+ 1498 0c00 9F3993BE 		.word	-1097647713
+ 1499 0c04 198F92BE 		.word	-1097691367
+ 1500 0c08 B4E491BE 		.word	-1097734988
+ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccpRnkdN.s 			page 32
+
+
+ 1501 0c0c B43A91BE 		.word	-1097778508
+ 1502 0c10 D69090BE 		.word	-1097821994
+ 1503 0c14 19E78FBE 		.word	-1097865447
+ 1504 0c18 C03D8FBE 		.word	-1097908800
+ 1505 0c1c 8A948EBE 		.word	-1097952118
+ 1506 0c20 74EB8DBE 		.word	-1097995404
+ 1507 0c24 C4428DBE 		.word	-1098038588
+ 1508 0c28 359A8CBE 		.word	-1098081739
+ 1509 0c2c C7F18BBE 		.word	-1098124857
+ 1510 0c30 BF498BBE 		.word	-1098167873
+ 1511 0c34 D7A18ABE 		.word	-1098210857
+ 1512 0c38 12FA89BE 		.word	-1098253806
+ 1513 0c3c 8F5289BE 		.word	-1098296689
+ 1514 0c40 50AB88BE 		.word	-1098339504
+ 1515 0c44 530488BE 		.word	-1098382253
+ 1516 0c48 795D87BE 		.word	-1098424967
+ 1517 0c4c BFB686BE 		.word	-1098467649
+ 1518 0c50 6B1086BE 		.word	-1098510229
+ 1519 0c54 386A85BE 		.word	-1098552776
+ 1520 0c58 26C484BE 		.word	-1098595290
+ 1521 0c5c 581E84BE 		.word	-1098637736
+ 1522 0c60 CD7883BE 		.word	-1098680115
+ 1523 0c64 63D382BE 		.word	-1098722461
+ 1524 0c68 3C2E82BE 		.word	-1098764740
+ 1525 0c6c 598981BE 		.word	-1098806951
+ 1526 0c70 97E480BE 		.word	-1098849129
+ 1527 0c74 184080BE 		.word	-1098891240
+ 1528 0c78 76377FBE 		.word	-1098958986
+ 1529 0c7c 41EF7DBE 		.word	-1099043007
+ 1530 0c80 50A77CBE 		.word	-1099126960
+ 1531 0c84 E55F7BBE 		.word	-1099210779
+ 1532 0c88 01197ABE 		.word	-1099294463
+ 1533 0c8c 5FD278BE 		.word	-1099378081
+ 1534 0c90 008C77BE 		.word	-1099461632
+ 1535 0c94 284676BE 		.word	-1099545048
+ 1536 0c98 D60075BE 		.word	-1099628330
+ 1537 0c9c C7BB73BE 		.word	-1099711545
+ 1538 0ca0 3E7772BE 		.word	-1099794626
+ 1539 0ca4 F83271BE 		.word	-1099877640
+ 1540 0ca8 39EF6FBE 		.word	-1099960519
+ 1541 0cac BDAB6EBE 		.word	-1100043331
+ 1542 0cb0 C7686DBE 		.word	-1100126009
+ 1543 0cb4 57266CBE 		.word	-1100208553
+ 1544 0cb8 2AE46ABE 		.word	-1100291030
+ 1545 0cbc 40A269BE 		.word	-1100373440
+ 1546 0cc0 DD6068BE 		.word	-1100455715
+ 1547 0cc4 BC1F67BE 		.word	-1100537924
+ 1548 0cc8 22DF65BE 		.word	-1100619998
+ 1549 0ccc 0E9F64BE 		.word	-1100701938
+ 1550 0cd0 3D5F63BE 		.word	-1100783811
+ 1551 0cd4 B01F62BE 		.word	-1100865616
+ 1552 0cd8 A8E060BE 		.word	-1100947288
+ 1553 0cdc E4A15FBE 		.word	-1101028892
+ 1554 0ce0 A6635EBE 		.word	-1101110362
+ 1555 0ce4 AB255DBE 		.word	-1101191765
+ 1556 0ce8 36E85BBE 		.word	-1101273034
+ 1557 0cec 04AB5ABE 		.word	-1101354236
+ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccpRnkdN.s 			page 33
+
+
+ 1558 0cf0 596E59BE 		.word	-1101435303
+ 1559 0cf4 F03158BE 		.word	-1101516304
+ 1560 0cf8 0EF656BE 		.word	-1101597170
+ 1561 0cfc 6FBA55BE 		.word	-1101677969
+ 1562 0d00 137F54BE 		.word	-1101758701
+ 1563 0d04 3D4453BE 		.word	-1101839299
+ 1564 0d08 EE0952BE 		.word	-1101919762
+ 1565 0d0c 9ECF50BE 		.word	-1102000226
+ 1566 0d10 18964FBE 		.word	-1102080488
+ 1567 0d14 925C4EBE 		.word	-1102160750
+ 1568 0d18 D5234DBE 		.word	-1102240811
+ 1569 0d1c 18EB4BBE 		.word	-1102320872
+ 1570 0d20 E1B24ABE 		.word	-1102400799
+ 1571 0d24 EE7A49BE 		.word	-1102480658
+ 1572 0d28 814348BE 		.word	-1102560383
+ 1573 0d2c 560C47BE 		.word	-1102640042
+ 1574 0d30 B2D545BE 		.word	-1102719566
+ 1575 0d34 519F44BE 		.word	-1102799023
+ 1576 0d38 346943BE 		.word	-1102878412
+ 1577 0d3c 9C3342BE 		.word	-1102957668
+ 1578 0d40 48FE40BE 		.word	-1103036856
+ 1579 0d44 79C93FBE 		.word	-1103115911
+ 1580 0d48 EE943EBE 		.word	-1103194898
+ 1581 0d4c A6603DBE 		.word	-1103273818
+ 1582 0d50 E42C3CBE 		.word	-1103352604
+ 1583 0d54 66F93ABE 		.word	-1103431322
+ 1584 0d58 6DC639BE 		.word	-1103509907
+ 1585 0d5c B89338BE 		.word	-1103588424
+ 1586 0d60 466137BE 		.word	-1103666874
+ 1587 0d64 162F36BE 		.word	-1103745258
+ 1588 0d68 6DFD34BE 		.word	-1103823507
+ 1589 0d6c 4BCC33BE 		.word	-1103901621
+ 1590 0d70 289B32BE 		.word	-1103979736
+ 1591 0d74 8C6A31BE 		.word	-1104057716
+ 1592 0d78 753A30BE 		.word	-1104135563
+ 1593 0d7c 5F0A2FBE 		.word	-1104213409
+ 1594 0d80 12DB2DBE 		.word	-1104291054
+ 1595 0d84 C5AB2CBE 		.word	-1104368699
+ 1596 0d88 FE7C2BBE 		.word	-1104446210
+ 1597 0d8c 7B4E2ABE 		.word	-1104523653
+ 1598 0d90 3A2029BE 		.word	-1104601030
+ 1599 0d94 80F227BE 		.word	-1104678272
+ 1600 0d98 09C526BE 		.word	-1104755447
+ 1601 0d9c D59725BE 		.word	-1104832555
+ 1602 0da0 276B24BE 		.word	-1104909529
+ 1603 0da4 BC3E23BE 		.word	-1104986436
+ 1604 0da8 941222BE 		.word	-1105063276
+ 1605 0dac F3E620BE 		.word	-1105139981
+ 1606 0db0 95BB1FBE 		.word	-1105216619
+ 1607 0db4 79901EBE 		.word	-1105293191
+ 1608 0db8 E4651DBE 		.word	-1105369628
+ 1609 0dbc 4F3B1CBE 		.word	-1105446065
+ 1610 0dc0 84111BBE 		.word	-1105522300
+ 1611 0dc4 B8E719BE 		.word	-1105598536
+ 1612 0dc8 73BE18BE 		.word	-1105674637
+ 1613 0dcc 709517BE 		.word	-1105750672
+ 1614 0dd0 B16C16BE 		.word	-1105826639
+ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccpRnkdN.s 			page 34
+
+
+ 1615 0dd4 354415BE 		.word	-1105902539
+ 1616 0dd8 3F1C14BE 		.word	-1105978305
+ 1617 0ddc 8CF412BE 		.word	-1106054004
+ 1618 0de0 60CD11BE 		.word	-1106129568
+ 1619 0de4 33A610BE 		.word	-1106205133
+ 1620 0de8 8D7F0FBE 		.word	-1106280563
+ 1621 0dec 29590EBE 		.word	-1106355927
+ 1622 0df0 4C330DBE 		.word	-1106431156
+ 1623 0df4 B20D0CBE 		.word	-1106506318
+ 1624 0df8 19E80ABE 		.word	-1106581479
+ 1625 0dfc 48C309BE 		.word	-1106656440
+ 1626 0e00 779E08BE 		.word	-1106731401
+ 1627 0e04 2D7A07BE 		.word	-1106806227
+ 1628 0e08 265606BE 		.word	-1106880986
+ 1629 0e0c 613205BE 		.word	-1106955679
+ 1630 0e10 E00E04BE 		.word	-1107030304
+ 1631 0e14 E6EB02BE 		.word	-1107104794
+ 1632 0e18 2EC901BE 		.word	-1107179218
+ 1633 0e1c B9A600BE 		.word	-1107253575
+ 1634 0e20 0F09FFBD 		.word	-1107359473
+ 1635 0e24 B9C5FCBD 		.word	-1107507783
+ 1636 0e28 6282FABD 		.word	-1107656094
+ 1637 0e2c 1840F8BD 		.word	-1107804136
+ 1638 0e30 DAFEF5BD 		.word	-1107951910
+ 1639 0e34 9DBDF3BD 		.word	-1108099683
+ 1640 0e38 6B7DF1BD 		.word	-1108247189
+ 1641 0e3c C03DEFBD 		.word	-1108394560
+ 1642 0e40 9BFEECBD 		.word	-1108541797
+ 1643 0e44 FDBFEABD 		.word	-1108688899
+ 1644 0e48 E481E8BD 		.word	-1108835868
+ 1645 0e4c D844E6BD 		.word	-1108982568
+ 1646 0e50 5308E4BD 		.word	-1109129133
+ 1647 0e54 53CCE1BD 		.word	-1109275565
+ 1648 0e58 DA90DFBD 		.word	-1109421862
+ 1649 0e5c E755DDBD 		.word	-1109568025
+ 1650 0e60 001CDBBD 		.word	-1109713920
+ 1651 0e64 A0E2D8BD 		.word	-1109859680
+ 1652 0e68 C5A9D6BD 		.word	-1110005307
+ 1653 0e6c 7171D4BD 		.word	-1110150799
+ 1654 0e70 A439D2BD 		.word	-1110296156
+ 1655 0e74 5C02D0BD 		.word	-1110441380
+ 1656 0e78 21CCCDBD 		.word	-1110586335
+ 1657 0e7c 6C96CBBD 		.word	-1110731156
+ 1658 0e80 3D61C9BD 		.word	-1110875843
+ 1659 0e84 952CC7BD 		.word	-1111020395
+ 1660 0e88 72F8C4BD 		.word	-1111164814
+ 1661 0e8c 5DC5C2BD 		.word	-1111308963
+ 1662 0e90 4792C0BD 		.word	-1111453113
+ 1663 0e94 3D60BEBD 		.word	-1111596995
+ 1664 0e98 BA2EBCBD 		.word	-1111740742
+ 1665 0e9c BDFDB9BD 		.word	-1111884355
+ 1666 0ea0 46CDB7BD 		.word	-1112027834
+ 1667 0ea4 569DB5BD 		.word	-1112171178
+ 1668 0ea8 726EB3BD 		.word	-1112314254
+ 1669 0eac 8E3FB1BD 		.word	-1112457330
+ 1670 0eb0 B611AFBD 		.word	-1112600138
+ 1671 0eb4 65E4ACBD 		.word	-1112742811
+ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccpRnkdN.s 			page 35
+
+
+ 1672 0eb8 99B7AABD 		.word	-1112885351
+ 1673 0ebc 548BA8BD 		.word	-1113027756
+ 1674 0ec0 965FA6BD 		.word	-1113170026
+ 1675 0ec4 E334A4BD 		.word	-1113312029
+ 1676 0ec8 310AA2BD 		.word	-1113454031
+ 1677 0ecc 8BE09FBD 		.word	-1113595765
+ 1678 0ed0 E5B69DBD 		.word	-1113737499
+ 1679 0ed4 4C8E9BBD 		.word	-1113878964
+ 1680 0ed8 386699BD 		.word	-1114020296
+ 1681 0edc AB3E97BD 		.word	-1114161493
+ 1682 0ee0 A41795BD 		.word	-1114302556
+ 1683 0ee4 24F192BD 		.word	-1114443484
+ 1684 0ee8 B0CB90BD 		.word	-1114584144
+ 1685 0eec 3BA68EBD 		.word	-1114724805
+ 1686 0ef0 D4818CBD 		.word	-1114865196
+ 1687 0ef4 6C5D8ABD 		.word	-1115005588
+ 1688 0ef8 113A88BD 		.word	-1115145711
+ 1689 0efc 3C1786BD 		.word	-1115285700
+ 1690 0f00 EDF483BD 		.word	-1115425555
+ 1691 0f04 24D381BD 		.word	-1115565276
+ 1692 0f08 C3637FBD 		.word	-1115724861
+ 1693 0f0c 4B227BBD 		.word	-1116003765
+ 1694 0f10 DFE176BD 		.word	-1116282401
+ 1695 0f14 8CA372BD 		.word	-1116560500
+ 1696 0f18 38656EBD 		.word	-1116838600
+ 1697 0f1c F2276ABD 		.word	-1117116430
+ 1698 0f20 C4EC65BD 		.word	-1117393724
+ 1699 0f24 A2B261BD 		.word	-1117670750
+ 1700 0f28 81785DBD 		.word	-1117947775
+ 1701 0f2c 794059BD 		.word	-1118224263
+ 1702 0f30 7D0955BD 		.word	-1118500483
+ 1703 0f34 80D250BD 		.word	-1118776704
+ 1704 0f38 9D9D4CBD 		.word	-1119052387
+ 1705 0f3c C66948BD 		.word	-1119327802
+ 1706 0f40 FC3644BD 		.word	-1119602948
+ 1707 0f44 3E0540BD 		.word	-1119877826
+ 1708 0f48 8DD43BBD 		.word	-1120152435
+ 1709 0f4c F4A537BD 		.word	-1120426508
+ 1710 0f50 5C7733BD 		.word	-1120700580
+ 1711 0f54 CF492FBD 		.word	-1120974385
+ 1712 0f58 501D2BBD 		.word	-1121247920
+ 1713 0f5c E9F226BD 		.word	-1121520919
+ 1714 0f60 82C822BD 		.word	-1121793918
+ 1715 0f64 279F1EBD 		.word	-1122066649
+ 1716 0f68 E6771ABD 		.word	-1122338842
+ 1717 0f6c A45016BD 		.word	-1122611036
+ 1718 0f70 6F2A12BD 		.word	-1122882961
+ 1719 0f74 53060EBD 		.word	-1123154349
+ 1720 0f78 37E209BD 		.word	-1123425737
+ 1721 0f7c 33C005BD 		.word	-1123696589
+ 1722 0f80 309E01BD 		.word	-1123967440
+ 1723 0f84 8BFCFABC 		.word	-1124402037
+ 1724 0f88 CFBEF2BC 		.word	-1124942129
+ 1725 0f8c 1381EABC 		.word	-1125482221
+ 1726 0f90 8847E2BC 		.word	-1126021240
+ 1727 0f94 FE0DDABC 		.word	-1126560258
+ 1728 0f98 A5D8D1BC 		.word	-1127098203
+ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccpRnkdN.s 			page 36
+
+
+ 1729 0f9c 65A5C9BC 		.word	-1127635611
+ 1730 0fa0 2672C1BC 		.word	-1128173018
+ 1731 0fa4 1843B9BC 		.word	-1128709352
+ 1732 0fa8 0A14B1BC 		.word	-1129245686
+ 1733 0fac 2DE9A8BC 		.word	-1129780947
+ 1734 0fb0 6AC0A0BC 		.word	-1130315670
+ 1735 0fb4 A69798BC 		.word	-1130850394
+ 1736 0fb8 157390BC 		.word	-1131384043
+ 1737 0fbc 834E88BC 		.word	-1131917693
+ 1738 0fc0 232E80BC 		.word	-1132450269
+ 1739 0fc4 861B70BC 		.word	-1133503610
+ 1740 0fc8 2AE35FBC 		.word	-1134566614
+ 1741 0fcc CEAA4FBC 		.word	-1135629618
+ 1742 0fd0 D57A3FBC 		.word	-1136690475
+ 1743 0fd4 DC4A2FBC 		.word	-1137751332
+ 1744 0fd8 46231FBC 		.word	-1138810042
+ 1745 0fdc B1FB0EBC 		.word	-1139868751
+ 1746 0fe0 9AB0FDBB 		.word	-1141002086
+ 1747 0fe4 9A7ADDBB 		.word	-1143113062
+ 1748 0fe8 9A44BDBB 		.word	-1145224038
+ 1749 0fec FD169DBB 		.word	-1147332867
+ 1750 0ff0 4DF479BB 		.word	-1149635507
+ 1751 0ff4 A1BA39BB 		.word	-1153844575
+ 1752 0ff8 7923F3BA 		.word	-1158470791
+ 1753 0ffc 79E665BA 		.word	-1167726983
+ 1754 1000 00000000 		.word	0
+ 1755              		.text
+ 1756              	.Letext0:
+ 1757              		.file 2 "/Users/johannes/Library/Application Support/Code/User/globalStorage/bmd.stm32-for-vscode/
+ 1758              		.file 3 "/Users/johannes/Library/Application Support/Code/User/globalStorage/bmd.stm32-for-vscode/
+ 1759              		.file 4 "Core/Inc/ADSR_envelope.h"
+ 1760              		.file 5 "Core/Inc/lut_log.h"
+ 1761              		.file 6 "Core/Inc/helper_functions.h"
+ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccpRnkdN.s 			page 37
+
+
+DEFINED SYMBOLS
+                            *ABS*:0000000000000000 ADSR_envelope.c
+/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccpRnkdN.s:20     .text.ADSR_keyOn:0000000000000000 $t
+/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccpRnkdN.s:26     .text.ADSR_keyOn:0000000000000000 ADSR_keyOn
+/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccpRnkdN.s:52     .text.ADSR_keyOn:0000000000000010 $d
+/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccpRnkdN.s:57     .text.ADSR_keyOff:0000000000000000 $t
+/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccpRnkdN.s:63     .text.ADSR_keyOff:0000000000000000 ADSR_keyOff
+/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccpRnkdN.s:85     .text.ADSR_setSustainLevel:0000000000000000 $t
+/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccpRnkdN.s:91     .text.ADSR_setSustainLevel:0000000000000000 ADSR_setSustainLevel
+/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccpRnkdN.s:108    .text.ADSR_calculateMultiplier:0000000000000000 $t
+/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccpRnkdN.s:114    .text.ADSR_calculateMultiplier:0000000000000000 ADSR_calculateMultiplier
+/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccpRnkdN.s:176    .text.ADSR_calculateMultiplier:0000000000000054 $d
+/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccpRnkdN.s:729    .rodata.log_lut:0000000000000000 log_lut
+/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccpRnkdN.s:183    .text.ADSR_init:0000000000000000 $t
+/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccpRnkdN.s:189    .text.ADSR_init:0000000000000000 ADSR_init
+/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccpRnkdN.s:270    .text.ADSR_init:000000000000006c $d
+/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccpRnkdN.s:278    .text.ADSR_setAttackTime:0000000000000000 $t
+/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccpRnkdN.s:284    .text.ADSR_setAttackTime:0000000000000000 ADSR_setAttackTime
+/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccpRnkdN.s:315    .text.ADSR_setAttackTime:000000000000001c $d
+/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccpRnkdN.s:320    .text.ADSR_setDecayTime:0000000000000000 $t
+/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccpRnkdN.s:326    .text.ADSR_setDecayTime:0000000000000000 ADSR_setDecayTime
+/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccpRnkdN.s:357    .text.ADSR_setReleaseTime:0000000000000000 $t
+/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccpRnkdN.s:363    .text.ADSR_setReleaseTime:0000000000000000 ADSR_setReleaseTime
+/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccpRnkdN.s:394    .text.ADSR_setReleaseTime:000000000000001c $d
+/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccpRnkdN.s:399    .text.ADSR_setAllTimes:0000000000000000 $t
+/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccpRnkdN.s:405    .text.ADSR_setAllTimes:0000000000000000 ADSR_setAllTimes
+/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccpRnkdN.s:460    .text.ADSR_setTarget:0000000000000000 $t
+/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccpRnkdN.s:466    .text.ADSR_setTarget:0000000000000000 ADSR_setTarget
+/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccpRnkdN.s:529    .text.ADSR_setValue:0000000000000000 $t
+/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccpRnkdN.s:535    .text.ADSR_setValue:0000000000000000 ADSR_setValue
+/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccpRnkdN.s:566    .text.ADSR_getState:0000000000000000 $t
+/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccpRnkdN.s:572    .text.ADSR_getState:0000000000000000 ADSR_getState
+/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccpRnkdN.s:592    .text.ADSR_compute:0000000000000000 $t
+/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccpRnkdN.s:598    .text.ADSR_compute:0000000000000000 ADSR_compute
+/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccpRnkdN.s:712    .text.ADSR_compute:00000000000000a0 $d
+/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccpRnkdN.s:723    .bss.adsr:0000000000000000 adsr
+/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccpRnkdN.s:720    .bss.adsr:0000000000000000 $d
+/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccpRnkdN.s:726    .rodata.log_lut:0000000000000000 $d
+
+UNDEFINED SYMBOLS
+interp_lin_lut
+__aeabi_f2d
+__aeabi_dcmple

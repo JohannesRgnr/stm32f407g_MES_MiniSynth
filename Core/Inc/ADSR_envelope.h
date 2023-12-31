@@ -1,11 +1,12 @@
 /**
- * @file envelope.h
+ * @file ADSR_envelope.c
  * @author modified by johannes regnier
- * @brief ADSR envelope generator
- * @note modification of Xavier Halgand version, which was itself an implementation of the STK ADSR envelope class
- * @note by Perry R. Cook and Gary P. Scavone https://ccrma.stanford.edu/software/stk/classstk_1_1ADSR.html 
+ * @brief Exponential ADSR envelope generator
+ * @note Modification of Perry R. Cook and Gary P. Scavone Envelope subclass
+ * @note  https://ccrma.stanford.edu/software/stk/classstk_1_1ADSR.html 
+ * @note Exponential curve multiplier from https://www.martin-finke.de/articles/audio-plugins-011-envelopes/ 
  * @version 0.1
- * @date 2023-12-30
+ * @date 2023-12-31
  * 
  * @copyright Copyright (c) 2023
  * 
@@ -13,8 +14,8 @@
 
 
 
-#ifndef _ENVELOPE_H
-#define _ENVELOPE_H
+#ifndef _ADSR_ENVELOPE_H
+#define _ADSR_ENVELOPE_H
 
 /* Includes ------------------------------------------------------------------*/
 
@@ -32,9 +33,9 @@ enum { ATTACK, DECAY, SUSTAIN, RELEASE, OFF};
 
 typedef struct
 {
-    float   value_;
-	float 	target_;
-	int 	state_;
+    float   value;
+	float 	target;
+	int 	state;
     float   atk_time;
     float   dcy_time;
     float   sust_level;
@@ -56,26 +57,21 @@ void ADSR_keyOn(ADSR_t *env);
 //! Set target = 0, state = \e ADSR::RELEASE.
 void ADSR_keyOff(ADSR_t *env);
 
-//! Set the attack rate.
-void ADSR_setAttackRate(ADSR_t *env, float rate);
 
-//! Set the decay rate.
-void ADSR_setDecayRate(ADSR_t *env, float rate);
+//! Set the attack multiplier based on a time duration.
+void ADSR_setAttackTime(ADSR_t *env, float time);
+
+//! Set the decay multiplier based on a time duration.
+void ADSR_setDecayTime(ADSR_t *env, float time);
 
 //! Set the sustain level.
 void ADSR_setSustainLevel(ADSR_t *env, float level);
 
-//! Set the release rate.
-void ADSR_setReleaseRate(ADSR_t *env, float rate);
-
-//! Set the attack rate based on a time duration.
-void ADSR_setAttackTime(ADSR_t *env, float time);
-
-//! Set the decay rate based on a time duration.
-void ADSR_setDecayTime(ADSR_t *env, float time);
-
-//! Set the release rate based on a time duration.
+//! Set the release multiplier based on a time duration.
 void ADSR_setReleaseTime(ADSR_t *env, float time);
+
+// Compute multiplier to achieve exponential curve between 2 values in specified time
+float ADSR_calculateMultiplier(float start_level, float end_level, float time);
 
 //! Set sustain level and attack, decay, and release time durations.
 void ADSR_setAllTimes(ADSR_t *env, float aTime, float dTime, float sLevel, float rTime);
@@ -84,21 +80,15 @@ void ADSR_setAllTimes(ADSR_t *env, float aTime, float dTime, float sLevel, float
 void ADSR_setTarget(ADSR_t *env, float target);
 
 //! Return the current envelope \e state (ATTACK, DECAY, SUSTAIN, RELEASE, DONE).
-int ADSR_getState(ADSR_t *env) ;
+int ADSR_getState(ADSR_t *env);
 
 //! Set to state = ADSR::SUSTAIN with current and target values of \e aValue.
 void ADSR_setValue(ADSR_t *env, float value);
 
-float ADSR_computeSample( ADSR_t *env );
+float ADSR_compute( ADSR_t *env );
 
-float ADSR_calculateMultiplier(float start_level, float end_level, float time);
-float env_Compute(ADSR_t *env);
 
-void setGateTime(uint8_t val);
-void AttTime_set(uint8_t val);
-void DecTime_set(uint8_t val);
-void SustLevel_set(uint8_t val);
-void RelTime_set(uint8_t val);
+
 
 
 

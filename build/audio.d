@@ -34,7 +34,7 @@ build/audio.o: Core/Src/audio.c Core/Inc/audio.h \
  Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_hcd.h \
  Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_ll_usb.h \
  Core/Inc/../../Drivers/BSP/STM32F4-Discovery/../../../Middlewares/ST/STM32_Audio/Addons/PDM/Inc/pdm2pcm_glo.h \
- Core/Inc/CONSTS.h Core/Inc/envelope.h Core/Inc/oscillators.h \
+ Core/Inc/CONSTS.h Core/Inc/ADSR_envelope.h Core/Inc/oscillators.h \
  Core/Inc/MIDI_lut.h
 Core/Inc/audio.h:
 Core/Inc/../../Drivers/BSP/STM32F4-Discovery/stm32f4_discovery_audio.h:
@@ -75,6 +75,6 @@ Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_hcd.h:
 Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_ll_usb.h:
 Core/Inc/../../Drivers/BSP/STM32F4-Discovery/../../../Middlewares/ST/STM32_Audio/Addons/PDM/Inc/pdm2pcm_glo.h:
 Core/Inc/CONSTS.h:
-Core/Inc/envelope.h:
+Core/Inc/ADSR_envelope.h:
 Core/Inc/oscillators.h:
 Core/Inc/MIDI_lut.h:

@@ -16,20 +16,20 @@
 #include "audio.h"
 #include "oscillators.h"
 #include "MIDI_lut.h"
+#include <stdint.h>
 
 
 
 
-int16_t audioBuffer[BUFFER_SIZE_DIV_2]; // 32 samples X 2 channels
-float outputBuffer[BUFFER_SIZE_DIV_4];
+uint16_t audioBuffer[BUFFER_SIZE]; // 256 samples X 2 channels = 512 samples
+// float outputBuffer[BUFFER_SIZE_DIV_4];
 
 extern int8_t currentPitch;
 extern int8_t velocity;
 extern ADSR_t adsr;
 
 static float env;
-static float yL = 0;
-static float yR = 0;
+
 
 extern oscillator_t osc1, osc2, osc3, osc4, osc5, osc6, osc7;
 
@@ -40,7 +40,7 @@ extern oscillator_t osc1, osc2, osc3, osc4, osc5, osc6, osc7;
 void AUDIO_Init()
 {
     BSP_AUDIO_OUT_Init(OUTPUT_DEVICE_HEADPHONE, INITIAL_VOLUME, FS);
-	BSP_AUDIO_OUT_Play((uint16_t *)audioBuffer, BUFFER_SIZE);
+	BSP_AUDIO_OUT_Play((uint16_t *)&audioBuffer[0], 2*BUFFER_SIZE); // 1024 samples
 
 	
 	
@@ -62,35 +62,39 @@ void AUDIO_Init()
 float superSaw_outL, superSaw_outR;
 
 
-void audioBlock(float *output, int32_t samples)
+void audioBlock(uint16_t *buffer, uint16_t samples)
 {
 	//osc1.freq = 440.f;
 	//osc2.freq = 110;
-	
-	
-	for (uint16_t i = 0; i < samples; i++)
+	int i;
+	uint16_t *output;
+	output = buffer;
+	float yL, yR;
+	uint16_t valueL, valueR;
+
+	for (i = 0; i < samples; i++)
 	{
 		//osc_polyblepSaw(&osc1);
 		//osc_polyblepSaw(&osc2);
-		// osc_Sine(&osc1);
-		// osc_Sine(&osc1);
-		/*--- Apply envelop and tremolo ---*/
-		// env = ADSR_computeSample(&adsr);
-		env = ADSR_computeSample(&adsr);
+		//osc_Sine(&osc1);
+		
+		/*--- compute ADSR envelope --*/
+		env = ADSR_compute(&adsr);
+
 		float frequency = mtof[currentPitch];
 		osc_superSaw(frequency, 0.3, &superSaw_outL, &superSaw_outR);
-		//osc1.freq = frequency;
-		//yL = osc1.output;
-		//yL *= env;
-		//osc_superSaw(frequency, 0.3, &superSaw_outL, &superSaw_outR);
+		// osc1.freq = frequency;
+		// yL = osc1.output;
+		// yR = yL;
+		// yL *= env;
+
 		yL = superSaw_outL * env;
 		yR = superSaw_outR * env;
-		output[i << 1] 			= yL;		// LEFT
-		output[(i << 1) + 1] 	= yR;  		// RIGHT
 
-		// output[i << 1] 			= y;			// LEFT
-		// output[(i << 1) + 1] 	= y;  		// RIGHT
-
+		valueL = (uint16_t) ((int16_t) ((32767.0f) * yL)); 
+		valueR = (uint16_t) ((int16_t) ((32767.0f) * yR));
+		*output++ = valueL; // left channel sample
+		*output++ = valueR; // right channel sample
 		
 	}
 }
@@ -99,23 +103,12 @@ void audioBlock(float *output, int32_t samples)
 
 void BSP_AUDIO_OUT_HalfTransfer_CallBack(void)
 {
-	audioBlock(outputBuffer, 16);
-	for (int i = 0; i < 32; i += 2)
-	{
-		audioBuffer[i + 0] = (int16_t)((outputBuffer[i]) * 32767.0f);
-		audioBuffer[i + 1] = (int16_t)((outputBuffer[i + 1]) * 32767.0f);
-	}
+	audioBlock((uint16_t *)audioBuffer, BUFFER_SIZE_DIV_4);
 }
 
 void BSP_AUDIO_OUT_TransferComplete_CallBack(void)
 {
-	BSP_AUDIO_OUT_ChangeBuffer((uint16_t *)audioBuffer, 64);
-	audioBlock(outputBuffer, 16);
-	for (int i = 0; i < 32; i += 2)
-	{
-		audioBuffer[i + 32] = (int16_t)((outputBuffer[i]) * 32767.0f);
-		audioBuffer[i + 33] = (int16_t)((outputBuffer[i + 1]) * 32767.0f);
-	}
+	audioBlock((uint16_t *)(audioBuffer + BUFFER_SIZE_DIV_2), BUFFER_SIZE_DIV_4);
 }
 
 void BSP_AUDIO_OUT_Error_CallBack(void)

@@ -39,12 +39,12 @@ f.close()
 
 
 # Log10 table for exponential ADSR
-f = open('log10_lut.txt', 'w')
-f.write("const float log10_lut[1025] = {")
+f = open('log_lut.txt', 'w')
+f.write("const float log_lut[1025] = {")
 # negative bend
 for i in range(1024):
     i = 0.0001 + i/1024
-    f.write(str(round(math.log10(i), 6))+", ")
+    f.write(str(round(math.log(i), 6))+", ")
 
 f.write("0")
 f.write("};")

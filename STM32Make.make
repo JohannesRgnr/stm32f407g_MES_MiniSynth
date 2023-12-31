@@ -36,6 +36,7 @@ BUILD_DIR = build
 ######################################
 # C sources
 C_SOURCES =  \
+Core/Src/ADSR_envelope.c \
 Core/Src/MIDI_application.c \
 Core/Src/MIDI_event.c \
 Core/Src/SEGGER_RTT.c \
@@ -44,7 +45,6 @@ Core/Src/audio.c \
 Core/Src/console.c \
 Core/Src/consoleCommands.c \
 Core/Src/consoleIo.c \
-Core/Src/envelope.c \
 Core/Src/filter.c \
 Core/Src/gpio.c \
 Core/Src/helper_functions.c \

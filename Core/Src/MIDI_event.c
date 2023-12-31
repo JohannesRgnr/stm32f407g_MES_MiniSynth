@@ -4,7 +4,7 @@
  * @brief MIDI events processing
  * @note Makes use of the great resources from Tom Erbe
  * @note http://synthnotes.ucsd.edu/wp4/index.php/2019/09/24/adding-the-usb-otg-midi-driver-polyphonic-framework/
- * @note and Xavier Halgand's Dekrispator
+ * @note and of the awesome Xavier Halgand's Dekrispator
  * @version 0.1
  * @date 2023-12-30
  *
@@ -19,7 +19,7 @@
 #include "SEGGER_RTT.h"
 #include "CONSTS.h"
 #include "helper_functions.h"
-#include "envelope.h"
+#include "ADSR_envelope.h"
 
 USBH_HandleTypeDef hUSBHost; /* USB Host handle */
 MIDI_ApplicationTypeDef Appli_state = MIDI_APPLICATION_IDLE;
@@ -120,7 +120,7 @@ void ProcessMIDI(midi_package_t pack)
 			{
 				currentPitch = noteOn - MIN_MIDI_NOTE; // conversion for mtof[]
 			}
-			SEGGER_RTT_printf(0, "Note ON, pitch %u\r\n", currentPitch);
+			// SEGGER_RTT_printf(0, "Note ON, pitch %u\r\n", currentPitch); // debug
 			HAL_GPIO_WritePin(LD5_GPIO_Port, LD5_Pin, GPIO_PIN_SET); // red LED ON when incoming MIDI note on
 			ADSR_keyOn(&adsr);
 			notesCount++;
@@ -132,7 +132,7 @@ void ProcessMIDI(midi_package_t pack)
 			notes_Active[noteOn] = 0;
 			notesCount--;
 			
-			SEGGER_RTT_printf(0, "Note OFF, pitch %u\r\n", currentPitch);
+			// SEGGER_RTT_printf(0, "Note OFF, pitch %u\r\n", currentPitch);
 			if (notesCount <= 0)
 			{
 				ADSR_keyOff(&adsr);
@@ -159,7 +159,7 @@ void ProcessMIDI(midi_package_t pack)
 	case 0xB0:	// Control Change
 		uint8_t cc_number = pack.evnt1;
 		uint8_t cc_value = pack.evnt2;
-		SEGGER_RTT_printf(0, "CC#  %u %u\r\n", cc_number, cc_value);
+		// SEGGER_RTT_printf(0, "CC#  %u %u\r\n", cc_number, cc_value); // debug
 		switch (pack.evnt1) // CC number
 		{
 		case 20:

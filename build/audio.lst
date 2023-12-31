@@ -1,4 +1,4 @@
-ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccXuaL0n.s 			page 1
+ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccR3moNj.s 			page 1
 
 
    1              		.cpu cortex-m4
@@ -46,23 +46,23 @@ ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccXuaL0n.s 			page 1
   16:Core/Src/audio.c **** #include "audio.h"
   17:Core/Src/audio.c **** #include "oscillators.h"
   18:Core/Src/audio.c **** #include "MIDI_lut.h"
-  19:Core/Src/audio.c **** 
+  19:Core/Src/audio.c **** #include <stdint.h>
   20:Core/Src/audio.c **** 
   21:Core/Src/audio.c **** 
   22:Core/Src/audio.c **** 
-  23:Core/Src/audio.c **** int16_t audioBuffer[BUFFER_SIZE_DIV_2]; // 32 samples X 2 channels
-  24:Core/Src/audio.c **** float outputBuffer[BUFFER_SIZE_DIV_4];
-  25:Core/Src/audio.c **** 
-  26:Core/Src/audio.c **** extern int8_t currentPitch;
-  27:Core/Src/audio.c **** extern int8_t velocity;
-  28:Core/Src/audio.c **** extern ADSR_t adsr;
-  29:Core/Src/audio.c **** 
-  30:Core/Src/audio.c **** static float env;
-ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccXuaL0n.s 			page 2
+  23:Core/Src/audio.c **** 
+  24:Core/Src/audio.c **** uint16_t audioBuffer[BUFFER_SIZE]; // 256 samples X 2 channels = 512 samples
+  25:Core/Src/audio.c **** // float outputBuffer[BUFFER_SIZE_DIV_4];
+  26:Core/Src/audio.c **** 
+  27:Core/Src/audio.c **** extern int8_t currentPitch;
+  28:Core/Src/audio.c **** extern int8_t velocity;
+  29:Core/Src/audio.c **** extern ADSR_t adsr;
+  30:Core/Src/audio.c **** 
+ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccR3moNj.s 			page 2
 
 
-  31:Core/Src/audio.c **** static float yL = 0;
-  32:Core/Src/audio.c **** static float yR = 0;
+  31:Core/Src/audio.c **** static float env;
+  32:Core/Src/audio.c **** 
   33:Core/Src/audio.c **** 
   34:Core/Src/audio.c **** extern oscillator_t osc1, osc2, osc3, osc4, osc5, osc6, osc7;
   35:Core/Src/audio.c **** 
@@ -91,9 +91,9 @@ ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccXuaL0n.s 			page 1
   44 000c 0220     		movs	r0, #2
   45 000e FFF7FEFF 		bl	BSP_AUDIO_OUT_Init
   46              	.LVL0:
-  43:Core/Src/audio.c **** 	BSP_AUDIO_OUT_Play((uint16_t *)audioBuffer, BUFFER_SIZE);
+  43:Core/Src/audio.c **** 	BSP_AUDIO_OUT_Play((uint16_t *)&audioBuffer[0], 2*BUFFER_SIZE); // 1024 samples
   47              		.loc 1 43 2 view .LVU2
-  48 0012 4FF40071 		mov	r1, #512
+  48 0012 4FF48061 		mov	r1, #1024
   49 0016 3448     		ldr	r0, .L3
   50 0018 FFF7FEFF 		bl	BSP_AUDIO_OUT_Play
   51              	.LVL1:
@@ -118,7 +118,7 @@ ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccXuaL0n.s 			page 1
   65 0042 F0EE481A 		vmov.f32	s3, s16
   66 0046 B0EE481A 		vmov.f32	s2, s16
   67 004a F0EE680A 		vmov.f32	s1, s17
-ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccXuaL0n.s 			page 3
+ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccR3moNj.s 			page 3
 
 
   68 004e B0EE420A 		vmov.f32	s0, s4
@@ -178,7 +178,7 @@ ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccXuaL0n.s 			page 1
   54:Core/Src/audio.c **** 
   55:Core/Src/audio.c **** 	ADSR_init(&adsr);
  117              		.loc 1 55 2 view .LVU10
-ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccXuaL0n.s 			page 4
+ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccR3moNj.s 			page 4
 
 
  118 00da 0E48     		ldr	r0, .L3+44
@@ -225,7 +225,7 @@ ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccXuaL0n.s 			page 1
   62:Core/Src/audio.c **** float superSaw_outL, superSaw_outR;
   63:Core/Src/audio.c **** 
   64:Core/Src/audio.c **** 
-  65:Core/Src/audio.c **** void audioBlock(float *output, int32_t samples)
+  65:Core/Src/audio.c **** void audioBlock(uint16_t *buffer, uint16_t samples)
   66:Core/Src/audio.c **** {
  155              		.loc 1 66 1 is_stmt 1 view -0
  156              		.cfi_startproc
@@ -238,1778 +238,1643 @@ ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccXuaL0n.s 			page 1
  163              		.cfi_offset 4, -28
  164              		.cfi_offset 5, -24
  165              		.cfi_offset 6, -20
-ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccXuaL0n.s 			page 5
+ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccR3moNj.s 			page 5
 
 
  166              		.cfi_offset 7, -16
  167              		.cfi_offset 8, -12
  168              		.cfi_offset 9, -8
  169              		.cfi_offset 14, -4
- 170 0004 0546     		mov	r5, r0
+ 170 0004 0446     		mov	r4, r0
  171 0006 0E46     		mov	r6, r1
   67:Core/Src/audio.c **** 	//osc1.freq = 440.f;
   68:Core/Src/audio.c **** 	//osc2.freq = 110;
-  69:Core/Src/audio.c **** 	
-  70:Core/Src/audio.c **** 	
-  71:Core/Src/audio.c **** 	for (uint16_t i = 0; i < samples; i++)
- 172              		.loc 1 71 2 is_stmt 1 view .LVU14
- 173              	.LBB2:
- 174              		.loc 1 71 7 view .LVU15
+  69:Core/Src/audio.c **** 	int i;
+ 172              		.loc 1 69 2 is_stmt 1 view .LVU14
+  70:Core/Src/audio.c **** 	uint16_t *output;
+ 173              		.loc 1 70 2 view .LVU15
+  71:Core/Src/audio.c **** 	output = buffer;
+ 174              		.loc 1 71 2 view .LVU16
  175              	.LVL11:
- 176              		.loc 1 71 16 is_stmt 0 view .LVU16
- 177 0008 0024     		movs	r4, #0
- 178              		.loc 1 71 2 view .LVU17
- 179 000a 33E0     		b	.L6
- 180              	.LVL12:
- 181              	.L7:
- 182              	.LBB3:
-  72:Core/Src/audio.c **** 	{
-  73:Core/Src/audio.c **** 		//osc_polyblepSaw(&osc1);
-  74:Core/Src/audio.c **** 		//osc_polyblepSaw(&osc2);
-  75:Core/Src/audio.c **** 		// osc_Sine(&osc1);
-  76:Core/Src/audio.c **** 		// osc_Sine(&osc1);
-  77:Core/Src/audio.c **** 		/*--- Apply envelop and tremolo ---*/
-  78:Core/Src/audio.c **** 		// env = ADSR_computeSample(&adsr);
-  79:Core/Src/audio.c **** 		env = ADSR_computeSample(&adsr);
- 183              		.loc 1 79 3 is_stmt 1 discriminator 3 view .LVU18
- 184              		.loc 1 79 9 is_stmt 0 discriminator 3 view .LVU19
- 185 000c 1B48     		ldr	r0, .L9
- 186 000e FFF7FEFF 		bl	ADSR_computeSample
- 187              	.LVL13:
- 188              		.loc 1 79 7 discriminator 3 view .LVU20
- 189 0012 DFF88490 		ldr	r9, .L9+28
- 190 0016 89ED000A 		vstr.32	s0, [r9]
-  80:Core/Src/audio.c **** 		float frequency = mtof[currentPitch];
- 191              		.loc 1 80 3 is_stmt 1 discriminator 3 view .LVU21
- 192              		.loc 1 80 25 is_stmt 0 discriminator 3 view .LVU22
- 193 001a 194B     		ldr	r3, .L9+4
- 194 001c 93F90020 		ldrsb	r2, [r3]
- 195              		.loc 1 80 9 discriminator 3 view .LVU23
- 196 0020 184B     		ldr	r3, .L9+8
- 197 0022 03EB8203 		add	r3, r3, r2, lsl #2
- 198              	.LVL14:
-  81:Core/Src/audio.c **** 		osc_superSaw(frequency, 0.3, &superSaw_outL, &superSaw_outR);
- 199              		.loc 1 81 3 is_stmt 1 discriminator 3 view .LVU24
- 200 0026 184F     		ldr	r7, .L9+12
- 201 0028 DFF87080 		ldr	r8, .L9+32
- 202 002c 3946     		mov	r1, r7
- 203 002e 4046     		mov	r0, r8
- 204 0030 DFED160A 		vldr.32	s1, .L9+16
- 205 0034 93ED000A 		vldr.32	s0, [r3]
- 206 0038 FFF7FEFF 		bl	osc_superSaw
- 207              	.LVL15:
-ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccXuaL0n.s 			page 6
+  72:Core/Src/audio.c **** 	float yL, yR;
+ 176              		.loc 1 72 2 view .LVU17
+  73:Core/Src/audio.c **** 	uint16_t valueL, valueR;
+ 177              		.loc 1 73 2 view .LVU18
+  74:Core/Src/audio.c **** 
+  75:Core/Src/audio.c **** 	for (i = 0; i < samples; i++)
+ 178              		.loc 1 75 2 view .LVU19
+ 179              		.loc 1 75 9 is_stmt 0 view .LVU20
+ 180 0008 0025     		movs	r5, #0
+ 181              		.loc 1 75 2 view .LVU21
+ 182 000a 35E0     		b	.L6
+ 183              	.LVL12:
+ 184              	.L7:
+ 185              	.LBB2:
+  76:Core/Src/audio.c **** 	{
+  77:Core/Src/audio.c **** 		//osc_polyblepSaw(&osc1);
+  78:Core/Src/audio.c **** 		//osc_polyblepSaw(&osc2);
+  79:Core/Src/audio.c **** 		//osc_Sine(&osc1);
+  80:Core/Src/audio.c **** 		
+  81:Core/Src/audio.c **** 		/*--- compute ADSR envelope --*/
+  82:Core/Src/audio.c **** 		env = ADSR_compute(&adsr);
+ 186              		.loc 1 82 3 is_stmt 1 discriminator 3 view .LVU22
+ 187              		.loc 1 82 9 is_stmt 0 discriminator 3 view .LVU23
+ 188 000c 1C48     		ldr	r0, .L9
+ 189 000e FFF7FEFF 		bl	ADSR_compute
+ 190              	.LVL13:
+ 191              		.loc 1 82 7 discriminator 3 view .LVU24
+ 192 0012 DFF88480 		ldr	r8, .L9+24
+ 193 0016 88ED000A 		vstr.32	s0, [r8]
+  83:Core/Src/audio.c **** 
+  84:Core/Src/audio.c **** 		float frequency = mtof[currentPitch];
+ 194              		.loc 1 84 3 is_stmt 1 discriminator 3 view .LVU25
+ 195              		.loc 1 84 25 is_stmt 0 discriminator 3 view .LVU26
+ 196 001a 1A4B     		ldr	r3, .L9+4
+ 197 001c 93F90020 		ldrsb	r2, [r3]
+ 198              		.loc 1 84 9 discriminator 3 view .LVU27
+ 199 0020 194B     		ldr	r3, .L9+8
+ 200 0022 03EB8203 		add	r3, r3, r2, lsl #2
+ 201              	.LVL14:
+  85:Core/Src/audio.c **** 		osc_superSaw(frequency, 0.3, &superSaw_outL, &superSaw_outR);
+ 202              		.loc 1 85 3 is_stmt 1 discriminator 3 view .LVU28
+ 203 0026 194F     		ldr	r7, .L9+12
+ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccR3moNj.s 			page 6
 
 
-  82:Core/Src/audio.c **** 		//osc1.freq = frequency;
-  83:Core/Src/audio.c **** 		//yL = osc1.output;
-  84:Core/Src/audio.c **** 		//yL *= env;
-  85:Core/Src/audio.c **** 		//osc_superSaw(frequency, 0.3, &superSaw_outL, &superSaw_outR);
-  86:Core/Src/audio.c **** 		yL = superSaw_outL * env;
- 208              		.loc 1 86 3 discriminator 3 view .LVU25
- 209              		.loc 1 86 22 is_stmt 0 discriminator 3 view .LVU26
- 210 003c D9ED007A 		vldr.32	s15, [r9]
- 211 0040 98ED007A 		vldr.32	s14, [r8]
- 212 0044 27EE877A 		vmul.f32	s14, s15, s14
- 213              		.loc 1 86 6 discriminator 3 view .LVU27
- 214 0048 114B     		ldr	r3, .L9+20
- 215 004a 83ED007A 		vstr.32	s14, [r3]
-  87:Core/Src/audio.c **** 		yR = superSaw_outR * env;
- 216              		.loc 1 87 3 is_stmt 1 discriminator 3 view .LVU28
- 217              		.loc 1 87 22 is_stmt 0 discriminator 3 view .LVU29
- 218 004e D7ED006A 		vldr.32	s13, [r7]
- 219 0052 67EEA67A 		vmul.f32	s15, s15, s13
- 220              		.loc 1 87 6 discriminator 3 view .LVU30
- 221 0056 0F4B     		ldr	r3, .L9+24
- 222 0058 C3ED007A 		vstr.32	s15, [r3]
-  88:Core/Src/audio.c **** 		output[i << 1] 			= yL;		// LEFT
- 223              		.loc 1 88 3 is_stmt 1 discriminator 3 view .LVU31
- 224              		.loc 1 88 12 is_stmt 0 discriminator 3 view .LVU32
- 225 005c 6300     		lsls	r3, r4, #1
- 226              		.loc 1 88 9 discriminator 3 view .LVU33
- 227 005e 05EBC402 		add	r2, r5, r4, lsl #3
- 228              		.loc 1 88 21 discriminator 3 view .LVU34
- 229 0062 82ED007A 		vstr.32	s14, [r2]
-  89:Core/Src/audio.c **** 		output[(i << 1) + 1] 	= yR;  		// RIGHT
- 230              		.loc 1 89 3 is_stmt 1 discriminator 3 view .LVU35
- 231              		.loc 1 89 9 is_stmt 0 discriminator 3 view .LVU36
- 232 0066 0133     		adds	r3, r3, #1
- 233 0068 05EB8303 		add	r3, r5, r3, lsl #2
- 234              		.loc 1 89 25 discriminator 3 view .LVU37
- 235 006c C3ED007A 		vstr.32	s15, [r3]
- 236              	.LBE3:
-  71:Core/Src/audio.c **** 	{
- 237              		.loc 1 71 37 is_stmt 1 discriminator 3 view .LVU38
- 238 0070 0134     		adds	r4, r4, #1
- 239              	.LVL16:
-  71:Core/Src/audio.c **** 	{
- 240              		.loc 1 71 37 is_stmt 0 discriminator 3 view .LVU39
- 241 0072 A4B2     		uxth	r4, r4
- 242              	.LVL17:
- 243              	.L6:
-  71:Core/Src/audio.c **** 	{
- 244              		.loc 1 71 25 is_stmt 1 discriminator 1 view .LVU40
- 245 0074 B442     		cmp	r4, r6
- 246 0076 C9DB     		blt	.L7
- 247              	.LBE2:
+ 204 0028 DFF87090 		ldr	r9, .L9+28
+ 205 002c 3946     		mov	r1, r7
+ 206 002e 4846     		mov	r0, r9
+ 207 0030 DFED170A 		vldr.32	s1, .L9+16
+ 208 0034 93ED000A 		vldr.32	s0, [r3]
+ 209 0038 FFF7FEFF 		bl	osc_superSaw
+ 210              	.LVL15:
+  86:Core/Src/audio.c **** 		// osc1.freq = frequency;
+  87:Core/Src/audio.c **** 		// yL = osc1.output;
+  88:Core/Src/audio.c **** 		// yR = yL;
+  89:Core/Src/audio.c **** 		// yL *= env;
   90:Core/Src/audio.c **** 
-  91:Core/Src/audio.c **** 		// output[i << 1] 			= y;			// LEFT
-  92:Core/Src/audio.c **** 		// output[(i << 1) + 1] 	= y;  		// RIGHT
+  91:Core/Src/audio.c **** 		yL = superSaw_outL * env;
+ 211              		.loc 1 91 3 discriminator 3 view .LVU29
+ 212              		.loc 1 91 22 is_stmt 0 discriminator 3 view .LVU30
+ 213 003c 99ED007A 		vldr.32	s14, [r9]
+ 214 0040 D8ED007A 		vldr.32	s15, [r8]
+ 215              		.loc 1 91 6 discriminator 3 view .LVU31
+ 216 0044 27EE277A 		vmul.f32	s14, s14, s15
+ 217              	.LVL16:
+  92:Core/Src/audio.c **** 		yR = superSaw_outR * env;
+ 218              		.loc 1 92 3 is_stmt 1 discriminator 3 view .LVU32
+ 219              		.loc 1 92 22 is_stmt 0 discriminator 3 view .LVU33
+ 220 0048 D7ED006A 		vldr.32	s13, [r7]
+ 221              		.loc 1 92 6 discriminator 3 view .LVU34
+ 222 004c 67EEA67A 		vmul.f32	s15, s15, s13
+ 223              	.LVL17:
   93:Core/Src/audio.c **** 
-  94:Core/Src/audio.c **** 		
-  95:Core/Src/audio.c **** 	}
-ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccXuaL0n.s 			page 7
+  94:Core/Src/audio.c **** 		valueL = (uint16_t) ((int16_t) ((32767.0f) * yL)); 
+ 224              		.loc 1 94 3 is_stmt 1 discriminator 3 view .LVU35
+ 225              		.loc 1 94 46 is_stmt 0 discriminator 3 view .LVU36
+ 226 0050 DFED106A 		vldr.32	s13, .L9+20
+ 227 0054 27EE267A 		vmul.f32	s14, s14, s13
+ 228              	.LVL18:
+ 229              		.loc 1 94 24 discriminator 3 view .LVU37
+ 230 0058 BDEEC77A 		vcvt.s32.f32	s14, s14
+ 231              	.LVL19:
+  95:Core/Src/audio.c **** 		valueR = (uint16_t) ((int16_t) ((32767.0f) * yR));
+ 232              		.loc 1 95 3 is_stmt 1 discriminator 3 view .LVU38
+ 233              		.loc 1 95 46 is_stmt 0 discriminator 3 view .LVU39
+ 234 005c 67EEA67A 		vmul.f32	s15, s15, s13
+ 235              	.LVL20:
+ 236              		.loc 1 95 24 discriminator 3 view .LVU40
+ 237 0060 FDEEE77A 		vcvt.s32.f32	s15, s15
+ 238              	.LVL21:
+  96:Core/Src/audio.c **** 		*output++ = valueL; // left channel sample
+ 239              		.loc 1 96 3 is_stmt 1 discriminator 3 view .LVU41
+ 240              		.loc 1 96 13 is_stmt 0 discriminator 3 view .LVU42
+ 241 0064 2346     		mov	r3, r4
+ 242 0066 17EE102A 		vmov	r2, s14	@ int
+ 243 006a 23F8042B 		strh	r2, [r3], #4	@ movhi
+ 244              	.LVL22:
+  97:Core/Src/audio.c **** 		*output++ = valueR; // right channel sample
+ 245              		.loc 1 97 3 is_stmt 1 discriminator 3 view .LVU43
+ 246              		.loc 1 97 13 is_stmt 0 discriminator 3 view .LVU44
+ 247 006e 17EE902A 		vmov	r2, s15	@ int
+ 248 0072 6280     		strh	r2, [r4, #2]	@ movhi
+ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccR3moNj.s 			page 7
 
 
-  96:Core/Src/audio.c **** }
- 248              		.loc 1 96 1 is_stmt 0 view .LVU41
- 249 0078 BDE8F883 		pop	{r3, r4, r5, r6, r7, r8, r9, pc}
- 250              	.LVL18:
- 251              	.L10:
- 252              		.loc 1 96 1 view .LVU42
- 253              		.align	2
- 254              	.L9:
- 255 007c 00000000 		.word	adsr
- 256 0080 00000000 		.word	currentPitch
- 257 0084 00000000 		.word	.LANCHOR2
- 258 0088 00000000 		.word	.LANCHOR3
- 259 008c 9A99993E 		.word	1050253722
- 260 0090 00000000 		.word	.LANCHOR5
- 261 0094 00000000 		.word	.LANCHOR6
- 262 0098 00000000 		.word	.LANCHOR1
- 263 009c 00000000 		.word	.LANCHOR4
- 264              		.cfi_endproc
- 265              	.LFE132:
- 267              		.section	.text.BSP_AUDIO_OUT_HalfTransfer_CallBack,"ax",%progbits
- 268              		.align	1
- 269              		.global	BSP_AUDIO_OUT_HalfTransfer_CallBack
- 270              		.syntax unified
- 271              		.thumb
- 272              		.thumb_func
- 274              	BSP_AUDIO_OUT_HalfTransfer_CallBack:
- 275              	.LFB133:
-  97:Core/Src/audio.c **** 
-  98:Core/Src/audio.c **** 
-  99:Core/Src/audio.c **** 
- 100:Core/Src/audio.c **** void BSP_AUDIO_OUT_HalfTransfer_CallBack(void)
- 101:Core/Src/audio.c **** {
- 276              		.loc 1 101 1 is_stmt 1 view -0
- 277              		.cfi_startproc
- 278              		@ args = 0, pretend = 0, frame = 0
- 279              		@ frame_needed = 0, uses_anonymous_args = 0
- 280 0000 08B5     		push	{r3, lr}
- 281              		.cfi_def_cfa_offset 8
- 282              		.cfi_offset 3, -8
- 283              		.cfi_offset 14, -4
- 102:Core/Src/audio.c **** 	audioBlock(outputBuffer, 16);
- 284              		.loc 1 102 2 view .LVU44
- 285 0002 1021     		movs	r1, #16
- 286 0004 1248     		ldr	r0, .L15
- 287 0006 FFF7FEFF 		bl	audioBlock
- 288              	.LVL19:
- 103:Core/Src/audio.c **** 	for (int i = 0; i < 32; i += 2)
- 289              		.loc 1 103 2 view .LVU45
- 290              	.LBB4:
- 291              		.loc 1 103 7 view .LVU46
- 292              		.loc 1 103 11 is_stmt 0 view .LVU47
- 293 000a 0023     		movs	r3, #0
- 294              		.loc 1 103 2 view .LVU48
- 295 000c 1DE0     		b	.L12
- 296              	.LVL20:
- 297              	.L13:
- 104:Core/Src/audio.c **** 	{
-ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccXuaL0n.s 			page 8
+ 249              	.LBE2:
+  75:Core/Src/audio.c **** 	{
+ 250              		.loc 1 75 28 is_stmt 1 discriminator 3 view .LVU45
+ 251 0074 0135     		adds	r5, r5, #1
+ 252              	.LVL23:
+ 253              	.LBB3:
+ 254              		.loc 1 97 10 is_stmt 0 discriminator 3 view .LVU46
+ 255 0076 1C46     		mov	r4, r3
+ 256              	.LVL24:
+ 257              	.L6:
+ 258              		.loc 1 97 10 discriminator 3 view .LVU47
+ 259              	.LBE3:
+  75:Core/Src/audio.c **** 	{
+ 260              		.loc 1 75 16 is_stmt 1 discriminator 1 view .LVU48
+ 261 0078 AE42     		cmp	r6, r5
+ 262 007a C7DC     		bgt	.L7
+  98:Core/Src/audio.c **** 		
+  99:Core/Src/audio.c **** 	}
+ 100:Core/Src/audio.c **** }
+ 263              		.loc 1 100 1 is_stmt 0 view .LVU49
+ 264 007c BDE8F883 		pop	{r3, r4, r5, r6, r7, r8, r9, pc}
+ 265              	.LVL25:
+ 266              	.L10:
+ 267              		.loc 1 100 1 view .LVU50
+ 268              		.align	2
+ 269              	.L9:
+ 270 0080 00000000 		.word	adsr
+ 271 0084 00000000 		.word	currentPitch
+ 272 0088 00000000 		.word	.LANCHOR2
+ 273 008c 00000000 		.word	.LANCHOR3
+ 274 0090 9A99993E 		.word	1050253722
+ 275 0094 00FEFF46 		.word	1191181824
+ 276 0098 00000000 		.word	.LANCHOR1
+ 277 009c 00000000 		.word	.LANCHOR4
+ 278              		.cfi_endproc
+ 279              	.LFE132:
+ 281              		.section	.text.BSP_AUDIO_OUT_HalfTransfer_CallBack,"ax",%progbits
+ 282              		.align	1
+ 283              		.global	BSP_AUDIO_OUT_HalfTransfer_CallBack
+ 284              		.syntax unified
+ 285              		.thumb
+ 286              		.thumb_func
+ 288              	BSP_AUDIO_OUT_HalfTransfer_CallBack:
+ 289              	.LFB133:
+ 101:Core/Src/audio.c **** 
+ 102:Core/Src/audio.c **** 
+ 103:Core/Src/audio.c **** 
+ 104:Core/Src/audio.c **** void BSP_AUDIO_OUT_HalfTransfer_CallBack(void)
+ 105:Core/Src/audio.c **** {
+ 290              		.loc 1 105 1 is_stmt 1 view -0
+ 291              		.cfi_startproc
+ 292              		@ args = 0, pretend = 0, frame = 0
+ 293              		@ frame_needed = 0, uses_anonymous_args = 0
+ 294 0000 08B5     		push	{r3, lr}
+ 295              		.cfi_def_cfa_offset 8
+ 296              		.cfi_offset 3, -8
+ 297              		.cfi_offset 14, -4
+ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccR3moNj.s 			page 8
 
 
- 105:Core/Src/audio.c **** 		audioBuffer[i + 0] = (int16_t)((outputBuffer[i]) * 32767.0f);
- 298              		.loc 1 105 3 is_stmt 1 discriminator 3 view .LVU49
- 299              		.loc 1 105 47 is_stmt 0 discriminator 3 view .LVU50
- 300 000e 104A     		ldr	r2, .L15
- 301 0010 02EB8301 		add	r1, r2, r3, lsl #2
- 302 0014 D1ED007A 		vldr.32	s15, [r1]
- 303              		.loc 1 105 52 discriminator 3 view .LVU51
- 304 0018 9FED0E7A 		vldr.32	s14, .L15+4
- 305 001c 67EE877A 		vmul.f32	s15, s15, s14
- 306              		.loc 1 105 24 discriminator 3 view .LVU52
- 307 0020 FDEEE77A 		vcvt.s32.f32	s15, s15
- 308              		.loc 1 105 22 discriminator 3 view .LVU53
- 309 0024 0C49     		ldr	r1, .L15+8
- 310 0026 17EE900A 		vmov	r0, s15	@ int
- 311 002a 21F81300 		strh	r0, [r1, r3, lsl #1]	@ movhi
- 106:Core/Src/audio.c **** 		audioBuffer[i + 1] = (int16_t)((outputBuffer[i + 1]) * 32767.0f);
- 312              		.loc 1 106 3 is_stmt 1 discriminator 3 view .LVU54
- 313              		.loc 1 106 50 is_stmt 0 discriminator 3 view .LVU55
- 314 002e 581C     		adds	r0, r3, #1
- 315              		.loc 1 106 47 discriminator 3 view .LVU56
- 316 0030 02EB8002 		add	r2, r2, r0, lsl #2
- 317 0034 D2ED007A 		vldr.32	s15, [r2]
- 318              		.loc 1 106 56 discriminator 3 view .LVU57
- 319 0038 67EE877A 		vmul.f32	s15, s15, s14
- 320              		.loc 1 106 24 discriminator 3 view .LVU58
- 321 003c FDEEE77A 		vcvt.s32.f32	s15, s15
- 322              		.loc 1 106 22 discriminator 3 view .LVU59
- 323 0040 17EE902A 		vmov	r2, s15	@ int
- 324 0044 21F81020 		strh	r2, [r1, r0, lsl #1]	@ movhi
- 103:Core/Src/audio.c **** 	for (int i = 0; i < 32; i += 2)
- 325              		.loc 1 103 28 is_stmt 1 discriminator 3 view .LVU60
- 326 0048 0233     		adds	r3, r3, #2
- 327              	.LVL21:
- 328              	.L12:
- 103:Core/Src/audio.c **** 	for (int i = 0; i < 32; i += 2)
- 329              		.loc 1 103 20 discriminator 1 view .LVU61
- 330 004a 1F2B     		cmp	r3, #31
- 331 004c DFDD     		ble	.L13
- 332              	.LBE4:
- 107:Core/Src/audio.c **** 	}
- 108:Core/Src/audio.c **** }
- 333              		.loc 1 108 1 is_stmt 0 view .LVU62
- 334 004e 08BD     		pop	{r3, pc}
- 335              	.LVL22:
- 336              	.L16:
- 337              		.loc 1 108 1 view .LVU63
- 338              		.align	2
- 339              	.L15:
- 340 0050 00000000 		.word	.LANCHOR7
- 341 0054 00FEFF46 		.word	1191181824
- 342 0058 00000000 		.word	.LANCHOR0
- 343              		.cfi_endproc
- 344              	.LFE133:
- 346              		.section	.text.BSP_AUDIO_OUT_TransferComplete_CallBack,"ax",%progbits
- 347              		.align	1
- 348              		.global	BSP_AUDIO_OUT_TransferComplete_CallBack
- 349              		.syntax unified
-ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccXuaL0n.s 			page 9
+ 106:Core/Src/audio.c **** 	audioBlock((uint16_t *)audioBuffer, BUFFER_SIZE_DIV_4);
+ 298              		.loc 1 106 2 view .LVU52
+ 299 0002 8021     		movs	r1, #128
+ 300 0004 0148     		ldr	r0, .L13
+ 301 0006 FFF7FEFF 		bl	audioBlock
+ 302              	.LVL26:
+ 107:Core/Src/audio.c **** }
+ 303              		.loc 1 107 1 is_stmt 0 view .LVU53
+ 304 000a 08BD     		pop	{r3, pc}
+ 305              	.L14:
+ 306              		.align	2
+ 307              	.L13:
+ 308 000c 00000000 		.word	.LANCHOR0
+ 309              		.cfi_endproc
+ 310              	.LFE133:
+ 312              		.section	.text.BSP_AUDIO_OUT_TransferComplete_CallBack,"ax",%progbits
+ 313              		.align	1
+ 314              		.global	BSP_AUDIO_OUT_TransferComplete_CallBack
+ 315              		.syntax unified
+ 316              		.thumb
+ 317              		.thumb_func
+ 319              	BSP_AUDIO_OUT_TransferComplete_CallBack:
+ 320              	.LFB134:
+ 108:Core/Src/audio.c **** 
+ 109:Core/Src/audio.c **** void BSP_AUDIO_OUT_TransferComplete_CallBack(void)
+ 110:Core/Src/audio.c **** {
+ 321              		.loc 1 110 1 is_stmt 1 view -0
+ 322              		.cfi_startproc
+ 323              		@ args = 0, pretend = 0, frame = 0
+ 324              		@ frame_needed = 0, uses_anonymous_args = 0
+ 325 0000 08B5     		push	{r3, lr}
+ 326              		.cfi_def_cfa_offset 8
+ 327              		.cfi_offset 3, -8
+ 328              		.cfi_offset 14, -4
+ 111:Core/Src/audio.c **** 	audioBlock((uint16_t *)(audioBuffer + BUFFER_SIZE_DIV_2), BUFFER_SIZE_DIV_4);
+ 329              		.loc 1 111 2 view .LVU55
+ 330 0002 8021     		movs	r1, #128
+ 331 0004 0148     		ldr	r0, .L17
+ 332 0006 FFF7FEFF 		bl	audioBlock
+ 333              	.LVL27:
+ 112:Core/Src/audio.c **** }
+ 334              		.loc 1 112 1 is_stmt 0 view .LVU56
+ 335 000a 08BD     		pop	{r3, pc}
+ 336              	.L18:
+ 337              		.align	2
+ 338              	.L17:
+ 339 000c 00020000 		.word	.LANCHOR0+512
+ 340              		.cfi_endproc
+ 341              	.LFE134:
+ 343              		.section	.text.BSP_AUDIO_OUT_Error_CallBack,"ax",%progbits
+ 344              		.align	1
+ 345              		.global	BSP_AUDIO_OUT_Error_CallBack
+ 346              		.syntax unified
+ 347              		.thumb
+ 348              		.thumb_func
+ 350              	BSP_AUDIO_OUT_Error_CallBack:
+ 351              	.LFB135:
+ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccR3moNj.s 			page 9
 
 
- 350              		.thumb
- 351              		.thumb_func
- 353              	BSP_AUDIO_OUT_TransferComplete_CallBack:
- 354              	.LFB134:
- 109:Core/Src/audio.c **** 
- 110:Core/Src/audio.c **** void BSP_AUDIO_OUT_TransferComplete_CallBack(void)
- 111:Core/Src/audio.c **** {
- 355              		.loc 1 111 1 is_stmt 1 view -0
- 356              		.cfi_startproc
- 357              		@ args = 0, pretend = 0, frame = 0
- 358              		@ frame_needed = 0, uses_anonymous_args = 0
- 359 0000 08B5     		push	{r3, lr}
- 360              		.cfi_def_cfa_offset 8
- 361              		.cfi_offset 3, -8
- 362              		.cfi_offset 14, -4
- 112:Core/Src/audio.c **** 	BSP_AUDIO_OUT_ChangeBuffer((uint16_t *)audioBuffer, 64);
- 363              		.loc 1 112 2 view .LVU65
- 364 0002 4021     		movs	r1, #64
- 365 0004 1648     		ldr	r0, .L21
- 366 0006 FFF7FEFF 		bl	BSP_AUDIO_OUT_ChangeBuffer
- 367              	.LVL23:
- 113:Core/Src/audio.c **** 	audioBlock(outputBuffer, 16);
- 368              		.loc 1 113 2 view .LVU66
- 369 000a 1021     		movs	r1, #16
- 370 000c 1548     		ldr	r0, .L21+4
- 371 000e FFF7FEFF 		bl	audioBlock
- 372              	.LVL24:
- 114:Core/Src/audio.c **** 	for (int i = 0; i < 32; i += 2)
- 373              		.loc 1 114 2 view .LVU67
- 374              	.LBB5:
- 375              		.loc 1 114 7 view .LVU68
- 376              		.loc 1 114 11 is_stmt 0 view .LVU69
- 377 0012 0023     		movs	r3, #0
- 378              		.loc 1 114 2 view .LVU70
- 379 0014 21E0     		b	.L18
- 380              	.LVL25:
- 381              	.L19:
- 115:Core/Src/audio.c **** 	{
- 116:Core/Src/audio.c **** 		audioBuffer[i + 32] = (int16_t)((outputBuffer[i]) * 32767.0f);
- 382              		.loc 1 116 3 is_stmt 1 discriminator 3 view .LVU71
- 383              		.loc 1 116 48 is_stmt 0 discriminator 3 view .LVU72
- 384 0016 134A     		ldr	r2, .L21+4
- 385 0018 02EB8301 		add	r1, r2, r3, lsl #2
- 386 001c D1ED007A 		vldr.32	s15, [r1]
- 387              		.loc 1 116 53 discriminator 3 view .LVU73
- 388 0020 9FED117A 		vldr.32	s14, .L21+8
- 389 0024 67EE877A 		vmul.f32	s15, s15, s14
- 390              		.loc 1 116 17 discriminator 3 view .LVU74
- 391 0028 03F12000 		add	r0, r3, #32
- 392              		.loc 1 116 25 discriminator 3 view .LVU75
- 393 002c FDEEE77A 		vcvt.s32.f32	s15, s15
- 394              		.loc 1 116 23 discriminator 3 view .LVU76
- 395 0030 0B49     		ldr	r1, .L21
- 396 0032 17EE90CA 		vmov	ip, s15	@ int
- 397 0036 21F810C0 		strh	ip, [r1, r0, lsl #1]	@ movhi
- 117:Core/Src/audio.c **** 		audioBuffer[i + 33] = (int16_t)((outputBuffer[i + 1]) * 32767.0f);
- 398              		.loc 1 117 3 is_stmt 1 discriminator 3 view .LVU77
-ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccXuaL0n.s 			page 10
+ 113:Core/Src/audio.c **** 
+ 114:Core/Src/audio.c **** void BSP_AUDIO_OUT_Error_CallBack(void)
+ 115:Core/Src/audio.c **** {
+ 352              		.loc 1 115 1 is_stmt 1 view -0
+ 353              		.cfi_startproc
+ 354              		@ Volatile: function does not return.
+ 355              		@ args = 0, pretend = 0, frame = 0
+ 356              		@ frame_needed = 0, uses_anonymous_args = 0
+ 357              		@ link register save eliminated.
+ 358              	.L20:
+ 116:Core/Src/audio.c **** 	/* Stop the program with an infinite loop */
+ 117:Core/Src/audio.c **** 	while (1)
+ 359              		.loc 1 117 2 discriminator 1 view .LVU58
+ 118:Core/Src/audio.c **** 	{
+ 119:Core/Src/audio.c **** 	}
+ 360              		.loc 1 119 2 discriminator 1 view .LVU59
+ 117:Core/Src/audio.c **** 	{
+ 361              		.loc 1 117 8 discriminator 1 view .LVU60
+ 362 0000 FEE7     		b	.L20
+ 363              		.cfi_endproc
+ 364              	.LFE135:
+ 366              		.section	.text.DMA1_Stream7_IRQHandler,"ax",%progbits
+ 367              		.align	1
+ 368              		.global	DMA1_Stream7_IRQHandler
+ 369              		.syntax unified
+ 370              		.thumb
+ 371              		.thumb_func
+ 373              	DMA1_Stream7_IRQHandler:
+ 374              	.LFB136:
+ 120:Core/Src/audio.c **** }
+ 121:Core/Src/audio.c **** 
+ 122:Core/Src/audio.c **** 
+ 123:Core/Src/audio.c **** void I2S3_IRQHandler(void)
+ 124:Core/Src/audio.c **** {
+ 375              		.loc 1 124 1 view -0
+ 376              		.cfi_startproc
+ 377              		@ args = 0, pretend = 0, frame = 0
+ 378              		@ frame_needed = 0, uses_anonymous_args = 0
+ 379 0000 08B5     		push	{r3, lr}
+ 380              		.cfi_def_cfa_offset 8
+ 381              		.cfi_offset 3, -8
+ 382              		.cfi_offset 14, -4
+ 125:Core/Src/audio.c **** 	HAL_DMA_IRQHandler(hAudioOutI2s.hdmatx);
+ 383              		.loc 1 125 2 view .LVU62
+ 384 0002 024B     		ldr	r3, .L23
+ 385 0004 986B     		ldr	r0, [r3, #56]
+ 386 0006 FFF7FEFF 		bl	HAL_DMA_IRQHandler
+ 387              	.LVL28:
+ 126:Core/Src/audio.c **** }
+ 388              		.loc 1 126 1 is_stmt 0 view .LVU63
+ 389 000a 08BD     		pop	{r3, pc}
+ 390              	.L24:
+ 391              		.align	2
+ 392              	.L23:
+ 393 000c 00000000 		.word	hAudioOutI2s
+ 394              		.cfi_endproc
+ 395              	.LFE136:
+ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccR3moNj.s 			page 10
 
 
- 399              		.loc 1 117 51 is_stmt 0 discriminator 3 view .LVU78
- 400 003a 581C     		adds	r0, r3, #1
- 401              		.loc 1 117 48 discriminator 3 view .LVU79
- 402 003c 02EB8002 		add	r2, r2, r0, lsl #2
- 403 0040 D2ED007A 		vldr.32	s15, [r2]
- 404              		.loc 1 117 57 discriminator 3 view .LVU80
- 405 0044 67EE877A 		vmul.f32	s15, s15, s14
- 406              		.loc 1 117 17 discriminator 3 view .LVU81
- 407 0048 03F12102 		add	r2, r3, #33
- 408              		.loc 1 117 25 discriminator 3 view .LVU82
- 409 004c FDEEE77A 		vcvt.s32.f32	s15, s15
- 410              		.loc 1 117 23 discriminator 3 view .LVU83
- 411 0050 17EE900A 		vmov	r0, s15	@ int
- 412 0054 21F81200 		strh	r0, [r1, r2, lsl #1]	@ movhi
- 114:Core/Src/audio.c **** 	for (int i = 0; i < 32; i += 2)
- 413              		.loc 1 114 28 is_stmt 1 discriminator 3 view .LVU84
- 414 0058 0233     		adds	r3, r3, #2
- 415              	.LVL26:
- 416              	.L18:
- 114:Core/Src/audio.c **** 	for (int i = 0; i < 32; i += 2)
- 417              		.loc 1 114 20 discriminator 1 view .LVU85
- 418 005a 1F2B     		cmp	r3, #31
- 419 005c DBDD     		ble	.L19
- 420              	.LBE5:
- 118:Core/Src/audio.c **** 	}
- 119:Core/Src/audio.c **** }
- 421              		.loc 1 119 1 is_stmt 0 view .LVU86
- 422 005e 08BD     		pop	{r3, pc}
- 423              	.LVL27:
- 424              	.L22:
- 425              		.loc 1 119 1 view .LVU87
- 426              		.align	2
- 427              	.L21:
- 428 0060 00000000 		.word	.LANCHOR0
- 429 0064 00000000 		.word	.LANCHOR7
- 430 0068 00FEFF46 		.word	1191181824
- 431              		.cfi_endproc
- 432              	.LFE134:
- 434              		.section	.text.BSP_AUDIO_OUT_Error_CallBack,"ax",%progbits
- 435              		.align	1
- 436              		.global	BSP_AUDIO_OUT_Error_CallBack
- 437              		.syntax unified
- 438              		.thumb
- 439              		.thumb_func
- 441              	BSP_AUDIO_OUT_Error_CallBack:
- 442              	.LFB135:
- 120:Core/Src/audio.c **** 
- 121:Core/Src/audio.c **** void BSP_AUDIO_OUT_Error_CallBack(void)
- 122:Core/Src/audio.c **** {
- 443              		.loc 1 122 1 is_stmt 1 view -0
- 444              		.cfi_startproc
- 445              		@ Volatile: function does not return.
- 446              		@ args = 0, pretend = 0, frame = 0
- 447              		@ frame_needed = 0, uses_anonymous_args = 0
- 448              		@ link register save eliminated.
- 449              	.L24:
- 123:Core/Src/audio.c **** 	/* Stop the program with an infinite loop */
-ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccXuaL0n.s 			page 11
+ 397              		.section	.text.DMA1_Stream3_IRQHandler,"ax",%progbits
+ 398              		.align	1
+ 399              		.global	DMA1_Stream3_IRQHandler
+ 400              		.syntax unified
+ 401              		.thumb
+ 402              		.thumb_func
+ 404              	DMA1_Stream3_IRQHandler:
+ 405              	.LFB137:
+ 127:Core/Src/audio.c **** void I2S2_IRQHandler(void)
+ 128:Core/Src/audio.c **** {
+ 406              		.loc 1 128 1 is_stmt 1 view -0
+ 407              		.cfi_startproc
+ 408              		@ args = 0, pretend = 0, frame = 0
+ 409              		@ frame_needed = 0, uses_anonymous_args = 0
+ 410 0000 08B5     		push	{r3, lr}
+ 411              		.cfi_def_cfa_offset 8
+ 412              		.cfi_offset 3, -8
+ 413              		.cfi_offset 14, -4
+ 129:Core/Src/audio.c **** 	HAL_DMA_IRQHandler(hAudioInI2s.hdmarx);
+ 414              		.loc 1 129 2 view .LVU65
+ 415 0002 024B     		ldr	r3, .L27
+ 416 0004 D86B     		ldr	r0, [r3, #60]
+ 417 0006 FFF7FEFF 		bl	HAL_DMA_IRQHandler
+ 418              	.LVL29:
+ 130:Core/Src/audio.c **** }...
+ 419              		.loc 1 130 1 is_stmt 0 view .LVU66
+ 420 000a 08BD     		pop	{r3, pc}
+ 421              	.L28:
+ 422              		.align	2
+ 423              	.L27:
+ 424 000c 00000000 		.word	hAudioInI2s
+ 425              		.cfi_endproc
+ 426              	.LFE137:
+ 428              		.global	superSaw_outR
+ 429              		.global	superSaw_outL
+ 430              		.global	audioBuffer
+ 431              		.global	pbend
+ 432              		.global	mtof
+ 433              		.section	.bss.audioBuffer,"aw",%nobits
+ 434              		.align	2
+ 435              		.set	.LANCHOR0,. + 0
+ 438              	audioBuffer:
+ 439 0000 00000000 		.space	1024
+ 439      00000000 
+ 439      00000000 
+ 439      00000000 
+ 439      00000000 
+ 440              		.section	.bss.env,"aw",%nobits
+ 441              		.align	2
+ 442              		.set	.LANCHOR1,. + 0
+ 445              	env:
+ 446 0000 00000000 		.space	4
+ 447              		.section	.bss.superSaw_outL,"aw",%nobits
+ 448              		.align	2
+ 449              		.set	.LANCHOR4,. + 0
+ 452              	superSaw_outL:
+ 453 0000 00000000 		.space	4
+ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccR3moNj.s 			page 11
 
 
- 124:Core/Src/audio.c **** 	while (1)
- 450              		.loc 1 124 2 discriminator 1 view .LVU89
- 125:Core/Src/audio.c **** 	{
- 126:Core/Src/audio.c **** 	}
- 451              		.loc 1 126 2 discriminator 1 view .LVU90
- 124:Core/Src/audio.c **** 	{
- 452              		.loc 1 124 8 discriminator 1 view .LVU91
- 453 0000 FEE7     		b	.L24
- 454              		.cfi_endproc
- 455              	.LFE135:
- 457              		.section	.text.DMA1_Stream7_IRQHandler,"ax",%progbits
- 458              		.align	1
- 459              		.global	DMA1_Stream7_IRQHandler
- 460              		.syntax unified
- 461              		.thumb
- 462              		.thumb_func
- 464              	DMA1_Stream7_IRQHandler:
- 465              	.LFB136:
- 127:Core/Src/audio.c **** }
- 128:Core/Src/audio.c **** 
- 129:Core/Src/audio.c **** 
- 130:Core/Src/audio.c **** void I2S3_IRQHandler(void)
- 131:Core/Src/audio.c **** {
- 466              		.loc 1 131 1 view -0
- 467              		.cfi_startproc
- 468              		@ args = 0, pretend = 0, frame = 0
- 469              		@ frame_needed = 0, uses_anonymous_args = 0
- 470 0000 08B5     		push	{r3, lr}
- 471              		.cfi_def_cfa_offset 8
- 472              		.cfi_offset 3, -8
- 473              		.cfi_offset 14, -4
- 132:Core/Src/audio.c **** 	HAL_DMA_IRQHandler(hAudioOutI2s.hdmatx);
- 474              		.loc 1 132 2 view .LVU93
- 475 0002 024B     		ldr	r3, .L27
- 476 0004 986B     		ldr	r0, [r3, #56]
- 477 0006 FFF7FEFF 		bl	HAL_DMA_IRQHandler
- 478              	.LVL28:
- 133:Core/Src/audio.c **** }
- 479              		.loc 1 133 1 is_stmt 0 view .LVU94
- 480 000a 08BD     		pop	{r3, pc}
- 481              	.L28:
- 482              		.align	2
- 483              	.L27:
- 484 000c 00000000 		.word	hAudioOutI2s
- 485              		.cfi_endproc
- 486              	.LFE136:
- 488              		.section	.text.DMA1_Stream3_IRQHandler,"ax",%progbits
- 489              		.align	1
- 490              		.global	DMA1_Stream3_IRQHandler
- 491              		.syntax unified
- 492              		.thumb
- 493              		.thumb_func
- 495              	DMA1_Stream3_IRQHandler:
- 496              	.LFB137:
- 134:Core/Src/audio.c **** void I2S2_IRQHandler(void)
- 135:Core/Src/audio.c **** {
- 497              		.loc 1 135 1 is_stmt 1 view -0
-ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccXuaL0n.s 			page 12
+ 454              		.section	.bss.superSaw_outR,"aw",%nobits
+ 455              		.align	2
+ 456              		.set	.LANCHOR3,. + 0
+ 459              	superSaw_outR:
+ 460 0000 00000000 		.space	4
+ 461              		.section	.rodata.mtof,"a"
+ 462              		.align	2
+ 463              		.set	.LANCHOR2,. + 0
+ 466              	mtof:
+ 467 0000 13D00241 		.word	1090703379
+ 468 0004 60970A41 		.word	1091213152
+ 469 0008 17D51241 		.word	1091753239
+ 470 000c 41901B41 		.word	1092325441
+ 471 0010 54D02441 		.word	1092931668
+ 472 0014 369D2E41 		.word	1093573942
+ 473 0018 4AFF3841 		.word	1094254410
+ 474 001c 6AFF4341 		.word	1094975338
+ 475 0020 01A74F41 		.word	1095739137
+ 476 0024 00005C41 		.word	1096548352
+ 477 0028 F7146941 		.word	1097405687
+ 478 002c 10F17641 		.word	1098314000
+ 479 0030 13D08241 		.word	1099091987
+ 480 0034 60978A41 		.word	1099601760
+ 481 0038 17D59241 		.word	1100141847
+ 482 003c 41909B41 		.word	1100714049
+ 483 0040 54D0A441 		.word	1101320276
+ 484 0044 369DAE41 		.word	1101962550
+ 485 0048 49FFB841 		.word	1102643017
+ 486 004c 6BFFC341 		.word	1103363947
+ 487 0050 01A7CF41 		.word	1104127745
+ 488 0054 0000DC41 		.word	1104936960
+ 489 0058 F614E941 		.word	1105794294
+ 490 005c 10F1F641 		.word	1106702608
+ 491 0060 13D00242 		.word	1107480595
+ 492 0064 60970A42 		.word	1107990368
+ 493 0068 17D51242 		.word	1108530455
+ 494 006c 41901B42 		.word	1109102657
+ 495 0070 54D02442 		.word	1109708884
+ 496 0074 379D2E42 		.word	1110351159
+ 497 0078 49FF3842 		.word	1111031625
+ 498 007c 6AFF4342 		.word	1111752554
+ 499 0080 00A74F42 		.word	1112516352
+ 500 0084 00005C42 		.word	1113325568
+ 501 0088 F6146942 		.word	1114182902
+ 502 008c 10F17642 		.word	1115091216
+ 503 0090 12D08242 		.word	1115869202
+ 504 0094 60978A42 		.word	1116378976
+ 505 0098 17D59242 		.word	1116919063
+ 506 009c 41909B42 		.word	1117491265
+ 507 00a0 54D0A442 		.word	1118097492
+ 508 00a4 379DAE42 		.word	1118739767
+ 509 00a8 49FFB842 		.word	1119420233
+ 510 00ac 6AFFC342 		.word	1120141162
+ 511 00b0 00A7CF42 		.word	1120904960
+ 512 00b4 0000DC42 		.word	1121714176
+ 513 00b8 F614E942 		.word	1122571510
+ 514 00bc 10F1F642 		.word	1123479824
+ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccR3moNj.s 			page 12
 
 
- 498              		.cfi_startproc
- 499              		@ args = 0, pretend = 0, frame = 0
- 500              		@ frame_needed = 0, uses_anonymous_args = 0
- 501 0000 08B5     		push	{r3, lr}
- 502              		.cfi_def_cfa_offset 8
- 503              		.cfi_offset 3, -8
- 504              		.cfi_offset 14, -4
- 136:Core/Src/audio.c **** 	HAL_DMA_IRQHandler(hAudioInI2s.hdmarx);
- 505              		.loc 1 136 2 view .LVU96
- 506 0002 024B     		ldr	r3, .L31
- 507 0004 D86B     		ldr	r0, [r3, #60]
- 508 0006 FFF7FEFF 		bl	HAL_DMA_IRQHandler
- 509              	.LVL29:
- 137:Core/Src/audio.c **** }...
- 510              		.loc 1 137 1 is_stmt 0 view .LVU97
- 511 000a 08BD     		pop	{r3, pc}
- 512              	.L32:
- 513              		.align	2
- 514              	.L31:
- 515 000c 00000000 		.word	hAudioInI2s
- 516              		.cfi_endproc
- 517              	.LFE137:
- 519              		.global	superSaw_outR
- 520              		.global	superSaw_outL
- 521              		.global	outputBuffer
- 522              		.global	audioBuffer
- 523              		.global	pbend
- 524              		.global	mtof
- 525              		.section	.bss.audioBuffer,"aw",%nobits
- 526              		.align	2
- 527              		.set	.LANCHOR0,. + 0
- 530              	audioBuffer:
- 531 0000 00000000 		.space	512
- 531      00000000 
- 531      00000000 
- 531      00000000 
- 531      00000000 
- 532              		.section	.bss.env,"aw",%nobits
- 533              		.align	2
- 534              		.set	.LANCHOR1,. + 0
- 537              	env:
- 538 0000 00000000 		.space	4
- 539              		.section	.bss.outputBuffer,"aw",%nobits
- 540              		.align	2
- 541              		.set	.LANCHOR7,. + 0
- 544              	outputBuffer:
- 545 0000 00000000 		.space	512
- 545      00000000 
- 545      00000000 
- 545      00000000 
- 545      00000000 
- 546              		.section	.bss.superSaw_outL,"aw",%nobits
- 547              		.align	2
- 548              		.set	.LANCHOR4,. + 0
- 551              	superSaw_outL:
- 552 0000 00000000 		.space	4
- 553              		.section	.bss.superSaw_outR,"aw",%nobits
-ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccXuaL0n.s 			page 13
+ 515 00c0 13D00243 		.word	1124257811
+ 516 00c4 60970A43 		.word	1124767584
+ 517 00c8 17D51243 		.word	1125307671
+ 518 00cc 41901B43 		.word	1125879873
+ 519 00d0 54D02443 		.word	1126486100
+ 520 00d4 379D2E43 		.word	1127128375
+ 521 00d8 49FF3843 		.word	1127808841
+ 522 00dc 6AFF4343 		.word	1128529770
+ 523 00e0 00A74F43 		.word	1129293568
+ 524 00e4 00005C43 		.word	1130102784
+ 525 00e8 F6146943 		.word	1130960118
+ 526 00ec 10F17643 		.word	1131868432
+ 527 00f0 13D08243 		.word	1132646419
+ 528 00f4 60978A43 		.word	1133156192
+ 529 00f8 17D59243 		.word	1133696279
+ 530 00fc 41909B43 		.word	1134268481
+ 531 0100 54D0A443 		.word	1134874708
+ 532 0104 379DAE43 		.word	1135516983
+ 533 0108 49FFB843 		.word	1136197449
+ 534 010c 6AFFC343 		.word	1136918378
+ 535 0110 00A7CF43 		.word	1137682176
+ 536 0114 0000DC43 		.word	1138491392
+ 537 0118 F614E943 		.word	1139348726
+ 538 011c 10F1F643 		.word	1140257040
+ 539 0120 13D00244 		.word	1141035027
+ 540 0124 60970A44 		.word	1141544800
+ 541 0128 17D51244 		.word	1142084887
+ 542 012c 41901B44 		.word	1142657089
+ 543 0130 54D02444 		.word	1143263316
+ 544 0134 379D2E44 		.word	1143905591
+ 545 0138 49FF3844 		.word	1144586057
+ 546 013c 6AFF4344 		.word	1145306986
+ 547 0140 00A74F44 		.word	1146070784
+ 548 0144 00005C44 		.word	1146880000
+ 549 0148 F6146944 		.word	1147737334
+ 550 014c 10F17644 		.word	1148645648
+ 551 0150 13D08244 		.word	1149423635
+ 552 0154 60978A44 		.word	1149933408
+ 553 0158 17D59244 		.word	1150473495
+ 554 015c 41909B44 		.word	1151045697
+ 555 0160 54D0A444 		.word	1151651924
+ 556 0164 379DAE44 		.word	1152294199
+ 557 0168 49FFB844 		.word	1152974665
+ 558 016c 6AFFC344 		.word	1153695594
+ 559 0170 00A7CF44 		.word	1154459392
+ 560 0174 0000DC44 		.word	1155268608
+ 561 0178 F614E944 		.word	1156125942
+ 562 017c 10F1F644 		.word	1157034256
+ 563 0180 13D00245 		.word	1157812243
+ 564 0184 60970A45 		.word	1158322016
+ 565 0188 17D51245 		.word	1158862103
+ 566 018c 41901B45 		.word	1159434305
+ 567 0190 54D02445 		.word	1160040532
+ 568 0194 379D2E45 		.word	1160682807
+ 569 0198 49FF3845 		.word	1161363273
+ 570 019c 6AFF4345 		.word	1162084202
+ 571 01a0 00A74F45 		.word	1162848000
+ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccR3moNj.s 			page 13
 
 
- 554              		.align	2
- 555              		.set	.LANCHOR3,. + 0
- 558              	superSaw_outR:
- 559 0000 00000000 		.space	4
- 560              		.section	.bss.yL,"aw",%nobits
- 561              		.align	2
- 562              		.set	.LANCHOR5,. + 0
- 565              	yL:
- 566 0000 00000000 		.space	4
- 567              		.section	.bss.yR,"aw",%nobits
- 568              		.align	2
- 569              		.set	.LANCHOR6,. + 0
- 572              	yR:
- 573 0000 00000000 		.space	4
- 574              		.section	.rodata.mtof,"a"
- 575              		.align	2
- 576              		.set	.LANCHOR2,. + 0
- 579              	mtof:
- 580 0000 13D00241 		.word	1090703379
- 581 0004 60970A41 		.word	1091213152
- 582 0008 17D51241 		.word	1091753239
- 583 000c 41901B41 		.word	1092325441
- 584 0010 54D02441 		.word	1092931668
- 585 0014 369D2E41 		.word	1093573942
- 586 0018 4AFF3841 		.word	1094254410
- 587 001c 6AFF4341 		.word	1094975338
- 588 0020 01A74F41 		.word	1095739137
- 589 0024 00005C41 		.word	1096548352
- 590 0028 F7146941 		.word	1097405687
- 591 002c 10F17641 		.word	1098314000
- 592 0030 13D08241 		.word	1099091987
- 593 0034 60978A41 		.word	1099601760
- 594 0038 17D59241 		.word	1100141847
- 595 003c 41909B41 		.word	1100714049
- 596 0040 54D0A441 		.word	1101320276
- 597 0044 369DAE41 		.word	1101962550
- 598 0048 49FFB841 		.word	1102643017
- 599 004c 6BFFC341 		.word	1103363947
- 600 0050 01A7CF41 		.word	1104127745
- 601 0054 0000DC41 		.word	1104936960
- 602 0058 F614E941 		.word	1105794294
- 603 005c 10F1F641 		.word	1106702608
- 604 0060 13D00242 		.word	1107480595
- 605 0064 60970A42 		.word	1107990368
- 606 0068 17D51242 		.word	1108530455
- 607 006c 41901B42 		.word	1109102657
- 608 0070 54D02442 		.word	1109708884
- 609 0074 379D2E42 		.word	1110351159
- 610 0078 49FF3842 		.word	1111031625
- 611 007c 6AFF4342 		.word	1111752554
- 612 0080 00A74F42 		.word	1112516352
- 613 0084 00005C42 		.word	1113325568
- 614 0088 F6146942 		.word	1114182902
- 615 008c 10F17642 		.word	1115091216
- 616 0090 12D08242 		.word	1115869202
- 617 0094 60978A42 		.word	1116378976
- 618 0098 17D59242 		.word	1116919063
-ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccXuaL0n.s 			page 14
+ 572 01a4 00005C45 		.word	1163657216
+ 573 01a8 F6146945 		.word	1164514550
+ 574 01ac 10F17645 		.word	1165422864
+ 575 01b0 13D08245 		.word	1166200851
+ 576 01b4 60978A45 		.word	1166710624
+ 577 01b8 17D59245 		.word	1167250711
+ 578 01bc 41909B45 		.word	1167822913
+ 579 01c0 54D0A445 		.word	1168429140
+ 580 01c4 379DAE45 		.word	1169071415
+ 581 01c8 49FFB845 		.word	1169751881
+ 582 01cc 6AFFC345 		.word	1170472810
+ 583 01d0 00A7CF45 		.word	1171236608
+ 584 01d4 0000DC45 		.word	1172045824
+ 585 01d8 F614E945 		.word	1172903158
+ 586 01dc 10F1F645 		.word	1173811472
+ 587 01e0 13D00246 		.word	1174589459
+ 588 01e4 60970A46 		.word	1175099232
+ 589 01e8 17D51246 		.word	1175639319
+ 590 01ec 41901B46 		.word	1176211521
+ 591 01f0 54D02446 		.word	1176817748
+ 592 01f4 379D2E46 		.word	1177460023
+ 593 01f8 49FF3846 		.word	1178140489
+ 594 01fc 6AFF4346 		.word	1178861418
+ 595              		.section	.rodata.pbend,"a"
+ 596              		.align	2
+ 599              	pbend:
+ 600 0000 0000003F 		.word	1056964608
+ 601 0004 5E2C003F 		.word	1056975966
+ 602 0008 DE58003F 		.word	1056987358
+ 603 000c 5E85003F 		.word	1056998750
+ 604 0010 EEB1003F 		.word	1057010158
+ 605 0014 8FDE003F 		.word	1057021583
+ 606 0018 410B013F 		.word	1057033025
+ 607 001c 0438013F 		.word	1057044484
+ 608 0020 D864013F 		.word	1057055960
+ 609 0024 AC91013F 		.word	1057067436
+ 610 0028 A1BE013F 		.word	1057078945
+ 611 002c A7EB013F 		.word	1057090471
+ 612 0030 AD18023F 		.word	1057101997
+ 613 0034 D445023F 		.word	1057113556
+ 614 0038 FC72023F 		.word	1057125116
+ 615 003c 34A0023F 		.word	1057136692
+ 616 0040 8ECD023F 		.word	1057148302
+ 617 0044 E8FA023F 		.word	1057159912
+ 618 0048 5228033F 		.word	1057171538
+ 619 004c CE55033F 		.word	1057183182
+ 620 0050 5A83033F 		.word	1057194842
+ 621 0054 F7B0033F 		.word	1057206519
+ 622 0058 A4DE033F 		.word	1057218212
+ 623 005c 630C043F 		.word	1057229923
+ 624 0060 213A043F 		.word	1057241633
+ 625 0064 0168043F 		.word	1057253377
+ 626 0068 F295043F 		.word	1057265138
+ 627 006c E3C3043F 		.word	1057276899
+ 628 0070 F5F1043F 		.word	1057288693
+ 629 0074 1920053F 		.word	1057300505
+ 630 0078 3C4E053F 		.word	1057312316
+ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccR3moNj.s 			page 14
 
 
- 619 009c 41909B42 		.word	1117491265
- 620 00a0 54D0A442 		.word	1118097492
- 621 00a4 379DAE42 		.word	1118739767
- 622 00a8 49FFB842 		.word	1119420233
- 623 00ac 6AFFC342 		.word	1120141162
- 624 00b0 00A7CF42 		.word	1120904960
- 625 00b4 0000DC42 		.word	1121714176
- 626 00b8 F614E942 		.word	1122571510
- 627 00bc 10F1F642 		.word	1123479824
- 628 00c0 13D00243 		.word	1124257811
- 629 00c4 60970A43 		.word	1124767584
- 630 00c8 17D51243 		.word	1125307671
- 631 00cc 41901B43 		.word	1125879873
- 632 00d0 54D02443 		.word	1126486100
- 633 00d4 379D2E43 		.word	1127128375
- 634 00d8 49FF3843 		.word	1127808841
- 635 00dc 6AFF4343 		.word	1128529770
- 636 00e0 00A74F43 		.word	1129293568
- 637 00e4 00005C43 		.word	1130102784
- 638 00e8 F6146943 		.word	1130960118
- 639 00ec 10F17643 		.word	1131868432
- 640 00f0 13D08243 		.word	1132646419
- 641 00f4 60978A43 		.word	1133156192
- 642 00f8 17D59243 		.word	1133696279
- 643 00fc 41909B43 		.word	1134268481
- 644 0100 54D0A443 		.word	1134874708
- 645 0104 379DAE43 		.word	1135516983
- 646 0108 49FFB843 		.word	1136197449
- 647 010c 6AFFC343 		.word	1136918378
- 648 0110 00A7CF43 		.word	1137682176
- 649 0114 0000DC43 		.word	1138491392
- 650 0118 F614E943 		.word	1139348726
- 651 011c 10F1F643 		.word	1140257040
- 652 0120 13D00244 		.word	1141035027
- 653 0124 60970A44 		.word	1141544800
- 654 0128 17D51244 		.word	1142084887
- 655 012c 41901B44 		.word	1142657089
- 656 0130 54D02444 		.word	1143263316
- 657 0134 379D2E44 		.word	1143905591
- 658 0138 49FF3844 		.word	1144586057
- 659 013c 6AFF4344 		.word	1145306986
- 660 0140 00A74F44 		.word	1146070784
- 661 0144 00005C44 		.word	1146880000
- 662 0148 F6146944 		.word	1147737334
- 663 014c 10F17644 		.word	1148645648
- 664 0150 13D08244 		.word	1149423635
- 665 0154 60978A44 		.word	1149933408
- 666 0158 17D59244 		.word	1150473495
- 667 015c 41909B44 		.word	1151045697
- 668 0160 54D0A444 		.word	1151651924
- 669 0164 379DAE44 		.word	1152294199
- 670 0168 49FFB844 		.word	1152974665
- 671 016c 6AFFC344 		.word	1153695594
- 672 0170 00A7CF44 		.word	1154459392
- 673 0174 0000DC44 		.word	1155268608
- 674 0178 F614E944 		.word	1156125942
- 675 017c 10F1F644 		.word	1157034256
-ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccXuaL0n.s 			page 15
+ 631 007c 707C053F 		.word	1057324144
+ 632 0080 C5AA053F 		.word	1057336005
+ 633 0084 1BD9053F 		.word	1057347867
+ 634 0088 9207063F 		.word	1057359762
+ 635 008c 0936063F 		.word	1057371657
+ 636 0090 9164063F 		.word	1057383569
+ 637 0094 2993063F 		.word	1057395497
+ 638 0098 D3C1063F 		.word	1057407443
+ 639 009c 9EF0063F 		.word	1057419422
+ 640 00a0 681F073F 		.word	1057431400
+ 641 00a4 444E073F 		.word	1057443396
+ 642 00a8 317D073F 		.word	1057455409
+ 643 00ac 2EAC073F 		.word	1057467438
+ 644 00b0 3CDB073F 		.word	1057479484
+ 645 00b4 5B0A083F 		.word	1057491547
+ 646 00b8 7A39083F 		.word	1057503610
+ 647 00bc BA68083F 		.word	1057515706
+ 648 00c0 0B98083F 		.word	1057527819
+ 649 00c4 6DC7083F 		.word	1057539949
+ 650 00c8 E0F6083F 		.word	1057552096
+ 651 00cc 6326093F 		.word	1057564259
+ 652 00d0 E755093F 		.word	1057576423
+ 653 00d4 8C85093F 		.word	1057588620
+ 654 00d8 42B5093F 		.word	1057600834
+ 655 00dc 08E5093F 		.word	1057613064
+ 656 00e0 CF140A3F 		.word	1057625295
+ 657 00e4 B7440A3F 		.word	1057637559
+ 658 00e8 B0740A3F 		.word	1057649840
+ 659 00ec A9A40A3F 		.word	1057662121
+ 660 00f0 C3D40A3F 		.word	1057674435
+ 661 00f4 EE040B3F 		.word	1057686766
+ 662 00f8 2B350B3F 		.word	1057699115
+ 663 00fc 67650B3F 		.word	1057711463
+ 664 0100 C4950B3F 		.word	1057723844
+ 665 0104 32C60B3F 		.word	1057736242
+ 666 0108 A1F60B3F 		.word	1057748641
+ 667 010c 31270C3F 		.word	1057761073
+ 668 0110 D1570C3F 		.word	1057773521
+ 669 0114 72880C3F 		.word	1057785970
+ 670 0118 34B90C3F 		.word	1057798452
+ 671 011c 07EA0C3F 		.word	1057810951
+ 672 0120 DA1A0D3F 		.word	1057823450
+ 673 0124 CF4B0D3F 		.word	1057835983
+ 674 0128 D47C0D3F 		.word	1057848532
+ 675 012c DAAD0D3F 		.word	1057861082
+ 676 0130 01DF0D3F 		.word	1057873665
+ 677 0134 38100E3F 		.word	1057886264
+ 678 0138 81410E3F 		.word	1057898881
+ 679 013c DA720E3F 		.word	1057911514
+ 680 0140 33A40E3F 		.word	1057924147
+ 681 0144 AED50E3F 		.word	1057936814
+ 682 0148 3A070F3F 		.word	1057949498
+ 683 014c D6380F3F 		.word	1057962198
+ 684 0150 836A0F3F 		.word	1057974915
+ 685 0154 419C0F3F 		.word	1057987649
+ 686 0158 10CE0F3F 		.word	1058000400
+ 687 015c EFFF0F3F 		.word	1058013167
+ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccR3moNj.s 			page 15
 
 
- 676 0180 13D00245 		.word	1157812243
- 677 0184 60970A45 		.word	1158322016
- 678 0188 17D51245 		.word	1158862103
- 679 018c 41901B45 		.word	1159434305
- 680 0190 54D02445 		.word	1160040532
- 681 0194 379D2E45 		.word	1160682807
- 682 0198 49FF3845 		.word	1161363273
- 683 019c 6AFF4345 		.word	1162084202
- 684 01a0 00A74F45 		.word	1162848000
- 685 01a4 00005C45 		.word	1163657216
- 686 01a8 F6146945 		.word	1164514550
- 687 01ac 10F17645 		.word	1165422864
- 688 01b0 13D08245 		.word	1166200851
- 689 01b4 60978A45 		.word	1166710624
- 690 01b8 17D59245 		.word	1167250711
- 691 01bc 41909B45 		.word	1167822913
- 692 01c0 54D0A445 		.word	1168429140
- 693 01c4 379DAE45 		.word	1169071415
- 694 01c8 49FFB845 		.word	1169751881
- 695 01cc 6AFFC345 		.word	1170472810
- 696 01d0 00A7CF45 		.word	1171236608
- 697 01d4 0000DC45 		.word	1172045824
- 698 01d8 F614E945 		.word	1172903158
- 699 01dc 10F1F645 		.word	1173811472
- 700 01e0 13D00246 		.word	1174589459
- 701 01e4 60970A46 		.word	1175099232
- 702 01e8 17D51246 		.word	1175639319
- 703 01ec 41901B46 		.word	1176211521
- 704 01f0 54D02446 		.word	1176817748
- 705 01f4 379D2E46 		.word	1177460023
- 706 01f8 49FF3846 		.word	1178140489
- 707 01fc 6AFF4346 		.word	1178861418
- 708              		.section	.rodata.pbend,"a"
- 709              		.align	2
- 712              	pbend:
- 713 0000 0000003F 		.word	1056964608
- 714 0004 5E2C003F 		.word	1056975966
- 715 0008 DE58003F 		.word	1056987358
- 716 000c 5E85003F 		.word	1056998750
- 717 0010 EEB1003F 		.word	1057010158
- 718 0014 8FDE003F 		.word	1057021583
- 719 0018 410B013F 		.word	1057033025
- 720 001c 0438013F 		.word	1057044484
- 721 0020 D864013F 		.word	1057055960
- 722 0024 AC91013F 		.word	1057067436
- 723 0028 A1BE013F 		.word	1057078945
- 724 002c A7EB013F 		.word	1057090471
- 725 0030 AD18023F 		.word	1057101997
- 726 0034 D445023F 		.word	1057113556
- 727 0038 FC72023F 		.word	1057125116
- 728 003c 34A0023F 		.word	1057136692
- 729 0040 8ECD023F 		.word	1057148302
- 730 0044 E8FA023F 		.word	1057159912
- 731 0048 5228033F 		.word	1057171538
- 732 004c CE55033F 		.word	1057183182
- 733 0050 5A83033F 		.word	1057194842
- 734 0054 F7B0033F 		.word	1057206519
-ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccXuaL0n.s 			page 16
+ 688 0160 DF31103F 		.word	1058025951
+ 689 0164 E063103F 		.word	1058038752
+ 690 0168 F295103F 		.word	1058051570
+ 691 016c 15C8103F 		.word	1058064405
+ 692 0170 48FA103F 		.word	1058077256
+ 693 0174 8C2C113F 		.word	1058090124
+ 694 0178 F25E113F 		.word	1058103026
+ 695 017c 5891113F 		.word	1058115928
+ 696 0180 CEC3113F 		.word	1058128846
+ 697 0184 66F6113F 		.word	1058141798
+ 698 0188 FE28123F 		.word	1058154750
+ 699 018c B85B123F 		.word	1058167736
+ 700 0190 718E123F 		.word	1058180721
+ 701 0194 4CC1123F 		.word	1058193740
+ 702 0198 28F4123F 		.word	1058206760
+ 703 019c 2427133F 		.word	1058219812
+ 704 01a0 325A133F 		.word	1058232882
+ 705 01a4 3F8D133F 		.word	1058245951
+ 706 01a8 6EC0133F 		.word	1058259054
+ 707 01ac AEF3133F 		.word	1058272174
+ 708 01b0 FE26143F 		.word	1058285310
+ 709 01b4 605A143F 		.word	1058298464
+ 710 01b8 D28D143F 		.word	1058311634
+ 711 01bc 55C1143F 		.word	1058324821
+ 712 01c0 E8F4143F 		.word	1058338024
+ 713 01c4 9E28153F 		.word	1058351262
+ 714 01c8 535C153F 		.word	1058364499
+ 715 01cc 1990153F 		.word	1058377753
+ 716 01d0 00C4153F 		.word	1058391040
+ 717 01d4 E8F7153F 		.word	1058404328
+ 718 01d8 F12B163F 		.word	1058417649
+ 719 01dc 0B60163F 		.word	1058430987
+ 720 01e0 2594163F 		.word	1058444325
+ 721 01e4 60C8163F 		.word	1058457696
+ 722 01e8 ADFC163F 		.word	1058471085
+ 723 01ec 0A31173F 		.word	1058484490
+ 724 01f0 7765173F 		.word	1058497911
+ 725 01f4 079A173F 		.word	1058511367
+ 726 01f8 96CE173F 		.word	1058524822
+ 727 01fc 3603183F 		.word	1058538294
+ 728 0200 F837183F 		.word	1058551800
+ 729 0204 B96C183F 		.word	1058565305
+ 730 0208 9DA1183F 		.word	1058578845
+ 731 020c 80D6183F 		.word	1058592384
+ 732 0210 850B193F 		.word	1058605957
+ 733 0214 9A40193F 		.word	1058619546
+ 734 0218 C075193F 		.word	1058633152
+ 735 021c F8AA193F 		.word	1058646776
+ 736 0220 3FE0193F 		.word	1058660415
+ 737 0224 A9151A3F 		.word	1058674089
+ 738 0228 124B1A3F 		.word	1058687762
+ 739 022c 9D801A3F 		.word	1058701469
+ 740 0230 28B61A3F 		.word	1058715176
+ 741 0234 D5EB1A3F 		.word	1058728917
+ 742 0238 92211B3F 		.word	1058742674
+ 743 023c 60571B3F 		.word	1058756448
+ 744 0240 3F8D1B3F 		.word	1058770239
+ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccR3moNj.s 			page 16
 
 
- 735 0058 A4DE033F 		.word	1057218212
- 736 005c 630C043F 		.word	1057229923
- 737 0060 213A043F 		.word	1057241633
- 738 0064 0168043F 		.word	1057253377
- 739 0068 F295043F 		.word	1057265138
- 740 006c E3C3043F 		.word	1057276899
- 741 0070 F5F1043F 		.word	1057288693
- 742 0074 1920053F 		.word	1057300505
- 743 0078 3C4E053F 		.word	1057312316
- 744 007c 707C053F 		.word	1057324144
- 745 0080 C5AA053F 		.word	1057336005
- 746 0084 1BD9053F 		.word	1057347867
- 747 0088 9207063F 		.word	1057359762
- 748 008c 0936063F 		.word	1057371657
- 749 0090 9164063F 		.word	1057383569
- 750 0094 2993063F 		.word	1057395497
- 751 0098 D3C1063F 		.word	1057407443
- 752 009c 9EF0063F 		.word	1057419422
- 753 00a0 681F073F 		.word	1057431400
- 754 00a4 444E073F 		.word	1057443396
- 755 00a8 317D073F 		.word	1057455409
- 756 00ac 2EAC073F 		.word	1057467438
- 757 00b0 3CDB073F 		.word	1057479484
- 758 00b4 5B0A083F 		.word	1057491547
- 759 00b8 7A39083F 		.word	1057503610
- 760 00bc BA68083F 		.word	1057515706
- 761 00c0 0B98083F 		.word	1057527819
- 762 00c4 6DC7083F 		.word	1057539949
- 763 00c8 E0F6083F 		.word	1057552096
- 764 00cc 6326093F 		.word	1057564259
- 765 00d0 E755093F 		.word	1057576423
- 766 00d4 8C85093F 		.word	1057588620
- 767 00d8 42B5093F 		.word	1057600834
- 768 00dc 08E5093F 		.word	1057613064
- 769 00e0 CF140A3F 		.word	1057625295
- 770 00e4 B7440A3F 		.word	1057637559
- 771 00e8 B0740A3F 		.word	1057649840
- 772 00ec A9A40A3F 		.word	1057662121
- 773 00f0 C3D40A3F 		.word	1057674435
- 774 00f4 EE040B3F 		.word	1057686766
- 775 00f8 2B350B3F 		.word	1057699115
- 776 00fc 67650B3F 		.word	1057711463
- 777 0100 C4950B3F 		.word	1057723844
- 778 0104 32C60B3F 		.word	1057736242
- 779 0108 A1F60B3F 		.word	1057748641
- 780 010c 31270C3F 		.word	1057761073
- 781 0110 D1570C3F 		.word	1057773521
- 782 0114 72880C3F 		.word	1057785970
- 783 0118 34B90C3F 		.word	1057798452
- 784 011c 07EA0C3F 		.word	1057810951
- 785 0120 DA1A0D3F 		.word	1057823450
- 786 0124 CF4B0D3F 		.word	1057835983
- 787 0128 D47C0D3F 		.word	1057848532
- 788 012c DAAD0D3F 		.word	1057861082
- 789 0130 01DF0D3F 		.word	1057873665
- 790 0134 38100E3F 		.word	1057886264
- 791 0138 81410E3F 		.word	1057898881
-ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccXuaL0n.s 			page 17
+ 745 0244 2FC31B3F 		.word	1058784047
+ 746 0248 2FF91B3F 		.word	1058797871
+ 747 024c 512F1C3F 		.word	1058811729
+ 748 0250 73651C3F 		.word	1058825587
+ 749 0254 B79B1C3F 		.word	1058839479
+ 750 0258 FAD11C3F 		.word	1058853370
+ 751 025c 5F081D3F 		.word	1058867295
+ 752 0260 D53E1D3F 		.word	1058881237
+ 753 0264 5C751D3F 		.word	1058895196
+ 754 0268 04AC1D3F 		.word	1058909188
+ 755 026c ACE21D3F 		.word	1058923180
+ 756 0270 76191E3F 		.word	1058937206
+ 757 0274 40501E3F 		.word	1058951232
+ 758 0278 2B871E3F 		.word	1058965291
+ 759 027c 27BE1E3F 		.word	1058979367
+ 760 0280 34F51E3F 		.word	1058993460
+ 761 0284 522C1F3F 		.word	1059007570
+ 762 0288 80631F3F 		.word	1059021696
+ 763 028c D09A1F3F 		.word	1059035856
+ 764 0290 20D21F3F 		.word	1059050016
+ 765 0294 9109203F 		.word	1059064209
+ 766 0298 1441203F 		.word	1059078420
+ 767 029c A778203F 		.word	1059092647
+ 768 02a0 4BB0203F 		.word	1059106891
+ 769 02a4 10E8203F 		.word	1059121168
+ 770 02a8 D61F213F 		.word	1059135446
+ 771 02ac BC57213F 		.word	1059149756
+ 772 02b0 B48F213F 		.word	1059164084
+ 773 02b4 BDC7213F 		.word	1059178429
+ 774 02b8 D6FF213F 		.word	1059192790
+ 775 02bc 0038223F 		.word	1059207168
+ 776 02c0 3B70223F 		.word	1059221563
+ 777 02c4 97A8223F 		.word	1059235991
+ 778 02c8 05E1223F 		.word	1059250437
+ 779 02cc 8319233F 		.word	1059264899
+ 780 02d0 1152233F 		.word	1059279377
+ 781 02d4 B18A233F 		.word	1059293873
+ 782 02d8 72C3233F 		.word	1059308402
+ 783 02dc 33FC233F 		.word	1059322931
+ 784 02e0 1635243F 		.word	1059337494
+ 785 02e4 096E243F 		.word	1059352073
+ 786 02e8 0DA7243F 		.word	1059366669
+ 787 02ec 22E0243F 		.word	1059381282
+ 788 02f0 5919253F 		.word	1059395929
+ 789 02f4 A052253F 		.word	1059410592
+ 790 02f8 E78B253F 		.word	1059425255
+ 791 02fc 61C5253F 		.word	1059439969
+ 792 0300 DAFE253F 		.word	1059454682
+ 793 0304 6538263F 		.word	1059469413
+ 794 0308 1172263F 		.word	1059484177
+ 795 030c CDAB263F 		.word	1059498957
+ 796 0310 9BE5263F 		.word	1059513755
+ 797 0314 791F273F 		.word	1059528569
+ 798 0318 6859273F 		.word	1059543400
+ 799 031c 7993273F 		.word	1059558265
+ 800 0320 9ACD273F 		.word	1059573146
+ 801 0324 CC07283F 		.word	1059588044
+ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccR3moNj.s 			page 17
 
 
- 792 013c DA720E3F 		.word	1057911514
- 793 0140 33A40E3F 		.word	1057924147
- 794 0144 AED50E3F 		.word	1057936814
- 795 0148 3A070F3F 		.word	1057949498
- 796 014c D6380F3F 		.word	1057962198
- 797 0150 836A0F3F 		.word	1057974915
- 798 0154 419C0F3F 		.word	1057987649
- 799 0158 10CE0F3F 		.word	1058000400
- 800 015c EFFF0F3F 		.word	1058013167
- 801 0160 DF31103F 		.word	1058025951
- 802 0164 E063103F 		.word	1058038752
- 803 0168 F295103F 		.word	1058051570
- 804 016c 15C8103F 		.word	1058064405
- 805 0170 48FA103F 		.word	1058077256
- 806 0174 8C2C113F 		.word	1058090124
- 807 0178 F25E113F 		.word	1058103026
- 808 017c 5891113F 		.word	1058115928
- 809 0180 CEC3113F 		.word	1058128846
- 810 0184 66F6113F 		.word	1058141798
- 811 0188 FE28123F 		.word	1058154750
- 812 018c B85B123F 		.word	1058167736
- 813 0190 718E123F 		.word	1058180721
- 814 0194 4CC1123F 		.word	1058193740
- 815 0198 28F4123F 		.word	1058206760
- 816 019c 2427133F 		.word	1058219812
- 817 01a0 325A133F 		.word	1058232882
- 818 01a4 3F8D133F 		.word	1058245951
- 819 01a8 6EC0133F 		.word	1058259054
- 820 01ac AEF3133F 		.word	1058272174
- 821 01b0 FE26143F 		.word	1058285310
- 822 01b4 605A143F 		.word	1058298464
- 823 01b8 D28D143F 		.word	1058311634
- 824 01bc 55C1143F 		.word	1058324821
- 825 01c0 E8F4143F 		.word	1058338024
- 826 01c4 9E28153F 		.word	1058351262
- 827 01c8 535C153F 		.word	1058364499
- 828 01cc 1990153F 		.word	1058377753
- 829 01d0 00C4153F 		.word	1058391040
- 830 01d4 E8F7153F 		.word	1058404328
- 831 01d8 F12B163F 		.word	1058417649
- 832 01dc 0B60163F 		.word	1058430987
- 833 01e0 2594163F 		.word	1058444325
- 834 01e4 60C8163F 		.word	1058457696
- 835 01e8 ADFC163F 		.word	1058471085
- 836 01ec 0A31173F 		.word	1058484490
- 837 01f0 7765173F 		.word	1058497911
- 838 01f4 079A173F 		.word	1058511367
- 839 01f8 96CE173F 		.word	1058524822
- 840 01fc 3603183F 		.word	1058538294
- 841 0200 F837183F 		.word	1058551800
- 842 0204 B96C183F 		.word	1058565305
- 843 0208 9DA1183F 		.word	1058578845
- 844 020c 80D6183F 		.word	1058592384
- 845 0210 850B193F 		.word	1058605957
- 846 0214 9A40193F 		.word	1058619546
- 847 0218 C075193F 		.word	1058633152
- 848 021c F8AA193F 		.word	1058646776
-ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccXuaL0n.s 			page 18
+ 802 0328 0F42283F 		.word	1059602959
+ 803 032c 637C283F 		.word	1059617891
+ 804 0330 D8B6283F 		.word	1059632856
+ 805 0334 5EF1283F 		.word	1059647838
+ 806 0338 F52B293F 		.word	1059662837
+ 807 033c 9D66293F 		.word	1059677853
+ 808 0340 55A1293F 		.word	1059692885
+ 809 0344 2FDC293F 		.word	1059707951
+ 810 0348 1A172A3F 		.word	1059723034
+ 811 034c 15522A3F 		.word	1059738133
+ 812 0350 228D2A3F 		.word	1059753250
+ 813 0354 50C82A3F 		.word	1059768400
+ 814 0358 8E032B3F 		.word	1059783566
+ 815 035c DE3E2B3F 		.word	1059798750
+ 816 0360 3E7A2B3F 		.word	1059813950
+ 817 0364 AFB52B3F 		.word	1059829167
+ 818 0368 41F12B3F 		.word	1059844417
+ 819 036c E42C2C3F 		.word	1059859684
+ 820 0370 98682C3F 		.word	1059874968
+ 821 0374 5DA42C3F 		.word	1059890269
+ 822 0378 44E02C3F 		.word	1059905604
+ 823 037c 3B1C2D3F 		.word	1059920955
+ 824 0380 43582D3F 		.word	1059936323
+ 825 0384 5B942D3F 		.word	1059951707
+ 826 0388 96D02D3F 		.word	1059967126
+ 827 038c D00C2E3F 		.word	1059982544
+ 828 0390 3D492E3F 		.word	1059998013
+ 829 0394 A9852E3F 		.word	1060013481
+ 830 0398 27C22E3F 		.word	1060028967
+ 831 039c C5FE2E3F 		.word	1060044485
+ 832 03a0 753B2F3F 		.word	1060060021
+ 833 03a4 46782F3F 		.word	1060075590
+ 834 03a8 18B52F3F 		.word	1060091160
+ 835 03ac 0AF22F3F 		.word	1060106762
+ 836 03b0 0E2F303F 		.word	1060122382
+ 837 03b4 226C303F 		.word	1060138018
+ 838 03b8 58A9303F 		.word	1060153688
+ 839 03bc 9FE6303F 		.word	1060169375
+ 840 03c0 F623313F 		.word	1060185078
+ 841 03c4 5F61313F 		.word	1060200799
+ 842 03c8 E99E313F 		.word	1060216553
+ 843 03cc 83DC313F 		.word	1060232323
+ 844 03d0 2E1A323F 		.word	1060248110
+ 845 03d4 FB57323F 		.word	1060263931
+ 846 03d8 C895323F 		.word	1060279752
+ 847 03dc C8D3323F 		.word	1060295624
+ 848 03e0 C711333F 		.word	1060311495
+ 849 03e4 D74F333F 		.word	1060327383
+ 850 03e8 088E333F 		.word	1060343304
+ 851 03ec 5CCC333F 		.word	1060359260
+ 852 03f0 AF0A343F 		.word	1060375215
+ 853 03f4 2349343F 		.word	1060391203
+ 854 03f8 A987343F 		.word	1060407209
+ 855 03fc 3FC6343F 		.word	1060423231
+ 856 0400 F704353F 		.word	1060439287
+ 857 0404 BF43353F 		.word	1060455359
+ 858 0408 9982353F 		.word	1060471449
+ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccR3moNj.s 			page 18
 
 
- 849 0220 3FE0193F 		.word	1058660415
- 850 0224 A9151A3F 		.word	1058674089
- 851 0228 124B1A3F 		.word	1058687762
- 852 022c 9D801A3F 		.word	1058701469
- 853 0230 28B61A3F 		.word	1058715176
- 854 0234 D5EB1A3F 		.word	1058728917
- 855 0238 92211B3F 		.word	1058742674
- 856 023c 60571B3F 		.word	1058756448
- 857 0240 3F8D1B3F 		.word	1058770239
- 858 0244 2FC31B3F 		.word	1058784047
- 859 0248 2FF91B3F 		.word	1058797871
- 860 024c 512F1C3F 		.word	1058811729
- 861 0250 73651C3F 		.word	1058825587
- 862 0254 B79B1C3F 		.word	1058839479
- 863 0258 FAD11C3F 		.word	1058853370
- 864 025c 5F081D3F 		.word	1058867295
- 865 0260 D53E1D3F 		.word	1058881237
- 866 0264 5C751D3F 		.word	1058895196
- 867 0268 04AC1D3F 		.word	1058909188
- 868 026c ACE21D3F 		.word	1058923180
- 869 0270 76191E3F 		.word	1058937206
- 870 0274 40501E3F 		.word	1058951232
- 871 0278 2B871E3F 		.word	1058965291
- 872 027c 27BE1E3F 		.word	1058979367
- 873 0280 34F51E3F 		.word	1058993460
- 874 0284 522C1F3F 		.word	1059007570
- 875 0288 80631F3F 		.word	1059021696
- 876 028c D09A1F3F 		.word	1059035856
- 877 0290 20D21F3F 		.word	1059050016
- 878 0294 9109203F 		.word	1059064209
- 879 0298 1441203F 		.word	1059078420
- 880 029c A778203F 		.word	1059092647
- 881 02a0 4BB0203F 		.word	1059106891
- 882 02a4 10E8203F 		.word	1059121168
- 883 02a8 D61F213F 		.word	1059135446
- 884 02ac BC57213F 		.word	1059149756
- 885 02b0 B48F213F 		.word	1059164084
- 886 02b4 BDC7213F 		.word	1059178429
- 887 02b8 D6FF213F 		.word	1059192790
- 888 02bc 0038223F 		.word	1059207168
- 889 02c0 3B70223F 		.word	1059221563
- 890 02c4 97A8223F 		.word	1059235991
- 891 02c8 05E1223F 		.word	1059250437
- 892 02cc 8319233F 		.word	1059264899
- 893 02d0 1152233F 		.word	1059279377
- 894 02d4 B18A233F 		.word	1059293873
- 895 02d8 72C3233F 		.word	1059308402
- 896 02dc 33FC233F 		.word	1059322931
- 897 02e0 1635243F 		.word	1059337494
- 898 02e4 096E243F 		.word	1059352073
- 899 02e8 0DA7243F 		.word	1059366669
- 900 02ec 22E0243F 		.word	1059381282
- 901 02f0 5919253F 		.word	1059395929
- 902 02f4 A052253F 		.word	1059410592
- 903 02f8 E78B253F 		.word	1059425255
- 904 02fc 61C5253F 		.word	1059439969
- 905 0300 DAFE253F 		.word	1059454682
-ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccXuaL0n.s 			page 19
+ 859 040c 83C1353F 		.word	1060487555
+ 860 0410 8F00363F 		.word	1060503695
+ 861 0414 AB3F363F 		.word	1060519851
+ 862 0418 E97E363F 		.word	1060536041
+ 863 041c 38BE363F 		.word	1060552248
+ 864 0420 97FD363F 		.word	1060568471
+ 865 0424 083D373F 		.word	1060584712
+ 866 0428 9A7C373F 		.word	1060600986
+ 867 042c 3CBC373F 		.word	1060617276
+ 868 0430 F0FB373F 		.word	1060633584
+ 869 0434 C53B383F 		.word	1060649925
+ 870 0438 AB7B383F 		.word	1060666283
+ 871 043c A1BB383F 		.word	1060682657
+ 872 0440 A9FB383F 		.word	1060699049
+ 873 0444 D13B393F 		.word	1060715473
+ 874 0448 1C7C393F 		.word	1060731932
+ 875 044c 66BC393F 		.word	1060748390
+ 876 0450 D2FC393F 		.word	1060764882
+ 877 0454 4F3D3A3F 		.word	1060781391
+ 878 0458 ED7D3A3F 		.word	1060797933
+ 879 045c 9DBE3A3F 		.word	1060814493
+ 880 0460 5CFF3A3F 		.word	1060831068
+ 881 0464 2D403B3F 		.word	1060847661
+ 882 0468 1F813B3F 		.word	1060864287
+ 883 046c 33C23B3F 		.word	1060880947
+ 884 0470 47033C3F 		.word	1060897607
+ 885 0474 7C443C3F 		.word	1060914300
+ 886 0478 C2853C3F 		.word	1060931010
+ 887 047c 2AC73C3F 		.word	1060947754
+ 888 0480 A2083D3F 		.word	1060964514
+ 889 0484 2C4A3D3F 		.word	1060981292
+ 890 0488 D68B3D3F 		.word	1060998102
+ 891 048c 92CD3D3F 		.word	1061014930
+ 892 0490 6F0F3E3F 		.word	1061031791
+ 893 0494 4C513E3F 		.word	1061048652
+ 894 0498 4B933E3F 		.word	1061065547
+ 895 049c 6BD53E3F 		.word	1061082475
+ 896 04a0 9C173F3F 		.word	1061099420
+ 897 04a4 DE593F3F 		.word	1061116382
+ 898 04a8 419C3F3F 		.word	1061133377
+ 899 04ac B5DE3F3F 		.word	1061150389
+ 900 04b0 3A21403F 		.word	1061167418
+ 901 04b4 E063403F 		.word	1061184480
+ 902 04b8 98A6403F 		.word	1061201560
+ 903 04bc 60E9403F 		.word	1061218656
+ 904 04c0 492C413F 		.word	1061235785
+ 905 04c4 446F413F 		.word	1061252932
+ 906 04c8 5FB2413F 		.word	1061270111
+ 907 04cc 8CF5413F 		.word	1061287308
+ 908 04d0 DA38423F 		.word	1061304538
+ 909 04d4 287C423F 		.word	1061321768
+ 910 04d8 A9BF423F 		.word	1061339049
+ 911 04dc 2A03433F 		.word	1061356330
+ 912 04e0 CC46433F 		.word	1061373644
+ 913 04e4 7E8A433F 		.word	1061390974
+ 914 04e8 53CE433F 		.word	1061408339
+ 915 04ec 3812443F 		.word	1061425720
+ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccR3moNj.s 			page 19
 
 
- 906 0304 6538263F 		.word	1059469413
- 907 0308 1172263F 		.word	1059484177
- 908 030c CDAB263F 		.word	1059498957
- 909 0310 9BE5263F 		.word	1059513755
- 910 0314 791F273F 		.word	1059528569
- 911 0318 6859273F 		.word	1059543400
- 912 031c 7993273F 		.word	1059558265
- 913 0320 9ACD273F 		.word	1059573146
- 914 0324 CC07283F 		.word	1059588044
- 915 0328 0F42283F 		.word	1059602959
- 916 032c 637C283F 		.word	1059617891
- 917 0330 D8B6283F 		.word	1059632856
- 918 0334 5EF1283F 		.word	1059647838
- 919 0338 F52B293F 		.word	1059662837
- 920 033c 9D66293F 		.word	1059677853
- 921 0340 55A1293F 		.word	1059692885
- 922 0344 2FDC293F 		.word	1059707951
- 923 0348 1A172A3F 		.word	1059723034
- 924 034c 15522A3F 		.word	1059738133
- 925 0350 228D2A3F 		.word	1059753250
- 926 0354 50C82A3F 		.word	1059768400
- 927 0358 8E032B3F 		.word	1059783566
- 928 035c DE3E2B3F 		.word	1059798750
- 929 0360 3E7A2B3F 		.word	1059813950
- 930 0364 AFB52B3F 		.word	1059829167
- 931 0368 41F12B3F 		.word	1059844417
- 932 036c E42C2C3F 		.word	1059859684
- 933 0370 98682C3F 		.word	1059874968
- 934 0374 5DA42C3F 		.word	1059890269
- 935 0378 44E02C3F 		.word	1059905604
- 936 037c 3B1C2D3F 		.word	1059920955
- 937 0380 43582D3F 		.word	1059936323
- 938 0384 5B942D3F 		.word	1059951707
- 939 0388 96D02D3F 		.word	1059967126
- 940 038c D00C2E3F 		.word	1059982544
- 941 0390 3D492E3F 		.word	1059998013
- 942 0394 A9852E3F 		.word	1060013481
- 943 0398 27C22E3F 		.word	1060028967
- 944 039c C5FE2E3F 		.word	1060044485
- 945 03a0 753B2F3F 		.word	1060060021
- 946 03a4 46782F3F 		.word	1060075590
- 947 03a8 18B52F3F 		.word	1060091160
- 948 03ac 0AF22F3F 		.word	1060106762
- 949 03b0 0E2F303F 		.word	1060122382
- 950 03b4 226C303F 		.word	1060138018
- 951 03b8 58A9303F 		.word	1060153688
- 952 03bc 9FE6303F 		.word	1060169375
- 953 03c0 F623313F 		.word	1060185078
- 954 03c4 5F61313F 		.word	1060200799
- 955 03c8 E99E313F 		.word	1060216553
- 956 03cc 83DC313F 		.word	1060232323
- 957 03d0 2E1A323F 		.word	1060248110
- 958 03d4 FB57323F 		.word	1060263931
- 959 03d8 C895323F 		.word	1060279752
- 960 03dc C8D3323F 		.word	1060295624
- 961 03e0 C711333F 		.word	1060311495
- 962 03e4 D74F333F 		.word	1060327383
-ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccXuaL0n.s 			page 20
+ 916 04f0 3F56443F 		.word	1061443135
+ 917 04f4 569A443F 		.word	1061460566
+ 918 04f8 7FDE443F 		.word	1061478015
+ 919 04fc C922453F 		.word	1061495497
+ 920 0500 2367453F 		.word	1061512995
+ 921 0504 9FAB453F 		.word	1061530527
+ 922 0508 2CF0453F 		.word	1061548076
+ 923 050c DB34463F 		.word	1061565659
+ 924 0510 8979463F 		.word	1061583241
+ 925 0514 6ABE463F 		.word	1061600874
+ 926 0518 4B03473F 		.word	1061618507
+ 927 051c 5E48473F 		.word	1061636190
+ 928 0520 718D473F 		.word	1061653873
+ 929 0524 A6D2473F 		.word	1061671590
+ 930 0528 FC17483F 		.word	1061689340
+ 931 052c 645D483F 		.word	1061707108
+ 932 0530 DBA2483F 		.word	1061724891
+ 933 0534 75E8483F 		.word	1061742709
+ 934 0538 1F2E493F 		.word	1061760543
+ 935 053c DA73493F 		.word	1061778394
+ 936 0540 B6B9493F 		.word	1061796278
+ 937 0544 B5FF493F 		.word	1061814197
+ 938 0548 C3454A3F 		.word	1061832131
+ 939 054c E38B4A3F 		.word	1061850083
+ 940 0550 24D24A3F 		.word	1061868068
+ 941 0554 76184B3F 		.word	1061886070
+ 942 0558 EA5E4B3F 		.word	1061904106
+ 943 055c 6EA54B3F 		.word	1061922158
+ 944 0560 14EC4B3F 		.word	1061940244
+ 945 0564 CA324C3F 		.word	1061958346
+ 946 0568 A3794C3F 		.word	1061976483
+ 947 056c 8BC04C3F 		.word	1061994635
+ 948 0570 85074D3F 		.word	1062012805
+ 949 0574 A04E4D3F 		.word	1062031008
+ 950 0578 DD954D3F 		.word	1062049245
+ 951 057c 2BDD4D3F 		.word	1062067499
+ 952 0580 89244E3F 		.word	1062085769
+ 953 0584 096C4E3F 		.word	1062104073
+ 954 0588 9AB34E3F 		.word	1062122394
+ 955 058c 4CFB4E3F 		.word	1062140748
+ 956 0590 20434F3F 		.word	1062159136
+ 957 0594 F48A4F3F 		.word	1062177524
+ 958 0598 FAD24F3F 		.word	1062195962
+ 959 059c 001B503F 		.word	1062214400
+ 960 05a0 3963503F 		.word	1062232889
+ 961 05a4 71AB503F 		.word	1062251377
+ 962 05a8 DCF3503F 		.word	1062269916
+ 963 05ac 473C513F 		.word	1062288455
+ 964 05b0 E484513F 		.word	1062307044
+ 965 05b4 81CD513F 		.word	1062325633
+ 966 05b8 5116523F 		.word	1062344273
+ 967 05bc 205F523F 		.word	1062362912
+ 968 05c0 22A8523F 		.word	1062381602
+ 969 05c4 35F1523F 		.word	1062400309
+ 970 05c8 583A533F 		.word	1062419032
+ 971 05cc 9D83533F 		.word	1062437789
+ 972 05d0 F3CC533F 		.word	1062456563
+ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccR3moNj.s 			page 20
 
 
- 963 03e8 088E333F 		.word	1060343304
- 964 03ec 5CCC333F 		.word	1060359260
- 965 03f0 AF0A343F 		.word	1060375215
- 966 03f4 2349343F 		.word	1060391203
- 967 03f8 A987343F 		.word	1060407209
- 968 03fc 3FC6343F 		.word	1060423231
- 969 0400 F704353F 		.word	1060439287
- 970 0404 BF43353F 		.word	1060455359
- 971 0408 9982353F 		.word	1060471449
- 972 040c 83C1353F 		.word	1060487555
- 973 0410 8F00363F 		.word	1060503695
- 974 0414 AB3F363F 		.word	1060519851
- 975 0418 E97E363F 		.word	1060536041
- 976 041c 38BE363F 		.word	1060552248
- 977 0420 97FD363F 		.word	1060568471
- 978 0424 083D373F 		.word	1060584712
- 979 0428 9A7C373F 		.word	1060600986
- 980 042c 3CBC373F 		.word	1060617276
- 981 0430 F0FB373F 		.word	1060633584
- 982 0434 C53B383F 		.word	1060649925
- 983 0438 AB7B383F 		.word	1060666283
- 984 043c A1BB383F 		.word	1060682657
- 985 0440 A9FB383F 		.word	1060699049
- 986 0444 D13B393F 		.word	1060715473
- 987 0448 1C7C393F 		.word	1060731932
- 988 044c 66BC393F 		.word	1060748390
- 989 0450 D2FC393F 		.word	1060764882
- 990 0454 4F3D3A3F 		.word	1060781391
- 991 0458 ED7D3A3F 		.word	1060797933
- 992 045c 9DBE3A3F 		.word	1060814493
- 993 0460 5CFF3A3F 		.word	1060831068
- 994 0464 2D403B3F 		.word	1060847661
- 995 0468 1F813B3F 		.word	1060864287
- 996 046c 33C23B3F 		.word	1060880947
- 997 0470 47033C3F 		.word	1060897607
- 998 0474 7C443C3F 		.word	1060914300
- 999 0478 C2853C3F 		.word	1060931010
- 1000 047c 2AC73C3F 		.word	1060947754
- 1001 0480 A2083D3F 		.word	1060964514
- 1002 0484 2C4A3D3F 		.word	1060981292
- 1003 0488 D68B3D3F 		.word	1060998102
- 1004 048c 92CD3D3F 		.word	1061014930
- 1005 0490 6F0F3E3F 		.word	1061031791
- 1006 0494 4C513E3F 		.word	1061048652
- 1007 0498 4B933E3F 		.word	1061065547
- 1008 049c 6BD53E3F 		.word	1061082475
- 1009 04a0 9C173F3F 		.word	1061099420
- 1010 04a4 DE593F3F 		.word	1061116382
- 1011 04a8 419C3F3F 		.word	1061133377
- 1012 04ac B5DE3F3F 		.word	1061150389
- 1013 04b0 3A21403F 		.word	1061167418
- 1014 04b4 E063403F 		.word	1061184480
- 1015 04b8 98A6403F 		.word	1061201560
- 1016 04bc 60E9403F 		.word	1061218656
- 1017 04c0 492C413F 		.word	1061235785
- 1018 04c4 446F413F 		.word	1061252932
- 1019 04c8 5FB2413F 		.word	1061270111
-ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccXuaL0n.s 			page 21
+ 973 05d4 6A16543F 		.word	1062475370
+ 974 05d8 F25F543F 		.word	1062494194
+ 975 05dc 9BA9543F 		.word	1062513051
+ 976 05e0 56F3543F 		.word	1062531926
+ 977 05e4 323D553F 		.word	1062550834
+ 978 05e8 2F87553F 		.word	1062569775
+ 979 05ec 3DD1553F 		.word	1062588733
+ 980 05f0 5C1B563F 		.word	1062607708
+ 981 05f4 9D65563F 		.word	1062626717
+ 982 05f8 FFAF563F 		.word	1062645759
+ 983 05fc 72FA563F 		.word	1062664818
+ 984 0600 F644573F 		.word	1062683894
+ 985 0604 AC8F573F 		.word	1062703020
+ 986 0608 62DA573F 		.word	1062722146
+ 987 060c 4A25583F 		.word	1062741322
+ 988 0610 3370583F 		.word	1062760499
+ 989 0614 4DBB583F 		.word	1062779725
+ 990 0618 7906593F 		.word	1062798969
+ 991 061c B551593F 		.word	1062818229
+ 992 0620 139D593F 		.word	1062837523
+ 993 0624 92E8593F 		.word	1062856850
+ 994 0628 22345A3F 		.word	1062876194
+ 995 062c D47F5A3F 		.word	1062895572
+ 996 0630 96CB5A3F 		.word	1062914966
+ 997 0634 7A175B3F 		.word	1062934394
+ 998 0638 6F635B3F 		.word	1062953839
+ 999 063c 86AF5B3F 		.word	1062973318
+ 1000 0640 BDFB5B3F 		.word	1062992829
+ 1001 0644 06485C3F 		.word	1063012358
+ 1002 0648 60945C3F 		.word	1063031904
+ 1003 064c EBE05C3F 		.word	1063051499
+ 1004 0650 882D5D3F 		.word	1063071112
+ 1005 0654 357A5D3F 		.word	1063090741
+ 1006 0658 04C75D3F 		.word	1063110404
+ 1007 065c F5135E3F 		.word	1063130101
+ 1008 0660 F6605E3F 		.word	1063149814
+ 1009 0664 19AE5E3F 		.word	1063169561
+ 1010 0668 4CFB5E3F 		.word	1063189324
+ 1011 066c A1485F3F 		.word	1063209121
+ 1012 0670 18965F3F 		.word	1063228952
+ 1013 0674 9FE35F3F 		.word	1063248799
+ 1014 0678 4831603F 		.word	1063268680
+ 1015 067c 027F603F 		.word	1063288578
+ 1016 0680 DECC603F 		.word	1063308510
+ 1017 0684 DA1A613F 		.word	1063328474
+ 1018 0688 E868613F 		.word	1063348456
+ 1019 068c 17B7613F 		.word	1063368471
+ 1020 0690 5705623F 		.word	1063388503
+ 1021 0694 B953623F 		.word	1063408569
+ 1022 0698 3CA2623F 		.word	1063428668
+ 1023 069c D0F0623F 		.word	1063448784
+ 1024 06a0 853F633F 		.word	1063468933
+ 1025 06a4 5C8E633F 		.word	1063489116
+ 1026 06a8 44DD633F 		.word	1063509316
+ 1027 06ac 4D2C643F 		.word	1063529549
+ 1028 06b0 677B643F 		.word	1063549799
+ 1029 06b4 A3CA643F 		.word	1063570083
+ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccR3moNj.s 			page 21
 
 
- 1020 04cc 8CF5413F 		.word	1061287308
- 1021 04d0 DA38423F 		.word	1061304538
- 1022 04d4 287C423F 		.word	1061321768
- 1023 04d8 A9BF423F 		.word	1061339049
- 1024 04dc 2A03433F 		.word	1061356330
- 1025 04e0 CC46433F 		.word	1061373644
- 1026 04e4 7E8A433F 		.word	1061390974
- 1027 04e8 53CE433F 		.word	1061408339
- 1028 04ec 3812443F 		.word	1061425720
- 1029 04f0 3F56443F 		.word	1061443135
- 1030 04f4 569A443F 		.word	1061460566
- 1031 04f8 7FDE443F 		.word	1061478015
- 1032 04fc C922453F 		.word	1061495497
- 1033 0500 2367453F 		.word	1061512995
- 1034 0504 9FAB453F 		.word	1061530527
- 1035 0508 2CF0453F 		.word	1061548076
- 1036 050c DB34463F 		.word	1061565659
- 1037 0510 8979463F 		.word	1061583241
- 1038 0514 6ABE463F 		.word	1061600874
- 1039 0518 4B03473F 		.word	1061618507
- 1040 051c 5E48473F 		.word	1061636190
- 1041 0520 718D473F 		.word	1061653873
- 1042 0524 A6D2473F 		.word	1061671590
- 1043 0528 FC17483F 		.word	1061689340
- 1044 052c 645D483F 		.word	1061707108
- 1045 0530 DBA2483F 		.word	1061724891
- 1046 0534 75E8483F 		.word	1061742709
- 1047 0538 1F2E493F 		.word	1061760543
- 1048 053c DA73493F 		.word	1061778394
- 1049 0540 B6B9493F 		.word	1061796278
- 1050 0544 B5FF493F 		.word	1061814197
- 1051 0548 C3454A3F 		.word	1061832131
- 1052 054c E38B4A3F 		.word	1061850083
- 1053 0550 24D24A3F 		.word	1061868068
- 1054 0554 76184B3F 		.word	1061886070
- 1055 0558 EA5E4B3F 		.word	1061904106
- 1056 055c 6EA54B3F 		.word	1061922158
- 1057 0560 14EC4B3F 		.word	1061940244
- 1058 0564 CA324C3F 		.word	1061958346
- 1059 0568 A3794C3F 		.word	1061976483
- 1060 056c 8BC04C3F 		.word	1061994635
- 1061 0570 85074D3F 		.word	1062012805
- 1062 0574 A04E4D3F 		.word	1062031008
- 1063 0578 DD954D3F 		.word	1062049245
- 1064 057c 2BDD4D3F 		.word	1062067499
- 1065 0580 89244E3F 		.word	1062085769
- 1066 0584 096C4E3F 		.word	1062104073
- 1067 0588 9AB34E3F 		.word	1062122394
- 1068 058c 4CFB4E3F 		.word	1062140748
- 1069 0590 20434F3F 		.word	1062159136
- 1070 0594 F48A4F3F 		.word	1062177524
- 1071 0598 FAD24F3F 		.word	1062195962
- 1072 059c 001B503F 		.word	1062214400
- 1073 05a0 3963503F 		.word	1062232889
- 1074 05a4 71AB503F 		.word	1062251377
- 1075 05a8 DCF3503F 		.word	1062269916
- 1076 05ac 473C513F 		.word	1062288455
-ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccXuaL0n.s 			page 22
+ 1030 06b8 001A653F 		.word	1063590400
+ 1031 06bc 7F69653F 		.word	1063610751
+ 1032 06c0 0FB9653F 		.word	1063631119
+ 1033 06c4 AF08663F 		.word	1063651503
+ 1034 06c8 8258663F 		.word	1063671938
+ 1035 06cc 54A8663F 		.word	1063692372
+ 1036 06d0 59F8663F 		.word	1063712857
+ 1037 06d4 6F48673F 		.word	1063733359
+ 1038 06d8 A698673F 		.word	1063753894
+ 1039 06dc FFE8673F 		.word	1063774463
+ 1040 06e0 6939683F 		.word	1063795049
+ 1041 06e4 F489683F 		.word	1063815668
+ 1042 06e8 A1DA683F 		.word	1063836321
+ 1043 06ec 5E2B693F 		.word	1063856990
+ 1044 06f0 3D7C693F 		.word	1063877693
+ 1045 06f4 2DCD693F 		.word	1063898413
+ 1046 06f8 4F1E6A3F 		.word	1063919183
+ 1047 06fc 726F6A3F 		.word	1063939954
+ 1048 0700 C6C06A3F 		.word	1063960774
+ 1049 0704 2B126B3F 		.word	1063981611
+ 1050 0708 B2636B3F 		.word	1064002482
+ 1051 070c 5BB56B3F 		.word	1064023387
+ 1052 0710 14076C3F 		.word	1064044308
+ 1053 0714 EF586C3F 		.word	1064065263
+ 1054 0718 EBAA6C3F 		.word	1064086251
+ 1055 071c F8FC6C3F 		.word	1064107256
+ 1056 0720 374F6D3F 		.word	1064128311
+ 1057 0724 77A16D3F 		.word	1064149367
+ 1058 0728 E9F36D3F 		.word	1064170473
+ 1059 072c 6B466E3F 		.word	1064191595
+ 1060 0730 0F996E3F 		.word	1064212751
+ 1061 0734 D5EB6E3F 		.word	1064233941
+ 1062 0738 AB3E6F3F 		.word	1064255147
+ 1063 073c A3916F3F 		.word	1064276387
+ 1064 0740 BDE46F3F 		.word	1064297661
+ 1065 0744 E737703F 		.word	1064318951
+ 1066 0748 448B703F 		.word	1064340292
+ 1067 074c A0DE703F 		.word	1064361632
+ 1068 0750 2F32713F 		.word	1064383023
+ 1069 0754 CF85713F 		.word	1064404431
+ 1070 0758 A1D9713F 		.word	1064425889
+ 1071 075c 732D723F 		.word	1064447347
+ 1072 0760 7781723F 		.word	1064468855
+ 1073 0764 8DD5723F 		.word	1064490381
+ 1074 0768 C329733F 		.word	1064511939
+ 1075 076c 1C7E733F 		.word	1064533532
+ 1076 0770 95D2733F 		.word	1064555157
+ 1077 0774 2027743F 		.word	1064576800
+ 1078 0778 CC7B743F 		.word	1064598476
+ 1079 077c 9AD0743F 		.word	1064620186
+ 1080 0780 7825753F 		.word	1064641912
+ 1081 0784 897A753F 		.word	1064663689
+ 1082 0788 ABCF753F 		.word	1064685483
+ 1083 078c DD24763F 		.word	1064707293
+ 1084 0790 427A763F 		.word	1064729154
+ 1085 0794 B7CF763F 		.word	1064751031
+ 1086 0798 4E25773F 		.word	1064772942
+ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccR3moNj.s 			page 22
 
 
- 1077 05b0 E484513F 		.word	1062307044
- 1078 05b4 81CD513F 		.word	1062325633
- 1079 05b8 5116523F 		.word	1062344273
- 1080 05bc 205F523F 		.word	1062362912
- 1081 05c0 22A8523F 		.word	1062381602
- 1082 05c4 35F1523F 		.word	1062400309
- 1083 05c8 583A533F 		.word	1062419032
- 1084 05cc 9D83533F 		.word	1062437789
- 1085 05d0 F3CC533F 		.word	1062456563
- 1086 05d4 6A16543F 		.word	1062475370
- 1087 05d8 F25F543F 		.word	1062494194
- 1088 05dc 9BA9543F 		.word	1062513051
- 1089 05e0 56F3543F 		.word	1062531926
- 1090 05e4 323D553F 		.word	1062550834
- 1091 05e8 2F87553F 		.word	1062569775
- 1092 05ec 3DD1553F 		.word	1062588733
- 1093 05f0 5C1B563F 		.word	1062607708
- 1094 05f4 9D65563F 		.word	1062626717
- 1095 05f8 FFAF563F 		.word	1062645759
- 1096 05fc 72FA563F 		.word	1062664818
- 1097 0600 F644573F 		.word	1062683894
- 1098 0604 AC8F573F 		.word	1062703020
- 1099 0608 62DA573F 		.word	1062722146
- 1100 060c 4A25583F 		.word	1062741322
- 1101 0610 3370583F 		.word	1062760499
- 1102 0614 4DBB583F 		.word	1062779725
- 1103 0618 7906593F 		.word	1062798969
- 1104 061c B551593F 		.word	1062818229
- 1105 0620 139D593F 		.word	1062837523
- 1106 0624 92E8593F 		.word	1062856850
- 1107 0628 22345A3F 		.word	1062876194
- 1108 062c D47F5A3F 		.word	1062895572
- 1109 0630 96CB5A3F 		.word	1062914966
- 1110 0634 7A175B3F 		.word	1062934394
- 1111 0638 6F635B3F 		.word	1062953839
- 1112 063c 86AF5B3F 		.word	1062973318
- 1113 0640 BDFB5B3F 		.word	1062992829
- 1114 0644 06485C3F 		.word	1063012358
- 1115 0648 60945C3F 		.word	1063031904
- 1116 064c EBE05C3F 		.word	1063051499
- 1117 0650 882D5D3F 		.word	1063071112
- 1118 0654 357A5D3F 		.word	1063090741
- 1119 0658 04C75D3F 		.word	1063110404
- 1120 065c F5135E3F 		.word	1063130101
- 1121 0660 F6605E3F 		.word	1063149814
- 1122 0664 19AE5E3F 		.word	1063169561
- 1123 0668 4CFB5E3F 		.word	1063189324
- 1124 066c A1485F3F 		.word	1063209121
- 1125 0670 18965F3F 		.word	1063228952
- 1126 0674 9FE35F3F 		.word	1063248799
- 1127 0678 4831603F 		.word	1063268680
- 1128 067c 027F603F 		.word	1063288578
- 1129 0680 DECC603F 		.word	1063308510
- 1130 0684 DA1A613F 		.word	1063328474
- 1131 0688 E868613F 		.word	1063348456
- 1132 068c 17B7613F 		.word	1063368471
- 1133 0690 5705623F 		.word	1063388503
-ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccXuaL0n.s 			page 23
+ 1087 079c 077B773F 		.word	1064794887
+ 1088 07a0 E1D0773F 		.word	1064816865
+ 1089 07a4 CC26783F 		.word	1064838860
+ 1090 07a8 D97C783F 		.word	1064860889
+ 1091 07ac 07D3783F 		.word	1064882951
+ 1092 07b0 5629793F 		.word	1064905046
+ 1093 07b4 C77F793F 		.word	1064927175
+ 1094 07b8 49D6793F 		.word	1064949321
+ 1095 07bc ED2C7A3F 		.word	1064971501
+ 1096 07c0 B2837A3F 		.word	1064993714
+ 1097 07c4 98DA7A3F 		.word	1065015960
+ 1098 07c8 90317B3F 		.word	1065038224
+ 1099 07cc B9887B3F 		.word	1065060537
+ 1100 07d0 F4DF7B3F 		.word	1065082868
+ 1101 07d4 50377C3F 		.word	1065105232
+ 1102 07d8 BD8E7C3F 		.word	1065127613
+ 1103 07dc 5CE67C3F 		.word	1065150044
+ 1104 07e0 0C3E7D3F 		.word	1065172492
+ 1105 07e4 DD957D3F 		.word	1065194973
+ 1106 07e8 D0ED7D3F 		.word	1065217488
+ 1107 07ec E5457E3F 		.word	1065240037
+ 1108 07f0 0A9E7E3F 		.word	1065262602
+ 1109 07f4 62F67E3F 		.word	1065285218
+ 1110 07f8 CA4E7F3F 		.word	1065307850
+ 1111 07fc 54A77F3F 		.word	1065330516
+ 1112 0800 0000803F 		.word	1065353216
+ 1113 0804 772C803F 		.word	1065364599
+ 1114 0808 0859803F 		.word	1065376008
+ 1115 080c A185803F 		.word	1065387425
+ 1116 0810 4AB2803F 		.word	1065398858
+ 1117 0814 FCDE803F 		.word	1065410300
+ 1118 0818 C80B813F 		.word	1065421768
+ 1119 081c 9B38813F 		.word	1065433243
+ 1120 0820 8865813F 		.word	1065444744
+ 1121 0824 7D92813F 		.word	1065456253
+ 1122 0828 83BF813F 		.word	1065467779
+ 1123 082c 9AEC813F 		.word	1065479322
+ 1124 0830 C119823F 		.word	1065490881
+ 1125 0834 F146823F 		.word	1065502449
+ 1126 0838 3A74823F 		.word	1065514042
+ 1127 083c 8CA1823F 		.word	1065525644
+ 1128 0840 EECE823F 		.word	1065537262
+ 1129 0844 69FC823F 		.word	1065548905
+ 1130 0848 ED29833F 		.word	1065560557
+ 1131 084c 8257833F 		.word	1065572226
+ 1132 0850 1F85833F 		.word	1065583903
+ 1133 0854 D5B2833F 		.word	1065595605
+ 1134 0858 9CE0833F 		.word	1065607324
+ 1135 085c 6B0E843F 		.word	1065619051
+ 1136 0860 533C843F 		.word	1065630803
+ 1137 0864 446A843F 		.word	1065642564
+ 1138 0868 4698843F 		.word	1065654342
+ 1139 086c 58C6843F 		.word	1065666136
+ 1140 0870 7BF4843F 		.word	1065677947
+ 1141 0874 AF22853F 		.word	1065689775
+ 1142 0878 F450853F 		.word	1065701620
+ 1143 087c 4A7F853F 		.word	1065713482
+ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccR3moNj.s 			page 23
 
 
- 1134 0694 B953623F 		.word	1063408569
- 1135 0698 3CA2623F 		.word	1063428668
- 1136 069c D0F0623F 		.word	1063448784
- 1137 06a0 853F633F 		.word	1063468933
- 1138 06a4 5C8E633F 		.word	1063489116
- 1139 06a8 44DD633F 		.word	1063509316
- 1140 06ac 4D2C643F 		.word	1063529549
- 1141 06b0 677B643F 		.word	1063549799
- 1142 06b4 A3CA643F 		.word	1063570083
- 1143 06b8 001A653F 		.word	1063590400
- 1144 06bc 7F69653F 		.word	1063610751
- 1145 06c0 0FB9653F 		.word	1063631119
- 1146 06c4 AF08663F 		.word	1063651503
- 1147 06c8 8258663F 		.word	1063671938
- 1148 06cc 54A8663F 		.word	1063692372
- 1149 06d0 59F8663F 		.word	1063712857
- 1150 06d4 6F48673F 		.word	1063733359
- 1151 06d8 A698673F 		.word	1063753894
- 1152 06dc FFE8673F 		.word	1063774463
- 1153 06e0 6939683F 		.word	1063795049
- 1154 06e4 F489683F 		.word	1063815668
- 1155 06e8 A1DA683F 		.word	1063836321
- 1156 06ec 5E2B693F 		.word	1063856990
- 1157 06f0 3D7C693F 		.word	1063877693
- 1158 06f4 2DCD693F 		.word	1063898413
- 1159 06f8 4F1E6A3F 		.word	1063919183
- 1160 06fc 726F6A3F 		.word	1063939954
- 1161 0700 C6C06A3F 		.word	1063960774
- 1162 0704 2B126B3F 		.word	1063981611
- 1163 0708 B2636B3F 		.word	1064002482
- 1164 070c 5BB56B3F 		.word	1064023387
- 1165 0710 14076C3F 		.word	1064044308
- 1166 0714 EF586C3F 		.word	1064065263
- 1167 0718 EBAA6C3F 		.word	1064086251
- 1168 071c F8FC6C3F 		.word	1064107256
- 1169 0720 374F6D3F 		.word	1064128311
- 1170 0724 77A16D3F 		.word	1064149367
- 1171 0728 E9F36D3F 		.word	1064170473
- 1172 072c 6B466E3F 		.word	1064191595
- 1173 0730 0F996E3F 		.word	1064212751
- 1174 0734 D5EB6E3F 		.word	1064233941
- 1175 0738 AB3E6F3F 		.word	1064255147
- 1176 073c A3916F3F 		.word	1064276387
- 1177 0740 BDE46F3F 		.word	1064297661
- 1178 0744 E737703F 		.word	1064318951
- 1179 0748 448B703F 		.word	1064340292
- 1180 074c A0DE703F 		.word	1064361632
- 1181 0750 2F32713F 		.word	1064383023
- 1182 0754 CF85713F 		.word	1064404431
- 1183 0758 A1D9713F 		.word	1064425889
- 1184 075c 732D723F 		.word	1064447347
- 1185 0760 7781723F 		.word	1064468855
- 1186 0764 8DD5723F 		.word	1064490381
- 1187 0768 C329733F 		.word	1064511939
- 1188 076c 1C7E733F 		.word	1064533532
- 1189 0770 95D2733F 		.word	1064555157
- 1190 0774 2027743F 		.word	1064576800
-ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccXuaL0n.s 			page 24
+ 1144 0880 A7AD853F 		.word	1065725351
+ 1145 0884 1EDC853F 		.word	1065737246
+ 1146 0888 9E0A863F 		.word	1065749150
+ 1147 088c 3739863F 		.word	1065761079
+ 1148 0890 D767863F 		.word	1065773015
+ 1149 0894 9296863F 		.word	1065784978
+ 1150 0898 54C5863F 		.word	1065796948
+ 1151 089c 28F4863F 		.word	1065808936
+ 1152 08a0 0C23873F 		.word	1065820940
+ 1153 08a4 0052873F 		.word	1065832960
+ 1154 08a8 0681873F 		.word	1065844998
+ 1155 08ac 1DB0873F 		.word	1065857053
+ 1156 08b0 44DF873F 		.word	1065869124
+ 1157 08b4 7C0E883F 		.word	1065881212
+ 1158 08b8 C53D883F 		.word	1065893317
+ 1159 08bc 166D883F 		.word	1065905430
+ 1160 08c0 809C883F 		.word	1065917568
+ 1161 08c4 FBCB883F 		.word	1065929723
+ 1162 08c8 7FFB883F 		.word	1065941887
+ 1163 08cc 1B2B893F 		.word	1065954075
+ 1164 08d0 C95A893F 		.word	1065966281
+ 1165 08d4 7E8A893F 		.word	1065978494
+ 1166 08d8 4DBA893F 		.word	1065990733
+ 1167 08dc 25EA893F 		.word	1066002981
+ 1168 08e0 151A8A3F 		.word	1066015253
+ 1169 08e4 0E4A8A3F 		.word	1066027534
+ 1170 08e8 207A8A3F 		.word	1066039840
+ 1171 08ec 3BAA8A3F 		.word	1066052155
+ 1172 08f0 6EDA8A3F 		.word	1066064494
+ 1173 08f4 AA0A8B3F 		.word	1066076842
+ 1174 08f8 003B8B3F 		.word	1066089216
+ 1175 08fc 5D6B8B3F 		.word	1066101597
+ 1176 0900 D49B8B3F 		.word	1066114004
+ 1177 0904 53CC8B3F 		.word	1066126419
+ 1178 0908 EBFC8B3F 		.word	1066138859
+ 1179 090c 8C2D8C3F 		.word	1066151308
+ 1180 0910 465E8C3F 		.word	1066163782
+ 1181 0914 088F8C3F 		.word	1066176264
+ 1182 0918 E4BF8C3F 		.word	1066188772
+ 1183 091c C7F08C3F 		.word	1066201287
+ 1184 0920 C4218D3F 		.word	1066213828
+ 1185 0924 D2528D3F 		.word	1066226386
+ 1186 0928 E8838D3F 		.word	1066238952
+ 1187 092c 18B58D3F 		.word	1066251544
+ 1188 0930 58E68D3F 		.word	1066264152
+ 1189 0934 A0178E3F 		.word	1066276768
+ 1190 0938 02498E3F 		.word	1066289410
+ 1191 093c 747A8E3F 		.word	1066302068
+ 1192 0940 F7AB8E3F 		.word	1066314743
+ 1193 0944 8BDD8E3F 		.word	1066327435
+ 1194 0948 300F8F3F 		.word	1066340144
+ 1195 094c E6408F3F 		.word	1066352870
+ 1196 0950 AC728F3F 		.word	1066365612
+ 1197 0954 83A48F3F 		.word	1066378371
+ 1198 0958 73D68F3F 		.word	1066391155
+ 1199 095c 6C08903F 		.word	1066403948
+ 1200 0960 753A903F 		.word	1066416757
+ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccR3moNj.s 			page 24
 
 
- 1191 0778 CC7B743F 		.word	1064598476
- 1192 077c 9AD0743F 		.word	1064620186
- 1193 0780 7825753F 		.word	1064641912
- 1194 0784 897A753F 		.word	1064663689
- 1195 0788 ABCF753F 		.word	1064685483
- 1196 078c DD24763F 		.word	1064707293
- 1197 0790 427A763F 		.word	1064729154
- 1198 0794 B7CF763F 		.word	1064751031
- 1199 0798 4E25773F 		.word	1064772942
- 1200 079c 077B773F 		.word	1064794887
- 1201 07a0 E1D0773F 		.word	1064816865
- 1202 07a4 CC26783F 		.word	1064838860
- 1203 07a8 D97C783F 		.word	1064860889
- 1204 07ac 07D3783F 		.word	1064882951
- 1205 07b0 5629793F 		.word	1064905046
- 1206 07b4 C77F793F 		.word	1064927175
- 1207 07b8 49D6793F 		.word	1064949321
- 1208 07bc ED2C7A3F 		.word	1064971501
- 1209 07c0 B2837A3F 		.word	1064993714
- 1210 07c4 98DA7A3F 		.word	1065015960
- 1211 07c8 90317B3F 		.word	1065038224
- 1212 07cc B9887B3F 		.word	1065060537
- 1213 07d0 F4DF7B3F 		.word	1065082868
- 1214 07d4 50377C3F 		.word	1065105232
- 1215 07d8 BD8E7C3F 		.word	1065127613
- 1216 07dc 5CE67C3F 		.word	1065150044
- 1217 07e0 0C3E7D3F 		.word	1065172492
- 1218 07e4 DD957D3F 		.word	1065194973
- 1219 07e8 D0ED7D3F 		.word	1065217488
- 1220 07ec E5457E3F 		.word	1065240037
- 1221 07f0 0A9E7E3F 		.word	1065262602
- 1222 07f4 62F67E3F 		.word	1065285218
- 1223 07f8 CA4E7F3F 		.word	1065307850
- 1224 07fc 54A77F3F 		.word	1065330516
- 1225 0800 0000803F 		.word	1065353216
- 1226 0804 772C803F 		.word	1065364599
- 1227 0808 0859803F 		.word	1065376008
- 1228 080c A185803F 		.word	1065387425
- 1229 0810 4AB2803F 		.word	1065398858
- 1230 0814 FCDE803F 		.word	1065410300
- 1231 0818 C80B813F 		.word	1065421768
- 1232 081c 9B38813F 		.word	1065433243
- 1233 0820 8865813F 		.word	1065444744
- 1234 0824 7D92813F 		.word	1065456253
- 1235 0828 83BF813F 		.word	1065467779
- 1236 082c 9AEC813F 		.word	1065479322
- 1237 0830 C119823F 		.word	1065490881
- 1238 0834 F146823F 		.word	1065502449
- 1239 0838 3A74823F 		.word	1065514042
- 1240 083c 8CA1823F 		.word	1065525644
- 1241 0840 EECE823F 		.word	1065537262
- 1242 0844 69FC823F 		.word	1065548905
- 1243 0848 ED29833F 		.word	1065560557
- 1244 084c 8257833F 		.word	1065572226
- 1245 0850 1F85833F 		.word	1065583903
- 1246 0854 D5B2833F 		.word	1065595605
- 1247 0858 9CE0833F 		.word	1065607324
-ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccXuaL0n.s 			page 25
+ 1201 0964 986C903F 		.word	1066429592
+ 1202 0968 C39E903F 		.word	1066442435
+ 1203 096c 07D1903F 		.word	1066455303
+ 1204 0970 5C03913F 		.word	1066468188
+ 1205 0974 B935913F 		.word	1066481081
+ 1206 0978 3068913F 		.word	1066494000
+ 1207 097c B79A913F 		.word	1066506935
+ 1208 0980 4FCD913F 		.word	1066519887
+ 1209 0984 F8FF913F 		.word	1066532856
+ 1210 0988 BA32923F 		.word	1066545850
+ 1211 098c 8465923F 		.word	1066558852
+ 1212 0990 6798923F 		.word	1066571879
+ 1213 0994 53CB923F 		.word	1066584915
+ 1214 0998 58FE923F 		.word	1066597976
+ 1215 099c 6E31933F 		.word	1066611054
+ 1216 09a0 8C64933F 		.word	1066624140
+ 1217 09a4 C497933F 		.word	1066637252
+ 1218 09a8 14CB933F 		.word	1066650388
+ 1219 09ac 6DFE933F 		.word	1066663533
+ 1220 09b0 D731943F 		.word	1066676695
+ 1221 09b4 5A65943F 		.word	1066689882
+ 1222 09b8 E598943F 		.word	1066703077
+ 1223 09bc 8ACC943F 		.word	1066716298
+ 1224 09c0 3F00953F 		.word	1066729535
+ 1225 09c4 0534953F 		.word	1066742789
+ 1226 09c8 E467953F 		.word	1066756068
+ 1227 09cc CC9B953F 		.word	1066769356
+ 1228 09d0 C4CF953F 		.word	1066782660
+ 1229 09d4 D503963F 		.word	1066795989
+ 1230 09d8 F837963F 		.word	1066809336
+ 1231 09dc 2B6C963F 		.word	1066822699
+ 1232 09e0 6FA0963F 		.word	1066836079
+ 1233 09e4 C3D4963F 		.word	1066849475
+ 1234 09e8 3109973F 		.word	1066862897
+ 1235 09ec B03D973F 		.word	1066876336
+ 1236 09f0 3672973F 		.word	1066889782
+ 1237 09f4 D7A6973F 		.word	1066903255
+ 1238 09f8 90DB973F 		.word	1066916752
+ 1239 09fc 5210983F 		.word	1066930258
+ 1240 0a00 2445983F 		.word	1066943780
+ 1241 0a04 107A983F 		.word	1066957328
+ 1242 0a08 0CAF983F 		.word	1066970892
+ 1243 0a0c 19E4983F 		.word	1066984473
+ 1244 0a10 3F19993F 		.word	1066998079
+ 1245 0a14 6E4E993F 		.word	1067011694
+ 1246 0a18 B683993F 		.word	1067025334
+ 1247 0a1c 0FB9993F 		.word	1067038991
+ 1248 0a20 78EE993F 		.word	1067052664
+ 1249 0a24 F2239A3F 		.word	1067066354
+ 1250 0a28 86599A3F 		.word	1067080070
+ 1251 0a2c 2A8F9A3F 		.word	1067093802
+ 1252 0a30 DFC49A3F 		.word	1067107551
+ 1253 0a34 A4FA9A3F 		.word	1067121316
+ 1254 0a38 7B309B3F 		.word	1067135099
+ 1255 0a3c 6B669B3F 		.word	1067148907
+ 1256 0a40 6B9C9B3F 		.word	1067162731
+ 1257 0a44 7CD29B3F 		.word	1067176572
+ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccR3moNj.s 			page 25
 
 
- 1248 085c 6B0E843F 		.word	1065619051
- 1249 0860 533C843F 		.word	1065630803
- 1250 0864 446A843F 		.word	1065642564
- 1251 0868 4698843F 		.word	1065654342
- 1252 086c 58C6843F 		.word	1065666136
- 1253 0870 7BF4843F 		.word	1065677947
- 1254 0874 AF22853F 		.word	1065689775
- 1255 0878 F450853F 		.word	1065701620
- 1256 087c 4A7F853F 		.word	1065713482
- 1257 0880 A7AD853F 		.word	1065725351
- 1258 0884 1EDC853F 		.word	1065737246
- 1259 0888 9E0A863F 		.word	1065749150
- 1260 088c 3739863F 		.word	1065761079
- 1261 0890 D767863F 		.word	1065773015
- 1262 0894 9296863F 		.word	1065784978
- 1263 0898 54C5863F 		.word	1065796948
- 1264 089c 28F4863F 		.word	1065808936
- 1265 08a0 0C23873F 		.word	1065820940
- 1266 08a4 0052873F 		.word	1065832960
- 1267 08a8 0681873F 		.word	1065844998
- 1268 08ac 1DB0873F 		.word	1065857053
- 1269 08b0 44DF873F 		.word	1065869124
- 1270 08b4 7C0E883F 		.word	1065881212
- 1271 08b8 C53D883F 		.word	1065893317
- 1272 08bc 166D883F 		.word	1065905430
- 1273 08c0 809C883F 		.word	1065917568
- 1274 08c4 FBCB883F 		.word	1065929723
- 1275 08c8 7FFB883F 		.word	1065941887
- 1276 08cc 1B2B893F 		.word	1065954075
- 1277 08d0 C95A893F 		.word	1065966281
- 1278 08d4 7E8A893F 		.word	1065978494
- 1279 08d8 4DBA893F 		.word	1065990733
- 1280 08dc 25EA893F 		.word	1066002981
- 1281 08e0 151A8A3F 		.word	1066015253
- 1282 08e4 0E4A8A3F 		.word	1066027534
- 1283 08e8 207A8A3F 		.word	1066039840
- 1284 08ec 3BAA8A3F 		.word	1066052155
- 1285 08f0 6EDA8A3F 		.word	1066064494
- 1286 08f4 AA0A8B3F 		.word	1066076842
- 1287 08f8 003B8B3F 		.word	1066089216
- 1288 08fc 5D6B8B3F 		.word	1066101597
- 1289 0900 D49B8B3F 		.word	1066114004
- 1290 0904 53CC8B3F 		.word	1066126419
- 1291 0908 EBFC8B3F 		.word	1066138859
- 1292 090c 8C2D8C3F 		.word	1066151308
- 1293 0910 465E8C3F 		.word	1066163782
- 1294 0914 088F8C3F 		.word	1066176264
- 1295 0918 E4BF8C3F 		.word	1066188772
- 1296 091c C7F08C3F 		.word	1066201287
- 1297 0920 C4218D3F 		.word	1066213828
- 1298 0924 D2528D3F 		.word	1066226386
- 1299 0928 E8838D3F 		.word	1066238952
- 1300 092c 18B58D3F 		.word	1066251544
- 1301 0930 58E68D3F 		.word	1066264152
- 1302 0934 A0178E3F 		.word	1066276768
- 1303 0938 02498E3F 		.word	1066289410
- 1304 093c 747A8E3F 		.word	1066302068
-ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccXuaL0n.s 			page 26
+ 1258 0a48 A7089C3F 		.word	1067190439
+ 1259 0a4c D93E9C3F 		.word	1067204313
+ 1260 0a50 25759C3F 		.word	1067218213
+ 1261 0a54 82AB9C3F 		.word	1067232130
+ 1262 0a58 F8E19C3F 		.word	1067246072
+ 1263 0a5c 76189D3F 		.word	1067260022
+ 1264 0a60 0E4F9D3F 		.word	1067273998
+ 1265 0a64 BE859D3F 		.word	1067287998
+ 1266 0a68 77BC9D3F 		.word	1067302007
+ 1267 0a6c 49F39D3F 		.word	1067316041
+ 1268 0a70 2C2A9E3F 		.word	1067330092
+ 1269 0a74 20619E3F 		.word	1067344160
+ 1270 0a78 24989E3F 		.word	1067358244
+ 1271 0a7c 42CF9E3F 		.word	1067372354
+ 1272 0a80 70069F3F 		.word	1067386480
+ 1273 0a84 B83D9F3F 		.word	1067400632
+ 1274 0a88 08759F3F 		.word	1067414792
+ 1275 0a8c 71AC9F3F 		.word	1067428977
+ 1276 0a90 F3E39F3F 		.word	1067443187
+ 1277 0a94 7E1BA03F 		.word	1067457406
+ 1278 0a98 2253A03F 		.word	1067471650
+ 1279 0a9c D78AA03F 		.word	1067485911
+ 1280 0aa0 A4C2A03F 		.word	1067500196
+ 1281 0aa4 7BFAA03F 		.word	1067514491
+ 1282 0aa8 7232A13F 		.word	1067528818
+ 1283 0aac 726AA13F 		.word	1067543154
+ 1284 0ab0 8CA2A13F 		.word	1067557516
+ 1285 0ab4 B6DAA13F 		.word	1067571894
+ 1286 0ab8 F112A23F 		.word	1067586289
+ 1287 0abc 454BA23F 		.word	1067600709
+ 1288 0ac0 A983A23F 		.word	1067615145
+ 1289 0ac4 1FBCA23F 		.word	1067629599
+ 1290 0ac8 AEF4A23F 		.word	1067644078
+ 1291 0acc 4D2DA33F 		.word	1067658573
+ 1292 0ad0 FE65A33F 		.word	1067673086
+ 1293 0ad4 C79EA33F 		.word	1067687623
+ 1294 0ad8 A1D7A33F 		.word	1067702177
+ 1295 0adc 9510A43F 		.word	1067716757
+ 1296 0ae0 9949A43F 		.word	1067731353
+ 1297 0ae4 AE82A43F 		.word	1067745966
+ 1298 0ae8 D4BBA43F 		.word	1067760596
+ 1299 0aec 12F5A43F 		.word	1067775250
+ 1300 0af0 622EA53F 		.word	1067789922
+ 1301 0af4 CB67A53F 		.word	1067804619
+ 1302 0af8 45A1A53F 		.word	1067819333
+ 1303 0afc D7DAA53F 		.word	1067834071
+ 1304 0b00 7214A63F 		.word	1067848818
+ 1305 0b04 2F4EA63F 		.word	1067863599
+ 1306 0b08 F487A63F 		.word	1067878388
+ 1307 0b0c D3C1A63F 		.word	1067893203
+ 1308 0b10 CAFBA63F 		.word	1067908042
+ 1309 0b14 CA35A73F 		.word	1067922890
+ 1310 0b18 E36FA73F 		.word	1067937763
+ 1311 0b1c 15AAA73F 		.word	1067952661
+ 1312 0b20 58E4A73F 		.word	1067967576
+ 1313 0b24 AC1EA83F 		.word	1067982508
+ 1314 0b28 1959A83F 		.word	1067997465
+ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccR3moNj.s 			page 26
 
 
- 1305 0940 F7AB8E3F 		.word	1066314743
- 1306 0944 8BDD8E3F 		.word	1066327435
- 1307 0948 300F8F3F 		.word	1066340144
- 1308 094c E6408F3F 		.word	1066352870
- 1309 0950 AC728F3F 		.word	1066365612
- 1310 0954 83A48F3F 		.word	1066378371
- 1311 0958 73D68F3F 		.word	1066391155
- 1312 095c 6C08903F 		.word	1066403948
- 1313 0960 753A903F 		.word	1066416757
- 1314 0964 986C903F 		.word	1066429592
- 1315 0968 C39E903F 		.word	1066442435
- 1316 096c 07D1903F 		.word	1066455303
- 1317 0970 5C03913F 		.word	1066468188
- 1318 0974 B935913F 		.word	1066481081
- 1319 0978 3068913F 		.word	1066494000
- 1320 097c B79A913F 		.word	1066506935
- 1321 0980 4FCD913F 		.word	1066519887
- 1322 0984 F8FF913F 		.word	1066532856
- 1323 0988 BA32923F 		.word	1066545850
- 1324 098c 8465923F 		.word	1066558852
- 1325 0990 6798923F 		.word	1066571879
- 1326 0994 53CB923F 		.word	1066584915
- 1327 0998 58FE923F 		.word	1066597976
- 1328 099c 6E31933F 		.word	1066611054
- 1329 09a0 8C64933F 		.word	1066624140
- 1330 09a4 C497933F 		.word	1066637252
- 1331 09a8 14CB933F 		.word	1066650388
- 1332 09ac 6DFE933F 		.word	1066663533
- 1333 09b0 D731943F 		.word	1066676695
- 1334 09b4 5A65943F 		.word	1066689882
- 1335 09b8 E598943F 		.word	1066703077
- 1336 09bc 8ACC943F 		.word	1066716298
- 1337 09c0 3F00953F 		.word	1066729535
- 1338 09c4 0534953F 		.word	1066742789
- 1339 09c8 E467953F 		.word	1066756068
- 1340 09cc CC9B953F 		.word	1066769356
- 1341 09d0 C4CF953F 		.word	1066782660
- 1342 09d4 D503963F 		.word	1066795989
- 1343 09d8 F837963F 		.word	1066809336
- 1344 09dc 2B6C963F 		.word	1066822699
- 1345 09e0 6FA0963F 		.word	1066836079
- 1346 09e4 C3D4963F 		.word	1066849475
- 1347 09e8 3109973F 		.word	1066862897
- 1348 09ec B03D973F 		.word	1066876336
- 1349 09f0 3672973F 		.word	1066889782
- 1350 09f4 D7A6973F 		.word	1066903255
- 1351 09f8 90DB973F 		.word	1066916752
- 1352 09fc 5210983F 		.word	1066930258
- 1353 0a00 2445983F 		.word	1066943780
- 1354 0a04 107A983F 		.word	1066957328
- 1355 0a08 0CAF983F 		.word	1066970892
- 1356 0a0c 19E4983F 		.word	1066984473
- 1357 0a10 3F19993F 		.word	1066998079
- 1358 0a14 6E4E993F 		.word	1067011694
- 1359 0a18 B683993F 		.word	1067025334
- 1360 0a1c 0FB9993F 		.word	1067038991
- 1361 0a20 78EE993F 		.word	1067052664
-ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccXuaL0n.s 			page 27
+ 1315 0b2c 9693A83F 		.word	1068012438
+ 1316 0b30 2DCEA83F 		.word	1068027437
+ 1317 0b34 D508A93F 		.word	1068042453
+ 1318 0b38 9643A93F 		.word	1068057494
+ 1319 0b3c 677EA93F 		.word	1068072551
+ 1320 0b40 49B9A93F 		.word	1068087625
+ 1321 0b44 45F4A93F 		.word	1068102725
+ 1322 0b48 512FAA3F 		.word	1068117841
+ 1323 0b4c 776AAA3F 		.word	1068132983
+ 1324 0b50 ADA5AA3F 		.word	1068148141
+ 1325 0b54 FCE0AA3F 		.word	1068163324
+ 1326 0b58 5C1CAB3F 		.word	1068178524
+ 1327 0b5c CD57AB3F 		.word	1068193741
+ 1328 0b60 5793AB3F 		.word	1068208983
+ 1329 0b64 FBCEAB3F 		.word	1068224251
+ 1330 0b68 AF0AAC3F 		.word	1068239535
+ 1331 0b6c 7446AC3F 		.word	1068254836
+ 1332 0b70 5182AC3F 		.word	1068270161
+ 1333 0b74 40BEAC3F 		.word	1068285504
+ 1334 0b78 48FAAC3F 		.word	1068300872
+ 1335 0b7c 6936AD3F 		.word	1068316265
+ 1336 0b80 9372AD3F 		.word	1068331667
+ 1337 0b84 DEAEAD3F 		.word	1068347102
+ 1338 0b88 3AEBAD3F 		.word	1068362554
+ 1339 0b8c A627AE3F 		.word	1068378022
+ 1340 0b90 2C64AE3F 		.word	1068393516
+ 1341 0b94 C3A0AE3F 		.word	1068409027
+ 1342 0b98 72DDAE3F 		.word	1068424562
+ 1343 0b9c 331AAF3F 		.word	1068440115
+ 1344 0ba0 0C57AF3F 		.word	1068455692
+ 1345 0ba4 FF93AF3F 		.word	1068471295
+ 1346 0ba8 FAD0AF3F 		.word	1068486906
+ 1347 0bac 170EB03F 		.word	1068502551
+ 1348 0bb0 454BB03F 		.word	1068518213
+ 1349 0bb4 8388B03F 		.word	1068533891
+ 1350 0bb8 DAC5B03F 		.word	1068549594
+ 1351 0bbc 4B03B13F 		.word	1068565323
+ 1352 0bc0 CC40B13F 		.word	1068581068
+ 1353 0bc4 677EB13F 		.word	1068596839
+ 1354 0bc8 12BCB13F 		.word	1068612626
+ 1355 0bcc D7F9B13F 		.word	1068628439
+ 1356 0bd0 AC37B23F 		.word	1068644268
+ 1357 0bd4 9B75B23F 		.word	1068660123
+ 1358 0bd8 A2B3B23F 		.word	1068676002
+ 1359 0bdc BBF1B23F 		.word	1068691899
+ 1360 0be0 E42FB33F 		.word	1068707812
+ 1361 0be4 266EB33F 		.word	1068723750
+ 1362 0be8 82ACB33F 		.word	1068739714
+ 1363 0bec EEEAB33F 		.word	1068755694
+ 1364 0bf0 7429B43F 		.word	1068771700
+ 1365 0bf4 1268B43F 		.word	1068787730
+ 1366 0bf8 C2A6B43F 		.word	1068803778
+ 1367 0bfc 8AE5B43F 		.word	1068819850
+ 1368 0c00 6424B53F 		.word	1068835940
+ 1369 0c04 5663B53F 		.word	1068852054
+ 1370 0c08 59A2B53F 		.word	1068868185
+ 1371 0c0c 7EE1B53F 		.word	1068884350
+ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccR3moNj.s 			page 27
 
 
- 1362 0a24 F2239A3F 		.word	1067066354
- 1363 0a28 86599A3F 		.word	1067080070
- 1364 0a2c 2A8F9A3F 		.word	1067093802
- 1365 0a30 DFC49A3F 		.word	1067107551
- 1366 0a34 A4FA9A3F 		.word	1067121316
- 1367 0a38 7B309B3F 		.word	1067135099
- 1368 0a3c 6B669B3F 		.word	1067148907
- 1369 0a40 6B9C9B3F 		.word	1067162731
- 1370 0a44 7CD29B3F 		.word	1067176572
- 1371 0a48 A7089C3F 		.word	1067190439
- 1372 0a4c D93E9C3F 		.word	1067204313
- 1373 0a50 25759C3F 		.word	1067218213
- 1374 0a54 82AB9C3F 		.word	1067232130
- 1375 0a58 F8E19C3F 		.word	1067246072
- 1376 0a5c 76189D3F 		.word	1067260022
- 1377 0a60 0E4F9D3F 		.word	1067273998
- 1378 0a64 BE859D3F 		.word	1067287998
- 1379 0a68 77BC9D3F 		.word	1067302007
- 1380 0a6c 49F39D3F 		.word	1067316041
- 1381 0a70 2C2A9E3F 		.word	1067330092
- 1382 0a74 20619E3F 		.word	1067344160
- 1383 0a78 24989E3F 		.word	1067358244
- 1384 0a7c 42CF9E3F 		.word	1067372354
- 1385 0a80 70069F3F 		.word	1067386480
- 1386 0a84 B83D9F3F 		.word	1067400632
- 1387 0a88 08759F3F 		.word	1067414792
- 1388 0a8c 71AC9F3F 		.word	1067428977
- 1389 0a90 F3E39F3F 		.word	1067443187
- 1390 0a94 7E1BA03F 		.word	1067457406
- 1391 0a98 2253A03F 		.word	1067471650
- 1392 0a9c D78AA03F 		.word	1067485911
- 1393 0aa0 A4C2A03F 		.word	1067500196
- 1394 0aa4 7BFAA03F 		.word	1067514491
- 1395 0aa8 7232A13F 		.word	1067528818
- 1396 0aac 726AA13F 		.word	1067543154
- 1397 0ab0 8CA2A13F 		.word	1067557516
- 1398 0ab4 B6DAA13F 		.word	1067571894
- 1399 0ab8 F112A23F 		.word	1067586289
- 1400 0abc 454BA23F 		.word	1067600709
- 1401 0ac0 A983A23F 		.word	1067615145
- 1402 0ac4 1FBCA23F 		.word	1067629599
- 1403 0ac8 AEF4A23F 		.word	1067644078
- 1404 0acc 4D2DA33F 		.word	1067658573
- 1405 0ad0 FE65A33F 		.word	1067673086
- 1406 0ad4 C79EA33F 		.word	1067687623
- 1407 0ad8 A1D7A33F 		.word	1067702177
- 1408 0adc 9510A43F 		.word	1067716757
- 1409 0ae0 9949A43F 		.word	1067731353
- 1410 0ae4 AE82A43F 		.word	1067745966
- 1411 0ae8 D4BBA43F 		.word	1067760596
- 1412 0aec 12F5A43F 		.word	1067775250
- 1413 0af0 622EA53F 		.word	1067789922
- 1414 0af4 CB67A53F 		.word	1067804619
- 1415 0af8 45A1A53F 		.word	1067819333
- 1416 0afc D7DAA53F 		.word	1067834071
- 1417 0b00 7214A63F 		.word	1067848818
- 1418 0b04 2F4EA63F 		.word	1067863599
-ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccXuaL0n.s 			page 28
+ 1372 0c10 AB20B63F 		.word	1068900523
+ 1373 0c14 FA5FB63F 		.word	1068916730
+ 1374 0c18 5A9FB63F 		.word	1068932954
+ 1375 0c1c CADEB63F 		.word	1068949194
+ 1376 0c20 5C1EB73F 		.word	1068965468
+ 1377 0c24 F65DB73F 		.word	1068981750
+ 1378 0c28 B29DB73F 		.word	1068998066
+ 1379 0c2c 7FDDB73F 		.word	1069014399
+ 1380 0c30 651DB83F 		.word	1069030757
+ 1381 0c34 5B5DB83F 		.word	1069047131
+ 1382 0c38 6B9DB83F 		.word	1069063531
+ 1383 0c3c 94DDB83F 		.word	1069079956
+ 1384 0c40 D61DB93F 		.word	1069096406
+ 1385 0c44 295EB93F 		.word	1069112873
+ 1386 0c48 8C9EB93F 		.word	1069129356
+ 1387 0c4c 11DFB93F 		.word	1069145873
+ 1388 0c50 A71FBA3F 		.word	1069162407
+ 1389 0c54 5760BA3F 		.word	1069178967
+ 1390 0c58 16A1BA3F 		.word	1069195542
+ 1391 0c5c EFE1BA3F 		.word	1069212143
+ 1392 0c60 E222BB3F 		.word	1069228770
+ 1393 0c64 E563BB3F 		.word	1069245413
+ 1394 0c68 09A5BB3F 		.word	1069262089
+ 1395 0c6c 36E6BB3F 		.word	1069278774
+ 1396 0c70 8527BC3F 		.word	1069295493
+ 1397 0c74 E468BC3F 		.word	1069312228
+ 1398 0c78 5CAABC3F 		.word	1069328988
+ 1399 0c7c EEEBBC3F 		.word	1069345774
+ 1400 0c80 902DBD3F 		.word	1069362576
+ 1401 0c84 546FBD3F 		.word	1069379412
+ 1402 0c88 21B1BD3F 		.word	1069396257
+ 1403 0c8c 0EF3BD3F 		.word	1069413134
+ 1404 0c90 0D35BE3F 		.word	1069430029
+ 1405 0c94 2577BE3F 		.word	1069446949
+ 1406 0c98 56B9BE3F 		.word	1069463894
+ 1407 0c9c A0FBBE3F 		.word	1069480864
+ 1408 0ca0 FB3DBF3F 		.word	1069497851
+ 1409 0ca4 6F80BF3F 		.word	1069514863
+ 1410 0ca8 FCC2BF3F 		.word	1069531900
+ 1411 0cac 9A05C03F 		.word	1069548954
+ 1412 0cb0 5A48C03F 		.word	1069566042
+ 1413 0cb4 2A8BC03F 		.word	1069583146
+ 1414 0cb8 0CCEC03F 		.word	1069600268
+ 1415 0cbc 0E11C13F 		.word	1069617422
+ 1416 0cc0 2254C13F 		.word	1069634594
+ 1417 0cc4 5797C13F 		.word	1069651799
+ 1418 0cc8 94DAC13F 		.word	1069669012
+ 1419 0ccc F31DC23F 		.word	1069686259
+ 1420 0cd0 6B61C23F 		.word	1069703531
+ 1421 0cd4 F4A4C23F 		.word	1069720820
+ 1422 0cd8 96E8C23F 		.word	1069738134
+ 1423 0cdc 522CC33F 		.word	1069755474
+ 1424 0ce0 2670C33F 		.word	1069772838
+ 1425 0ce4 0BB4C33F 		.word	1069790219
+ 1426 0ce8 12F8C33F 		.word	1069807634
+ 1427 0cec 293CC43F 		.word	1069825065
+ 1428 0cf0 5A80C43F 		.word	1069842522
+ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccR3moNj.s 			page 28
 
 
- 1419 0b08 F487A63F 		.word	1067878388
- 1420 0b0c D3C1A63F 		.word	1067893203
- 1421 0b10 CAFBA63F 		.word	1067908042
- 1422 0b14 CA35A73F 		.word	1067922890
- 1423 0b18 E36FA73F 		.word	1067937763
- 1424 0b1c 15AAA73F 		.word	1067952661
- 1425 0b20 58E4A73F 		.word	1067967576
- 1426 0b24 AC1EA83F 		.word	1067982508
- 1427 0b28 1959A83F 		.word	1067997465
- 1428 0b2c 9693A83F 		.word	1068012438
- 1429 0b30 2DCEA83F 		.word	1068027437
- 1430 0b34 D508A93F 		.word	1068042453
- 1431 0b38 9643A93F 		.word	1068057494
- 1432 0b3c 677EA93F 		.word	1068072551
- 1433 0b40 49B9A93F 		.word	1068087625
- 1434 0b44 45F4A93F 		.word	1068102725
- 1435 0b48 512FAA3F 		.word	1068117841
- 1436 0b4c 776AAA3F 		.word	1068132983
- 1437 0b50 ADA5AA3F 		.word	1068148141
- 1438 0b54 FCE0AA3F 		.word	1068163324
- 1439 0b58 5C1CAB3F 		.word	1068178524
- 1440 0b5c CD57AB3F 		.word	1068193741
- 1441 0b60 5793AB3F 		.word	1068208983
- 1442 0b64 FBCEAB3F 		.word	1068224251
- 1443 0b68 AF0AAC3F 		.word	1068239535
- 1444 0b6c 7446AC3F 		.word	1068254836
- 1445 0b70 5182AC3F 		.word	1068270161
- 1446 0b74 40BEAC3F 		.word	1068285504
- 1447 0b78 48FAAC3F 		.word	1068300872
- 1448 0b7c 6936AD3F 		.word	1068316265
- 1449 0b80 9372AD3F 		.word	1068331667
- 1450 0b84 DEAEAD3F 		.word	1068347102
- 1451 0b88 3AEBAD3F 		.word	1068362554
- 1452 0b8c A627AE3F 		.word	1068378022
- 1453 0b90 2C64AE3F 		.word	1068393516
- 1454 0b94 C3A0AE3F 		.word	1068409027
- 1455 0b98 72DDAE3F 		.word	1068424562
- 1456 0b9c 331AAF3F 		.word	1068440115
- 1457 0ba0 0C57AF3F 		.word	1068455692
- 1458 0ba4 FF93AF3F 		.word	1068471295
- 1459 0ba8 FAD0AF3F 		.word	1068486906
- 1460 0bac 170EB03F 		.word	1068502551
- 1461 0bb0 454BB03F 		.word	1068518213
- 1462 0bb4 8388B03F 		.word	1068533891
- 1463 0bb8 DAC5B03F 		.word	1068549594
- 1464 0bbc 4B03B13F 		.word	1068565323
- 1465 0bc0 CC40B13F 		.word	1068581068
- 1466 0bc4 677EB13F 		.word	1068596839
- 1467 0bc8 12BCB13F 		.word	1068612626
- 1468 0bcc D7F9B13F 		.word	1068628439
- 1469 0bd0 AC37B23F 		.word	1068644268
- 1470 0bd4 9B75B23F 		.word	1068660123
- 1471 0bd8 A2B3B23F 		.word	1068676002
- 1472 0bdc BBF1B23F 		.word	1068691899
- 1473 0be0 E42FB33F 		.word	1068707812
- 1474 0be4 266EB33F 		.word	1068723750
- 1475 0be8 82ACB33F 		.word	1068739714
-ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccXuaL0n.s 			page 29
+ 1429 0cf4 9CC4C43F 		.word	1069859996
+ 1430 0cf8 FF08C53F 		.word	1069877503
+ 1431 0cfc 7B4DC53F 		.word	1069895035
+ 1432 0d00 0892C53F 		.word	1069912584
+ 1433 0d04 AED6C53F 		.word	1069930158
+ 1434 0d08 6D1BC63F 		.word	1069947757
+ 1435 0d0c 4660C63F 		.word	1069965382
+ 1436 0d10 2FA5C63F 		.word	1069983023
+ 1437 0d14 3AEAC63F 		.word	1070000698
+ 1438 0d18 552FC73F 		.word	1070018389
+ 1439 0d1c 9274C73F 		.word	1070036114
+ 1440 0d20 E0B9C73F 		.word	1070053856
+ 1441 0d24 47FFC73F 		.word	1070071623
+ 1442 0d28 C844C83F 		.word	1070089416
+ 1443 0d2c 598AC83F 		.word	1070107225
+ 1444 0d30 0BD0C83F 		.word	1070125067
+ 1445 0d34 CF15C93F 		.word	1070142927
+ 1446 0d38 B45BC93F 		.word	1070160820
+ 1447 0d3c A9A1C93F 		.word	1070178729
+ 1448 0d40 B8E7C93F 		.word	1070196664
+ 1449 0d44 E02DCA3F 		.word	1070214624
+ 1450 0d48 2174CA3F 		.word	1070232609
+ 1451 0d4c 7CBACA3F 		.word	1070250620
+ 1452 0d50 EF00CB3F 		.word	1070268655
+ 1453 0d54 7C47CB3F 		.word	1070286716
+ 1454 0d58 228ECB3F 		.word	1070304802
+ 1455 0d5c D8D4CB3F 		.word	1070322904
+ 1456 0d60 B01BCC3F 		.word	1070341040
+ 1457 0d64 9962CC3F 		.word	1070359193
+ 1458 0d68 A4A9CC3F 		.word	1070377380
+ 1459 0d6c BFF0CC3F 		.word	1070395583
+ 1460 0d70 F437CD3F 		.word	1070413812
+ 1461 0d74 417FCD3F 		.word	1070432065
+ 1462 0d78 B0C6CD3F 		.word	1070450352
+ 1463 0d7c 300ECE3F 		.word	1070468656
+ 1464 0d80 C955CE3F 		.word	1070486985
+ 1465 0d84 7C9DCE3F 		.word	1070505340
+ 1466 0d88 47E5CE3F 		.word	1070523719
+ 1467 0d8c 2C2DCF3F 		.word	1070542124
+ 1468 0d90 2975CF3F 		.word	1070560553
+ 1469 0d94 40BDCF3F 		.word	1070579008
+ 1470 0d98 7105D03F 		.word	1070597489
+ 1471 0d9c BA4DD03F 		.word	1070615994
+ 1472 0da0 1C96D03F 		.word	1070634524
+ 1473 0da4 98DED03F 		.word	1070653080
+ 1474 0da8 2D27D13F 		.word	1070671661
+ 1475 0dac DB6FD13F 		.word	1070690267
+ 1476 0db0 A2B8D13F 		.word	1070708898
+ 1477 0db4 8201D23F 		.word	1070727554
+ 1478 0db8 7B4AD23F 		.word	1070746235
+ 1479 0dbc 8E93D23F 		.word	1070764942
+ 1480 0dc0 BADCD23F 		.word	1070783674
+ 1481 0dc4 FF25D33F 		.word	1070802431
+ 1482 0dc8 5D6FD33F 		.word	1070821213
+ 1483 0dcc D4B8D33F 		.word	1070840020
+ 1484 0dd0 6402D43F 		.word	1070858852
+ 1485 0dd4 164CD43F 		.word	1070877718
+ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccR3moNj.s 			page 29
 
 
- 1476 0bec EEEAB33F 		.word	1068755694
- 1477 0bf0 7429B43F 		.word	1068771700
- 1478 0bf4 1268B43F 		.word	1068787730
- 1479 0bf8 C2A6B43F 		.word	1068803778
- 1480 0bfc 8AE5B43F 		.word	1068819850
- 1481 0c00 6424B53F 		.word	1068835940
- 1482 0c04 5663B53F 		.word	1068852054
- 1483 0c08 59A2B53F 		.word	1068868185
- 1484 0c0c 7EE1B53F 		.word	1068884350
- 1485 0c10 AB20B63F 		.word	1068900523
- 1486 0c14 FA5FB63F 		.word	1068916730
- 1487 0c18 5A9FB63F 		.word	1068932954
- 1488 0c1c CADEB63F 		.word	1068949194
- 1489 0c20 5C1EB73F 		.word	1068965468
- 1490 0c24 F65DB73F 		.word	1068981750
- 1491 0c28 B29DB73F 		.word	1068998066
- 1492 0c2c 7FDDB73F 		.word	1069014399
- 1493 0c30 651DB83F 		.word	1069030757
- 1494 0c34 5B5DB83F 		.word	1069047131
- 1495 0c38 6B9DB83F 		.word	1069063531
- 1496 0c3c 94DDB83F 		.word	1069079956
- 1497 0c40 D61DB93F 		.word	1069096406
- 1498 0c44 295EB93F 		.word	1069112873
- 1499 0c48 8C9EB93F 		.word	1069129356
- 1500 0c4c 11DFB93F 		.word	1069145873
- 1501 0c50 A71FBA3F 		.word	1069162407
- 1502 0c54 5760BA3F 		.word	1069178967
- 1503 0c58 16A1BA3F 		.word	1069195542
- 1504 0c5c EFE1BA3F 		.word	1069212143
- 1505 0c60 E222BB3F 		.word	1069228770
- 1506 0c64 E563BB3F 		.word	1069245413
- 1507 0c68 09A5BB3F 		.word	1069262089
- 1508 0c6c 36E6BB3F 		.word	1069278774
- 1509 0c70 8527BC3F 		.word	1069295493
- 1510 0c74 E468BC3F 		.word	1069312228
- 1511 0c78 5CAABC3F 		.word	1069328988
- 1512 0c7c EEEBBC3F 		.word	1069345774
- 1513 0c80 902DBD3F 		.word	1069362576
- 1514 0c84 546FBD3F 		.word	1069379412
- 1515 0c88 21B1BD3F 		.word	1069396257
- 1516 0c8c 0EF3BD3F 		.word	1069413134
- 1517 0c90 0D35BE3F 		.word	1069430029
- 1518 0c94 2577BE3F 		.word	1069446949
- 1519 0c98 56B9BE3F 		.word	1069463894
- 1520 0c9c A0FBBE3F 		.word	1069480864
- 1521 0ca0 FB3DBF3F 		.word	1069497851
- 1522 0ca4 6F80BF3F 		.word	1069514863
- 1523 0ca8 FCC2BF3F 		.word	1069531900
- 1524 0cac 9A05C03F 		.word	1069548954
- 1525 0cb0 5A48C03F 		.word	1069566042
- 1526 0cb4 2A8BC03F 		.word	1069583146
- 1527 0cb8 0CCEC03F 		.word	1069600268
- 1528 0cbc 0E11C13F 		.word	1069617422
- 1529 0cc0 2254C13F 		.word	1069634594
- 1530 0cc4 5797C13F 		.word	1069651799
- 1531 0cc8 94DAC13F 		.word	1069669012
- 1532 0ccc F31DC23F 		.word	1069686259
-ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccXuaL0n.s 			page 30
+ 1486 0dd8 D995D43F 		.word	1070896601
+ 1487 0ddc B5DFD43F 		.word	1070915509
+ 1488 0de0 B329D53F 		.word	1070934451
+ 1489 0de4 C173D53F 		.word	1070953409
+ 1490 0de8 F1BDD53F 		.word	1070972401
+ 1491 0dec 3108D63F 		.word	1070991409
+ 1492 0df0 9352D63F 		.word	1071010451
+ 1493 0df4 0F9DD63F 		.word	1071029519
+ 1494 0df8 A3E7D63F 		.word	1071048611
+ 1495 0dfc 5132D73F 		.word	1071067729
+ 1496 0e00 187DD73F 		.word	1071086872
+ 1497 0e04 F7C7D73F 		.word	1071106039
+ 1498 0e08 F112D83F 		.word	1071125233
+ 1499 0e0c 035ED83F 		.word	1071144451
+ 1500 0e10 37A9D83F 		.word	1071163703
+ 1501 0e14 7BF4D83F 		.word	1071182971
+ 1502 0e18 E23FD93F 		.word	1071202274
+ 1503 0e1c 618BD93F 		.word	1071221601
+ 1504 0e20 F9D6D93F 		.word	1071240953
+ 1505 0e24 AB22DA3F 		.word	1071260331
+ 1506 0e28 766EDA3F 		.word	1071279734
+ 1507 0e2c 62BADA3F 		.word	1071299170
+ 1508 0e30 6006DB3F 		.word	1071318624
+ 1509 0e34 7E52DB3F 		.word	1071338110
+ 1510 0e38 AE9EDB3F 		.word	1071357614
+ 1511 0e3c FFEADB3F 		.word	1071377151
+ 1512 0e40 7237DC3F 		.word	1071396722
+ 1513 0e44 F583DC3F 		.word	1071416309
+ 1514 0e48 91D0DC3F 		.word	1071435921
+ 1515 0e4c 501DDD3F 		.word	1071455568
+ 1516 0e50 276ADD3F 		.word	1071475239
+ 1517 0e54 17B7DD3F 		.word	1071494935
+ 1518 0e58 2104DE3F 		.word	1071514657
+ 1519 0e5c 4451DE3F 		.word	1071534404
+ 1520 0e60 889EDE3F 		.word	1071554184
+ 1521 0e64 E6EBDE3F 		.word	1071573990
+ 1522 0e68 5439DF3F 		.word	1071593812
+ 1523 0e6c EC86DF3F 		.word	1071613676
+ 1524 0e70 95D4DF3F 		.word	1071633557
+ 1525 0e74 6022E03F 		.word	1071653472
+ 1526 0e78 3B70E03F 		.word	1071673403
+ 1527 0e7c 40BEE03F 		.word	1071693376
+ 1528 0e80 560CE13F 		.word	1071713366
+ 1529 0e84 865AE13F 		.word	1071733382
+ 1530 0e88 D6A8E13F 		.word	1071753430
+ 1531 0e8c 40F7E13F 		.word	1071773504
+ 1532 0e90 C345E23F 		.word	1071793603
+ 1533 0e94 6894E23F 		.word	1071813736
+ 1534 0e98 26E3E23F 		.word	1071833894
+ 1535 0e9c FD31E33F 		.word	1071854077
+ 1536 0ea0 ED80E33F 		.word	1071874285
+ 1537 0ea4 F6CFE33F 		.word	1071894518
+ 1538 0ea8 211FE43F 		.word	1071914785
+ 1539 0eac 656EE43F 		.word	1071935077
+ 1540 0eb0 CBBDE43F 		.word	1071955403
+ 1541 0eb4 410DE53F 		.word	1071975745
+ 1542 0eb8 D95CE53F 		.word	1071996121
+ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccR3moNj.s 			page 30
 
 
- 1533 0cd0 6B61C23F 		.word	1069703531
- 1534 0cd4 F4A4C23F 		.word	1069720820
- 1535 0cd8 96E8C23F 		.word	1069738134
- 1536 0cdc 522CC33F 		.word	1069755474
- 1537 0ce0 2670C33F 		.word	1069772838
- 1538 0ce4 0BB4C33F 		.word	1069790219
- 1539 0ce8 12F8C33F 		.word	1069807634
- 1540 0cec 293CC43F 		.word	1069825065
- 1541 0cf0 5A80C43F 		.word	1069842522
- 1542 0cf4 9CC4C43F 		.word	1069859996
- 1543 0cf8 FF08C53F 		.word	1069877503
- 1544 0cfc 7B4DC53F 		.word	1069895035
- 1545 0d00 0892C53F 		.word	1069912584
- 1546 0d04 AED6C53F 		.word	1069930158
- 1547 0d08 6D1BC63F 		.word	1069947757
- 1548 0d0c 4660C63F 		.word	1069965382
- 1549 0d10 2FA5C63F 		.word	1069983023
- 1550 0d14 3AEAC63F 		.word	1070000698
- 1551 0d18 552FC73F 		.word	1070018389
- 1552 0d1c 9274C73F 		.word	1070036114
- 1553 0d20 E0B9C73F 		.word	1070053856
- 1554 0d24 47FFC73F 		.word	1070071623
- 1555 0d28 C844C83F 		.word	1070089416
- 1556 0d2c 598AC83F 		.word	1070107225
- 1557 0d30 0BD0C83F 		.word	1070125067
- 1558 0d34 CF15C93F 		.word	1070142927
- 1559 0d38 B45BC93F 		.word	1070160820
- 1560 0d3c A9A1C93F 		.word	1070178729
- 1561 0d40 B8E7C93F 		.word	1070196664
- 1562 0d44 E02DCA3F 		.word	1070214624
- 1563 0d48 2174CA3F 		.word	1070232609
- 1564 0d4c 7CBACA3F 		.word	1070250620
- 1565 0d50 EF00CB3F 		.word	1070268655
- 1566 0d54 7C47CB3F 		.word	1070286716
- 1567 0d58 228ECB3F 		.word	1070304802
- 1568 0d5c D8D4CB3F 		.word	1070322904
- 1569 0d60 B01BCC3F 		.word	1070341040
- 1570 0d64 9962CC3F 		.word	1070359193
- 1571 0d68 A4A9CC3F 		.word	1070377380
- 1572 0d6c BFF0CC3F 		.word	1070395583
- 1573 0d70 F437CD3F 		.word	1070413812
- 1574 0d74 417FCD3F 		.word	1070432065
- 1575 0d78 B0C6CD3F 		.word	1070450352
- 1576 0d7c 300ECE3F 		.word	1070468656
- 1577 0d80 C955CE3F 		.word	1070486985
- 1578 0d84 7C9DCE3F 		.word	1070505340
- 1579 0d88 47E5CE3F 		.word	1070523719
- 1580 0d8c 2C2DCF3F 		.word	1070542124
- 1581 0d90 2975CF3F 		.word	1070560553
- 1582 0d94 40BDCF3F 		.word	1070579008
- 1583 0d98 7105D03F 		.word	1070597489
- 1584 0d9c BA4DD03F 		.word	1070615994
- 1585 0da0 1C96D03F 		.word	1070634524
- 1586 0da4 98DED03F 		.word	1070653080
- 1587 0da8 2D27D13F 		.word	1070671661
- 1588 0dac DB6FD13F 		.word	1070690267
- 1589 0db0 A2B8D13F 		.word	1070708898
-ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccXuaL0n.s 			page 31
+ 1543 0ebc 93ACE53F 		.word	1072016531
+ 1544 0ec0 5DFCE53F 		.word	1072036957
+ 1545 0ec4 494CE63F 		.word	1072057417
+ 1546 0ec8 4E9CE63F 		.word	1072077902
+ 1547 0ecc 74ECE63F 		.word	1072098420
+ 1548 0ed0 B43CE73F 		.word	1072118964
+ 1549 0ed4 0D8DE73F 		.word	1072139533
+ 1550 0ed8 7FDDE73F 		.word	1072160127
+ 1551 0edc 122EE83F 		.word	1072180754
+ 1552 0ee0 BF7EE83F 		.word	1072201407
+ 1553 0ee4 8DCFE83F 		.word	1072222093
+ 1554 0ee8 7520E93F 		.word	1072242805
+ 1555 0eec 7671E93F 		.word	1072263542
+ 1556 0ef0 8FC2E93F 		.word	1072284303
+ 1557 0ef4 CB13EA3F 		.word	1072305099
+ 1558 0ef8 2865EA3F 		.word	1072325928
+ 1559 0efc 95B6EA3F 		.word	1072346773
+ 1560 0f00 2508EB3F 		.word	1072367653
+ 1561 0f04 D559EB3F 		.word	1072388565
+ 1562 0f08 97ABEB3F 		.word	1072409495
+ 1563 0f0c 7AFDEB3F 		.word	1072430458
+ 1564 0f10 7F4FEC3F 		.word	1072451455
+ 1565 0f14 9DA1EC3F 		.word	1072472477
+ 1566 0f18 D4F3EC3F 		.word	1072493524
+ 1567 0f1c 2C46ED3F 		.word	1072514604
+ 1568 0f20 9E98ED3F 		.word	1072535710
+ 1569 0f24 31EBED3F 		.word	1072556849
+ 1570 0f28 DE3DEE3F 		.word	1072578014
+ 1571 0f2c A390EE3F 		.word	1072599203
+ 1572 0f30 8AE3EE3F 		.word	1072620426
+ 1573 0f34 8B36EF3F 		.word	1072641675
+ 1574 0f38 AD89EF3F 		.word	1072662957
+ 1575 0f3c E8DCEF3F 		.word	1072684264
+ 1576 0f40 4430F03F 		.word	1072705604
+ 1577 0f44 BA83F03F 		.word	1072726970
+ 1578 0f48 52D7F03F 		.word	1072748370
+ 1579 0f4c 022BF13F 		.word	1072769794
+ 1580 0f50 CC7EF13F 		.word	1072791244
+ 1581 0f54 B7D2F13F 		.word	1072812727
+ 1582 0f58 BB26F23F 		.word	1072834235
+ 1583 0f5c E17AF23F 		.word	1072855777
+ 1584 0f60 29CFF23F 		.word	1072877353
+ 1585 0f64 8123F33F 		.word	1072898945
+ 1586 0f68 0378F33F 		.word	1072920579
+ 1587 0f6c 9FCCF33F 		.word	1072942239
+ 1588 0f70 5321F43F 		.word	1072963923
+ 1589 0f74 2976F43F 		.word	1072985641
+ 1590 0f78 19CBF43F 		.word	1073007385
+ 1591 0f7c 2920F53F 		.word	1073029161
+ 1592 0f80 5C75F53F 		.word	1073050972
+ 1593 0f84 A7CAF53F 		.word	1073072807
+ 1594 0f88 0C20F63F 		.word	1073094668
+ 1595 0f8c 9275F63F 		.word	1073116562
+ 1596 0f90 3ACBF63F 		.word	1073138490
+ 1597 0f94 FB20F73F 		.word	1073160443
+ 1598 0f98 D576F73F 		.word	1073182421
+ 1599 0f9c D9CCF73F 		.word	1073204441
+ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccR3moNj.s 			page 31
 
 
- 1590 0db4 8201D23F 		.word	1070727554
- 1591 0db8 7B4AD23F 		.word	1070746235
- 1592 0dbc 8E93D23F 		.word	1070764942
- 1593 0dc0 BADCD23F 		.word	1070783674
- 1594 0dc4 FF25D33F 		.word	1070802431
- 1595 0dc8 5D6FD33F 		.word	1070821213
- 1596 0dcc D4B8D33F 		.word	1070840020
- 1597 0dd0 6402D43F 		.word	1070858852
- 1598 0dd4 164CD43F 		.word	1070877718
- 1599 0dd8 D995D43F 		.word	1070896601
- 1600 0ddc B5DFD43F 		.word	1070915509
- 1601 0de0 B329D53F 		.word	1070934451
- 1602 0de4 C173D53F 		.word	1070953409
- 1603 0de8 F1BDD53F 		.word	1070972401
- 1604 0dec 3108D63F 		.word	1070991409
- 1605 0df0 9352D63F 		.word	1071010451
- 1606 0df4 0F9DD63F 		.word	1071029519
- 1607 0df8 A3E7D63F 		.word	1071048611
- 1608 0dfc 5132D73F 		.word	1071067729
- 1609 0e00 187DD73F 		.word	1071086872
- 1610 0e04 F7C7D73F 		.word	1071106039
- 1611 0e08 F112D83F 		.word	1071125233
- 1612 0e0c 035ED83F 		.word	1071144451
- 1613 0e10 37A9D83F 		.word	1071163703
- 1614 0e14 7BF4D83F 		.word	1071182971
- 1615 0e18 E23FD93F 		.word	1071202274
- 1616 0e1c 618BD93F 		.word	1071221601
- 1617 0e20 F9D6D93F 		.word	1071240953
- 1618 0e24 AB22DA3F 		.word	1071260331
- 1619 0e28 766EDA3F 		.word	1071279734
- 1620 0e2c 62BADA3F 		.word	1071299170
- 1621 0e30 6006DB3F 		.word	1071318624
- 1622 0e34 7E52DB3F 		.word	1071338110
- 1623 0e38 AE9EDB3F 		.word	1071357614
- 1624 0e3c FFEADB3F 		.word	1071377151
- 1625 0e40 7237DC3F 		.word	1071396722
- 1626 0e44 F583DC3F 		.word	1071416309
- 1627 0e48 91D0DC3F 		.word	1071435921
- 1628 0e4c 501DDD3F 		.word	1071455568
- 1629 0e50 276ADD3F 		.word	1071475239
- 1630 0e54 17B7DD3F 		.word	1071494935
- 1631 0e58 2104DE3F 		.word	1071514657
- 1632 0e5c 4451DE3F 		.word	1071534404
- 1633 0e60 889EDE3F 		.word	1071554184
- 1634 0e64 E6EBDE3F 		.word	1071573990
- 1635 0e68 5439DF3F 		.word	1071593812
- 1636 0e6c EC86DF3F 		.word	1071613676
- 1637 0e70 95D4DF3F 		.word	1071633557
- 1638 0e74 6022E03F 		.word	1071653472
- 1639 0e78 3B70E03F 		.word	1071673403
- 1640 0e7c 40BEE03F 		.word	1071693376
- 1641 0e80 560CE13F 		.word	1071713366
- 1642 0e84 865AE13F 		.word	1071733382
- 1643 0e88 D6A8E13F 		.word	1071753430
- 1644 0e8c 40F7E13F 		.word	1071773504
- 1645 0e90 C345E23F 		.word	1071793603
- 1646 0e94 6894E23F 		.word	1071813736
-ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccXuaL0n.s 			page 32
-
-
- 1647 0e98 26E3E23F 		.word	1071833894
- 1648 0e9c FD31E33F 		.word	1071854077
- 1649 0ea0 ED80E33F 		.word	1071874285
- 1650 0ea4 F6CFE33F 		.word	1071894518
- 1651 0ea8 211FE43F 		.word	1071914785
- 1652 0eac 656EE43F 		.word	1071935077
- 1653 0eb0 CBBDE43F 		.word	1071955403
- 1654 0eb4 410DE53F 		.word	1071975745
- 1655 0eb8 D95CE53F 		.word	1071996121
- 1656 0ebc 93ACE53F 		.word	1072016531
- 1657 0ec0 5DFCE53F 		.word	1072036957
- 1658 0ec4 494CE63F 		.word	1072057417
- 1659 0ec8 4E9CE63F 		.word	1072077902
- 1660 0ecc 74ECE63F 		.word	1072098420
- 1661 0ed0 B43CE73F 		.word	1072118964
- 1662 0ed4 0D8DE73F 		.word	1072139533
- 1663 0ed8 7FDDE73F 		.word	1072160127
- 1664 0edc 122EE83F 		.word	1072180754
- 1665 0ee0 BF7EE83F 		.word	1072201407
- 1666 0ee4 8DCFE83F 		.word	1072222093
- 1667 0ee8 7520E93F 		.word	1072242805
- 1668 0eec 7671E93F 		.word	1072263542
- 1669 0ef0 8FC2E93F 		.word	1072284303
- 1670 0ef4 CB13EA3F 		.word	1072305099
- 1671 0ef8 2865EA3F 		.word	1072325928
- 1672 0efc 95B6EA3F 		.word	1072346773
- 1673 0f00 2508EB3F 		.word	1072367653
- 1674 0f04 D559EB3F 		.word	1072388565
- 1675 0f08 97ABEB3F 		.word	1072409495
- 1676 0f0c 7AFDEB3F 		.word	1072430458
- 1677 0f10 7F4FEC3F 		.word	1072451455
- 1678 0f14 9DA1EC3F 		.word	1072472477
- 1679 0f18 D4F3EC3F 		.word	1072493524
- 1680 0f1c 2C46ED3F 		.word	1072514604
- 1681 0f20 9E98ED3F 		.word	1072535710
- 1682 0f24 31EBED3F 		.word	1072556849
- 1683 0f28 DE3DEE3F 		.word	1072578014
- 1684 0f2c A390EE3F 		.word	1072599203
- 1685 0f30 8AE3EE3F 		.word	1072620426
- 1686 0f34 8B36EF3F 		.word	1072641675
- 1687 0f38 AD89EF3F 		.word	1072662957
- 1688 0f3c E8DCEF3F 		.word	1072684264
- 1689 0f40 4430F03F 		.word	1072705604
- 1690 0f44 BA83F03F 		.word	1072726970
- 1691 0f48 52D7F03F 		.word	1072748370
- 1692 0f4c 022BF13F 		.word	1072769794
- 1693 0f50 CC7EF13F 		.word	1072791244
- 1694 0f54 B7D2F13F 		.word	1072812727
- 1695 0f58 BB26F23F 		.word	1072834235
- 1696 0f5c E17AF23F 		.word	1072855777
- 1697 0f60 29CFF23F 		.word	1072877353
- 1698 0f64 8123F33F 		.word	1072898945
- 1699 0f68 0378F33F 		.word	1072920579
- 1700 0f6c 9FCCF33F 		.word	1072942239
- 1701 0f70 5321F43F 		.word	1072963923
- 1702 0f74 2976F43F 		.word	1072985641
- 1703 0f78 19CBF43F 		.word	1073007385
-ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccXuaL0n.s 			page 33
-
-
- 1704 0f7c 2920F53F 		.word	1073029161
- 1705 0f80 5C75F53F 		.word	1073050972
- 1706 0f84 A7CAF53F 		.word	1073072807
- 1707 0f88 0C20F63F 		.word	1073094668
- 1708 0f8c 9275F63F 		.word	1073116562
- 1709 0f90 3ACBF63F 		.word	1073138490
- 1710 0f94 FB20F73F 		.word	1073160443
- 1711 0f98 D576F73F 		.word	1073182421
- 1712 0f9c D9CCF73F 		.word	1073204441
- 1713 0fa0 EE22F83F 		.word	1073226478
- 1714 0fa4 2D79F83F 		.word	1073248557
- 1715 0fa8 85CFF83F 		.word	1073270661
- 1716 0fac F625F93F 		.word	1073292790
- 1717 0fb0 897CF93F 		.word	1073314953
- 1718 0fb4 3DD3F93F 		.word	1073337149
- 1719 0fb8 0B2AFA3F 		.word	1073359371
- 1720 0fbc FA80FA3F 		.word	1073381626
- 1721 0fc0 0AD8FA3F 		.word	1073403914
- 1722 0fc4 342FFB3F 		.word	1073426228
- 1723 0fc8 7786FB3F 		.word	1073448567
- 1724 0fcc E3DDFB3F 		.word	1073470947
- 1725 0fd0 6935FC3F 		.word	1073493353
- 1726 0fd4 098DFC3F 		.word	1073515785
- 1727 0fd8 C9E4FC3F 		.word	1073538249
- 1728 0fdc AC3CFD3F 		.word	1073560748
- 1729 0fe0 AF94FD3F 		.word	1073583279
- 1730 0fe4 CCECFD3F 		.word	1073605836
- 1731 0fe8 0245FE3F 		.word	1073628418
- 1732 0fec 629DFE3F 		.word	1073651042
- 1733 0ff0 DCF5FE3F 		.word	1073673692
- 1734 0ff4 774EFF3F 		.word	1073696375
- 1735 0ff8 2AA7FF3F 		.word	1073719082
- 1736 0ffc 00000040 		.word	1073741824
- 1737              		.text
- 1738              	.Letext0:
- 1739              		.file 2 "/Users/johannes/Library/Application Support/Code/User/globalStorage/bmd.stm32-for-vscode/
- 1740              		.file 3 "/Users/johannes/Library/Application Support/Code/User/globalStorage/bmd.stm32-for-vscode/
- 1741              		.file 4 "Drivers/CMSIS/Device/ST/STM32F4xx/Include/stm32f407xx.h"
- 1742              		.file 5 "Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_def.h"
- 1743              		.file 6 "Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_dma.h"
- 1744              		.file 7 "Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_i2s.h"
- 1745              		.file 8 "Core/Inc/envelope.h"
- 1746              		.file 9 "Core/Inc/audio.h"
- 1747              		.file 10 "Core/Inc/oscillators.h"
- 1748              		.file 11 "Core/Inc/MIDI_lut.h"
- 1749              		.file 12 "Core/Inc/../../Drivers/BSP/STM32F4-Discovery/stm32f4_discovery_audio.h"
-ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccXuaL0n.s 			page 34
+ 1600 0fa0 EE22F83F 		.word	1073226478
+ 1601 0fa4 2D79F83F 		.word	1073248557
+ 1602 0fa8 85CFF83F 		.word	1073270661
+ 1603 0fac F625F93F 		.word	1073292790
+ 1604 0fb0 897CF93F 		.word	1073314953
+ 1605 0fb4 3DD3F93F 		.word	1073337149
+ 1606 0fb8 0B2AFA3F 		.word	1073359371
+ 1607 0fbc FA80FA3F 		.word	1073381626
+ 1608 0fc0 0AD8FA3F 		.word	1073403914
+ 1609 0fc4 342FFB3F 		.word	1073426228
+ 1610 0fc8 7786FB3F 		.word	1073448567
+ 1611 0fcc E3DDFB3F 		.word	1073470947
+ 1612 0fd0 6935FC3F 		.word	1073493353
+ 1613 0fd4 098DFC3F 		.word	1073515785
+ 1614 0fd8 C9E4FC3F 		.word	1073538249
+ 1615 0fdc AC3CFD3F 		.word	1073560748
+ 1616 0fe0 AF94FD3F 		.word	1073583279
+ 1617 0fe4 CCECFD3F 		.word	1073605836
+ 1618 0fe8 0245FE3F 		.word	1073628418
+ 1619 0fec 629DFE3F 		.word	1073651042
+ 1620 0ff0 DCF5FE3F 		.word	1073673692
+ 1621 0ff4 774EFF3F 		.word	1073696375
+ 1622 0ff8 2AA7FF3F 		.word	1073719082
+ 1623 0ffc 00000040 		.word	1073741824
+ 1624              		.text
+ 1625              	.Letext0:
+ 1626              		.file 2 "/Users/johannes/Library/Application Support/Code/User/globalStorage/bmd.stm32-for-vscode/
+ 1627              		.file 3 "/Users/johannes/Library/Application Support/Code/User/globalStorage/bmd.stm32-for-vscode/
+ 1628              		.file 4 "Drivers/CMSIS/Device/ST/STM32F4xx/Include/stm32f407xx.h"
+ 1629              		.file 5 "Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_def.h"
+ 1630              		.file 6 "Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_dma.h"
+ 1631              		.file 7 "Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_i2s.h"
+ 1632              		.file 8 "Core/Inc/ADSR_envelope.h"
+ 1633              		.file 9 "Core/Inc/audio.h"
+ 1634              		.file 10 "Core/Inc/oscillators.h"
+ 1635              		.file 11 "Core/Inc/MIDI_lut.h"
+ 1636              		.file 12 "Core/Inc/../../Drivers/BSP/STM32F4-Discovery/stm32f4_discovery_audio.h"
+ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccR3moNj.s 			page 32
 
 
 DEFINED SYMBOLS
                             *ABS*:0000000000000000 audio.c
-/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccXuaL0n.s:20     .text.AUDIO_Init:0000000000000000 $t
-/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccXuaL0n.s:26     .text.AUDIO_Init:0000000000000000 AUDIO_Init
-/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccXuaL0n.s:130    .text.AUDIO_Init:00000000000000e8 $d
-/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccXuaL0n.s:146    .text.audioBlock:0000000000000000 $t
-/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccXuaL0n.s:152    .text.audioBlock:0000000000000000 audioBlock
-/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccXuaL0n.s:255    .text.audioBlock:000000000000007c $d
-/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccXuaL0n.s:268    .text.BSP_AUDIO_OUT_HalfTransfer_CallBack:0000000000000000 $t
-/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccXuaL0n.s:274    .text.BSP_AUDIO_OUT_HalfTransfer_CallBack:0000000000000000 BSP_AUDIO_OUT_HalfTransfer_CallBack
-/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccXuaL0n.s:340    .text.BSP_AUDIO_OUT_HalfTransfer_CallBack:0000000000000050 $d
-/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccXuaL0n.s:347    .text.BSP_AUDIO_OUT_TransferComplete_CallBack:0000000000000000 $t
-/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccXuaL0n.s:353    .text.BSP_AUDIO_OUT_TransferComplete_CallBack:0000000000000000 BSP_AUDIO_OUT_TransferComplete_CallBack
-/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccXuaL0n.s:428    .text.BSP_AUDIO_OUT_TransferComplete_CallBack:0000000000000060 $d
-/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccXuaL0n.s:435    .text.BSP_AUDIO_OUT_Error_CallBack:0000000000000000 $t
-/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccXuaL0n.s:441    .text.BSP_AUDIO_OUT_Error_CallBack:0000000000000000 BSP_AUDIO_OUT_Error_CallBack
-/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccXuaL0n.s:458    .text.DMA1_Stream7_IRQHandler:0000000000000000 $t
-/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccXuaL0n.s:464    .text.DMA1_Stream7_IRQHandler:0000000000000000 DMA1_Stream7_IRQHandler
-/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccXuaL0n.s:484    .text.DMA1_Stream7_IRQHandler:000000000000000c $d
-/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccXuaL0n.s:489    .text.DMA1_Stream3_IRQHandler:0000000000000000 $t
-/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccXuaL0n.s:495    .text.DMA1_Stream3_IRQHandler:0000000000000000 DMA1_Stream3_IRQHandler
-/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccXuaL0n.s:515    .text.DMA1_Stream3_IRQHandler:000000000000000c $d
-/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccXuaL0n.s:558    .bss.superSaw_outR:0000000000000000 superSaw_outR
-/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccXuaL0n.s:551    .bss.superSaw_outL:0000000000000000 superSaw_outL
-/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccXuaL0n.s:544    .bss.outputBuffer:0000000000000000 outputBuffer
-/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccXuaL0n.s:530    .bss.audioBuffer:0000000000000000 audioBuffer
-/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccXuaL0n.s:712    .rodata.pbend:0000000000000000 pbend
-/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccXuaL0n.s:579    .rodata.mtof:0000000000000000 mtof
-/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccXuaL0n.s:526    .bss.audioBuffer:0000000000000000 $d
-/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccXuaL0n.s:533    .bss.env:0000000000000000 $d
-/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccXuaL0n.s:537    .bss.env:0000000000000000 env
-/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccXuaL0n.s:540    .bss.outputBuffer:0000000000000000 $d
-/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccXuaL0n.s:547    .bss.superSaw_outL:0000000000000000 $d
-/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccXuaL0n.s:554    .bss.superSaw_outR:0000000000000000 $d
-/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccXuaL0n.s:561    .bss.yL:0000000000000000 $d
-/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccXuaL0n.s:565    .bss.yL:0000000000000000 yL
-/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccXuaL0n.s:568    .bss.yR:0000000000000000 $d
-/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccXuaL0n.s:572    .bss.yR:0000000000000000 yR
-/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccXuaL0n.s:575    .rodata.mtof:0000000000000000 $d
-/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccXuaL0n.s:709    .rodata.pbend:0000000000000000 $d
+/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccR3moNj.s:20     .text.AUDIO_Init:0000000000000000 $t
+/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccR3moNj.s:26     .text.AUDIO_Init:0000000000000000 AUDIO_Init
+/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccR3moNj.s:130    .text.AUDIO_Init:00000000000000e8 $d
+/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccR3moNj.s:146    .text.audioBlock:0000000000000000 $t
+/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccR3moNj.s:152    .text.audioBlock:0000000000000000 audioBlock
+/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccR3moNj.s:270    .text.audioBlock:0000000000000080 $d
+/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccR3moNj.s:282    .text.BSP_AUDIO_OUT_HalfTransfer_CallBack:0000000000000000 $t
+/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccR3moNj.s:288    .text.BSP_AUDIO_OUT_HalfTransfer_CallBack:0000000000000000 BSP_AUDIO_OUT_HalfTransfer_CallBack
+/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccR3moNj.s:308    .text.BSP_AUDIO_OUT_HalfTransfer_CallBack:000000000000000c $d
+/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccR3moNj.s:313    .text.BSP_AUDIO_OUT_TransferComplete_CallBack:0000000000000000 $t
+/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccR3moNj.s:319    .text.BSP_AUDIO_OUT_TransferComplete_CallBack:0000000000000000 BSP_AUDIO_OUT_TransferComplete_CallBack
+/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccR3moNj.s:339    .text.BSP_AUDIO_OUT_TransferComplete_CallBack:000000000000000c $d
+/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccR3moNj.s:344    .text.BSP_AUDIO_OUT_Error_CallBack:0000000000000000 $t
+/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccR3moNj.s:350    .text.BSP_AUDIO_OUT_Error_CallBack:0000000000000000 BSP_AUDIO_OUT_Error_CallBack
+/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccR3moNj.s:367    .text.DMA1_Stream7_IRQHandler:0000000000000000 $t
+/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccR3moNj.s:373    .text.DMA1_Stream7_IRQHandler:0000000000000000 DMA1_Stream7_IRQHandler
+/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccR3moNj.s:393    .text.DMA1_Stream7_IRQHandler:000000000000000c $d
+/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccR3moNj.s:398    .text.DMA1_Stream3_IRQHandler:0000000000000000 $t
+/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccR3moNj.s:404    .text.DMA1_Stream3_IRQHandler:0000000000000000 DMA1_Stream3_IRQHandler
+/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccR3moNj.s:424    .text.DMA1_Stream3_IRQHandler:000000000000000c $d
+/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccR3moNj.s:459    .bss.superSaw_outR:0000000000000000 superSaw_outR
+/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccR3moNj.s:452    .bss.superSaw_outL:0000000000000000 superSaw_outL
+/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccR3moNj.s:438    .bss.audioBuffer:0000000000000000 audioBuffer
+/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccR3moNj.s:599    .rodata.pbend:0000000000000000 pbend
+/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccR3moNj.s:466    .rodata.mtof:0000000000000000 mtof
+/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccR3moNj.s:434    .bss.audioBuffer:0000000000000000 $d
+/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccR3moNj.s:441    .bss.env:0000000000000000 $d
+/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccR3moNj.s:445    .bss.env:0000000000000000 env
+/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccR3moNj.s:448    .bss.superSaw_outL:0000000000000000 $d
+/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccR3moNj.s:455    .bss.superSaw_outR:0000000000000000 $d
+/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccR3moNj.s:462    .rodata.mtof:0000000000000000 $d
+/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccR3moNj.s:596    .rodata.pbend:0000000000000000 $d
 
 UNDEFINED SYMBOLS
 BSP_AUDIO_OUT_Init
@@ -2024,13 +1889,9 @@ osc5
 osc6
 osc7
 adsr
-ADSR_computeSample
+ADSR_compute
 osc_superSaw
 currentPitch
-ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccXuaL0n.s 			page 35
-
-
-BSP_AUDIO_OUT_ChangeBuffer
 HAL_DMA_IRQHandler
 hAudioOutI2s
 hAudioInI2s
