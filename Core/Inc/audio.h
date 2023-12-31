@@ -14,7 +14,6 @@
 
 #include "../../Drivers/BSP/STM32F4-Discovery/stm32f4_discovery_audio.h"
 #include "CONSTS.h"
-#include "ADSR_envelope.h"
 #include <stdint.h>
 
 

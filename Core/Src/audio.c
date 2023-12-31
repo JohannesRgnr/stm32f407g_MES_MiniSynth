@@ -15,8 +15,11 @@
 #include <stdint.h>
 #include "audio.h"
 #include "oscillators.h"
+#include "ADSR_envelope.h"
+#include "filter.h"
 #include "MIDI_lut.h"
 #include <stdint.h>
+#include "helper_functions.h"
 
 
 
@@ -27,8 +30,7 @@ uint16_t audioBuffer[BUFFER_SIZE]; // 256 samples X 2 channels = 512 samples
 extern int8_t currentPitch;
 extern int8_t velocity;
 extern ADSR_t adsr;
-
-static float env;
+extern ZDFLadder_t Moog_filter;
 
 
 extern oscillator_t osc1, osc2, osc3, osc4, osc5, osc6, osc7;
@@ -47,20 +49,29 @@ void AUDIO_Init()
 	osc_init(&osc1, 0.5, 1000, 0, 0, 0.5);
 	osc_init(&osc2, 0.5, 440, 0, 0, 0.5);
 	osc_init(&osc3, 0.5, 440, 0, 0, 0.5);
-	osc_init(&osc4, 0.5, 440, 0, 0, 0.5);
-	osc_init(&osc5, 0.5, 440, 0, 0, 0.5);
-	osc_init(&osc6, 0.5, 440, 0, 0, 0.5);
-	osc_init(&osc7, 0.5, 440, 0, 0, 0.5);
+	// osc_init(&osc4, 0.5, 440, 0, 0, 0.5);
+	// osc_init(&osc5, 0.5, 440, 0, 0, 0.5);
+	// osc_init(&osc6, 0.5, 440, 0, 0, 0.5);
+	// osc_init(&osc7, 0.5, 440, 0, 0, 0.5);
 
 	ADSR_init(&adsr);
+	MoogLP_init(&Moog_filter);
 	// ADSR_setReleaseTime(&adsr, 0.4);
 	// ADSR_setTarget(&adsr, 1);
-	
+}
 
+
+void
+OpSetFreq(oscillator_t * op, float f)
+{
+	op->freq = f;
 }
 
 float superSaw_outL, superSaw_outR;
-
+static float f0 _CCM_;
+static float f_sub _CCM_;
+// static float vol _CCM_;
+static float env _CCM_;
 
 void audioBlock(uint16_t *buffer, uint16_t samples)
 {
@@ -74,25 +85,35 @@ void audioBlock(uint16_t *buffer, uint16_t samples)
 
 	for (i = 0; i < samples; i++)
 	{
-		//osc_polyblepSaw(&osc1);
-		//osc_polyblepSaw(&osc2);
-		//osc_Sine(&osc1);
 		
+		// osc_Sine(&osc1);
+
 		/*--- compute ADSR envelope --*/
 		env = ADSR_compute(&adsr);
 
-		float frequency = mtof[currentPitch];
-		osc_superSaw(frequency, 0.3, &superSaw_outL, &superSaw_outR);
-		// osc1.freq = frequency;
-		// yL = osc1.output;
-		// yR = yL;
-		// yL *= env;
+		f0 = mtof[currentPitch];
+		
 
-		yL = superSaw_outL * env;
-		yR = superSaw_outR * env;
+		//osc_superSaw(frequency, 0.3, &superSaw_outL, &superSaw_outR);
+		// Moog_filter.cutoff = 2000;
+		OpSetFreq(&osc1, f0);
+		OpSetFreq(&osc2, f0 + 0.1);
+		f_sub = mtof[max(currentPitch - 12, 0)];
+		OpSetFreq(&osc3, f_sub);
+		// yL = 0.1*osc1.output + 0.1*osc2.output + 0.1*osc3.output;
+		// yL = clip(osc1.output + osc2.output + osc3.output, -1, 1) ;
+		yL = 0.2*osc_polyblepSaw(&osc1) + 0.2*osc_polyblepSaw(&osc2) + 0.2*osc_polyblepRect(&osc3);
+		// yL = 0.2*osc_polyblepSaw(&osc3);
+		yR = yL;
+		yL *= env;
+
+		// yL = 0.1*superSaw_outL * env;
+		// yR = 0.1*superSaw_outR * env;
+
+		yL = MoogLP_compute(&Moog_filter, yL);
 
 		valueL = (uint16_t) ((int16_t) ((32767.0f) * yL)); 
-		valueR = (uint16_t) ((int16_t) ((32767.0f) * yR));
+		valueR = (uint16_t) ((int16_t) ((32767.0f) * yL));
 		*output++ = valueL; // left channel sample
 		*output++ = valueR; // right channel sample
 		

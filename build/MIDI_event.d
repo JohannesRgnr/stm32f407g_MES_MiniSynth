@@ -44,7 +44,7 @@ build/MIDI_event.o: Core/Src/MIDI_event.c Core/Inc/MIDI_event.h \
  Core/Inc/../../Drivers/BSP/STM32F4-Discovery/../Components/cs43l22/../Common/audio.h \
  Core/Inc/../../Drivers/BSP/STM32F4-Discovery/stm32f4_discovery.h \
  Core/Inc/../../Drivers/BSP/STM32F4-Discovery/../../../Middlewares/ST/STM32_Audio/Addons/PDM/Inc/pdm2pcm_glo.h \
- Core/Inc/CONSTS.h Core/Inc/ADSR_envelope.h Core/Inc/SEGGER_RTT.h \
+ Core/Inc/CONSTS.h Core/Inc/SEGGER_RTT.h \
  Core/Inc/Config/SEGGER_RTT_Conf.h Core/Inc/console.h \
  Core/Inc/SEGGER_RTT.h Core/Inc/CONSTS.h Core/Inc/helper_functions.h \
  Core/Inc/ADSR_envelope.h
@@ -99,7 +99,6 @@ Core/Inc/../../Drivers/BSP/STM32F4-Discovery/../Components/cs43l22/../Common/aud
 Core/Inc/../../Drivers/BSP/STM32F4-Discovery/stm32f4_discovery.h:
 Core/Inc/../../Drivers/BSP/STM32F4-Discovery/../../../Middlewares/ST/STM32_Audio/Addons/PDM/Inc/pdm2pcm_glo.h:
 Core/Inc/CONSTS.h:
-Core/Inc/ADSR_envelope.h:
 Core/Inc/SEGGER_RTT.h:
 Core/Inc/Config/SEGGER_RTT_Conf.h:
 Core/Inc/console.h:

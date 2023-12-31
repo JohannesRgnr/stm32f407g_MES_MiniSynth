@@ -54,7 +54,7 @@ extern "C" {
 
 /* Exported macro ------------------------------------------------------------*/
 /* USER CODE BEGIN EM */
-
+// #define __FPU_PRESENT
 /* USER CODE END EM */
 
 /* Exported functions prototypes ---------------------------------------------*/

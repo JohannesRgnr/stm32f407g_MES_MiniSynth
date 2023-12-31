@@ -20,13 +20,13 @@
 #include "helper_functions.h"
 
 /*------------------------------------------------------------------------*/
-oscillator_t osc1;
-oscillator_t osc2;
-oscillator_t osc3;
-oscillator_t osc4;
-oscillator_t osc5;
-oscillator_t osc6;
-oscillator_t osc7;
+oscillator_t osc1 _CCM_;
+oscillator_t osc2 _CCM_;
+oscillator_t osc3 _CCM_;
+oscillator_t osc4 _CCM_;
+oscillator_t osc5 _CCM_;
+oscillator_t osc6 _CCM_;
+oscillator_t osc7 _CCM_;
 
 void osc_init(oscillator_t *osc, float amp, float freq, float mod, float freq_mult, float pw)
 {

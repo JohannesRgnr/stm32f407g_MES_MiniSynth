@@ -22,7 +22,7 @@ TARGET = stm32f407g_MES_Minisynth
 # debug build?
 DEBUG = 1
 # optimization
-OPT = -Og
+OPT = -O2
 
 
 #######################################

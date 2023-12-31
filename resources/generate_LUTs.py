@@ -49,3 +49,15 @@ for i in range(1024):
 f.write("0")
 f.write("};")
 f.close()
+
+# Tan table for filter coefficients
+f = open('tan_lut.txt', 'w')
+f.write("const float tan_lut[2049] = {")
+# negative bend
+for i in range(2048):
+    i = i*1.570797/2048
+    f.write(str(round(math.tan(i), 6))+", ")
+
+f.write("0")
+f.write("};")
+f.close()
