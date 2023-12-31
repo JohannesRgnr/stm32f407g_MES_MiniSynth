@@ -38,7 +38,7 @@ f.write("};")
 f.close()
 
 
-# Log10 table for exponential ADSR
+# Log table for exponential ADSR
 f = open('log_lut.txt', 'w')
 f.write("const float log_lut[1025] = {")
 # negative bend
