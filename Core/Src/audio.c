@@ -25,14 +25,12 @@
 
 
 uint16_t audioBuffer[BUFFER_SIZE]; // 256 samples X 2 channels = 512 samples
-// float outputBuffer[BUFFER_SIZE_DIV_4];
+
 
 extern int8_t currentPitch;
 extern int8_t velocity;
-extern ADSR_t adsr;
-extern ZDFLadder_t Moog_filter;
-
-
+extern ADSR_t adsr_amp, adsr_filt;
+extern ZDFLadder_t Moog_filterL, Moog_filterR;
 extern oscillator_t osc1, osc2, osc3, osc4, osc5, osc6, osc7;
 
 /**
@@ -49,29 +47,33 @@ void AUDIO_Init()
 	osc_init(&osc1, 0.5, 1000, 0, 0, 0.5);
 	osc_init(&osc2, 0.5, 440, 0, 0, 0.5);
 	osc_init(&osc3, 0.5, 440, 0, 0, 0.5);
-	// osc_init(&osc4, 0.5, 440, 0, 0, 0.5);
-	// osc_init(&osc5, 0.5, 440, 0, 0, 0.5);
-	// osc_init(&osc6, 0.5, 440, 0, 0, 0.5);
-	// osc_init(&osc7, 0.5, 440, 0, 0, 0.5);
+	osc_init(&osc4, 0.5, 440, 0, 0, 0.5);
+	osc_init(&osc5, 0.5, 440, 0, 0, 0.5);
+	osc_init(&osc6, 0.5, 440, 0, 0, 0.5);
+	osc_init(&osc7, 0.5, 440, 0, 0, 0.5);
 
-	ADSR_init(&adsr);
-	MoogLP_init(&Moog_filter);
-	// ADSR_setReleaseTime(&adsr, 0.4);
-	// ADSR_setTarget(&adsr, 1);
+	ADSR_init(&adsr_amp);
+	ADSR_init(&adsr_filt);
+	MoogLP_init(&Moog_filterL);
+	MoogLP_init(&Moog_filterR);
+
 }
 
 
 void
 OpSetFreq(oscillator_t * op, float f)
 {
-	op->freq = f;
+	op->freq = A0 * f;
 }
 
-float superSaw_outL, superSaw_outR;
+
 static float f0 _CCM_;
 static float f_sub _CCM_;
 // static float vol _CCM_;
-static float env _CCM_;
+static float amp_env _CCM_;
+static float filt_env _CCM_;
+static float ssawL _CCM_;
+static float ssawR _CCM_;
 
 void audioBlock(uint16_t *buffer, uint16_t samples)
 {
@@ -82,38 +84,60 @@ void audioBlock(uint16_t *buffer, uint16_t samples)
 	output = buffer;
 	float yL, yR;
 	uint16_t valueL, valueR;
+	
 
 	for (i = 0; i < samples; i++)
 	{
 		
 		// osc_Sine(&osc1);
 
-		/*--- compute ADSR envelope --*/
-		env = ADSR_compute(&adsr);
+		
 
 		f0 = mtof[currentPitch];
 		
 
-		//osc_superSaw(frequency, 0.3, &superSaw_outL, &superSaw_outR);
-		// Moog_filter.cutoff = 2000;
+		
+		/* test with 3 sawtooth*/
+		// OpSetFreq(&osc1, f0);
+		// OpSetFreq(&osc2, f0 + 0.1);
+
+		// OpSetFreq(&osc4, f0 - 0.2);
+		// OpSetFreq(&osc5, f0 + 1);
+		// OpSetFreq(&osc6, f0 + 5);
+		// f_sub = mtof[max(currentPitch - 12, 0)];
+		// OpSetFreq(&osc3, f_sub);
+		// yL = osc_polyblepSaw(&osc1) + osc_polyblepSaw(&osc2) + osc_polyblepRect(&osc3) + osc_polyblepSaw(&osc4) + osc_polyblepSaw(&osc5) + osc_polyblepRect(&osc6);
+	
+
+		/* test with supersaw */
 		OpSetFreq(&osc1, f0);
-		OpSetFreq(&osc2, f0 + 0.1);
-		f_sub = mtof[max(currentPitch - 12, 0)];
-		OpSetFreq(&osc3, f_sub);
-		// yL = 0.1*osc1.output + 0.1*osc2.output + 0.1*osc3.output;
-		// yL = clip(osc1.output + osc2.output + osc3.output, -1, 1) ;
-		yL = 0.2*osc_polyblepSaw(&osc1) + 0.2*osc_polyblepSaw(&osc2) + 0.2*osc_polyblepRect(&osc3);
-		// yL = 0.2*osc_polyblepSaw(&osc3);
-		yR = yL;
-		yL *= env;
+		OpSetFreq(&osc2, f0 * (1 - 0.3 * 0.01953125));
+		OpSetFreq(&osc3, f0 * (1 + 0.3 * 0.01953125));
+		OpSetFreq(&osc4, f0 * (1 + 0.3 * 0.0625));
+		OpSetFreq(&osc5, f0 * (1 - 0.3 * 0.109375));
+		OpSetFreq(&osc6, f0 * (1 + 0.3 * 0.109375));
+		yL = 0.25 * (0.707 * osc_polyblepSaw(&osc1) + osc_polyblepSaw(&osc2) + osc_polyblepSaw(&osc3) + osc_polyblepSaw(&osc4));
+    	yR = 0.25 * (0.707 * osc_polyblepSaw(&osc1) + osc_polyblepSaw(&osc5) + osc_polyblepSaw(&osc6) );
+		// OpSetFreq(&osc6, f0 + 5);
 
-		// yL = 0.1*superSaw_outL * env;
-		// yR = 0.1*superSaw_outR * env;
-
-		yL = MoogLP_compute(&Moog_filter, yL);
+		/*--- compute ADSR amplitude envelope --*/
+		amp_env = ADSR_compute(&adsr_amp);
+		yL *= amp_env;
+		yR *= amp_env;
+		
+		/*--- compute ADSR filter envelope --*/
+		filt_env = ADSR_compute(&adsr_filt);
+		Moog_filterL.cutoff = 600 * filt_env;
+		Moog_filterR.cutoff = 600 * filt_env;
+		yL = MoogLP_compute(&Moog_filterL, yL);
+		yR = MoogLP_compute(&Moog_filterR, yR);
+		
+		/* clip between - 1 and 1 */
+		yL = SoftClip(yL);
+		yR = SoftClip(yR);
 
 		valueL = (uint16_t) ((int16_t) ((32767.0f) * yL)); 
-		valueR = (uint16_t) ((int16_t) ((32767.0f) * yL));
+		valueR = (uint16_t) ((int16_t) ((32767.0f) * yR));
 		*output++ = valueL; // left channel sample
 		*output++ = valueR; // right channel sample
 		

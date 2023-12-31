@@ -1,4 +1,4 @@
-ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccNexo8a.s 			page 1
+ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccgewa7z.s 			page 1
 
 
    1              		.cpu cortex-m4
@@ -58,13 +58,13 @@ ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccNexo8a.s 			page 1
   27:Core/Src/MIDI_event.c **** uint16_t pitchbend;
   28:Core/Src/MIDI_event.c **** uint8_t currentPitch;
   29:Core/Src/MIDI_event.c **** uint8_t velocity;
-ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccNexo8a.s 			page 2
+ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccgewa7z.s 			page 2
 
 
   30:Core/Src/MIDI_event.c **** uint8_t notes_Active[128] = {0}; // at most, 128 MIDI notes are active
   31:Core/Src/MIDI_event.c **** int8_t notesCount = 0;			 // number of notes active
-  32:Core/Src/MIDI_event.c **** extern ADSR_t adsr;
-  33:Core/Src/MIDI_event.c **** 
+  32:Core/Src/MIDI_event.c **** extern ADSR_t adsr_amp;
+  33:Core/Src/MIDI_event.c **** extern ADSR_t adsr_filt;
   34:Core/Src/MIDI_event.c **** 
   35:Core/Src/MIDI_event.c **** void allNotesOff(void)
   36:Core/Src/MIDI_event.c **** {
@@ -118,7 +118,7 @@ ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccNexo8a.s 			page 1
   73              		.syntax unified
   74              		.thumb
   75              		.thumb_func
-ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccNexo8a.s 			page 3
+ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccgewa7z.s 			page 3
 
 
   77              	MIDI_eventInit:
@@ -178,7 +178,7 @@ ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccNexo8a.s 			page 1
  118              		.cfi_offset 5, -16
  119              		.cfi_offset 6, -12
  120              		.cfi_offset 7, -8
-ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccNexo8a.s 			page 4
+ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccgewa7z.s 			page 4
 
 
  121              		.cfi_offset 14, -4
@@ -238,7 +238,7 @@ ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccNexo8a.s 			page 1
  144              	.L9:
   84:Core/Src/MIDI_event.c **** 	{
   85:Core/Src/MIDI_event.c **** 	/********************* Real Note Off *************************/	
-ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccNexo8a.s 			page 5
+ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccgewa7z.s 			page 5
 
 
   86:Core/Src/MIDI_event.c **** 	case 0x80: 
@@ -247,98 +247,101 @@ ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccNexo8a.s 			page 1
   89:Core/Src/MIDI_event.c **** 		notesCount--;
   90:Core/Src/MIDI_event.c **** 		if (notesCount <= 0) // no more keys pressed
   91:Core/Src/MIDI_event.c **** 		{
-  92:Core/Src/MIDI_event.c **** 			ADSR_keyOff(&adsr);
-  93:Core/Src/MIDI_event.c **** 			notesCount = 0;
-  94:Core/Src/MIDI_event.c **** 		}
-  95:Core/Src/MIDI_event.c **** 		else // legato 
-  96:Core/Src/MIDI_event.c **** 		{
-  97:Core/Src/MIDI_event.c **** 			if ((noteOff - MIN_MIDI_NOTE) == currentPitch) // let sound the lowest key pressed
-  98:Core/Src/MIDI_event.c **** 			{
-  99:Core/Src/MIDI_event.c **** 				uint8_t i;
- 100:Core/Src/MIDI_event.c **** 				for (i = 0; i < 128; i++)
- 101:Core/Src/MIDI_event.c **** 				{
- 102:Core/Src/MIDI_event.c **** 					if (notes_Active[i] == 1) // find the lowest key pressed
- 103:Core/Src/MIDI_event.c **** 						break;
- 104:Core/Src/MIDI_event.c **** 				}
- 105:Core/Src/MIDI_event.c **** 				currentPitch = i - MIN_MIDI_NOTE; // conversion for mtof[]
- 106:Core/Src/MIDI_event.c **** 			}
- 107:Core/Src/MIDI_event.c **** 		}
- 108:Core/Src/MIDI_event.c **** 		break;
- 109:Core/Src/MIDI_event.c **** 	/*********************  Note On *************************/	
- 110:Core/Src/MIDI_event.c **** 	case 0x90: // Note On
- 111:Core/Src/MIDI_event.c **** 		uint8_t noteOn = pack.evnt1;
- 112:Core/Src/MIDI_event.c **** 		velocity = pack.evnt2;
- 113:Core/Src/MIDI_event.c **** 		if (velocity > 0) // True note on !
- 114:Core/Src/MIDI_event.c **** 		{
- 115:Core/Src/MIDI_event.c **** 			if (noteOn < MIN_MIDI_NOTE) // filtering notes
- 116:Core/Src/MIDI_event.c **** 			{
- 117:Core/Src/MIDI_event.c **** 				currentPitch = 0;
- 118:Core/Src/MIDI_event.c **** 			}
- 119:Core/Src/MIDI_event.c **** 			else
- 120:Core/Src/MIDI_event.c **** 			{
- 121:Core/Src/MIDI_event.c **** 				currentPitch = noteOn - MIN_MIDI_NOTE; // conversion for mtof[]
- 122:Core/Src/MIDI_event.c **** 			}
- 123:Core/Src/MIDI_event.c **** 			// SEGGER_RTT_printf(0, "Note ON, pitch %u\r\n", currentPitch); // debug
- 124:Core/Src/MIDI_event.c **** 			HAL_GPIO_WritePin(LD5_GPIO_Port, LD5_Pin, GPIO_PIN_SET); // red LED ON when incoming MIDI note o
- 125:Core/Src/MIDI_event.c **** 			ADSR_keyOn(&adsr);
- 126:Core/Src/MIDI_event.c **** 			notesCount++;
- 127:Core/Src/MIDI_event.c **** 			notes_Active[noteOn] = 1;
- 128:Core/Src/MIDI_event.c **** 		}
- 129:Core/Src/MIDI_event.c **** 		/*********************  Note Off *************************/
- 130:Core/Src/MIDI_event.c **** 		else //  common implementation in MIDI devices: Note Off = Note On with velocity 0
- 131:Core/Src/MIDI_event.c **** 		{			
- 132:Core/Src/MIDI_event.c **** 			notes_Active[noteOn] = 0;
- 133:Core/Src/MIDI_event.c **** 			notesCount--;
- 134:Core/Src/MIDI_event.c **** 			
- 135:Core/Src/MIDI_event.c **** 			// SEGGER_RTT_printf(0, "Note OFF, pitch %u\r\n", currentPitch);
- 136:Core/Src/MIDI_event.c **** 			if (notesCount <= 0)
- 137:Core/Src/MIDI_event.c **** 			{
- 138:Core/Src/MIDI_event.c **** 				ADSR_keyOff(&adsr);
- 139:Core/Src/MIDI_event.c **** 				notesCount = 0;
- 140:Core/Src/MIDI_event.c **** 				HAL_GPIO_WritePin(LD5_GPIO_Port, LD5_Pin, GPIO_PIN_RESET); // red LED OFF when all MIDI notes o
- 141:Core/Src/MIDI_event.c **** 			}
- 142:Core/Src/MIDI_event.c **** 			else // legato
-ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccNexo8a.s 			page 6
+  92:Core/Src/MIDI_event.c **** 			ADSR_keyOff(&adsr_amp);
+  93:Core/Src/MIDI_event.c **** 			ADSR_keyOff(&adsr_filt);
+  94:Core/Src/MIDI_event.c **** 			notesCount = 0;
+  95:Core/Src/MIDI_event.c **** 		}
+  96:Core/Src/MIDI_event.c **** 		else // legato 
+  97:Core/Src/MIDI_event.c **** 		{
+  98:Core/Src/MIDI_event.c **** 			if ((noteOff - MIN_MIDI_NOTE) == currentPitch) // let sound the lowest key pressed
+  99:Core/Src/MIDI_event.c **** 			{
+ 100:Core/Src/MIDI_event.c **** 				uint8_t i;
+ 101:Core/Src/MIDI_event.c **** 				for (i = 0; i < 128; i++)
+ 102:Core/Src/MIDI_event.c **** 				{
+ 103:Core/Src/MIDI_event.c **** 					if (notes_Active[i] == 1) // find the lowest key pressed
+ 104:Core/Src/MIDI_event.c **** 						break;
+ 105:Core/Src/MIDI_event.c **** 				}
+ 106:Core/Src/MIDI_event.c **** 				currentPitch = i - MIN_MIDI_NOTE; // conversion for mtof[]
+ 107:Core/Src/MIDI_event.c **** 			}
+ 108:Core/Src/MIDI_event.c **** 		}
+ 109:Core/Src/MIDI_event.c **** 		break;
+ 110:Core/Src/MIDI_event.c **** 	/*********************  Note On *************************/	
+ 111:Core/Src/MIDI_event.c **** 	case 0x90: // Note On
+ 112:Core/Src/MIDI_event.c **** 		uint8_t noteOn = pack.evnt1;
+ 113:Core/Src/MIDI_event.c **** 		velocity = pack.evnt2;
+ 114:Core/Src/MIDI_event.c **** 		if (velocity > 0) // True note on !
+ 115:Core/Src/MIDI_event.c **** 		{
+ 116:Core/Src/MIDI_event.c **** 			if (noteOn < MIN_MIDI_NOTE) // filtering notes
+ 117:Core/Src/MIDI_event.c **** 			{
+ 118:Core/Src/MIDI_event.c **** 				currentPitch = 0;
+ 119:Core/Src/MIDI_event.c **** 			}
+ 120:Core/Src/MIDI_event.c **** 			else
+ 121:Core/Src/MIDI_event.c **** 			{
+ 122:Core/Src/MIDI_event.c **** 				currentPitch = noteOn - MIN_MIDI_NOTE; // conversion for mtof[]
+ 123:Core/Src/MIDI_event.c **** 			}
+ 124:Core/Src/MIDI_event.c **** 			// SEGGER_RTT_printf(0, "Note ON, pitch %u\r\n", currentPitch); // debug
+ 125:Core/Src/MIDI_event.c **** 			HAL_GPIO_WritePin(LD5_GPIO_Port, LD5_Pin, GPIO_PIN_SET); // red LED ON when incoming MIDI note o
+ 126:Core/Src/MIDI_event.c **** 			ADSR_keyOn(&adsr_amp);
+ 127:Core/Src/MIDI_event.c **** 			ADSR_keyOn(&adsr_filt);
+ 128:Core/Src/MIDI_event.c **** 			notesCount++;
+ 129:Core/Src/MIDI_event.c **** 			notes_Active[noteOn] = 1;
+ 130:Core/Src/MIDI_event.c **** 		}
+ 131:Core/Src/MIDI_event.c **** 		/*********************  Note Off *************************/
+ 132:Core/Src/MIDI_event.c **** 		else //  common implementation in MIDI devices: Note Off = Note On with velocity 0
+ 133:Core/Src/MIDI_event.c **** 		{			
+ 134:Core/Src/MIDI_event.c **** 			notes_Active[noteOn] = 0;
+ 135:Core/Src/MIDI_event.c **** 			notesCount--;
+ 136:Core/Src/MIDI_event.c **** 			
+ 137:Core/Src/MIDI_event.c **** 			// SEGGER_RTT_printf(0, "Note OFF, pitch %u\r\n", currentPitch);
+ 138:Core/Src/MIDI_event.c **** 			if (notesCount <= 0)
+ 139:Core/Src/MIDI_event.c **** 			{
+ 140:Core/Src/MIDI_event.c **** 				ADSR_keyOff(&adsr_amp);
+ 141:Core/Src/MIDI_event.c **** 				ADSR_keyOff(&adsr_filt);
+ 142:Core/Src/MIDI_event.c **** 				notesCount = 0;
+ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccgewa7z.s 			page 6
 
 
- 143:Core/Src/MIDI_event.c **** 			{
- 144:Core/Src/MIDI_event.c **** 				if ((noteOn - MIN_MIDI_NOTE) == currentPitch)
- 145:Core/Src/MIDI_event.c **** 				{
- 146:Core/Src/MIDI_event.c **** 					uint8_t i;
- 147:Core/Src/MIDI_event.c **** 					for (i = 0; i < 128; i++)
- 148:Core/Src/MIDI_event.c **** 					{
- 149:Core/Src/MIDI_event.c **** 						if (notes_Active[i] == 1) // find the lowest key pressed
- 150:Core/Src/MIDI_event.c **** 							break;
- 151:Core/Src/MIDI_event.c **** 					}
- 152:Core/Src/MIDI_event.c **** 					currentPitch = i - MIN_MIDI_NOTE; // conversion for notesFreq[]
- 153:Core/Src/MIDI_event.c **** 				}
- 154:Core/Src/MIDI_event.c **** 			}
- 155:Core/Src/MIDI_event.c **** 		}
- 156:Core/Src/MIDI_event.c **** 	/********************* Other MIDI Messages *************************/	
- 157:Core/Src/MIDI_event.c **** 	case 0xA0: 	// Polyphonic Pressure
- 158:Core/Src/MIDI_event.c **** 		break;
- 159:Core/Src/MIDI_event.c **** 	case 0xB0:	// Control Change
- 160:Core/Src/MIDI_event.c **** 		uint8_t cc_number = pack.evnt1;
- 161:Core/Src/MIDI_event.c **** 		uint8_t cc_value = pack.evnt2;
- 162:Core/Src/MIDI_event.c **** 		// SEGGER_RTT_printf(0, "CC#  %u %u\r\n", cc_number, cc_value); // debug
- 163:Core/Src/MIDI_event.c **** 		switch (pack.evnt1) // CC number
- 164:Core/Src/MIDI_event.c **** 		{
- 165:Core/Src/MIDI_event.c **** 		case 20:
- 166:Core/Src/MIDI_event.c **** 			break;
- 167:Core/Src/MIDI_event.c **** 		case 7:
- 168:Core/Src/MIDI_event.c **** 			break; // master volume
- 169:Core/Src/MIDI_event.c **** 		}
- 170:Core/Src/MIDI_event.c **** 		break;
- 171:Core/Src/MIDI_event.c **** 	case 0xC0: // Program Change
- 172:Core/Src/MIDI_event.c **** 		break;
- 173:Core/Src/MIDI_event.c **** 	case 0xD0: // After Touch
- 174:Core/Src/MIDI_event.c **** 		break;
- 175:Core/Src/MIDI_event.c **** 	case 0xE0: // Pitch Bend
- 176:Core/Src/MIDI_event.c **** 		pitchbend = pack.evnt2 * 128 + pack.evnt1;
+ 143:Core/Src/MIDI_event.c **** 				HAL_GPIO_WritePin(LD5_GPIO_Port, LD5_Pin, GPIO_PIN_RESET); // red LED OFF when all MIDI notes o
+ 144:Core/Src/MIDI_event.c **** 			}
+ 145:Core/Src/MIDI_event.c **** 			else // legato
+ 146:Core/Src/MIDI_event.c **** 			{
+ 147:Core/Src/MIDI_event.c **** 				if ((noteOn - MIN_MIDI_NOTE) == currentPitch)
+ 148:Core/Src/MIDI_event.c **** 				{
+ 149:Core/Src/MIDI_event.c **** 					uint8_t i;
+ 150:Core/Src/MIDI_event.c **** 					for (i = 0; i < 128; i++)
+ 151:Core/Src/MIDI_event.c **** 					{
+ 152:Core/Src/MIDI_event.c **** 						if (notes_Active[i] == 1) // find the lowest key pressed
+ 153:Core/Src/MIDI_event.c **** 							break;
+ 154:Core/Src/MIDI_event.c **** 					}
+ 155:Core/Src/MIDI_event.c **** 					currentPitch = i - MIN_MIDI_NOTE; // conversion for notesFreq[]
+ 156:Core/Src/MIDI_event.c **** 				}
+ 157:Core/Src/MIDI_event.c **** 			}
+ 158:Core/Src/MIDI_event.c **** 		}
+ 159:Core/Src/MIDI_event.c **** 	/********************* Other MIDI Messages *************************/	
+ 160:Core/Src/MIDI_event.c **** 	case 0xA0: 	// Polyphonic Pressure
+ 161:Core/Src/MIDI_event.c **** 		break;
+ 162:Core/Src/MIDI_event.c **** 	case 0xB0:	// Control Change
+ 163:Core/Src/MIDI_event.c **** 		uint8_t cc_number = pack.evnt1;
+ 164:Core/Src/MIDI_event.c **** 		uint8_t cc_value = pack.evnt2;
+ 165:Core/Src/MIDI_event.c **** 		// SEGGER_RTT_printf(0, "CC#  %u %u\r\n", cc_number, cc_value); // debug
+ 166:Core/Src/MIDI_event.c **** 		switch (pack.evnt1) // CC number
+ 167:Core/Src/MIDI_event.c **** 		{
+ 168:Core/Src/MIDI_event.c **** 		case 20:
+ 169:Core/Src/MIDI_event.c **** 			break;
+ 170:Core/Src/MIDI_event.c **** 		case 7:
+ 171:Core/Src/MIDI_event.c **** 			break; // master volume
+ 172:Core/Src/MIDI_event.c **** 		}
+ 173:Core/Src/MIDI_event.c **** 		break;
+ 174:Core/Src/MIDI_event.c **** 	case 0xC0: // Program Change
+ 175:Core/Src/MIDI_event.c **** 		break;
+ 176:Core/Src/MIDI_event.c **** 	case 0xD0: // After Touch
  177:Core/Src/MIDI_event.c **** 		break;
- 178:Core/Src/MIDI_event.c **** 	}
- 179:Core/Src/MIDI_event.c **** }
- 145              		.loc 1 179 1 is_stmt 0 view .LVU23
+ 178:Core/Src/MIDI_event.c **** 	case 0xE0: // Pitch Bend
+ 179:Core/Src/MIDI_event.c **** 		pitchbend = pack.evnt2 * 128 + pack.evnt1;
+ 180:Core/Src/MIDI_event.c **** 		break;
+ 181:Core/Src/MIDI_event.c **** 	}
+ 182:Core/Src/MIDI_event.c **** }
+ 145              		.loc 1 182 1 is_stmt 0 view .LVU23
  146 0022 F8BD     		pop	{r3, r4, r5, r6, r7, pc}
  147              	.LVL6:
  148              	.L32:
@@ -349,18 +352,18 @@ ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccNexo8a.s 			page 1
  151              		.loc 1 88 3 view .LVU25
   89:Core/Src/MIDI_event.c **** 		if (notesCount <= 0) // no more keys pressed
  152              		.loc 1 89 13 is_stmt 0 view .LVU26
- 153 0024 334E     		ldr	r6, .L41
+ 153 0024 384E     		ldr	r6, .L41
  154              	.LVL7:
   88:Core/Src/MIDI_event.c **** 		notesCount--;
  155              		.loc 1 88 25 view .LVU27
- 156 0026 344B     		ldr	r3, .L41+4
+ 156 0026 394B     		ldr	r3, .L41+4
   89:Core/Src/MIDI_event.c **** 		if (notesCount <= 0) // no more keys pressed
+ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccgewa7z.s 			page 7
+
+
  157              		.loc 1 89 13 view .LVU28
  158 0028 3278     		ldrb	r2, [r6]	@ zero_extendqisi2
  159 002a 013A     		subs	r2, r2, #1
-ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccNexo8a.s 			page 7
-
-
   88:Core/Src/MIDI_event.c **** 		notesCount--;
  160              		.loc 1 88 25 view .LVU29
  161 002c 0024     		movs	r4, #0
@@ -382,14 +385,14 @@ ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccNexo8a.s 			page 1
  171              		.loc 1 90 3 is_stmt 1 view .LVU35
   90:Core/Src/MIDI_event.c **** 		{
  172              		.loc 1 90 6 is_stmt 0 view .LVU36
- 173 0036 46DD     		ble	.L33
-  97:Core/Src/MIDI_event.c **** 			{
- 174              		.loc 1 97 4 is_stmt 1 view .LVU37
-  97:Core/Src/MIDI_event.c **** 			{
- 175              		.loc 1 97 34 is_stmt 0 view .LVU38
- 176 0038 304E     		ldr	r6, .L41+8
-  97:Core/Src/MIDI_event.c **** 			{
- 177              		.loc 1 97 7 view .LVU39
+ 173 0036 49DD     		ble	.L33
+  98:Core/Src/MIDI_event.c **** 			{
+ 174              		.loc 1 98 4 is_stmt 1 view .LVU37
+  98:Core/Src/MIDI_event.c **** 			{
+ 175              		.loc 1 98 34 is_stmt 0 view .LVU38
+ 176 0038 354E     		ldr	r6, .L41+8
+  98:Core/Src/MIDI_event.c **** 			{
+ 177              		.loc 1 98 7 view .LVU39
  178 003a 3278     		ldrb	r2, [r6]	@ zero_extendqisi2
  179 003c AA42     		cmp	r2, r5
  180 003e F0D1     		bne	.L9
@@ -399,127 +402,127 @@ ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccNexo8a.s 			page 1
  184              	.LVL8:
  185              	.L35:
  186              	.LBB5:
- 100:Core/Src/MIDI_event.c **** 				{
- 187              		.loc 1 100 19 discriminator 2 view .LVU40
+ 101:Core/Src/MIDI_event.c **** 				{
+ 187              		.loc 1 101 19 discriminator 2 view .LVU40
  188 0046 802B     		cmp	r3, #128
- 189 0048 4ED0     		beq	.L34
+ 189 0048 57D0     		beq	.L34
  190              	.LVL9:
  191              	.L16:
- 100:Core/Src/MIDI_event.c **** 				{
- 192              		.loc 1 100 27 is_stmt 1 view .LVU41
- 100:Core/Src/MIDI_event.c **** 				{
- 193              		.loc 1 100 19 view .LVU42
- 102:Core/Src/MIDI_event.c **** 						break;
- 194              		.loc 1 102 22 is_stmt 0 view .LVU43
+ 101:Core/Src/MIDI_event.c **** 				{
+ 192              		.loc 1 101 27 is_stmt 1 view .LVU41
+ 101:Core/Src/MIDI_event.c **** 				{
+ 193              		.loc 1 101 19 view .LVU42
+ 103:Core/Src/MIDI_event.c **** 						break;
+ 194              		.loc 1 103 22 is_stmt 0 view .LVU43
  195 004a 12F8011B 		ldrb	r1, [r2], #1	@ zero_extendqisi2
- 102:Core/Src/MIDI_event.c **** 						break;
- 196              		.loc 1 102 9 view .LVU44
+ 103:Core/Src/MIDI_event.c **** 						break;
+ 196              		.loc 1 103 9 view .LVU44
  197 004e 0129     		cmp	r1, #1
+ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccgewa7z.s 			page 8
+
+
  198 0050 D8B2     		uxtb	r0, r3
  199              	.LVL10:
- 102:Core/Src/MIDI_event.c **** 						break;
-ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccNexo8a.s 			page 8
-
-
- 200              		.loc 1 102 6 is_stmt 1 view .LVU45
- 100:Core/Src/MIDI_event.c **** 				{
- 201              		.loc 1 100 19 is_stmt 0 view .LVU46
+ 103:Core/Src/MIDI_event.c **** 						break;
+ 200              		.loc 1 103 6 is_stmt 1 view .LVU45
+ 101:Core/Src/MIDI_event.c **** 				{
+ 201              		.loc 1 101 19 is_stmt 0 view .LVU46
  202 0052 03F10103 		add	r3, r3, #1
- 102:Core/Src/MIDI_event.c **** 						break;
- 203              		.loc 1 102 9 view .LVU47
+ 103:Core/Src/MIDI_event.c **** 						break;
+ 203              		.loc 1 103 9 view .LVU47
  204 0056 F6D1     		bne	.L35
  205              	.LBE5:
  206              	.LBB6:
- 152:Core/Src/MIDI_event.c **** 				}
- 207              		.loc 1 152 6 is_stmt 1 view .LVU48
- 152:Core/Src/MIDI_event.c **** 				}
- 208              		.loc 1 152 19 is_stmt 0 view .LVU49
+ 155:Core/Src/MIDI_event.c **** 				}
+ 207              		.loc 1 155 6 is_stmt 1 view .LVU48
+ 155:Core/Src/MIDI_event.c **** 				}
+ 208              		.loc 1 155 19 is_stmt 0 view .LVU49
  209 0058 3070     		strb	r0, [r6]
  210              	.LVL11:
  211              	.L40:
- 152:Core/Src/MIDI_event.c **** 				}
- 212              		.loc 1 152 19 view .LVU50
+ 155:Core/Src/MIDI_event.c **** 				}
+ 212              		.loc 1 155 19 view .LVU50
  213              	.LBE6:
  214              	.LBE4:
- 215              		.loc 1 179 1 view .LVU51
+ 215              		.loc 1 182 1 view .LVU51
  216 005a F8BD     		pop	{r3, r4, r5, r6, r7, pc}
  217              	.LVL12:
  218              	.L11:
  219              	.LBB10:
- 176:Core/Src/MIDI_event.c **** 		break;
- 220              		.loc 1 176 3 is_stmt 1 view .LVU52
- 176:Core/Src/MIDI_event.c **** 		break;
- 221              		.loc 1 176 13 is_stmt 0 view .LVU53
- 222 005c 284B     		ldr	r3, .L41+12
- 176:Core/Src/MIDI_event.c **** 		break;
- 223              		.loc 1 176 32 view .LVU54
+ 179:Core/Src/MIDI_event.c **** 		break;
+ 220              		.loc 1 179 3 is_stmt 1 view .LVU52
+ 179:Core/Src/MIDI_event.c **** 		break;
+ 221              		.loc 1 179 13 is_stmt 0 view .LVU53
+ 222 005c 2D4B     		ldr	r3, .L41+12
+ 179:Core/Src/MIDI_event.c **** 		break;
+ 223              		.loc 1 179 32 view .LVU54
  224 005e 05EBC412 		add	r2, r5, r4, lsl #7
- 176:Core/Src/MIDI_event.c **** 		break;
- 225              		.loc 1 176 13 view .LVU55
+ 179:Core/Src/MIDI_event.c **** 		break;
+ 225              		.loc 1 179 13 view .LVU55
  226 0062 1A80     		strh	r2, [r3]	@ movhi
- 177:Core/Src/MIDI_event.c **** 	}
- 227              		.loc 1 177 3 is_stmt 1 view .LVU56
+ 180:Core/Src/MIDI_event.c **** 	}
+ 227              		.loc 1 180 3 is_stmt 1 view .LVU56
  228              	.LBE10:
- 229              		.loc 1 179 1 is_stmt 0 view .LVU57
+ 229              		.loc 1 182 1 is_stmt 0 view .LVU57
  230 0064 F8BD     		pop	{r3, r4, r5, r6, r7, pc}
  231              	.LVL13:
  232              	.L10:
  233              	.LBB11:
- 111:Core/Src/MIDI_event.c **** 		velocity = pack.evnt2;
- 234              		.loc 1 111 3 is_stmt 1 view .LVU58
- 112:Core/Src/MIDI_event.c **** 		if (velocity > 0) // True note on !
- 235              		.loc 1 112 3 view .LVU59
- 112:Core/Src/MIDI_event.c **** 		if (velocity > 0) // True note on !
- 236              		.loc 1 112 12 is_stmt 0 view .LVU60
- 237 0066 274A     		ldr	r2, .L41+16
+ 112:Core/Src/MIDI_event.c **** 		velocity = pack.evnt2;
+ 234              		.loc 1 112 3 is_stmt 1 view .LVU58
+ 113:Core/Src/MIDI_event.c **** 		if (velocity > 0) // True note on !
+ 235              		.loc 1 113 3 view .LVU59
+ 113:Core/Src/MIDI_event.c **** 		if (velocity > 0) // True note on !
+ 236              		.loc 1 113 12 is_stmt 0 view .LVU60
+ 237 0066 2C4A     		ldr	r2, .L41+16
  238 0068 1670     		strb	r6, [r2]
- 113:Core/Src/MIDI_event.c **** 		{
- 239              		.loc 1 113 3 is_stmt 1 view .LVU61
- 113:Core/Src/MIDI_event.c **** 		{
- 240              		.loc 1 113 6 is_stmt 0 view .LVU62
+ 114:Core/Src/MIDI_event.c **** 		{
+ 239              		.loc 1 114 3 is_stmt 1 view .LVU61
+ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccgewa7z.s 			page 9
+
+
+ 114:Core/Src/MIDI_event.c **** 		{
+ 240              		.loc 1 114 6 is_stmt 0 view .LVU62
  241 006a CCB9     		cbnz	r4, .L36
-ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccNexo8a.s 			page 9
-
-
- 132:Core/Src/MIDI_event.c **** 			notesCount--;
- 242              		.loc 1 132 4 is_stmt 1 view .LVU63
- 133:Core/Src/MIDI_event.c **** 			
- 243              		.loc 1 133 14 is_stmt 0 view .LVU64
- 244 006c 214F     		ldr	r7, .L41
- 132:Core/Src/MIDI_event.c **** 			notesCount--;
- 245              		.loc 1 132 25 view .LVU65
- 246 006e 224B     		ldr	r3, .L41+4
- 133:Core/Src/MIDI_event.c **** 			
- 247              		.loc 1 133 14 view .LVU66
+ 134:Core/Src/MIDI_event.c **** 			notesCount--;
+ 242              		.loc 1 134 4 is_stmt 1 view .LVU63
+ 135:Core/Src/MIDI_event.c **** 			
+ 243              		.loc 1 135 14 is_stmt 0 view .LVU64
+ 244 006c 264F     		ldr	r7, .L41
+ 134:Core/Src/MIDI_event.c **** 			notesCount--;
+ 245              		.loc 1 134 25 view .LVU65
+ 246 006e 274B     		ldr	r3, .L41+4
+ 135:Core/Src/MIDI_event.c **** 			
+ 247              		.loc 1 135 14 view .LVU66
  248 0070 3A78     		ldrb	r2, [r7]	@ zero_extendqisi2
- 132:Core/Src/MIDI_event.c **** 			notesCount--;
- 249              		.loc 1 132 25 view .LVU67
+ 134:Core/Src/MIDI_event.c **** 			notesCount--;
+ 249              		.loc 1 134 25 view .LVU67
  250 0072 5E55     		strb	r6, [r3, r5]
- 133:Core/Src/MIDI_event.c **** 			
- 251              		.loc 1 133 4 is_stmt 1 view .LVU68
- 133:Core/Src/MIDI_event.c **** 			
- 252              		.loc 1 133 14 is_stmt 0 view .LVU69
+ 135:Core/Src/MIDI_event.c **** 			
+ 251              		.loc 1 135 4 is_stmt 1 view .LVU68
+ 135:Core/Src/MIDI_event.c **** 			
+ 252              		.loc 1 135 14 is_stmt 0 view .LVU69
  253 0074 013A     		subs	r2, r2, #1
  254 0076 52B2     		sxtb	r2, r2
- 136:Core/Src/MIDI_event.c **** 			{
- 255              		.loc 1 136 7 view .LVU70
+ 138:Core/Src/MIDI_event.c **** 			{
+ 255              		.loc 1 138 7 view .LVU70
  256 0078 002A     		cmp	r2, #0
- 133:Core/Src/MIDI_event.c **** 			
- 257              		.loc 1 133 14 view .LVU71
+ 135:Core/Src/MIDI_event.c **** 			
+ 257              		.loc 1 135 14 view .LVU71
  258 007a 3A70     		strb	r2, [r7]
- 136:Core/Src/MIDI_event.c **** 			{
- 259              		.loc 1 136 4 is_stmt 1 view .LVU72
- 136:Core/Src/MIDI_event.c **** 			{
- 260              		.loc 1 136 7 is_stmt 0 view .LVU73
- 261 007c 28DD     		ble	.L37
- 144:Core/Src/MIDI_event.c **** 				{
- 262              		.loc 1 144 5 is_stmt 1 view .LVU74
- 144:Core/Src/MIDI_event.c **** 				{
- 263              		.loc 1 144 34 is_stmt 0 view .LVU75
- 264 007e 1F4E     		ldr	r6, .L41+8
+ 138:Core/Src/MIDI_event.c **** 			{
+ 259              		.loc 1 138 4 is_stmt 1 view .LVU72
+ 138:Core/Src/MIDI_event.c **** 			{
+ 260              		.loc 1 138 7 is_stmt 0 view .LVU73
+ 261 007c 2EDD     		ble	.L37
+ 147:Core/Src/MIDI_event.c **** 				{
+ 262              		.loc 1 147 5 is_stmt 1 view .LVU74
+ 147:Core/Src/MIDI_event.c **** 				{
+ 263              		.loc 1 147 34 is_stmt 0 view .LVU75
+ 264 007e 244E     		ldr	r6, .L41+8
  265              	.LVL14:
- 144:Core/Src/MIDI_event.c **** 				{
- 266              		.loc 1 144 8 view .LVU76
+ 147:Core/Src/MIDI_event.c **** 				{
+ 266              		.loc 1 147 8 view .LVU76
  267 0080 3278     		ldrb	r2, [r6]	@ zero_extendqisi2
  268 0082 AA42     		cmp	r2, r5
  269 0084 CDD1     		bne	.L9
@@ -528,504 +531,521 @@ ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccNexo8a.s 			page 1
  272              	.LVL15:
  273              	.L39:
  274              	.LBB7:
- 147:Core/Src/MIDI_event.c **** 					{
- 275              		.loc 1 147 20 discriminator 2 view .LVU77
+ 150:Core/Src/MIDI_event.c **** 					{
+ 275              		.loc 1 150 20 discriminator 2 view .LVU77
  276 008a 802A     		cmp	r2, #128
- 277 008c 2FD0     		beq	.L38
+ 277 008c 38D0     		beq	.L38
  278              	.LVL16:
  279              	.L21:
- 147:Core/Src/MIDI_event.c **** 					{
- 280              		.loc 1 147 28 is_stmt 1 view .LVU78
- 147:Core/Src/MIDI_event.c **** 					{
- 281              		.loc 1 147 20 view .LVU79
-ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccNexo8a.s 			page 10
+ 150:Core/Src/MIDI_event.c **** 					{
+ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccgewa7z.s 			page 10
 
 
- 149:Core/Src/MIDI_event.c **** 							break;
- 282              		.loc 1 149 23 is_stmt 0 view .LVU80
+ 280              		.loc 1 150 28 is_stmt 1 view .LVU78
+ 150:Core/Src/MIDI_event.c **** 					{
+ 281              		.loc 1 150 20 view .LVU79
+ 152:Core/Src/MIDI_event.c **** 							break;
+ 282              		.loc 1 152 23 is_stmt 0 view .LVU80
  283 008e 13F8011B 		ldrb	r1, [r3], #1	@ zero_extendqisi2
- 149:Core/Src/MIDI_event.c **** 							break;
- 284              		.loc 1 149 10 view .LVU81
+ 152:Core/Src/MIDI_event.c **** 							break;
+ 284              		.loc 1 152 10 view .LVU81
  285 0092 0129     		cmp	r1, #1
  286 0094 D0B2     		uxtb	r0, r2
  287              	.LVL17:
- 149:Core/Src/MIDI_event.c **** 							break;
- 288              		.loc 1 149 7 is_stmt 1 view .LVU82
- 147:Core/Src/MIDI_event.c **** 					{
- 289              		.loc 1 147 20 is_stmt 0 view .LVU83
+ 152:Core/Src/MIDI_event.c **** 							break;
+ 288              		.loc 1 152 7 is_stmt 1 view .LVU82
+ 150:Core/Src/MIDI_event.c **** 					{
+ 289              		.loc 1 150 20 is_stmt 0 view .LVU83
  290 0096 02F10102 		add	r2, r2, #1
- 149:Core/Src/MIDI_event.c **** 							break;
- 291              		.loc 1 149 10 view .LVU84
+ 152:Core/Src/MIDI_event.c **** 							break;
+ 291              		.loc 1 152 10 view .LVU84
  292 009a F6D1     		bne	.L39
- 152:Core/Src/MIDI_event.c **** 				}
- 293              		.loc 1 152 6 is_stmt 1 view .LVU85
- 152:Core/Src/MIDI_event.c **** 				}
- 294              		.loc 1 152 19 is_stmt 0 view .LVU86
+ 155:Core/Src/MIDI_event.c **** 				}
+ 293              		.loc 1 155 6 is_stmt 1 view .LVU85
+ 155:Core/Src/MIDI_event.c **** 				}
+ 294              		.loc 1 155 19 is_stmt 0 view .LVU86
  295 009c 3070     		strb	r0, [r6]
  296 009e DCE7     		b	.L40
  297              	.LVL18:
  298              	.L36:
- 152:Core/Src/MIDI_event.c **** 				}
- 299              		.loc 1 152 19 view .LVU87
+ 155:Core/Src/MIDI_event.c **** 				}
+ 299              		.loc 1 155 19 view .LVU87
  300              	.LBE7:
- 115:Core/Src/MIDI_event.c **** 			{
- 301              		.loc 1 115 4 is_stmt 1 view .LVU88
- 121:Core/Src/MIDI_event.c **** 			}
- 302              		.loc 1 121 5 view .LVU89
- 121:Core/Src/MIDI_event.c **** 			}
- 303              		.loc 1 121 18 is_stmt 0 view .LVU90
- 304 00a0 1649     		ldr	r1, .L41+8
- 124:Core/Src/MIDI_event.c **** 			ADSR_keyOn(&adsr);
- 305              		.loc 1 124 4 view .LVU91
- 306 00a2 1948     		ldr	r0, .L41+20
- 307              	.LVL19:
- 121:Core/Src/MIDI_event.c **** 			}
- 308              		.loc 1 121 18 view .LVU92
- 309 00a4 0B70     		strb	r3, [r1]
- 124:Core/Src/MIDI_event.c **** 			ADSR_keyOn(&adsr);
- 310              		.loc 1 124 4 is_stmt 1 view .LVU93
- 311 00a6 0122     		movs	r2, #1
- 312 00a8 4FF48041 		mov	r1, #16384
+ 116:Core/Src/MIDI_event.c **** 			{
+ 301              		.loc 1 116 4 is_stmt 1 view .LVU88
+ 122:Core/Src/MIDI_event.c **** 			}
+ 302              		.loc 1 122 5 view .LVU89
+ 122:Core/Src/MIDI_event.c **** 			}
+ 303              		.loc 1 122 18 is_stmt 0 view .LVU90
+ 304 00a0 1B48     		ldr	r0, .L41+8
+ 305              	.LVL19:
+ 125:Core/Src/MIDI_event.c **** 			ADSR_keyOn(&adsr_amp);
+ 306              		.loc 1 125 4 view .LVU91
+ 307 00a2 0122     		movs	r2, #1
+ 122:Core/Src/MIDI_event.c **** 			}
+ 308              		.loc 1 122 18 view .LVU92
+ 309 00a4 0370     		strb	r3, [r0]
+ 125:Core/Src/MIDI_event.c **** 			ADSR_keyOn(&adsr_amp);
+ 310              		.loc 1 125 4 is_stmt 1 view .LVU93
+ 311 00a6 4FF48041 		mov	r1, #16384
+ 312 00aa 1C48     		ldr	r0, .L41+20
  313 00ac FFF7FEFF 		bl	HAL_GPIO_WritePin
  314              	.LVL20:
- 125:Core/Src/MIDI_event.c **** 			notesCount++;
- 315              		.loc 1 125 4 view .LVU94
- 316 00b0 1648     		ldr	r0, .L41+24
+ 126:Core/Src/MIDI_event.c **** 			ADSR_keyOn(&adsr_filt);
+ 315              		.loc 1 126 4 view .LVU94
+ 316 00b0 1B48     		ldr	r0, .L41+24
  317 00b2 FFF7FEFF 		bl	ADSR_keyOn
  318              	.LVL21:
- 126:Core/Src/MIDI_event.c **** 			notes_Active[noteOn] = 1;
- 319              		.loc 1 126 4 view .LVU95
- 126:Core/Src/MIDI_event.c **** 			notes_Active[noteOn] = 1;
- 320              		.loc 1 126 14 is_stmt 0 view .LVU96
- 321 00b6 0F4A     		ldr	r2, .L41
-ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccNexo8a.s 			page 11
+ 127:Core/Src/MIDI_event.c **** 			notesCount++;
+ 319              		.loc 1 127 4 view .LVU95
+ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccgewa7z.s 			page 11
 
 
- 127:Core/Src/MIDI_event.c **** 		}
- 322              		.loc 1 127 25 view .LVU97
- 323 00b8 0F49     		ldr	r1, .L41+4
- 126:Core/Src/MIDI_event.c **** 			notes_Active[noteOn] = 1;
- 324              		.loc 1 126 14 view .LVU98
- 325 00ba 1378     		ldrb	r3, [r2]	@ zero_extendqisi2
- 127:Core/Src/MIDI_event.c **** 		}
- 326              		.loc 1 127 25 view .LVU99
- 327 00bc 0120     		movs	r0, #1
- 126:Core/Src/MIDI_event.c **** 			notes_Active[noteOn] = 1;
- 328              		.loc 1 126 14 view .LVU100
- 329 00be 0344     		add	r3, r3, r0
- 127:Core/Src/MIDI_event.c **** 		}
- 330              		.loc 1 127 25 view .LVU101
- 331 00c0 4855     		strb	r0, [r1, r5]
- 126:Core/Src/MIDI_event.c **** 			notes_Active[noteOn] = 1;
- 332              		.loc 1 126 14 view .LVU102
- 333 00c2 1370     		strb	r3, [r2]
- 127:Core/Src/MIDI_event.c **** 		}
- 334              		.loc 1 127 4 is_stmt 1 view .LVU103
- 335              	.LBE11:
- 336              		.loc 1 179 1 is_stmt 0 view .LVU104
- 337 00c4 F8BD     		pop	{r3, r4, r5, r6, r7, pc}
- 338              	.LVL22:
- 339              	.L33:
- 340              	.LBB12:
-  92:Core/Src/MIDI_event.c **** 			notesCount = 0;
- 341              		.loc 1 92 4 is_stmt 1 view .LVU105
- 342 00c6 1148     		ldr	r0, .L41+24
- 343              	.LVL23:
-  92:Core/Src/MIDI_event.c **** 			notesCount = 0;
- 344              		.loc 1 92 4 is_stmt 0 view .LVU106
- 345 00c8 FFF7FEFF 		bl	ADSR_keyOff
- 346              	.LVL24:
-  93:Core/Src/MIDI_event.c **** 		}
- 347              		.loc 1 93 4 is_stmt 1 view .LVU107
-  93:Core/Src/MIDI_event.c **** 		}
- 348              		.loc 1 93 15 is_stmt 0 view .LVU108
- 349 00cc 3470     		strb	r4, [r6]
- 350              	.LBE12:
- 351              		.loc 1 179 1 view .LVU109
- 352 00ce F8BD     		pop	{r3, r4, r5, r6, r7, pc}
- 353              	.LVL25:
- 354              	.L37:
- 355              	.LBB13:
- 138:Core/Src/MIDI_event.c **** 				notesCount = 0;
- 356              		.loc 1 138 5 is_stmt 1 view .LVU110
- 357 00d0 0E48     		ldr	r0, .L41+24
- 358              	.LVL26:
- 138:Core/Src/MIDI_event.c **** 				notesCount = 0;
- 359              		.loc 1 138 5 is_stmt 0 view .LVU111
- 360 00d2 FFF7FEFF 		bl	ADSR_keyOff
+ 320 00b6 1B48     		ldr	r0, .L41+28
+ 321 00b8 FFF7FEFF 		bl	ADSR_keyOn
+ 322              	.LVL22:
+ 128:Core/Src/MIDI_event.c **** 			notes_Active[noteOn] = 1;
+ 323              		.loc 1 128 4 view .LVU96
+ 128:Core/Src/MIDI_event.c **** 			notes_Active[noteOn] = 1;
+ 324              		.loc 1 128 14 is_stmt 0 view .LVU97
+ 325 00bc 124A     		ldr	r2, .L41
+ 129:Core/Src/MIDI_event.c **** 		}
+ 326              		.loc 1 129 25 view .LVU98
+ 327 00be 1349     		ldr	r1, .L41+4
+ 128:Core/Src/MIDI_event.c **** 			notes_Active[noteOn] = 1;
+ 328              		.loc 1 128 14 view .LVU99
+ 329 00c0 1378     		ldrb	r3, [r2]	@ zero_extendqisi2
+ 129:Core/Src/MIDI_event.c **** 		}
+ 330              		.loc 1 129 25 view .LVU100
+ 331 00c2 0120     		movs	r0, #1
+ 128:Core/Src/MIDI_event.c **** 			notes_Active[noteOn] = 1;
+ 332              		.loc 1 128 14 view .LVU101
+ 333 00c4 0344     		add	r3, r3, r0
+ 129:Core/Src/MIDI_event.c **** 		}
+ 334              		.loc 1 129 25 view .LVU102
+ 335 00c6 4855     		strb	r0, [r1, r5]
+ 128:Core/Src/MIDI_event.c **** 			notes_Active[noteOn] = 1;
+ 336              		.loc 1 128 14 view .LVU103
+ 337 00c8 1370     		strb	r3, [r2]
+ 129:Core/Src/MIDI_event.c **** 		}
+ 338              		.loc 1 129 4 is_stmt 1 view .LVU104
+ 339              	.LBE11:
+ 340              		.loc 1 182 1 is_stmt 0 view .LVU105
+ 341 00ca F8BD     		pop	{r3, r4, r5, r6, r7, pc}
+ 342              	.LVL23:
+ 343              	.L33:
+ 344              	.LBB12:
+  92:Core/Src/MIDI_event.c **** 			ADSR_keyOff(&adsr_filt);
+ 345              		.loc 1 92 4 is_stmt 1 view .LVU106
+ 346 00cc 1448     		ldr	r0, .L41+24
+ 347              	.LVL24:
+  92:Core/Src/MIDI_event.c **** 			ADSR_keyOff(&adsr_filt);
+ 348              		.loc 1 92 4 is_stmt 0 view .LVU107
+ 349 00ce FFF7FEFF 		bl	ADSR_keyOff
+ 350              	.LVL25:
+  93:Core/Src/MIDI_event.c **** 			notesCount = 0;
+ 351              		.loc 1 93 4 is_stmt 1 view .LVU108
+ 352 00d2 1448     		ldr	r0, .L41+28
+ 353 00d4 FFF7FEFF 		bl	ADSR_keyOff
+ 354              	.LVL26:
+  94:Core/Src/MIDI_event.c **** 		}
+ 355              		.loc 1 94 4 view .LVU109
+  94:Core/Src/MIDI_event.c **** 		}
+ 356              		.loc 1 94 15 is_stmt 0 view .LVU110
+ 357 00d8 3470     		strb	r4, [r6]
+ 358              	.LBE12:
+ 359              		.loc 1 182 1 view .LVU111
+ 360 00da F8BD     		pop	{r3, r4, r5, r6, r7, pc}
  361              	.LVL27:
- 139:Core/Src/MIDI_event.c **** 				HAL_GPIO_WritePin(LD5_GPIO_Port, LD5_Pin, GPIO_PIN_RESET); // red LED OFF when all MIDI notes o
- 362              		.loc 1 139 5 is_stmt 1 view .LVU112
- 140:Core/Src/MIDI_event.c **** 			}
- 363              		.loc 1 140 5 is_stmt 0 view .LVU113
-ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccNexo8a.s 			page 12
+ 362              	.L37:
+ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccgewa7z.s 			page 12
 
 
- 364 00d6 2246     		mov	r2, r4
- 139:Core/Src/MIDI_event.c **** 				HAL_GPIO_WritePin(LD5_GPIO_Port, LD5_Pin, GPIO_PIN_RESET); // red LED OFF when all MIDI notes o
- 365              		.loc 1 139 16 view .LVU114
- 366 00d8 3E70     		strb	r6, [r7]
- 140:Core/Src/MIDI_event.c **** 			}
- 367              		.loc 1 140 5 is_stmt 1 view .LVU115
- 368 00da 0B48     		ldr	r0, .L41+20
- 369              	.LBE13:
- 370              		.loc 1 179 1 is_stmt 0 view .LVU116
- 371 00dc BDE8F840 		pop	{r3, r4, r5, r6, r7, lr}
- 372              		.cfi_remember_state
- 373              		.cfi_restore 14
- 374              		.cfi_restore 7
- 375              		.cfi_restore 6
- 376              		.cfi_restore 5
- 377              		.cfi_restore 4
- 378              		.cfi_restore 3
- 379              		.cfi_def_cfa_offset 0
- 380              	.LVL28:
- 381              	.LBB14:
- 140:Core/Src/MIDI_event.c **** 			}
- 382              		.loc 1 140 5 view .LVU117
- 383 00e0 4FF48041 		mov	r1, #16384
- 384 00e4 FFF7FEBF 		b	HAL_GPIO_WritePin
- 385              	.LVL29:
- 386              	.L34:
- 387              		.cfi_restore_state
- 388              	.LBB8:
- 140:Core/Src/MIDI_event.c **** 			}
- 389              		.loc 1 140 5 view .LVU118
- 390 00e8 1846     		mov	r0, r3
- 391              	.LVL30:
- 105:Core/Src/MIDI_event.c **** 			}
- 392              		.loc 1 105 5 is_stmt 1 view .LVU119
- 393              	.LBE8:
- 394              	.LBB9:
- 152:Core/Src/MIDI_event.c **** 				}
- 395              		.loc 1 152 6 view .LVU120
- 152:Core/Src/MIDI_event.c **** 				}
- 396              		.loc 1 152 19 is_stmt 0 view .LVU121
- 397 00ea 3070     		strb	r0, [r6]
- 398 00ec B5E7     		b	.L40
- 399              	.LVL31:
- 400              	.L38:
- 152:Core/Src/MIDI_event.c **** 				}
- 401              		.loc 1 152 19 view .LVU122
- 402 00ee 1046     		mov	r0, r2
- 403              	.LVL32:
- 152:Core/Src/MIDI_event.c **** 				}
- 404              		.loc 1 152 6 is_stmt 1 view .LVU123
- 152:Core/Src/MIDI_event.c **** 				}
- 405              		.loc 1 152 19 is_stmt 0 view .LVU124
- 406 00f0 3070     		strb	r0, [r6]
- 407 00f2 B2E7     		b	.L40
- 408              	.L42:
- 409              		.align	2
- 410              	.L41:
-ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccNexo8a.s 			page 13
+ 363              	.LBB13:
+ 140:Core/Src/MIDI_event.c **** 				ADSR_keyOff(&adsr_filt);
+ 364              		.loc 1 140 5 is_stmt 1 view .LVU112
+ 365 00dc 1048     		ldr	r0, .L41+24
+ 366              	.LVL28:
+ 140:Core/Src/MIDI_event.c **** 				ADSR_keyOff(&adsr_filt);
+ 367              		.loc 1 140 5 is_stmt 0 view .LVU113
+ 368 00de FFF7FEFF 		bl	ADSR_keyOff
+ 369              	.LVL29:
+ 141:Core/Src/MIDI_event.c **** 				notesCount = 0;
+ 370              		.loc 1 141 5 is_stmt 1 view .LVU114
+ 371 00e2 1048     		ldr	r0, .L41+28
+ 372 00e4 FFF7FEFF 		bl	ADSR_keyOff
+ 373              	.LVL30:
+ 142:Core/Src/MIDI_event.c **** 				HAL_GPIO_WritePin(LD5_GPIO_Port, LD5_Pin, GPIO_PIN_RESET); // red LED OFF when all MIDI notes o
+ 374              		.loc 1 142 5 view .LVU115
+ 143:Core/Src/MIDI_event.c **** 			}
+ 375              		.loc 1 143 5 is_stmt 0 view .LVU116
+ 376 00e8 2246     		mov	r2, r4
+ 142:Core/Src/MIDI_event.c **** 				HAL_GPIO_WritePin(LD5_GPIO_Port, LD5_Pin, GPIO_PIN_RESET); // red LED OFF when all MIDI notes o
+ 377              		.loc 1 142 16 view .LVU117
+ 378 00ea 3E70     		strb	r6, [r7]
+ 143:Core/Src/MIDI_event.c **** 			}
+ 379              		.loc 1 143 5 is_stmt 1 view .LVU118
+ 380 00ec 0B48     		ldr	r0, .L41+20
+ 381              	.LBE13:
+ 382              		.loc 1 182 1 is_stmt 0 view .LVU119
+ 383 00ee BDE8F840 		pop	{r3, r4, r5, r6, r7, lr}
+ 384              		.cfi_remember_state
+ 385              		.cfi_restore 14
+ 386              		.cfi_restore 7
+ 387              		.cfi_restore 6
+ 388              		.cfi_restore 5
+ 389              		.cfi_restore 4
+ 390              		.cfi_restore 3
+ 391              		.cfi_def_cfa_offset 0
+ 392              	.LVL31:
+ 393              	.LBB14:
+ 143:Core/Src/MIDI_event.c **** 			}
+ 394              		.loc 1 143 5 view .LVU120
+ 395 00f2 4FF48041 		mov	r1, #16384
+ 396 00f6 FFF7FEBF 		b	HAL_GPIO_WritePin
+ 397              	.LVL32:
+ 398              	.L34:
+ 399              		.cfi_restore_state
+ 400              	.LBB8:
+ 143:Core/Src/MIDI_event.c **** 			}
+ 401              		.loc 1 143 5 view .LVU121
+ 402 00fa 1846     		mov	r0, r3
+ 403              	.LVL33:
+ 106:Core/Src/MIDI_event.c **** 			}
+ 404              		.loc 1 106 5 is_stmt 1 view .LVU122
+ 405              	.LBE8:
+ 406              	.LBB9:
+ 155:Core/Src/MIDI_event.c **** 				}
+ 407              		.loc 1 155 6 view .LVU123
+ 155:Core/Src/MIDI_event.c **** 				}
+ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccgewa7z.s 			page 13
 
 
- 411 00f4 00000000 		.word	.LANCHOR1
- 412 00f8 00000000 		.word	.LANCHOR0
- 413 00fc 00000000 		.word	.LANCHOR3
- 414 0100 00000000 		.word	.LANCHOR2
- 415 0104 00000000 		.word	.LANCHOR4
- 416 0108 000C0240 		.word	1073875968
- 417 010c 00000000 		.word	adsr
- 418              	.LBE9:
- 419              	.LBE14:
- 420              		.cfi_endproc
- 421              	.LFE138:
- 423              		.section	.text.USBH_UserProcess_callback,"ax",%progbits
- 424              		.align	1
- 425              		.p2align 2,,3
- 426              		.global	USBH_UserProcess_callback
- 427              		.syntax unified
- 428              		.thumb
- 429              		.thumb_func
- 431              	USBH_UserProcess_callback:
- 432              	.LVL33:
- 433              	.LFB139:
- 180:Core/Src/MIDI_event.c **** 
- 181:Core/Src/MIDI_event.c **** 
- 182:Core/Src/MIDI_event.c **** 
+ 408              		.loc 1 155 19 is_stmt 0 view .LVU124
+ 409 00fc 3070     		strb	r0, [r6]
+ 410 00fe ACE7     		b	.L40
+ 411              	.LVL34:
+ 412              	.L38:
+ 155:Core/Src/MIDI_event.c **** 				}
+ 413              		.loc 1 155 19 view .LVU125
+ 414 0100 1046     		mov	r0, r2
+ 415              	.LVL35:
+ 155:Core/Src/MIDI_event.c **** 				}
+ 416              		.loc 1 155 6 is_stmt 1 view .LVU126
+ 155:Core/Src/MIDI_event.c **** 				}
+ 417              		.loc 1 155 19 is_stmt 0 view .LVU127
+ 418 0102 3070     		strb	r0, [r6]
+ 419 0104 A9E7     		b	.L40
+ 420              	.L42:
+ 421 0106 00BF     		.align	2
+ 422              	.L41:
+ 423 0108 00000000 		.word	.LANCHOR1
+ 424 010c 00000000 		.word	.LANCHOR0
+ 425 0110 00000000 		.word	.LANCHOR3
+ 426 0114 00000000 		.word	.LANCHOR2
+ 427 0118 00000000 		.word	.LANCHOR4
+ 428 011c 000C0240 		.word	1073875968
+ 429 0120 00000000 		.word	adsr_amp
+ 430 0124 00000000 		.word	adsr_filt
+ 431              	.LBE9:
+ 432              	.LBE14:
+ 433              		.cfi_endproc
+ 434              	.LFE138:
+ 436              		.section	.text.USBH_UserProcess_callback,"ax",%progbits
+ 437              		.align	1
+ 438              		.p2align 2,,3
+ 439              		.global	USBH_UserProcess_callback
+ 440              		.syntax unified
+ 441              		.thumb
+ 442              		.thumb_func
+ 444              	USBH_UserProcess_callback:
+ 445              	.LVL36:
+ 446              	.LFB139:
  183:Core/Src/MIDI_event.c **** 
- 184:Core/Src/MIDI_event.c **** /*=================================================================================================
- 185:Core/Src/MIDI_event.c **** /**
- 186:Core/Src/MIDI_event.c ****  * @brief  User Process function callback
- 187:Core/Src/MIDI_event.c ****  * @param  phost: Host Handle
- 188:Core/Src/MIDI_event.c ****  * @param  id: Host Library user message ID
- 189:Core/Src/MIDI_event.c ****  * @retval none
- 190:Core/Src/MIDI_event.c ****  */
- 191:Core/Src/MIDI_event.c **** void USBH_UserProcess_callback(USBH_HandleTypeDef *pHost, uint8_t vId)
- 192:Core/Src/MIDI_event.c **** {
- 434              		.loc 1 192 1 is_stmt 1 view -0
- 435              		.cfi_startproc
- 436              		@ args = 0, pretend = 0, frame = 0
- 437              		@ frame_needed = 0, uses_anonymous_args = 0
- 193:Core/Src/MIDI_event.c **** 	switch (vId)
- 438              		.loc 1 193 2 view .LVU126
- 439 0000 0429     		cmp	r1, #4
- 440 0002 06D0     		beq	.L44
- 441 0004 0529     		cmp	r1, #5
- 192:Core/Src/MIDI_event.c **** 	switch (vId)
- 442              		.loc 1 192 1 is_stmt 0 view .LVU127
- 443 0006 10B5     		push	{r4, lr}
- 444              		.cfi_def_cfa_offset 8
- 445              		.cfi_offset 4, -8
- 446              		.cfi_offset 14, -4
- 447 0008 0B46     		mov	r3, r1
- 448              		.loc 1 193 2 view .LVU128
- 449 000a 20D0     		beq	.L45
- 450 000c 0229     		cmp	r1, #2
- 451 000e 08D0     		beq	.L52
- 194:Core/Src/MIDI_event.c **** 	{
- 195:Core/Src/MIDI_event.c **** 	case HOST_USER_SELECT_CONFIGURATION:
- 196:Core/Src/MIDI_event.c **** 		break;
-ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccNexo8a.s 			page 14
+ 184:Core/Src/MIDI_event.c **** 
+ 185:Core/Src/MIDI_event.c **** 
+ 186:Core/Src/MIDI_event.c **** 
+ 187:Core/Src/MIDI_event.c **** /*=================================================================================================
+ 188:Core/Src/MIDI_event.c **** /**
+ 189:Core/Src/MIDI_event.c ****  * @brief  User Process function callback
+ 190:Core/Src/MIDI_event.c ****  * @param  phost: Host Handle
+ 191:Core/Src/MIDI_event.c ****  * @param  id: Host Library user message ID
+ 192:Core/Src/MIDI_event.c ****  * @retval none
+ 193:Core/Src/MIDI_event.c ****  */
+ 194:Core/Src/MIDI_event.c **** void USBH_UserProcess_callback(USBH_HandleTypeDef *pHost, uint8_t vId)
+ 195:Core/Src/MIDI_event.c **** {
+ 447              		.loc 1 195 1 is_stmt 1 view -0
+ 448              		.cfi_startproc
+ 449              		@ args = 0, pretend = 0, frame = 0
+ 450              		@ frame_needed = 0, uses_anonymous_args = 0
+ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccgewa7z.s 			page 14
 
 
- 197:Core/Src/MIDI_event.c **** 
- 198:Core/Src/MIDI_event.c **** 	case HOST_USER_DISCONNECTION:
- 199:Core/Src/MIDI_event.c **** 		Appli_state = MIDI_APPLICATION_DISCONNECT;
- 200:Core/Src/MIDI_event.c **** 		// 4 - green, 3 - orange, 5 - red, 6 - blue
- 201:Core/Src/MIDI_event.c **** 		HAL_GPIO_WritePin(LD4_GPIO_Port, LD4_Pin, GPIO_PIN_RESET);
- 202:Core/Src/MIDI_event.c **** 		HAL_GPIO_WritePin(LD6_GPIO_Port, LD6_Pin, GPIO_PIN_RESET);
- 203:Core/Src/MIDI_event.c **** 		break;
- 204:Core/Src/MIDI_event.c **** 
- 205:Core/Src/MIDI_event.c **** 	case HOST_USER_CLASS_ACTIVE:
- 206:Core/Src/MIDI_event.c **** 		Appli_state = MIDI_APPLICATION_READY;
- 207:Core/Src/MIDI_event.c **** 		HAL_GPIO_WritePin(LD4_GPIO_Port, LD4_Pin, GPIO_PIN_SET);
- 208:Core/Src/MIDI_event.c **** 		HAL_GPIO_WritePin(LD6_GPIO_Port, LD6_Pin, GPIO_PIN_RESET);
- 209:Core/Src/MIDI_event.c **** 		HAL_GPIO_WritePin(LD5_GPIO_Port, LD5_Pin, GPIO_PIN_RESET);
- 210:Core/Src/MIDI_event.c **** 		break;
- 211:Core/Src/MIDI_event.c **** 
- 212:Core/Src/MIDI_event.c **** 	case HOST_USER_CONNECTION:
- 213:Core/Src/MIDI_event.c **** 		Appli_state = MIDI_APPLICATION_START;
- 214:Core/Src/MIDI_event.c **** 		HAL_GPIO_WritePin(GPIOD, 0x8000, GPIO_PIN_SET);
- 215:Core/Src/MIDI_event.c **** 		break;
- 216:Core/Src/MIDI_event.c **** 
- 217:Core/Src/MIDI_event.c **** 	default:
+ 196:Core/Src/MIDI_event.c **** 	switch (vId)
+ 451              		.loc 1 196 2 view .LVU129
+ 452 0000 0429     		cmp	r1, #4
+ 453 0002 06D0     		beq	.L44
+ 454 0004 0529     		cmp	r1, #5
+ 195:Core/Src/MIDI_event.c **** 	switch (vId)
+ 455              		.loc 1 195 1 is_stmt 0 view .LVU130
+ 456 0006 10B5     		push	{r4, lr}
+ 457              		.cfi_def_cfa_offset 8
+ 458              		.cfi_offset 4, -8
+ 459              		.cfi_offset 14, -4
+ 460 0008 0B46     		mov	r3, r1
+ 461              		.loc 1 196 2 view .LVU131
+ 462 000a 20D0     		beq	.L45
+ 463 000c 0229     		cmp	r1, #2
+ 464 000e 08D0     		beq	.L52
+ 197:Core/Src/MIDI_event.c **** 	{
+ 198:Core/Src/MIDI_event.c **** 	case HOST_USER_SELECT_CONFIGURATION:
+ 199:Core/Src/MIDI_event.c **** 		break;
+ 200:Core/Src/MIDI_event.c **** 
+ 201:Core/Src/MIDI_event.c **** 	case HOST_USER_DISCONNECTION:
+ 202:Core/Src/MIDI_event.c **** 		Appli_state = MIDI_APPLICATION_DISCONNECT;
+ 203:Core/Src/MIDI_event.c **** 		// 4 - green, 3 - orange, 5 - red, 6 - blue
+ 204:Core/Src/MIDI_event.c **** 		HAL_GPIO_WritePin(LD4_GPIO_Port, LD4_Pin, GPIO_PIN_RESET);
+ 205:Core/Src/MIDI_event.c **** 		HAL_GPIO_WritePin(LD6_GPIO_Port, LD6_Pin, GPIO_PIN_RESET);
+ 206:Core/Src/MIDI_event.c **** 		break;
+ 207:Core/Src/MIDI_event.c **** 
+ 208:Core/Src/MIDI_event.c **** 	case HOST_USER_CLASS_ACTIVE:
+ 209:Core/Src/MIDI_event.c **** 		Appli_state = MIDI_APPLICATION_READY;
+ 210:Core/Src/MIDI_event.c **** 		HAL_GPIO_WritePin(LD4_GPIO_Port, LD4_Pin, GPIO_PIN_SET);
+ 211:Core/Src/MIDI_event.c **** 		HAL_GPIO_WritePin(LD6_GPIO_Port, LD6_Pin, GPIO_PIN_RESET);
+ 212:Core/Src/MIDI_event.c **** 		HAL_GPIO_WritePin(LD5_GPIO_Port, LD5_Pin, GPIO_PIN_RESET);
+ 213:Core/Src/MIDI_event.c **** 		break;
+ 214:Core/Src/MIDI_event.c **** 
+ 215:Core/Src/MIDI_event.c **** 	case HOST_USER_CONNECTION:
+ 216:Core/Src/MIDI_event.c **** 		Appli_state = MIDI_APPLICATION_START;
+ 217:Core/Src/MIDI_event.c **** 		HAL_GPIO_WritePin(GPIOD, 0x8000, GPIO_PIN_SET);
  218:Core/Src/MIDI_event.c **** 		break;
- 219:Core/Src/MIDI_event.c **** 	}
- 220:Core/Src/MIDI_event.c **** }
- 452              		.loc 1 220 1 view .LVU129
- 453 0010 10BD     		pop	{r4, pc}
- 454              	.L44:
- 455              		.cfi_def_cfa_offset 0
- 456              		.cfi_restore 4
- 457              		.cfi_restore 14
- 213:Core/Src/MIDI_event.c **** 		HAL_GPIO_WritePin(GPIOD, 0x8000, GPIO_PIN_SET);
- 458              		.loc 1 213 3 is_stmt 1 view .LVU130
- 213:Core/Src/MIDI_event.c **** 		HAL_GPIO_WritePin(GPIOD, 0x8000, GPIO_PIN_SET);
- 459              		.loc 1 213 15 is_stmt 0 view .LVU131
- 460 0012 174B     		ldr	r3, .L53
- 214:Core/Src/MIDI_event.c **** 		break;
- 461              		.loc 1 214 3 view .LVU132
- 462 0014 1748     		ldr	r0, .L53+4
- 463              	.LVL34:
- 213:Core/Src/MIDI_event.c **** 		HAL_GPIO_WritePin(GPIOD, 0x8000, GPIO_PIN_SET);
- 464              		.loc 1 213 15 view .LVU133
- 465 0016 0122     		movs	r2, #1
- 214:Core/Src/MIDI_event.c **** 		break;
- 466              		.loc 1 214 3 view .LVU134
- 467 0018 4FF40041 		mov	r1, #32768
- 468              	.LVL35:
- 213:Core/Src/MIDI_event.c **** 		HAL_GPIO_WritePin(GPIOD, 0x8000, GPIO_PIN_SET);
- 469              		.loc 1 213 15 view .LVU135
- 470 001c 1A70     		strb	r2, [r3]
- 214:Core/Src/MIDI_event.c **** 		break;
- 471              		.loc 1 214 3 is_stmt 1 view .LVU136
- 472 001e FFF7FEBF 		b	HAL_GPIO_WritePin
- 473              	.LVL36:
- 474              	.L52:
- 475              		.cfi_def_cfa_offset 8
- 476              		.cfi_offset 4, -8
- 477              		.cfi_offset 14, -4
-ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccNexo8a.s 			page 15
+ 219:Core/Src/MIDI_event.c **** 
+ 220:Core/Src/MIDI_event.c **** 	default:
+ 221:Core/Src/MIDI_event.c **** 		break;
+ 222:Core/Src/MIDI_event.c **** 	}
+ 223:Core/Src/MIDI_event.c **** }
+ 465              		.loc 1 223 1 view .LVU132
+ 466 0010 10BD     		pop	{r4, pc}
+ 467              	.L44:
+ 468              		.cfi_def_cfa_offset 0
+ 469              		.cfi_restore 4
+ 470              		.cfi_restore 14
+ 216:Core/Src/MIDI_event.c **** 		HAL_GPIO_WritePin(GPIOD, 0x8000, GPIO_PIN_SET);
+ 471              		.loc 1 216 3 is_stmt 1 view .LVU133
+ 216:Core/Src/MIDI_event.c **** 		HAL_GPIO_WritePin(GPIOD, 0x8000, GPIO_PIN_SET);
+ 472              		.loc 1 216 15 is_stmt 0 view .LVU134
+ 473 0012 174B     		ldr	r3, .L53
+ 217:Core/Src/MIDI_event.c **** 		break;
+ 474              		.loc 1 217 3 view .LVU135
+ 475 0014 1748     		ldr	r0, .L53+4
+ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccgewa7z.s 			page 15
 
 
- 206:Core/Src/MIDI_event.c **** 		HAL_GPIO_WritePin(LD4_GPIO_Port, LD4_Pin, GPIO_PIN_SET);
- 478              		.loc 1 206 3 view .LVU137
- 206:Core/Src/MIDI_event.c **** 		HAL_GPIO_WritePin(LD4_GPIO_Port, LD4_Pin, GPIO_PIN_SET);
- 479              		.loc 1 206 15 is_stmt 0 view .LVU138
- 480 0022 134C     		ldr	r4, .L53
- 207:Core/Src/MIDI_event.c **** 		HAL_GPIO_WritePin(LD6_GPIO_Port, LD6_Pin, GPIO_PIN_RESET);
- 481              		.loc 1 207 3 view .LVU139
- 482 0024 1348     		ldr	r0, .L53+4
- 483              	.LVL37:
- 206:Core/Src/MIDI_event.c **** 		HAL_GPIO_WritePin(LD4_GPIO_Port, LD4_Pin, GPIO_PIN_SET);
- 484              		.loc 1 206 15 view .LVU140
- 485 0026 2370     		strb	r3, [r4]
- 207:Core/Src/MIDI_event.c **** 		HAL_GPIO_WritePin(LD6_GPIO_Port, LD6_Pin, GPIO_PIN_RESET);
- 486              		.loc 1 207 3 is_stmt 1 view .LVU141
- 487 0028 0122     		movs	r2, #1
- 488 002a 4FF48051 		mov	r1, #4096
- 489              	.LVL38:
- 207:Core/Src/MIDI_event.c **** 		HAL_GPIO_WritePin(LD6_GPIO_Port, LD6_Pin, GPIO_PIN_RESET);
- 490              		.loc 1 207 3 is_stmt 0 view .LVU142
- 491 002e FFF7FEFF 		bl	HAL_GPIO_WritePin
- 492              	.LVL39:
- 208:Core/Src/MIDI_event.c **** 		HAL_GPIO_WritePin(LD5_GPIO_Port, LD5_Pin, GPIO_PIN_RESET);
- 493              		.loc 1 208 3 is_stmt 1 view .LVU143
- 494 0032 1048     		ldr	r0, .L53+4
- 495 0034 0022     		movs	r2, #0
- 496 0036 4FF40041 		mov	r1, #32768
- 497 003a FFF7FEFF 		bl	HAL_GPIO_WritePin
- 498              	.LVL40:
- 209:Core/Src/MIDI_event.c **** 		break;
- 499              		.loc 1 209 3 view .LVU144
- 500              		.loc 1 220 1 is_stmt 0 view .LVU145
- 501 003e BDE81040 		pop	{r4, lr}
- 502              		.cfi_remember_state
- 503              		.cfi_restore 14
- 504              		.cfi_restore 4
- 505              		.cfi_def_cfa_offset 0
- 209:Core/Src/MIDI_event.c **** 		break;
- 506              		.loc 1 209 3 view .LVU146
- 507 0042 0C48     		ldr	r0, .L53+4
- 508 0044 0022     		movs	r2, #0
- 509 0046 4FF48041 		mov	r1, #16384
- 510 004a FFF7FEBF 		b	HAL_GPIO_WritePin
- 511              	.LVL41:
- 512              	.L45:
- 513              		.cfi_restore_state
- 199:Core/Src/MIDI_event.c **** 		// 4 - green, 3 - orange, 5 - red, 6 - blue
- 514              		.loc 1 199 3 is_stmt 1 view .LVU147
- 199:Core/Src/MIDI_event.c **** 		// 4 - green, 3 - orange, 5 - red, 6 - blue
- 515              		.loc 1 199 15 is_stmt 0 view .LVU148
- 516 004e 084B     		ldr	r3, .L53
- 201:Core/Src/MIDI_event.c **** 		HAL_GPIO_WritePin(LD6_GPIO_Port, LD6_Pin, GPIO_PIN_RESET);
- 517              		.loc 1 201 3 view .LVU149
- 518 0050 0848     		ldr	r0, .L53+4
- 519              	.LVL42:
- 201:Core/Src/MIDI_event.c **** 		HAL_GPIO_WritePin(LD6_GPIO_Port, LD6_Pin, GPIO_PIN_RESET);
- 520              		.loc 1 201 3 view .LVU150
- 521 0052 0022     		movs	r2, #0
-ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccNexo8a.s 			page 16
+ 476              	.LVL37:
+ 216:Core/Src/MIDI_event.c **** 		HAL_GPIO_WritePin(GPIOD, 0x8000, GPIO_PIN_SET);
+ 477              		.loc 1 216 15 view .LVU136
+ 478 0016 0122     		movs	r2, #1
+ 217:Core/Src/MIDI_event.c **** 		break;
+ 479              		.loc 1 217 3 view .LVU137
+ 480 0018 4FF40041 		mov	r1, #32768
+ 481              	.LVL38:
+ 216:Core/Src/MIDI_event.c **** 		HAL_GPIO_WritePin(GPIOD, 0x8000, GPIO_PIN_SET);
+ 482              		.loc 1 216 15 view .LVU138
+ 483 001c 1A70     		strb	r2, [r3]
+ 217:Core/Src/MIDI_event.c **** 		break;
+ 484              		.loc 1 217 3 is_stmt 1 view .LVU139
+ 485 001e FFF7FEBF 		b	HAL_GPIO_WritePin
+ 486              	.LVL39:
+ 487              	.L52:
+ 488              		.cfi_def_cfa_offset 8
+ 489              		.cfi_offset 4, -8
+ 490              		.cfi_offset 14, -4
+ 209:Core/Src/MIDI_event.c **** 		HAL_GPIO_WritePin(LD4_GPIO_Port, LD4_Pin, GPIO_PIN_SET);
+ 491              		.loc 1 209 3 view .LVU140
+ 209:Core/Src/MIDI_event.c **** 		HAL_GPIO_WritePin(LD4_GPIO_Port, LD4_Pin, GPIO_PIN_SET);
+ 492              		.loc 1 209 15 is_stmt 0 view .LVU141
+ 493 0022 134C     		ldr	r4, .L53
+ 210:Core/Src/MIDI_event.c **** 		HAL_GPIO_WritePin(LD6_GPIO_Port, LD6_Pin, GPIO_PIN_RESET);
+ 494              		.loc 1 210 3 view .LVU142
+ 495 0024 1348     		ldr	r0, .L53+4
+ 496              	.LVL40:
+ 209:Core/Src/MIDI_event.c **** 		HAL_GPIO_WritePin(LD4_GPIO_Port, LD4_Pin, GPIO_PIN_SET);
+ 497              		.loc 1 209 15 view .LVU143
+ 498 0026 2370     		strb	r3, [r4]
+ 210:Core/Src/MIDI_event.c **** 		HAL_GPIO_WritePin(LD6_GPIO_Port, LD6_Pin, GPIO_PIN_RESET);
+ 499              		.loc 1 210 3 is_stmt 1 view .LVU144
+ 500 0028 0122     		movs	r2, #1
+ 501 002a 4FF48051 		mov	r1, #4096
+ 502              	.LVL41:
+ 210:Core/Src/MIDI_event.c **** 		HAL_GPIO_WritePin(LD6_GPIO_Port, LD6_Pin, GPIO_PIN_RESET);
+ 503              		.loc 1 210 3 is_stmt 0 view .LVU145
+ 504 002e FFF7FEFF 		bl	HAL_GPIO_WritePin
+ 505              	.LVL42:
+ 211:Core/Src/MIDI_event.c **** 		HAL_GPIO_WritePin(LD5_GPIO_Port, LD5_Pin, GPIO_PIN_RESET);
+ 506              		.loc 1 211 3 is_stmt 1 view .LVU146
+ 507 0032 1048     		ldr	r0, .L53+4
+ 508 0034 0022     		movs	r2, #0
+ 509 0036 4FF40041 		mov	r1, #32768
+ 510 003a FFF7FEFF 		bl	HAL_GPIO_WritePin
+ 511              	.LVL43:
+ 212:Core/Src/MIDI_event.c **** 		break;
+ 512              		.loc 1 212 3 view .LVU147
+ 513              		.loc 1 223 1 is_stmt 0 view .LVU148
+ 514 003e BDE81040 		pop	{r4, lr}
+ 515              		.cfi_remember_state
+ 516              		.cfi_restore 14
+ 517              		.cfi_restore 4
+ 518              		.cfi_def_cfa_offset 0
+ 212:Core/Src/MIDI_event.c **** 		break;
+ 519              		.loc 1 212 3 view .LVU149
+ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccgewa7z.s 			page 16
 
 
- 522 0054 4FF48051 		mov	r1, #4096
- 523              	.LVL43:
- 199:Core/Src/MIDI_event.c **** 		// 4 - green, 3 - orange, 5 - red, 6 - blue
- 524              		.loc 1 199 15 view .LVU151
- 525 0058 0424     		movs	r4, #4
- 526 005a 1C70     		strb	r4, [r3]
- 201:Core/Src/MIDI_event.c **** 		HAL_GPIO_WritePin(LD6_GPIO_Port, LD6_Pin, GPIO_PIN_RESET);
- 527              		.loc 1 201 3 is_stmt 1 view .LVU152
- 528 005c FFF7FEFF 		bl	HAL_GPIO_WritePin
- 529              	.LVL44:
- 202:Core/Src/MIDI_event.c **** 		break;
- 530              		.loc 1 202 3 view .LVU153
- 531              		.loc 1 220 1 is_stmt 0 view .LVU154
- 532 0060 BDE81040 		pop	{r4, lr}
- 533              		.cfi_restore 14
- 534              		.cfi_restore 4
- 535              		.cfi_def_cfa_offset 0
- 202:Core/Src/MIDI_event.c **** 		break;
- 536              		.loc 1 202 3 view .LVU155
- 537 0064 0348     		ldr	r0, .L53+4
- 538 0066 0022     		movs	r2, #0
- 539 0068 4FF40041 		mov	r1, #32768
- 540 006c FFF7FEBF 		b	HAL_GPIO_WritePin
- 541              	.LVL45:
- 542              	.L54:
- 543              		.align	2
- 544              	.L53:
- 545 0070 00000000 		.word	.LANCHOR5
- 546 0074 000C0240 		.word	1073875968
- 547              		.cfi_endproc
- 548              	.LFE139:
- 550              		.global	notesCount
- 551              		.global	notes_Active
- 552              		.global	velocity
- 553              		.global	currentPitch
- 554              		.global	pitchbend
- 555              		.global	Appli_state
- 556              		.global	hUSBHost
- 557              		.section	.bss.Appli_state,"aw",%nobits
- 558              		.set	.LANCHOR5,. + 0
- 561              	Appli_state:
- 562 0000 00       		.space	1
- 563              		.section	.bss.currentPitch,"aw",%nobits
- 564              		.set	.LANCHOR3,. + 0
- 567              	currentPitch:
- 568 0000 00       		.space	1
- 569              		.section	.bss.hUSBHost,"aw",%nobits
- 570              		.align	2
- 573              	hUSBHost:
- 574 0000 00000000 		.space	1564
- 574      00000000 
- 574      00000000 
- 574      00000000 
- 574      00000000 
- 575              		.section	.bss.notesCount,"aw",%nobits
- 576              		.set	.LANCHOR1,. + 0
- 579              	notesCount:
-ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccNexo8a.s 			page 17
+ 520 0042 0C48     		ldr	r0, .L53+4
+ 521 0044 0022     		movs	r2, #0
+ 522 0046 4FF48041 		mov	r1, #16384
+ 523 004a FFF7FEBF 		b	HAL_GPIO_WritePin
+ 524              	.LVL44:
+ 525              	.L45:
+ 526              		.cfi_restore_state
+ 202:Core/Src/MIDI_event.c **** 		// 4 - green, 3 - orange, 5 - red, 6 - blue
+ 527              		.loc 1 202 3 is_stmt 1 view .LVU150
+ 202:Core/Src/MIDI_event.c **** 		// 4 - green, 3 - orange, 5 - red, 6 - blue
+ 528              		.loc 1 202 15 is_stmt 0 view .LVU151
+ 529 004e 084B     		ldr	r3, .L53
+ 204:Core/Src/MIDI_event.c **** 		HAL_GPIO_WritePin(LD6_GPIO_Port, LD6_Pin, GPIO_PIN_RESET);
+ 530              		.loc 1 204 3 view .LVU152
+ 531 0050 0848     		ldr	r0, .L53+4
+ 532              	.LVL45:
+ 204:Core/Src/MIDI_event.c **** 		HAL_GPIO_WritePin(LD6_GPIO_Port, LD6_Pin, GPIO_PIN_RESET);
+ 533              		.loc 1 204 3 view .LVU153
+ 534 0052 0022     		movs	r2, #0
+ 535 0054 4FF48051 		mov	r1, #4096
+ 536              	.LVL46:
+ 202:Core/Src/MIDI_event.c **** 		// 4 - green, 3 - orange, 5 - red, 6 - blue
+ 537              		.loc 1 202 15 view .LVU154
+ 538 0058 0424     		movs	r4, #4
+ 539 005a 1C70     		strb	r4, [r3]
+ 204:Core/Src/MIDI_event.c **** 		HAL_GPIO_WritePin(LD6_GPIO_Port, LD6_Pin, GPIO_PIN_RESET);
+ 540              		.loc 1 204 3 is_stmt 1 view .LVU155
+ 541 005c FFF7FEFF 		bl	HAL_GPIO_WritePin
+ 542              	.LVL47:
+ 205:Core/Src/MIDI_event.c **** 		break;
+ 543              		.loc 1 205 3 view .LVU156
+ 544              		.loc 1 223 1 is_stmt 0 view .LVU157
+ 545 0060 BDE81040 		pop	{r4, lr}
+ 546              		.cfi_restore 14
+ 547              		.cfi_restore 4
+ 548              		.cfi_def_cfa_offset 0
+ 205:Core/Src/MIDI_event.c **** 		break;
+ 549              		.loc 1 205 3 view .LVU158
+ 550 0064 0348     		ldr	r0, .L53+4
+ 551 0066 0022     		movs	r2, #0
+ 552 0068 4FF40041 		mov	r1, #32768
+ 553 006c FFF7FEBF 		b	HAL_GPIO_WritePin
+ 554              	.LVL48:
+ 555              	.L54:
+ 556              		.align	2
+ 557              	.L53:
+ 558 0070 00000000 		.word	.LANCHOR5
+ 559 0074 000C0240 		.word	1073875968
+ 560              		.cfi_endproc
+ 561              	.LFE139:
+ 563              		.global	notesCount
+ 564              		.global	notes_Active
+ 565              		.global	velocity
+ 566              		.global	currentPitch
+ 567              		.global	pitchbend
+ 568              		.global	Appli_state
+ 569              		.global	hUSBHost
+ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccgewa7z.s 			page 17
 
 
- 580 0000 00       		.space	1
- 581              		.section	.bss.notes_Active,"aw",%nobits
- 582              		.align	2
- 583              		.set	.LANCHOR0,. + 0
- 586              	notes_Active:
- 587 0000 00000000 		.space	128
+ 570              		.section	.bss.Appli_state,"aw",%nobits
+ 571              		.set	.LANCHOR5,. + 0
+ 574              	Appli_state:
+ 575 0000 00       		.space	1
+ 576              		.section	.bss.currentPitch,"aw",%nobits
+ 577              		.set	.LANCHOR3,. + 0
+ 580              	currentPitch:
+ 581 0000 00       		.space	1
+ 582              		.section	.bss.hUSBHost,"aw",%nobits
+ 583              		.align	2
+ 586              	hUSBHost:
+ 587 0000 00000000 		.space	1564
  587      00000000 
  587      00000000 
  587      00000000 
  587      00000000 
- 588              		.section	.bss.pitchbend,"aw",%nobits
- 589              		.align	1
- 590              		.set	.LANCHOR2,. + 0
- 593              	pitchbend:
- 594 0000 0000     		.space	2
- 595              		.section	.bss.velocity,"aw",%nobits
- 596              		.set	.LANCHOR4,. + 0
- 599              	velocity:
- 600 0000 00       		.space	1
- 601              		.text
- 602              	.Letext0:
- 603              		.file 2 "/Users/johannes/Library/Application Support/Code/User/globalStorage/bmd.stm32-for-vscode/
- 604              		.file 3 "/Users/johannes/Library/Application Support/Code/User/globalStorage/bmd.stm32-for-vscode/
- 605              		.file 4 "Drivers/CMSIS/Device/ST/STM32F4xx/Include/stm32f407xx.h"
- 606              		.file 5 "Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_gpio.h"
- 607              		.file 6 "Middlewares/ST/STM32_USB_Host_Library/Core/Inc/usbh_def.h"
- 608              		.file 7 "Core/Inc/usbh_MIDI.h"
- 609              		.file 8 "Core/Inc/MIDI_application.h"
- 610              		.file 9 "Core/Inc/ADSR_envelope.h"
- 611              		.file 10 "<built-in>"
-ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccNexo8a.s 			page 18
+ 588              		.section	.bss.notesCount,"aw",%nobits
+ 589              		.set	.LANCHOR1,. + 0
+ 592              	notesCount:
+ 593 0000 00       		.space	1
+ 594              		.section	.bss.notes_Active,"aw",%nobits
+ 595              		.align	2
+ 596              		.set	.LANCHOR0,. + 0
+ 599              	notes_Active:
+ 600 0000 00000000 		.space	128
+ 600      00000000 
+ 600      00000000 
+ 600      00000000 
+ 600      00000000 
+ 601              		.section	.bss.pitchbend,"aw",%nobits
+ 602              		.align	1
+ 603              		.set	.LANCHOR2,. + 0
+ 606              	pitchbend:
+ 607 0000 0000     		.space	2
+ 608              		.section	.bss.velocity,"aw",%nobits
+ 609              		.set	.LANCHOR4,. + 0
+ 612              	velocity:
+ 613 0000 00       		.space	1
+ 614              		.text
+ 615              	.Letext0:
+ 616              		.file 2 "/Users/johannes/Library/Application Support/Code/User/globalStorage/bmd.stm32-for-vscode/
+ 617              		.file 3 "/Users/johannes/Library/Application Support/Code/User/globalStorage/bmd.stm32-for-vscode/
+ 618              		.file 4 "Drivers/CMSIS/Device/ST/STM32F4xx/Include/stm32f407xx.h"
+ 619              		.file 5 "Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_gpio.h"
+ 620              		.file 6 "Middlewares/ST/STM32_USB_Host_Library/Core/Inc/usbh_def.h"
+ 621              		.file 7 "Core/Inc/usbh_MIDI.h"
+ 622              		.file 8 "Core/Inc/MIDI_application.h"
+ 623              		.file 9 "Core/Inc/ADSR_envelope.h"
+ 624              		.file 10 "<built-in>"
+ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccgewa7z.s 			page 18
 
 
 DEFINED SYMBOLS
                             *ABS*:0000000000000000 MIDI_event.c
-/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccNexo8a.s:20     .text.allNotesOff:0000000000000000 $t
-/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccNexo8a.s:27     .text.allNotesOff:0000000000000000 allNotesOff
-/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccNexo8a.s:64     .text.allNotesOff:0000000000000014 $d
-/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccNexo8a.s:70     .text.MIDI_eventInit:0000000000000000 $t
-/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccNexo8a.s:77     .text.MIDI_eventInit:0000000000000000 MIDI_eventInit
-/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccNexo8a.s:94     .text.MIDI_eventInit:000000000000000c $d
-/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccNexo8a.s:99     .text.ProcessMIDI:0000000000000000 $t
-/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccNexo8a.s:106    .text.ProcessMIDI:0000000000000000 ProcessMIDI
-/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccNexo8a.s:411    .text.ProcessMIDI:00000000000000f4 $d
-/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccNexo8a.s:424    .text.USBH_UserProcess_callback:0000000000000000 $t
-/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccNexo8a.s:431    .text.USBH_UserProcess_callback:0000000000000000 USBH_UserProcess_callback
-/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccNexo8a.s:545    .text.USBH_UserProcess_callback:0000000000000070 $d
-/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccNexo8a.s:579    .bss.notesCount:0000000000000000 notesCount
-/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccNexo8a.s:586    .bss.notes_Active:0000000000000000 notes_Active
-/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccNexo8a.s:599    .bss.velocity:0000000000000000 velocity
-/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccNexo8a.s:567    .bss.currentPitch:0000000000000000 currentPitch
-/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccNexo8a.s:593    .bss.pitchbend:0000000000000000 pitchbend
-/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccNexo8a.s:561    .bss.Appli_state:0000000000000000 Appli_state
-/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccNexo8a.s:573    .bss.hUSBHost:0000000000000000 hUSBHost
-/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccNexo8a.s:562    .bss.Appli_state:0000000000000000 $d
-/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccNexo8a.s:568    .bss.currentPitch:0000000000000000 $d
-/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccNexo8a.s:570    .bss.hUSBHost:0000000000000000 $d
-/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccNexo8a.s:580    .bss.notesCount:0000000000000000 $d
-/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccNexo8a.s:582    .bss.notes_Active:0000000000000000 $d
-/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccNexo8a.s:589    .bss.pitchbend:0000000000000000 $d
-/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccNexo8a.s:600    .bss.velocity:0000000000000000 $d
+/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccgewa7z.s:20     .text.allNotesOff:0000000000000000 $t
+/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccgewa7z.s:27     .text.allNotesOff:0000000000000000 allNotesOff
+/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccgewa7z.s:64     .text.allNotesOff:0000000000000014 $d
+/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccgewa7z.s:70     .text.MIDI_eventInit:0000000000000000 $t
+/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccgewa7z.s:77     .text.MIDI_eventInit:0000000000000000 MIDI_eventInit
+/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccgewa7z.s:94     .text.MIDI_eventInit:000000000000000c $d
+/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccgewa7z.s:99     .text.ProcessMIDI:0000000000000000 $t
+/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccgewa7z.s:106    .text.ProcessMIDI:0000000000000000 ProcessMIDI
+/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccgewa7z.s:423    .text.ProcessMIDI:0000000000000108 $d
+/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccgewa7z.s:437    .text.USBH_UserProcess_callback:0000000000000000 $t
+/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccgewa7z.s:444    .text.USBH_UserProcess_callback:0000000000000000 USBH_UserProcess_callback
+/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccgewa7z.s:558    .text.USBH_UserProcess_callback:0000000000000070 $d
+/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccgewa7z.s:592    .bss.notesCount:0000000000000000 notesCount
+/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccgewa7z.s:599    .bss.notes_Active:0000000000000000 notes_Active
+/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccgewa7z.s:612    .bss.velocity:0000000000000000 velocity
+/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccgewa7z.s:580    .bss.currentPitch:0000000000000000 currentPitch
+/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccgewa7z.s:606    .bss.pitchbend:0000000000000000 pitchbend
+/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccgewa7z.s:574    .bss.Appli_state:0000000000000000 Appli_state
+/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccgewa7z.s:586    .bss.hUSBHost:0000000000000000 hUSBHost
+/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccgewa7z.s:575    .bss.Appli_state:0000000000000000 $d
+/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccgewa7z.s:581    .bss.currentPitch:0000000000000000 $d
+/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccgewa7z.s:583    .bss.hUSBHost:0000000000000000 $d
+/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccgewa7z.s:593    .bss.notesCount:0000000000000000 $d
+/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccgewa7z.s:595    .bss.notes_Active:0000000000000000 $d
+/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccgewa7z.s:602    .bss.pitchbend:0000000000000000 $d
+/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccgewa7z.s:613    .bss.velocity:0000000000000000 $d
 
 UNDEFINED SYMBOLS
 memset
 HAL_GPIO_WritePin
 ADSR_keyOn
 ADSR_keyOff
-adsr
+adsr_amp
+adsr_filt

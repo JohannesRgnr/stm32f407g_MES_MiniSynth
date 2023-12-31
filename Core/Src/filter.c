@@ -5,15 +5,16 @@
 #include "CONSTS.h"
 #include "lut_tan.h"
 
-ZDFLadder_t Moog_filter _CCM_;
+ZDFLadder_t Moog_filterL _CCM_;
+ZDFLadder_t Moog_filterR _CCM_;
 
 void MoogLP_init(ZDFLadder_t * filter){
-    filter->cutoff = 500.0f;
+    filter->cutoff = 300.0f;
     filter->s1 = 0.0f;
     filter->s2 = 0.0f;
     filter->s3 = 0.0f;
     filter->s4 = 0.0f;
-    filter->k = 3.5f;
+    filter->k = 1.f;
 }
 
 

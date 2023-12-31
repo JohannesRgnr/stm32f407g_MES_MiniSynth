@@ -29,8 +29,8 @@ uint8_t currentPitch;
 uint8_t velocity;
 uint8_t notes_Active[128] = {0}; // at most, 128 MIDI notes are active
 int8_t notesCount = 0;			 // number of notes active
-extern ADSR_t adsr;
-
+extern ADSR_t adsr_amp;
+extern ADSR_t adsr_filt;
 
 void allNotesOff(void)
 {
@@ -89,7 +89,8 @@ void ProcessMIDI(midi_package_t pack)
 		notesCount--;
 		if (notesCount <= 0) // no more keys pressed
 		{
-			ADSR_keyOff(&adsr);
+			ADSR_keyOff(&adsr_amp);
+			ADSR_keyOff(&adsr_filt);
 			notesCount = 0;
 		}
 		else // legato 
@@ -122,7 +123,8 @@ void ProcessMIDI(midi_package_t pack)
 			}
 			// SEGGER_RTT_printf(0, "Note ON, pitch %u\r\n", currentPitch); // debug
 			HAL_GPIO_WritePin(LD5_GPIO_Port, LD5_Pin, GPIO_PIN_SET); // red LED ON when incoming MIDI note on
-			ADSR_keyOn(&adsr);
+			ADSR_keyOn(&adsr_amp);
+			ADSR_keyOn(&adsr_filt);
 			notesCount++;
 			notes_Active[noteOn] = 1;
 		}
@@ -135,7 +137,8 @@ void ProcessMIDI(midi_package_t pack)
 			// SEGGER_RTT_printf(0, "Note OFF, pitch %u\r\n", currentPitch);
 			if (notesCount <= 0)
 			{
-				ADSR_keyOff(&adsr);
+				ADSR_keyOff(&adsr_amp);
+				ADSR_keyOff(&adsr_filt);
 				notesCount = 0;
 				HAL_GPIO_WritePin(LD5_GPIO_Port, LD5_Pin, GPIO_PIN_RESET); // red LED OFF when all MIDI notes off
 			}

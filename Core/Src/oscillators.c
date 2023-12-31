@@ -100,14 +100,10 @@ void osc_superSaw(float freq, float detune, float *superSaw_outL, float *superSa
     osc5.freq = osc1.freq * (1 + detune * 0.01953125);
     osc6.freq = osc1.freq * (1 - detune * 0.0625);
     osc7.freq = osc1.freq * (1 + detune * 0.109375);
-    osc_polyblepSaw(&osc1);
-    osc_polyblepSaw(&osc2);
-    osc_polyblepSaw(&osc3);
-    osc_polyblepSaw(&osc4);
-    osc_polyblepSaw(&osc5);
-    osc_polyblepSaw(&osc6);
-    osc_polyblepSaw(&osc7);
 
-    *superSaw_outL = 0.25 * (0.707 * osc1.output + osc2.output + osc3.output + osc4.output);
-    *superSaw_outR = 0.25 * (0.707 * osc1.output + osc5.output + osc6.output + osc4.output);
+    // *superSaw_outL = 0.25 * (0.707 * osc_polyblepSaw(&osc1) + osc_polyblepSaw(&osc2) + osc_polyblepSaw(&osc3) + osc_polyblepSaw(&osc4));
+    // *superSaw_outR = 0.25 * (0.707 * osc_polyblepSaw(&osc1) + osc_polyblepSaw(&osc5) + osc_polyblepSaw(&osc6) + osc_polyblepSaw(&osc7));
+    *superSaw_outL = 0.25 * (0.707 * osc_polyblepSaw(&osc1) + osc_polyblepSaw(&osc2));
+    *superSaw_outR = 0.25 * (0.707 * osc_polyblepSaw(&osc1) + osc_polyblepSaw(&osc5));
+
 }
