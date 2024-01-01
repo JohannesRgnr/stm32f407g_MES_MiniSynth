@@ -24,7 +24,7 @@ void MoogLP_init(ZDFLadder_t * filter){
     filter->s2 = 0.0f;
     filter->s3 = 0.0f;
     filter->s4 = 0.0f;
-    filter->k = 3.5f;
+    filter->k = 5.0f;
 }
 
 

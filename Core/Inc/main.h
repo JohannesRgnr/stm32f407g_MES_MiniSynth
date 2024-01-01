@@ -29,9 +29,7 @@ extern "C" {
 /* Includes ------------------------------------------------------------------*/
 #include "stm32f4xx_hal.h"
 // #include "usb_host.h"
-#include "audio.h"
-#include "SEGGER_RTT.h"
-#include "console.h"
+
 
 
 /* Private includes ----------------------------------------------------------*/
@@ -39,6 +37,8 @@ extern "C" {
 #ifndef __USBH_MIDI_CORE_H
 #include "usbh_MIDI.h"
 #endif
+#include "SEGGER_RTT.h"
+#include "console.h"
 #include "MIDI_application.h"
 #include "audio.h"
 #include "oscillators.h"

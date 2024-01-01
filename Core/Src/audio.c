@@ -109,7 +109,7 @@ void audioBlock(uint16_t *buffer, uint16_t samples)
 		
 		/* test with 3 sawtooth*/
 		OpSetFreq(&osc1, f0);
-		OpSetFreq(&osc2, f0 + 0.1);
+		OpSetFreq(&osc2, f0 + 1);
 
 		f_sub = mtof[max(currentPitch - 12, 0)];
 		OpSetFreq(&osc3, f_sub);
@@ -129,7 +129,7 @@ void audioBlock(uint16_t *buffer, uint16_t samples)
 
 		/****************** Apply filter ***********************/
 		filt_env = ADSR_compute(&adsr_filt);
-		Moog_filter.cutoff = 600 * filt_env;
+		Moog_filter.cutoff = 2000 * filt_env;
 		// Moog_filterR.cutoff = 1600 * filt_env;
 		sample = MoogLP_compute(&Moog_filter, sample);
 	
@@ -140,7 +140,7 @@ void audioBlock(uint16_t *buffer, uint16_t samples)
 
 		
 		/************** Apply bitcrushing effect ***************/
-		// sample = decimator(sample, 1., 4);
+		sample = decimator(sample, 0.2, 16);
 
 		/************** Apply delay effect ****************/
 		// pingpongDelay_compute(sample, &delayLOut, &delayROut);

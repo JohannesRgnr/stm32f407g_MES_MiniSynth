@@ -28,15 +28,7 @@ build/MIDI_application.o: Core/Src/MIDI_application.c Core/Inc/main.h \
  Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_pwr_ex.h \
  Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_spi.h \
  Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_hcd.h \
- Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_ll_usb.h Core/Inc/audio.h \
- Core/Inc/../../Drivers/BSP/STM32F4-Discovery/stm32f4_discovery_audio.h \
- Core/Inc/../../Drivers/BSP/STM32F4-Discovery/../Components/cs43l22/cs43l22.h \
- Core/Inc/../../Drivers/BSP/STM32F4-Discovery/../Components/cs43l22/../Common/audio.h \
- Core/Inc/../../Drivers/BSP/STM32F4-Discovery/stm32f4_discovery.h \
- Core/Inc/../../Drivers/BSP/STM32F4-Discovery/../../../Middlewares/ST/STM32_Audio/Addons/PDM/Inc/pdm2pcm_glo.h \
- Core/Inc/CONSTS.h Core/Inc/SEGGER_RTT.h \
- Core/Inc/Config/SEGGER_RTT_Conf.h Core/Inc/console.h \
- Core/Inc/usbh_MIDI.h \
+ Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_ll_usb.h Core/Inc/usbh_MIDI.h \
  Middlewares/ST/STM32_USB_Host_Library/Core/Inc/usbh_core.h \
  Core/Inc/usbh_conf.h \
  Middlewares/ST/STM32_USB_Host_Library/Core/Inc/usbh_def.h \
@@ -44,9 +36,16 @@ build/MIDI_application.o: Core/Src/MIDI_application.c Core/Inc/main.h \
  Middlewares/ST/STM32_USB_Host_Library/Core/Inc/usbh_core.h \
  Middlewares/ST/STM32_USB_Host_Library/Core/Inc/usbh_pipes.h \
  Middlewares/ST/STM32_USB_Host_Library/Core/Inc/usbh_ctlreq.h \
- Core/Inc/MIDI_application.h Core/Inc/oscillators.h \
- Core/Inc/ADSR_envelope.h Core/Inc/ladder_filter.h \
- Core/Inc/stereo_delay.h Core/Inc/helper_functions.h Core/Inc/filters.h \
+ Core/Inc/SEGGER_RTT.h Core/Inc/Config/SEGGER_RTT_Conf.h \
+ Core/Inc/console.h Core/Inc/MIDI_application.h Core/Inc/audio.h \
+ Core/Inc/../../Drivers/BSP/STM32F4-Discovery/stm32f4_discovery_audio.h \
+ Core/Inc/../../Drivers/BSP/STM32F4-Discovery/../Components/cs43l22/cs43l22.h \
+ Core/Inc/../../Drivers/BSP/STM32F4-Discovery/../Components/cs43l22/../Common/audio.h \
+ Core/Inc/../../Drivers/BSP/STM32F4-Discovery/stm32f4_discovery.h \
+ Core/Inc/../../Drivers/BSP/STM32F4-Discovery/../../../Middlewares/ST/STM32_Audio/Addons/PDM/Inc/pdm2pcm_glo.h \
+ Core/Inc/CONSTS.h Core/Inc/oscillators.h Core/Inc/ADSR_envelope.h \
+ Core/Inc/ladder_filter.h Core/Inc/stereo_delay.h \
+ Core/Inc/helper_functions.h Core/Inc/filters.h \
  Core/Inc/MIDI_application.h
 Core/Inc/main.h:
 Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal.h:
@@ -81,16 +80,6 @@ Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_pwr_ex.h:
 Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_spi.h:
 Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_hcd.h:
 Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_ll_usb.h:
-Core/Inc/audio.h:
-Core/Inc/../../Drivers/BSP/STM32F4-Discovery/stm32f4_discovery_audio.h:
-Core/Inc/../../Drivers/BSP/STM32F4-Discovery/../Components/cs43l22/cs43l22.h:
-Core/Inc/../../Drivers/BSP/STM32F4-Discovery/../Components/cs43l22/../Common/audio.h:
-Core/Inc/../../Drivers/BSP/STM32F4-Discovery/stm32f4_discovery.h:
-Core/Inc/../../Drivers/BSP/STM32F4-Discovery/../../../Middlewares/ST/STM32_Audio/Addons/PDM/Inc/pdm2pcm_glo.h:
-Core/Inc/CONSTS.h:
-Core/Inc/SEGGER_RTT.h:
-Core/Inc/Config/SEGGER_RTT_Conf.h:
-Core/Inc/console.h:
 Core/Inc/usbh_MIDI.h:
 Middlewares/ST/STM32_USB_Host_Library/Core/Inc/usbh_core.h:
 Core/Inc/usbh_conf.h:
@@ -99,7 +88,17 @@ Middlewares/ST/STM32_USB_Host_Library/Core/Inc/usbh_ioreq.h:
 Middlewares/ST/STM32_USB_Host_Library/Core/Inc/usbh_core.h:
 Middlewares/ST/STM32_USB_Host_Library/Core/Inc/usbh_pipes.h:
 Middlewares/ST/STM32_USB_Host_Library/Core/Inc/usbh_ctlreq.h:
+Core/Inc/SEGGER_RTT.h:
+Core/Inc/Config/SEGGER_RTT_Conf.h:
+Core/Inc/console.h:
 Core/Inc/MIDI_application.h:
+Core/Inc/audio.h:
+Core/Inc/../../Drivers/BSP/STM32F4-Discovery/stm32f4_discovery_audio.h:
+Core/Inc/../../Drivers/BSP/STM32F4-Discovery/../Components/cs43l22/cs43l22.h:
+Core/Inc/../../Drivers/BSP/STM32F4-Discovery/../Components/cs43l22/../Common/audio.h:
+Core/Inc/../../Drivers/BSP/STM32F4-Discovery/stm32f4_discovery.h:
+Core/Inc/../../Drivers/BSP/STM32F4-Discovery/../../../Middlewares/ST/STM32_Audio/Addons/PDM/Inc/pdm2pcm_glo.h:
+Core/Inc/CONSTS.h:
 Core/Inc/oscillators.h:
 Core/Inc/ADSR_envelope.h:
 Core/Inc/ladder_filter.h:
