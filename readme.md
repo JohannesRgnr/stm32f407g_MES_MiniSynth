@@ -17,6 +17,6 @@ WIP....
 
 
 ### Thanks to:
-Tom Erbe http://synthnotes.ucsd.edu/wp4/
-Xavier Halgand https://github.com/MrBlueXav/Dekrispator_v2/tree/dekrispatorV3
-Mutable Instruments https://pichenettes.github.io/mutable-instruments-documentation/
+Tom Erbe http://synthnotes.ucsd.edu/wp4/  
+Xavier Halgand https://github.com/MrBlueXav/Dekrispator_v2/tree/dekrispatorV3  
+Mutable Instruments https://pichenettes.github.io/mutable-instruments-documentation/  
