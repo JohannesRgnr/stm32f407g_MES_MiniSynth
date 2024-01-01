@@ -36,18 +36,18 @@ extern uint8_t currentPitch;
 extern uint8_t velocity;
 extern ADSR_t adsr_amp, adsr_filt;
 extern ZDFLadder_t Moog_filter;
-extern oscillator_t osc1, osc2, osc3;
+extern oscillator_t osc1, osc2, sub_osc;
 
 
-static float f0 _CCM_;
-static float f_sub _CCM_;
+static float f0 _CCM_;			// frequency of oscillators 1 & 2
+static float f_sub _CCM_;		// frequency of sub oscillator
 // static float vol _CCM_;
-static float amp_env _CCM_;
-static float filt_env _CCM_;
+static float amp_env _CCM_;		// amplitude envelope
+static float filt_env _CCM_;	// filter envelope
 
 
-static float delayLOut _CCM_;
-static float delayROut _CCM_;
+static float delayLOut _CCM_;	// left output of ping pong delay
+static float delayROut _CCM_;	// right output of ping pong delay
 
 
 
@@ -70,7 +70,7 @@ void AUDIO_Init()
 	
 	osc_init(&osc1, 0.5, 1000, 0, 0, 0.5);
 	osc_init(&osc2, 0.5, 440, 0, 0, 0.5);
-	osc_init(&osc3, 0.5, 440, 0, 0, 0.5);
+	osc_init(&sub_osc, 0.5, 440, 0, 0, 0.5);
 
 
 	ADSR_init(&adsr_amp);
@@ -107,30 +107,17 @@ void audioBlock(uint16_t *buffer, uint16_t samples)
 
 		f0 = mtof[currentPitch];
 		
-		/* test with 3 sawtooth*/
+		/* test with 3 oscillators*/
 		OpSetFreq(&osc1, f0);
 		OpSetFreq(&osc2, f0 + 1);
 
 		f_sub = mtof[max(currentPitch - 12, 0)];
-		OpSetFreq(&osc3, f_sub);
-		sample = osc_polyblepSaw(&osc1) + osc_polyblepSaw(&osc2) + osc_polyblepRect(&osc3);
+		OpSetFreq(&sub_osc, f_sub);
+		sample = 0.5*(osc_polyblepSaw(&osc1) + osc_polyblepSaw(&osc2) + osc_polyblepRect(&sub_osc));
 	
-
-		/* test with supersaw */
-		// OpSetFreq(&osc1, f0);
-		// OpSetFreq(&osc2, f0 * (1 - 0.3 * 0.01953125));
-		// OpSetFreq(&osc3, f0 * (1 + 0.3 * 0.01953125));
-		// OpSetFreq(&osc4, f0 * (1 + 0.3 * 0.0625));
-		// OpSetFreq(&osc5, f0 * (1 - 0.3 * 0.109375));
-		// OpSetFreq(&osc6, f0 * (1 + 0.3 * 0.109375));
-		// yL = 0.25 * (0.707 * osc_polyblepSaw(&osc1) + osc_polyblepSaw(&osc2) + osc_polyblepSaw(&osc3) + osc_polyblepSaw(&osc4));
-    	// yR = 0.25 * (0.707 * osc_polyblepSaw(&osc1) + osc_polyblepSaw(&osc5) + osc_polyblepSaw(&osc6) );
-		
-
 		/****************** Apply filter ***********************/
 		filt_env = ADSR_compute(&adsr_filt);
 		Moog_filter.cutoff = 2000 * filt_env;
-		// Moog_filterR.cutoff = 1600 * filt_env;
 		sample = MoogLP_compute(&Moog_filter, sample);
 	
 
@@ -140,10 +127,9 @@ void audioBlock(uint16_t *buffer, uint16_t samples)
 
 		
 		/************** Apply bitcrushing effect ***************/
-		sample = decimator(sample, 0.2, 16);
+		// sample = decimator(sample, 0.2, 16);
 
 		/************** Apply delay effect ****************/
-		// pingpongDelay_compute(sample, &delayLOut, &delayROut);
 		pingpongDelay_compute(sample, &delayLOut, &delayROut);
 		sampleL = delayLOut;
 		sampleR = delayROut;
@@ -159,9 +145,6 @@ void audioBlock(uint16_t *buffer, uint16_t samples)
 		/*************** Output to audio buffer *****************/
 		output[i<<1] = valueL ;			// LEFT channel
 	    output[(i<<1) + 1] = valueR;	// RIGHT channel
-		// *output++ = valueL; // left channel sample
-		// *output++ = valueR; // right channel sample
-		
 	}
 }
 

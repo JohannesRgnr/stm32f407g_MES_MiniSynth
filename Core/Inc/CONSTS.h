@@ -13,10 +13,18 @@
 #define _CONSTS_H
 
 
-#define FS                  48000     // selected samplerate
-/*  Actual samplerate is actually 48095 Hz (derived from I2S clock).. 
+// #define FS                  48000     // selected samplerate
+// /*  Actual samplerate is actually 48095 Hz (derived from I2S clock).. 
+// *   we take that into account for accurate tuning */
+// #define correctedFS         48095.f   // real samplerate (check STM32CubeMX configuration)
+
+#define FS                  44000     // selected samplerate
+/*  Actual samplerate is actually 44053 Hz (derived from I2S clock).. 
 *   we take that into account for accurate tuning */
-#define correctedFS         48095.f   // real samplerate (check STM32CubeMX configuration)
+#define correctedFS         44053.f   // real samplerate (check STM32CubeMX configuration)
+
+
+
 #define A0                  FS/correctedFS  // correcting factor for tuning
 #define TS		            (1.f/FS)    // sampling period
 #define BUFFER_SIZE         64         // size of the audio buffer (samples)

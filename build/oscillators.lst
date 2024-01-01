@@ -1,4 +1,4 @@
-ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccBEAgJi.s 			page 1
+ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccqHetyi.s 			page 1
 
 
    1              		.cpu cortex-m4
@@ -34,8 +34,8 @@ ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccBEAgJi.s 			page 1
    2:Core/Src/oscillators.c ****  * @file oscillators.c
    3:Core/Src/oscillators.c ****  * @author johannes regnier
    4:Core/Src/oscillators.c ****  * @brief Various oscillators
-   5:Core/Src/oscillators.c ****  * General architecture and FM2OP inspired from  Xavier Halgand's Dekrispator
-   6:Core/Src/oscillators.c ****  * 2-sample polyblep oscillators from:
+   5:Core/Src/oscillators.c ****  *  General architecture and FM2OP from Xavier Halgand's Dekrispator
+   6:Core/Src/oscillators.c ****  *  2-sample polyblep oscillators from:
    7:Core/Src/oscillators.c ****  *  Välimäki, V., Pekonen, J., & Nam, J. (2012). Perceptually informed synthesis of bandlimited c
    8:Core/Src/oscillators.c ****  *  waveforms using integrated polynomial interpolation. 
    9:Core/Src/oscillators.c ****  * @version 0.1
@@ -51,96 +51,92 @@ ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccBEAgJi.s 			page 1
   19:Core/Src/oscillators.c **** #include "lut_sine.h"
   20:Core/Src/oscillators.c **** #include "helper_functions.h"
   21:Core/Src/oscillators.c **** 
-  22:Core/Src/oscillators.c **** /*------------------------------------------------------------------------*/
-  23:Core/Src/oscillators.c **** oscillator_t osc1 _CCM_;
-  24:Core/Src/oscillators.c **** oscillator_t osc2 _CCM_;
-  25:Core/Src/oscillators.c **** oscillator_t osc3 _CCM_;
-  26:Core/Src/oscillators.c **** oscillator_t osc4 _CCM_;
-  27:Core/Src/oscillators.c **** oscillator_t osc5 _CCM_;
-  28:Core/Src/oscillators.c **** oscillator_t osc6 _CCM_;
-ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccBEAgJi.s 			page 2
+  22:Core/Src/oscillators.c **** oscillator_t osc1 _CCM_;
+  23:Core/Src/oscillators.c **** oscillator_t osc2 _CCM_;
+  24:Core/Src/oscillators.c **** oscillator_t sub_osc _CCM_;
+  25:Core/Src/oscillators.c **** 
+  26:Core/Src/oscillators.c **** 
+  27:Core/Src/oscillators.c **** void osc_init(oscillator_t *osc, float amp, float freq, float mod, float freq_mult, float pw)
+  28:Core/Src/oscillators.c **** {
+ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccqHetyi.s 			page 2
 
 
-  29:Core/Src/oscillators.c **** oscillator_t osc7 _CCM_;
-  30:Core/Src/oscillators.c **** 
-  31:Core/Src/oscillators.c **** void osc_init(oscillator_t *osc, float amp, float freq, float mod, float freq_mult, float pw)
-  32:Core/Src/oscillators.c **** {
-  31              		.loc 1 32 1 view -0
+  31              		.loc 1 28 1 view -0
   32              		.cfi_startproc
   33              		@ args = 0, pretend = 0, frame = 0
   34              		@ frame_needed = 0, uses_anonymous_args = 0
   35              		@ link register save eliminated.
-  33:Core/Src/oscillators.c ****     osc->amp = amp;
-  36              		.loc 1 33 5 view .LVU1
-  34:Core/Src/oscillators.c ****     osc->freq = A0 * freq;
-  37              		.loc 1 34 20 is_stmt 0 view .LVU2
+  29:Core/Src/oscillators.c ****     osc->amp = amp;
+  36              		.loc 1 29 5 view .LVU1
+  30:Core/Src/oscillators.c ****     osc->freq = A0 * freq;
+  37              		.loc 1 30 20 is_stmt 0 view .LVU2
   38 0000 DFED087A 		vldr.32	s15, .L3
-  33:Core/Src/oscillators.c ****     osc->amp = amp;
-  39              		.loc 1 33 14 view .LVU3
+  29:Core/Src/oscillators.c ****     osc->amp = amp;
+  39              		.loc 1 29 14 view .LVU3
   40 0004 80ED000A 		vstr.32	s0, [r0]
-  41              		.loc 1 34 5 is_stmt 1 view .LVU4
-  42              		.loc 1 34 20 is_stmt 0 view .LVU5
+  41              		.loc 1 30 5 is_stmt 1 view .LVU4
+  42              		.loc 1 30 20 is_stmt 0 view .LVU5
   43 0008 60EEA70A 		vmul.f32	s1, s1, s15
   44              	.LVL1:
-  35:Core/Src/oscillators.c ****     osc->phase = 0;
-  45              		.loc 1 35 16 view .LVU6
+  31:Core/Src/oscillators.c ****     osc->phase = 0;
+  45              		.loc 1 31 16 view .LVU6
   46 000c 0023     		movs	r3, #0
-  34:Core/Src/oscillators.c ****     osc->freq = A0 * freq;
-  47              		.loc 1 34 15 view .LVU7
+  30:Core/Src/oscillators.c ****     osc->freq = A0 * freq;
+  47              		.loc 1 30 15 view .LVU7
   48 000e C0ED010A 		vstr.32	s1, [r0, #4]
-  49              		.loc 1 35 5 is_stmt 1 view .LVU8
-  50              		.loc 1 35 16 is_stmt 0 view .LVU9
+  49              		.loc 1 31 5 is_stmt 1 view .LVU8
+  50              		.loc 1 31 16 is_stmt 0 view .LVU9
   51 0012 8360     		str	r3, [r0, #8]	@ float
-  36:Core/Src/oscillators.c ****     osc->mod = mod;
-  52              		.loc 1 36 5 is_stmt 1 view .LVU10
-  53              		.loc 1 36 14 is_stmt 0 view .LVU11
+  32:Core/Src/oscillators.c ****     osc->mod = mod;
+  52              		.loc 1 32 5 is_stmt 1 view .LVU10
+  53              		.loc 1 32 14 is_stmt 0 view .LVU11
   54 0014 80ED031A 		vstr.32	s2, [r0, #12]
-  37:Core/Src/oscillators.c ****     osc->freq_mult = freq_mult;
-  55              		.loc 1 37 5 is_stmt 1 view .LVU12
-  56              		.loc 1 37 20 is_stmt 0 view .LVU13
+  33:Core/Src/oscillators.c ****     osc->freq_mult = freq_mult;
+  55              		.loc 1 33 5 is_stmt 1 view .LVU12
+  56              		.loc 1 33 20 is_stmt 0 view .LVU13
   57 0018 C0ED041A 		vstr.32	s3, [r0, #16]
-  38:Core/Src/oscillators.c ****     osc->pw = pw;
-  58              		.loc 1 38 5 is_stmt 1 view .LVU14
-  39:Core/Src/oscillators.c ****     osc->output = 0;
-  59              		.loc 1 39 17 is_stmt 0 view .LVU15
+  34:Core/Src/oscillators.c ****     osc->pw = pw;
+  58              		.loc 1 34 5 is_stmt 1 view .LVU14
+  35:Core/Src/oscillators.c ****     osc->output = 0;
+  59              		.loc 1 35 17 is_stmt 0 view .LVU15
   60 001c 8361     		str	r3, [r0, #24]	@ float
-  38:Core/Src/oscillators.c ****     osc->pw = pw;
-  61              		.loc 1 38 13 view .LVU16
+  34:Core/Src/oscillators.c ****     osc->pw = pw;
+  61              		.loc 1 34 13 view .LVU16
   62 001e 80ED052A 		vstr.32	s4, [r0, #20]
-  63              		.loc 1 39 5 is_stmt 1 view .LVU17
-  40:Core/Src/oscillators.c **** }
-  64              		.loc 1 40 1 is_stmt 0 view .LVU18
+  63              		.loc 1 35 5 is_stmt 1 view .LVU17
+  36:Core/Src/oscillators.c **** }
+  64              		.loc 1 36 1 is_stmt 0 view .LVU18
   65 0022 7047     		bx	lr
   66              	.L4:
   67              		.align	2
   68              	.L3:
-  69 0024 8D7E7F3F 		.word	1065320077
+  69 0024 27B17F3F 		.word	1065333031
   70              		.cfi_endproc
   71              	.LFE4:
   73              		.section	.text.osc_Sine,"ax",%progbits
-ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccBEAgJi.s 			page 3
-
-
   74              		.align	1
   75              		.p2align 2,,3
   76              		.global	osc_Sine
   77              		.syntax unified
+ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccqHetyi.s 			page 3
+
+
   78              		.thumb
   79              		.thumb_func
   81              	osc_Sine:
   82              	.LVL2:
   83              	.LFB5:
-  41:Core/Src/oscillators.c **** 
-  42:Core/Src/oscillators.c **** float osc_Sine(oscillator_t *osc)
-  43:Core/Src/oscillators.c **** {
-  84              		.loc 1 43 1 is_stmt 1 view -0
+  37:Core/Src/oscillators.c **** 
+  38:Core/Src/oscillators.c **** float osc_Sine(oscillator_t *osc)
+  39:Core/Src/oscillators.c **** {
+  84              		.loc 1 39 1 is_stmt 1 view -0
   85              		.cfi_startproc
   86              		@ args = 0, pretend = 0, frame = 0
   87              		@ frame_needed = 0, uses_anonymous_args = 0
-  44:Core/Src/oscillators.c **** 
-  45:Core/Src/oscillators.c ****     osc->phase = wrap(osc->phase, 1);  // keep phase between 0 and 1
-  88              		.loc 1 45 5 view .LVU20
-  89              		.loc 1 45 18 is_stmt 0 view .LVU21
+  40:Core/Src/oscillators.c **** 
+  41:Core/Src/oscillators.c ****     osc->phase = wrap(osc->phase, 1);  // keep phase between 0 and 1
+  88              		.loc 1 41 5 view .LVU20
+  89              		.loc 1 41 18 is_stmt 0 view .LVU21
   90 0000 D0ED027A 		vldr.32	s15, [r0, #8]
   91              	.LVL3:
   92              	.LBB12:
@@ -178,13 +174,13 @@ ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccBEAgJi.s 			page 1
   30:Core/Inc/helper_functions.h **** 
   31:Core/Inc/helper_functions.h **** /**
   32:Core/Inc/helper_functions.h ****  * @brief Keep value between 0 and max
-ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccBEAgJi.s 			page 4
-
-
   33:Core/Inc/helper_functions.h ****  * 
   34:Core/Inc/helper_functions.h ****  * @param value 
   35:Core/Inc/helper_functions.h ****  * @param max 
   36:Core/Inc/helper_functions.h ****  * @return float 
+ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccqHetyi.s 			page 4
+
+
   37:Core/Inc/helper_functions.h ****  */
   38:Core/Inc/helper_functions.h **** inline float wrap(float value, float max)   
   95              		.loc 2 38 14 is_stmt 1 view .LVU22
@@ -194,8 +190,8 @@ ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccBEAgJi.s 			page 1
   97              		.loc 2 40 5 view .LVU23
   98              	.LBE13:
   99              	.LBE12:
-  46:Core/Src/oscillators.c ****     osc->output = osc->amp * interp_lin_lut(LUT_SINE_SIZE * (osc->phase), LUT_SINE_SIZE, lut_sine);
- 100              		.loc 1 46 30 is_stmt 0 view .LVU24
+  42:Core/Src/oscillators.c ****     osc->output = osc->amp * interp_lin_lut(LUT_SINE_SIZE * (osc->phase), LUT_SINE_SIZE, lut_sine);
+ 100              		.loc 1 42 30 is_stmt 0 view .LVU24
  101 0004 9FED190A 		vldr.32	s0, .L13
  102 0008 1949     		ldr	r1, .L13+4
  103              	.LBB16:
@@ -214,8 +210,8 @@ ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccBEAgJi.s 			page 1
  114              		.loc 2 42 5 is_stmt 1 view .LVU28
  115              	.LBE14:
  116              	.LBE16:
-  43:Core/Src/oscillators.c **** 
- 117              		.loc 1 43 1 is_stmt 0 view .LVU29
+  39:Core/Src/oscillators.c **** 
+ 117              		.loc 1 39 1 is_stmt 0 view .LVU29
  118 001c 10B5     		push	{r4, lr}
  119              		.cfi_def_cfa_offset 8
  120              		.cfi_offset 4, -8
@@ -238,73 +234,73 @@ ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccBEAgJi.s 			page 1
  134              		.loc 2 45 5 is_stmt 0 view .LVU34
  135              	.LBE15:
  136              	.LBE17:
-ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccBEAgJi.s 			page 5
-
-
-  43:Core/Src/oscillators.c **** 
- 137              		.loc 1 43 1 view .LVU35
+  39:Core/Src/oscillators.c **** 
+ 137              		.loc 1 39 1 view .LVU35
  138 0030 0446     		mov	r4, r0
  139 0032 2DED028B 		vpush.64	{d8}
+ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccqHetyi.s 			page 5
+
+
  140              		.cfi_def_cfa_offset 16
  141              		.cfi_offset 80, -16
  142              		.cfi_offset 81, -12
- 143              		.loc 1 46 30 view .LVU36
+ 143              		.loc 1 42 30 view .LVU36
  144 0036 27EE800A 		vmul.f32	s0, s15, s0
-  45:Core/Src/oscillators.c ****     osc->output = osc->amp * interp_lin_lut(LUT_SINE_SIZE * (osc->phase), LUT_SINE_SIZE, lut_sine);
- 145              		.loc 1 45 16 view .LVU37
+  41:Core/Src/oscillators.c ****     osc->output = osc->amp * interp_lin_lut(LUT_SINE_SIZE * (osc->phase), LUT_SINE_SIZE, lut_sine);
+ 145              		.loc 1 41 16 view .LVU37
  146 003a C0ED027A 		vstr.32	s15, [r0, #8]
- 147              		.loc 1 46 5 is_stmt 1 view .LVU38
- 148              		.loc 1 46 30 is_stmt 0 view .LVU39
+ 147              		.loc 1 42 5 is_stmt 1 view .LVU38
+ 148              		.loc 1 42 30 is_stmt 0 view .LVU39
  149 003e 4FF48060 		mov	r0, #1024
  150              	.LVL6:
- 151              		.loc 1 46 22 view .LVU40
+ 151              		.loc 1 42 22 view .LVU40
  152 0042 94ED008A 		vldr.32	s16, [r4]
- 153              		.loc 1 46 30 view .LVU41
+ 153              		.loc 1 42 30 view .LVU41
  154 0046 FFF7FEFF 		bl	interp_lin_lut
  155              	.LVL7:
-  47:Core/Src/oscillators.c ****     osc->phase += A0 * TS * osc->freq;  // increment phase (phase normalized from 0 to 1)
- 156              		.loc 1 47 16 view .LVU42
+  43:Core/Src/oscillators.c ****     osc->phase += A0 * TS * osc->freq;  // increment phase (phase normalized from 0 to 1)
+ 156              		.loc 1 43 16 view .LVU42
  157 004a D4ED027A 		vldr.32	s15, [r4, #8]
  158 004e D4ED016A 		vldr.32	s13, [r4, #4]
  159 0052 9FED087A 		vldr.32	s14, .L13+8
-  46:Core/Src/oscillators.c ****     osc->phase += A0 * TS * osc->freq;  // increment phase (phase normalized from 0 to 1)
- 160              		.loc 1 46 28 view .LVU43
+  42:Core/Src/oscillators.c ****     osc->phase += A0 * TS * osc->freq;  // increment phase (phase normalized from 0 to 1)
+ 160              		.loc 1 42 28 view .LVU43
  161 0056 28EE000A 		vmul.f32	s0, s16, s0
-  48:Core/Src/oscillators.c **** 
-  49:Core/Src/oscillators.c ****     return osc->output;
-  50:Core/Src/oscillators.c **** }
- 162              		.loc 1 50 1 view .LVU44
+  44:Core/Src/oscillators.c **** 
+  45:Core/Src/oscillators.c ****     return osc->output;
+  46:Core/Src/oscillators.c **** }
+ 162              		.loc 1 46 1 view .LVU44
  163 005a BDEC028B 		vldm	sp!, {d8}
  164              		.cfi_restore 80
  165              		.cfi_restore 81
  166              		.cfi_def_cfa_offset 8
-  47:Core/Src/oscillators.c **** 
- 167              		.loc 1 47 16 view .LVU45
+  43:Core/Src/oscillators.c **** 
+ 167              		.loc 1 43 16 view .LVU45
  168 005e E6EE877A 		vfma.f32	s15, s13, s14
-  46:Core/Src/oscillators.c ****     osc->phase += A0 * TS * osc->freq;  // increment phase (phase normalized from 0 to 1)
- 169              		.loc 1 46 17 view .LVU46
+  42:Core/Src/oscillators.c ****     osc->phase += A0 * TS * osc->freq;  // increment phase (phase normalized from 0 to 1)
+ 169              		.loc 1 42 17 view .LVU46
  170 0062 84ED060A 		vstr.32	s0, [r4, #24]
-  47:Core/Src/oscillators.c **** 
- 171              		.loc 1 47 5 is_stmt 1 view .LVU47
-  47:Core/Src/oscillators.c **** 
- 172              		.loc 1 47 16 is_stmt 0 view .LVU48
+  43:Core/Src/oscillators.c **** 
+ 171              		.loc 1 43 5 is_stmt 1 view .LVU47
+  43:Core/Src/oscillators.c **** 
+ 172              		.loc 1 43 16 is_stmt 0 view .LVU48
  173 0066 C4ED027A 		vstr.32	s15, [r4, #8]
-  49:Core/Src/oscillators.c **** }
- 174              		.loc 1 49 5 is_stmt 1 view .LVU49
- 175              		.loc 1 50 1 is_stmt 0 view .LVU50
+  45:Core/Src/oscillators.c **** }
+ 174              		.loc 1 45 5 is_stmt 1 view .LVU49
+ 175              		.loc 1 46 1 is_stmt 0 view .LVU50
  176 006a 10BD     		pop	{r4, pc}
  177              	.LVL8:
  178              	.L14:
- 179              		.loc 1 50 1 view .LVU51
+ 179              		.loc 1 46 1 view .LVU51
  180              		.align	2
  181              	.L13:
-ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccBEAgJi.s 			page 6
-
-
  182 006c 00008044 		.word	1149239296
  183 0070 00000000 		.word	lut_sine
- 184 0074 DF6AAE37 		.word	934177503
+ 184 0074 BA6BBE37 		.word	935226298
  185              		.cfi_endproc
+ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccqHetyi.s 			page 6
+
+
  186              	.LFE5:
  188              		.section	.text.osc_FM2OP,"ax",%progbits
  189              		.align	1
@@ -316,66 +312,66 @@ ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccBEAgJi.s 			page 1
  196              	osc_FM2OP:
  197              	.LVL9:
  198              	.LFB6:
-  51:Core/Src/oscillators.c **** 
-  52:Core/Src/oscillators.c **** float osc_FM2OP(float freq)
-  53:Core/Src/oscillators.c **** {
- 199              		.loc 1 53 1 is_stmt 1 view -0
+  47:Core/Src/oscillators.c **** 
+  48:Core/Src/oscillators.c **** float osc_FM2OP(float freq)
+  49:Core/Src/oscillators.c **** {
+ 199              		.loc 1 49 1 is_stmt 1 view -0
  200              		.cfi_startproc
  201              		@ args = 0, pretend = 0, frame = 0
  202              		@ frame_needed = 0, uses_anonymous_args = 0
-  54:Core/Src/oscillators.c ****     osc1.freq = A0 * freq;
- 203              		.loc 1 54 5 view .LVU53
-  53:Core/Src/oscillators.c ****     osc1.freq = A0 * freq;
- 204              		.loc 1 53 1 is_stmt 0 view .LVU54
+  50:Core/Src/oscillators.c ****     osc1.freq = A0 * freq;
+ 203              		.loc 1 50 5 view .LVU53
+  49:Core/Src/oscillators.c ****     osc1.freq = A0 * freq;
+ 204              		.loc 1 49 1 is_stmt 0 view .LVU54
  205 0000 10B5     		push	{r4, lr}
  206              		.cfi_def_cfa_offset 8
  207              		.cfi_offset 4, -8
  208              		.cfi_offset 14, -4
- 209              		.loc 1 54 15 view .LVU55
+ 209              		.loc 1 50 15 view .LVU55
  210 0002 3E4C     		ldr	r4, .L29
-  55:Core/Src/oscillators.c ****     osc2.freq = osc2.freq_mult * A0 * freq;
- 211              		.loc 1 55 32 view .LVU56
+  51:Core/Src/oscillators.c ****     osc2.freq = osc2.freq_mult * A0 * freq;
+ 211              		.loc 1 51 32 view .LVU56
  212 0004 9FED3E7A 		vldr.32	s14, .L29+4
  213 0008 D4ED0B7A 		vldr.32	s15, [r4, #44]
- 214              		.loc 1 55 34 view .LVU57
+ 214              		.loc 1 51 34 view .LVU57
  215 000c DFED3D6A 		vldr.32	s13, .L29+8
  216              	.LBB26:
  217              	.LBB27:
-  46:Core/Src/oscillators.c ****     osc->phase += A0 * TS * osc->freq;  // increment phase (phase normalized from 0 to 1)
- 218              		.loc 1 46 30 view .LVU58
+  42:Core/Src/oscillators.c ****     osc->phase += A0 * TS * osc->freq;  // increment phase (phase normalized from 0 to 1)
+ 218              		.loc 1 42 30 view .LVU58
  219 0010 3D49     		ldr	r1, .L29+12
  220              	.LBE27:
  221              	.LBE26:
- 222              		.loc 1 55 32 view .LVU59
+ 222              		.loc 1 51 32 view .LVU59
  223 0012 67EE877A 		vmul.f32	s15, s15, s14
-  53:Core/Src/oscillators.c ****     osc1.freq = A0 * freq;
- 224              		.loc 1 53 1 view .LVU60
+  49:Core/Src/oscillators.c ****     osc1.freq = A0 * freq;
+ 224              		.loc 1 49 1 view .LVU60
  225 0016 2DED028B 		vpush.64	{d8}
  226              		.cfi_def_cfa_offset 16
  227              		.cfi_offset 80, -16
  228              		.cfi_offset 81, -12
- 229              		.loc 1 55 34 view .LVU61
+ 229              		.loc 1 51 34 view .LVU61
  230 001a 87EEA67A 		vdiv.f32	s14, s15, s13
  231              	.LBB46:
  232              	.LBB36:
-ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccBEAgJi.s 			page 7
-
-
-  46:Core/Src/oscillators.c ****     osc->phase += A0 * TS * osc->freq;  // increment phase (phase normalized from 0 to 1)
- 233              		.loc 1 46 30 view .LVU62
+  42:Core/Src/oscillators.c ****     osc->phase += A0 * TS * osc->freq;  // increment phase (phase normalized from 0 to 1)
+ 233              		.loc 1 42 30 view .LVU62
  234 001e 4FF48060 		mov	r0, #1024
-  45:Core/Src/oscillators.c ****     osc->output = osc->amp * interp_lin_lut(LUT_SINE_SIZE * (osc->phase), LUT_SINE_SIZE, lut_sine);
- 235              		.loc 1 45 18 view .LVU63
+  41:Core/Src/oscillators.c ****     osc->output = osc->amp * interp_lin_lut(LUT_SINE_SIZE * (osc->phase), LUT_SINE_SIZE, lut_sine);
+ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccqHetyi.s 			page 7
+
+
+ 235              		.loc 1 41 18 view .LVU63
  236 0022 D4ED097A 		vldr.32	s15, [r4, #36]
  237              	.LBE36:
  238              	.LBE46:
-  54:Core/Src/oscillators.c ****     osc2.freq = osc2.freq_mult * A0 * freq;
- 239              		.loc 1 54 20 view .LVU64
+  50:Core/Src/oscillators.c ****     osc2.freq = osc2.freq_mult * A0 * freq;
+ 239              		.loc 1 50 20 view .LVU64
  240 0026 DFED396A 		vldr.32	s13, .L29+16
  241              	.LBB47:
  242              	.LBB37:
-  46:Core/Src/oscillators.c ****     osc->phase += A0 * TS * osc->freq;  // increment phase (phase normalized from 0 to 1)
- 243              		.loc 1 46 22 view .LVU65
+  42:Core/Src/oscillators.c ****     osc->phase += A0 * TS * osc->freq;  // increment phase (phase normalized from 0 to 1)
+ 243              		.loc 1 42 22 view .LVU65
  244 002a 94ED078A 		vldr.32	s16, [r4, #28]
  245              	.LBB28:
  246              	.LBB29:
@@ -386,7 +382,7 @@ ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccBEAgJi.s 			page 1
  250              	.LBE28:
  251              	.LBE37:
  252              	.LBE47:
- 253              		.loc 1 55 37 view .LVU67
+ 253              		.loc 1 51 37 view .LVU67
  254 0032 27EE007A 		vmul.f32	s14, s14, s0
  255              	.LBB48:
  256              	.LBB38:
@@ -399,7 +395,7 @@ ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccBEAgJi.s 			page 1
  262              	.LBE33:
  263              	.LBE38:
  264              	.LBE48:
- 265              		.loc 1 55 15 view .LVU69
+ 265              		.loc 1 51 15 view .LVU69
  266 003a 84ED087A 		vstr.32	s14, [r4, #32]
  267              	.LBB49:
  268              	.LBB39:
@@ -418,41 +414,41 @@ ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccBEAgJi.s 			page 1
   43:Core/Inc/helper_functions.h **** 
  279              		.loc 2 43 15 view .LVU72
  280 0054 A8BF     		it	ge
-ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccBEAgJi.s 			page 8
-
-
  281 0056 77EEC77A 		vsubge.f32	s15, s15, s14
  282              	.LBE31:
  283              	.LBE34:
  284              	.LBE39:
+ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccqHetyi.s 			page 8
+
+
  285              	.LBE49:
-  54:Core/Src/oscillators.c ****     osc2.freq = osc2.freq_mult * A0 * freq;
- 286              		.loc 1 54 20 view .LVU73
+  50:Core/Src/oscillators.c ****     osc2.freq = osc2.freq_mult * A0 * freq;
+ 286              		.loc 1 50 20 view .LVU73
  287 005a 60EE266A 		vmul.f32	s13, s0, s13
  288              	.LBB50:
  289              	.LBB40:
-  46:Core/Src/oscillators.c ****     osc->phase += A0 * TS * osc->freq;  // increment phase (phase normalized from 0 to 1)
- 290              		.loc 1 46 30 view .LVU74
+  42:Core/Src/oscillators.c ****     osc->phase += A0 * TS * osc->freq;  // increment phase (phase normalized from 0 to 1)
+ 290              		.loc 1 42 30 view .LVU74
  291 005e 9FED2C0A 		vldr.32	s0, .L29+20
  292              	.LVL10:
-  46:Core/Src/oscillators.c ****     osc->phase += A0 * TS * osc->freq;  // increment phase (phase normalized from 0 to 1)
- 293              		.loc 1 46 30 view .LVU75
+  42:Core/Src/oscillators.c ****     osc->phase += A0 * TS * osc->freq;  // increment phase (phase normalized from 0 to 1)
+ 293              		.loc 1 42 30 view .LVU75
  294              	.LBE40:
  295              	.LBE50:
-  54:Core/Src/oscillators.c ****     osc2.freq = osc2.freq_mult * A0 * freq;
- 296              		.loc 1 54 15 view .LVU76
+  50:Core/Src/oscillators.c ****     osc2.freq = osc2.freq_mult * A0 * freq;
+ 296              		.loc 1 50 15 view .LVU76
  297 0062 C4ED016A 		vstr.32	s13, [r4, #4]
- 298              		.loc 1 55 5 is_stmt 1 view .LVU77
-  56:Core/Src/oscillators.c ****     osc_Sine(&osc2);
- 299              		.loc 1 56 5 view .LVU78
+ 298              		.loc 1 51 5 is_stmt 1 view .LVU77
+  52:Core/Src/oscillators.c ****     osc_Sine(&osc2);
+ 299              		.loc 1 52 5 view .LVU78
  300              	.LVL11:
  301              	.LBB51:
  302              	.LBI26:
-  42:Core/Src/oscillators.c **** {
- 303              		.loc 1 42 7 view .LVU79
+  38:Core/Src/oscillators.c **** {
+ 303              		.loc 1 38 7 view .LVU79
  304              	.LBB41:
-  45:Core/Src/oscillators.c ****     osc->output = osc->amp * interp_lin_lut(LUT_SINE_SIZE * (osc->phase), LUT_SINE_SIZE, lut_sine);
- 305              		.loc 1 45 5 view .LVU80
+  41:Core/Src/oscillators.c ****     osc->output = osc->amp * interp_lin_lut(LUT_SINE_SIZE * (osc->phase), LUT_SINE_SIZE, lut_sine);
+ 305              		.loc 1 41 5 view .LVU80
  306              	.LBB35:
  307              	.LBI28:
   38:Core/Inc/helper_functions.h **** {
@@ -470,31 +466,31 @@ ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccBEAgJi.s 			page 1
  315              		.loc 2 45 5 is_stmt 0 view .LVU87
  316              	.LBE32:
  317              	.LBE35:
-  46:Core/Src/oscillators.c ****     osc->phase += A0 * TS * osc->freq;  // increment phase (phase normalized from 0 to 1)
- 318              		.loc 1 46 30 view .LVU88
+  42:Core/Src/oscillators.c ****     osc->phase += A0 * TS * osc->freq;  // increment phase (phase normalized from 0 to 1)
+ 318              		.loc 1 42 30 view .LVU88
  319 0066 27EE800A 		vmul.f32	s0, s15, s0
-  45:Core/Src/oscillators.c ****     osc->output = osc->amp * interp_lin_lut(LUT_SINE_SIZE * (osc->phase), LUT_SINE_SIZE, lut_sine);
- 320              		.loc 1 45 16 view .LVU89
+  41:Core/Src/oscillators.c ****     osc->output = osc->amp * interp_lin_lut(LUT_SINE_SIZE * (osc->phase), LUT_SINE_SIZE, lut_sine);
+ 320              		.loc 1 41 16 view .LVU89
  321 006a C4ED097A 		vstr.32	s15, [r4, #36]
-  46:Core/Src/oscillators.c ****     osc->phase += A0 * TS * osc->freq;  // increment phase (phase normalized from 0 to 1)
- 322              		.loc 1 46 5 is_stmt 1 view .LVU90
-ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccBEAgJi.s 			page 9
-
-
-  46:Core/Src/oscillators.c ****     osc->phase += A0 * TS * osc->freq;  // increment phase (phase normalized from 0 to 1)
- 323              		.loc 1 46 30 is_stmt 0 view .LVU91
+  42:Core/Src/oscillators.c ****     osc->phase += A0 * TS * osc->freq;  // increment phase (phase normalized from 0 to 1)
+ 322              		.loc 1 42 5 is_stmt 1 view .LVU90
+  42:Core/Src/oscillators.c ****     osc->phase += A0 * TS * osc->freq;  // increment phase (phase normalized from 0 to 1)
+ 323              		.loc 1 42 30 is_stmt 0 view .LVU91
  324 006e FFF7FEFF 		bl	interp_lin_lut
  325              	.LVL12:
+ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccqHetyi.s 			page 9
+
+
  326              	.LBE41:
  327              	.LBE51:
-  57:Core/Src/oscillators.c ****     osc1.phase += osc1.mod * osc2.output;
- 328              		.loc 1 57 16 view .LVU92
+  53:Core/Src/oscillators.c ****     osc1.phase += osc1.mod * osc2.output;
+ 328              		.loc 1 53 16 view .LVU92
  329 0072 D4ED036A 		vldr.32	s13, [r4, #12]
  330 0076 D4ED027A 		vldr.32	s15, [r4, #8]
  331              	.LBB52:
  332              	.LBB42:
-  47:Core/Src/oscillators.c **** 
- 333              		.loc 1 47 16 view .LVU93
+  43:Core/Src/oscillators.c **** 
+ 333              		.loc 1 43 16 view .LVU93
  334 007a 94ED097A 		vldr.32	s14, [r4, #36]
  335 007e D4ED085A 		vldr.32	s11, [r4, #32]
  336 0082 9FED246A 		vldr.32	s12, .L29+24
@@ -502,34 +498,34 @@ ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccBEAgJi.s 			page 1
  338              	.LBE52:
  339              	.LBB53:
  340              	.LBB54:
-  46:Core/Src/oscillators.c ****     osc->phase += A0 * TS * osc->freq;  // increment phase (phase normalized from 0 to 1)
- 341              		.loc 1 46 30 view .LVU94
+  42:Core/Src/oscillators.c ****     osc->phase += A0 * TS * osc->freq;  // increment phase (phase normalized from 0 to 1)
+ 341              		.loc 1 42 30 view .LVU94
  342 0086 2049     		ldr	r1, .L29+12
  343              	.LBE54:
  344              	.LBE53:
  345              	.LBB63:
  346              	.LBB43:
-  46:Core/Src/oscillators.c ****     osc->phase += A0 * TS * osc->freq;  // increment phase (phase normalized from 0 to 1)
- 347              		.loc 1 46 28 view .LVU95
+  42:Core/Src/oscillators.c ****     osc->phase += A0 * TS * osc->freq;  // increment phase (phase normalized from 0 to 1)
+ 347              		.loc 1 42 28 view .LVU95
  348 0088 28EE000A 		vmul.f32	s0, s16, s0
-  47:Core/Src/oscillators.c **** 
- 349              		.loc 1 47 16 view .LVU96
+  43:Core/Src/oscillators.c **** 
+ 349              		.loc 1 43 16 view .LVU96
  350 008c A5EE867A 		vfma.f32	s14, s11, s12
  351              	.LBE43:
  352              	.LBE63:
  353              	.LBB64:
  354              	.LBB59:
-  46:Core/Src/oscillators.c ****     osc->phase += A0 * TS * osc->freq;  // increment phase (phase normalized from 0 to 1)
- 355              		.loc 1 46 30 view .LVU97
+  42:Core/Src/oscillators.c ****     osc->phase += A0 * TS * osc->freq;  // increment phase (phase normalized from 0 to 1)
+ 355              		.loc 1 42 30 view .LVU97
  356 0090 4FF48060 		mov	r0, #1024
  357              	.LBE59:
  358              	.LBE64:
- 359              		.loc 1 57 16 view .LVU98
+ 359              		.loc 1 53 16 view .LVU98
  360 0094 E6EE807A 		vfma.f32	s15, s13, s0
  361              	.LBB65:
  362              	.LBB44:
-  47:Core/Src/oscillators.c **** 
- 363              		.loc 1 47 16 view .LVU99
+  43:Core/Src/oscillators.c **** 
+ 363              		.loc 1 43 16 view .LVU99
  364 0098 84ED097A 		vstr.32	s14, [r4, #36]
  365              	.LBE44:
  366              	.LBE65:
@@ -538,13 +534,13 @@ ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccBEAgJi.s 			page 1
  369              	.LBB55:
  370              	.LBB56:
   40:Core/Inc/helper_functions.h ****         value += max;
-ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccBEAgJi.s 			page 10
-
-
  371              		.loc 2 40 8 view .LVU100
  372 009c F5EEC07A 		vcmpe.f32	s15, #0
  373 00a0 F1EE10FA 		vmrs	APSR_nzcv, FPSCR
   41:Core/Inc/helper_functions.h ****     if (value >= max)
+ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccqHetyi.s 			page 10
+
+
  374              		.loc 2 41 15 view .LVU101
  375 00a4 44BF     		itt	mi
  376 00a6 B7EE007A 		vmovmi.f32	s14, #1.0e+0
@@ -564,28 +560,28 @@ ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccBEAgJi.s 			page 1
  388              	.LBE66:
  389              	.LBB67:
  390              	.LBB45:
-  46:Core/Src/oscillators.c ****     osc->phase += A0 * TS * osc->freq;  // increment phase (phase normalized from 0 to 1)
- 391              		.loc 1 46 17 view .LVU104
+  42:Core/Src/oscillators.c ****     osc->phase += A0 * TS * osc->freq;  // increment phase (phase normalized from 0 to 1)
+ 391              		.loc 1 42 17 view .LVU104
  392 00c0 84ED0D0A 		vstr.32	s0, [r4, #52]
-  47:Core/Src/oscillators.c **** 
- 393              		.loc 1 47 5 is_stmt 1 view .LVU105
-  49:Core/Src/oscillators.c **** }
- 394              		.loc 1 49 5 view .LVU106
+  43:Core/Src/oscillators.c **** 
+ 393              		.loc 1 43 5 is_stmt 1 view .LVU105
+  45:Core/Src/oscillators.c **** }
+ 394              		.loc 1 45 5 view .LVU106
  395              	.LVL13:
-  49:Core/Src/oscillators.c **** }
- 396              		.loc 1 49 5 is_stmt 0 view .LVU107
+  45:Core/Src/oscillators.c **** }
+ 396              		.loc 1 45 5 is_stmt 0 view .LVU107
  397              	.LBE45:
  398              	.LBE67:
- 399              		.loc 1 57 5 is_stmt 1 view .LVU108
-  58:Core/Src/oscillators.c ****     osc_Sine(&osc1);
- 400              		.loc 1 58 5 view .LVU109
+ 399              		.loc 1 53 5 is_stmt 1 view .LVU108
+  54:Core/Src/oscillators.c ****     osc_Sine(&osc1);
+ 400              		.loc 1 54 5 view .LVU109
  401              	.LBB68:
  402              	.LBI53:
-  42:Core/Src/oscillators.c **** {
- 403              		.loc 1 42 7 view .LVU110
+  38:Core/Src/oscillators.c **** {
+ 403              		.loc 1 38 7 view .LVU110
  404              	.LBB61:
-  45:Core/Src/oscillators.c ****     osc->output = osc->amp * interp_lin_lut(LUT_SINE_SIZE * (osc->phase), LUT_SINE_SIZE, lut_sine);
- 405              		.loc 1 45 5 view .LVU111
+  41:Core/Src/oscillators.c ****     osc->output = osc->amp * interp_lin_lut(LUT_SINE_SIZE * (osc->phase), LUT_SINE_SIZE, lut_sine);
+ 405              		.loc 1 41 5 view .LVU111
  406              	.LBB58:
  407              	.LBI55:
   38:Core/Inc/helper_functions.h **** {
@@ -598,85 +594,85 @@ ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccBEAgJi.s 			page 1
   42:Core/Inc/helper_functions.h ****         value -= max;
  412              		.loc 2 42 5 view .LVU115
   43:Core/Inc/helper_functions.h **** 
-ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccBEAgJi.s 			page 11
-
-
  413              		.loc 2 43 9 view .LVU116
  414              		.loc 2 45 5 view .LVU117
  415              		.loc 2 45 5 is_stmt 0 view .LVU118
  416              	.LBE57:
+ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccqHetyi.s 			page 11
+
+
  417              	.LBE58:
-  46:Core/Src/oscillators.c ****     osc->phase += A0 * TS * osc->freq;  // increment phase (phase normalized from 0 to 1)
- 418              		.loc 1 46 30 view .LVU119
+  42:Core/Src/oscillators.c ****     osc->phase += A0 * TS * osc->freq;  // increment phase (phase normalized from 0 to 1)
+ 418              		.loc 1 42 30 view .LVU119
  419 00c4 9FED120A 		vldr.32	s0, .L29+20
-  46:Core/Src/oscillators.c ****     osc->phase += A0 * TS * osc->freq;  // increment phase (phase normalized from 0 to 1)
- 420              		.loc 1 46 22 view .LVU120
+  42:Core/Src/oscillators.c ****     osc->phase += A0 * TS * osc->freq;  // increment phase (phase normalized from 0 to 1)
+ 420              		.loc 1 42 22 view .LVU120
  421 00c8 94ED008A 		vldr.32	s16, [r4]
-  45:Core/Src/oscillators.c ****     osc->output = osc->amp * interp_lin_lut(LUT_SINE_SIZE * (osc->phase), LUT_SINE_SIZE, lut_sine);
- 422              		.loc 1 45 16 view .LVU121
+  41:Core/Src/oscillators.c ****     osc->output = osc->amp * interp_lin_lut(LUT_SINE_SIZE * (osc->phase), LUT_SINE_SIZE, lut_sine);
+ 422              		.loc 1 41 16 view .LVU121
  423 00cc C4ED027A 		vstr.32	s15, [r4, #8]
-  46:Core/Src/oscillators.c ****     osc->phase += A0 * TS * osc->freq;  // increment phase (phase normalized from 0 to 1)
- 424              		.loc 1 46 5 is_stmt 1 view .LVU122
-  46:Core/Src/oscillators.c ****     osc->phase += A0 * TS * osc->freq;  // increment phase (phase normalized from 0 to 1)
- 425              		.loc 1 46 30 is_stmt 0 view .LVU123
+  42:Core/Src/oscillators.c ****     osc->phase += A0 * TS * osc->freq;  // increment phase (phase normalized from 0 to 1)
+ 424              		.loc 1 42 5 is_stmt 1 view .LVU122
+  42:Core/Src/oscillators.c ****     osc->phase += A0 * TS * osc->freq;  // increment phase (phase normalized from 0 to 1)
+ 425              		.loc 1 42 30 is_stmt 0 view .LVU123
  426 00d0 27EE800A 		vmul.f32	s0, s15, s0
  427 00d4 FFF7FEFF 		bl	interp_lin_lut
  428              	.LVL14:
-  47:Core/Src/oscillators.c **** 
- 429              		.loc 1 47 16 view .LVU124
+  43:Core/Src/oscillators.c **** 
+ 429              		.loc 1 43 16 view .LVU124
  430 00d8 D4ED027A 		vldr.32	s15, [r4, #8]
  431 00dc D4ED016A 		vldr.32	s13, [r4, #4]
  432 00e0 9FED0C7A 		vldr.32	s14, .L29+24
-  46:Core/Src/oscillators.c ****     osc->phase += A0 * TS * osc->freq;  // increment phase (phase normalized from 0 to 1)
- 433              		.loc 1 46 28 view .LVU125
+  42:Core/Src/oscillators.c ****     osc->phase += A0 * TS * osc->freq;  // increment phase (phase normalized from 0 to 1)
+ 433              		.loc 1 42 28 view .LVU125
  434 00e4 28EE000A 		vmul.f32	s0, s16, s0
  435              	.LBE61:
  436              	.LBE68:
-  59:Core/Src/oscillators.c **** 
-  60:Core/Src/oscillators.c ****     return osc1.output;
-  61:Core/Src/oscillators.c **** }
- 437              		.loc 1 61 1 view .LVU126
+  55:Core/Src/oscillators.c **** 
+  56:Core/Src/oscillators.c ****     return osc1.output;
+  57:Core/Src/oscillators.c **** }
+ 437              		.loc 1 57 1 view .LVU126
  438 00e8 BDEC028B 		vldm	sp!, {d8}
  439              		.cfi_restore 80
  440              		.cfi_restore 81
  441              		.cfi_def_cfa_offset 8
  442              	.LBB69:
  443              	.LBB62:
-  47:Core/Src/oscillators.c **** 
- 444              		.loc 1 47 16 view .LVU127
+  43:Core/Src/oscillators.c **** 
+ 444              		.loc 1 43 16 view .LVU127
  445 00ec E6EE877A 		vfma.f32	s15, s13, s14
-  46:Core/Src/oscillators.c ****     osc->phase += A0 * TS * osc->freq;  // increment phase (phase normalized from 0 to 1)
- 446              		.loc 1 46 17 view .LVU128
+  42:Core/Src/oscillators.c ****     osc->phase += A0 * TS * osc->freq;  // increment phase (phase normalized from 0 to 1)
+ 446              		.loc 1 42 17 view .LVU128
  447 00f0 84ED060A 		vstr.32	s0, [r4, #24]
-  47:Core/Src/oscillators.c **** 
- 448              		.loc 1 47 5 is_stmt 1 view .LVU129
-  47:Core/Src/oscillators.c **** 
- 449              		.loc 1 47 16 is_stmt 0 view .LVU130
+  43:Core/Src/oscillators.c **** 
+ 448              		.loc 1 43 5 is_stmt 1 view .LVU129
+  43:Core/Src/oscillators.c **** 
+ 449              		.loc 1 43 16 is_stmt 0 view .LVU130
  450 00f4 C4ED027A 		vstr.32	s15, [r4, #8]
-  49:Core/Src/oscillators.c **** }
- 451              		.loc 1 49 5 is_stmt 1 view .LVU131
+  45:Core/Src/oscillators.c **** }
+ 451              		.loc 1 45 5 is_stmt 1 view .LVU131
  452              	.LVL15:
-  49:Core/Src/oscillators.c **** }
- 453              		.loc 1 49 5 is_stmt 0 view .LVU132
-ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccBEAgJi.s 			page 12
-
-
+  45:Core/Src/oscillators.c **** }
+ 453              		.loc 1 45 5 is_stmt 0 view .LVU132
  454              	.LBE62:
  455              	.LBE69:
-  60:Core/Src/oscillators.c **** }
- 456              		.loc 1 60 5 is_stmt 1 view .LVU133
- 457              		.loc 1 61 1 is_stmt 0 view .LVU134
+  56:Core/Src/oscillators.c **** }
+ 456              		.loc 1 56 5 is_stmt 1 view .LVU133
+ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccqHetyi.s 			page 12
+
+
+ 457              		.loc 1 57 1 is_stmt 0 view .LVU134
  458 00f8 10BD     		pop	{r4, pc}
  459              	.L30:
  460 00fa 00BF     		.align	2
  461              	.L29:
  462 00fc 00000000 		.word	.LANCHOR0
- 463 0100 00803B47 		.word	1195081728
- 464 0104 00DF3B47 		.word	1195106048
+ 463 0100 00E02B47 		.word	1194057728
+ 464 0104 00152C47 		.word	1194071296
  465 0108 00000000 		.word	lut_sine
- 466 010c 8D7E7F3F 		.word	1065320077
+ 466 010c 27B17F3F 		.word	1065333031
  467 0110 00008044 		.word	1149239296
- 468 0114 DF6AAE37 		.word	934177503
+ 468 0114 BA6BBE37 		.word	935226298
  469              		.cfi_endproc
  470              	.LFE6:
  472              		.section	.text.osc_polyblepSaw,"ax",%progbits
@@ -689,51 +685,51 @@ ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccBEAgJi.s 			page 1
  480              	osc_polyblepSaw:
  481              	.LVL16:
  482              	.LFB7:
-  62:Core/Src/oscillators.c **** 
-  63:Core/Src/oscillators.c **** 
-  64:Core/Src/oscillators.c **** float osc_polyblepSaw(oscillator_t *osc)
-  65:Core/Src/oscillators.c **** {
- 483              		.loc 1 65 1 is_stmt 1 view -0
+  58:Core/Src/oscillators.c **** 
+  59:Core/Src/oscillators.c **** 
+  60:Core/Src/oscillators.c **** float osc_polyblepSaw(oscillator_t *osc)
+  61:Core/Src/oscillators.c **** {
+ 483              		.loc 1 61 1 is_stmt 1 view -0
  484              		.cfi_startproc
  485              		@ args = 0, pretend = 0, frame = 0
  486              		@ frame_needed = 0, uses_anonymous_args = 0
  487              		@ link register save eliminated.
-  66:Core/Src/oscillators.c ****     float dt = A0 * TS * osc->freq; // phase increment
- 488              		.loc 1 66 5 view .LVU136
- 489              		.loc 1 66 11 is_stmt 0 view .LVU137
+  62:Core/Src/oscillators.c ****     float dt = A0 * TS * osc->freq; // phase increment
+ 488              		.loc 1 62 5 view .LVU136
+ 489              		.loc 1 62 11 is_stmt 0 view .LVU137
  490 0000 9FED2C7A 		vldr.32	s14, .L45
  491 0004 D0ED017A 		vldr.32	s15, [r0, #4]
-  67:Core/Src/oscillators.c ****     float t = osc->phase;   // phase
- 492              		.loc 1 67 11 view .LVU138
+  63:Core/Src/oscillators.c ****     float t = osc->phase;   // phase
+ 492              		.loc 1 63 11 view .LVU138
  493 0008 D0ED026A 		vldr.32	s13, [r0, #8]
-  68:Core/Src/oscillators.c ****     float naiveSaw = (2.f * t) - 1.f;  // naive sawtooth (bipolar ramp)
-  69:Core/Src/oscillators.c **** 
-  70:Core/Src/oscillators.c ****     osc->phase += dt;       
-  71:Core/Src/oscillators.c ****     osc->phase = wrap(osc->phase, 1); // keep phase between 0 and 1
-  72:Core/Src/oscillators.c **** 
-  73:Core/Src/oscillators.c ****     // osc->output = osc->amp * naiveSaw;                       // naive sawtooth
-  74:Core/Src/oscillators.c ****     osc->output = osc->amp * (naiveSaw - polyblep(t, dt));      // quasi-bandlimited sawtooth
- 494              		.loc 1 74 22 view .LVU139
+  64:Core/Src/oscillators.c ****     float naiveSaw = (2.f * t) - 1.f;  // naive sawtooth (bipolar ramp)
+  65:Core/Src/oscillators.c **** 
+  66:Core/Src/oscillators.c ****     osc->phase += dt;       
+  67:Core/Src/oscillators.c ****     osc->phase = wrap(osc->phase, 1); // keep phase between 0 and 1
+  68:Core/Src/oscillators.c **** 
+  69:Core/Src/oscillators.c ****     // osc->output = osc->amp * naiveSaw;                       // naive sawtooth
+  70:Core/Src/oscillators.c ****     osc->output = osc->amp * (naiveSaw - polyblep(t, dt));      // quasi-bandlimited sawtooth
+ 494              		.loc 1 70 22 view .LVU139
  495 000c 90ED000A 		vldr.32	s0, [r0]
-  66:Core/Src/oscillators.c ****     float t = osc->phase;   // phase
- 496              		.loc 1 66 11 view .LVU140
+  62:Core/Src/oscillators.c ****     float t = osc->phase;   // phase
+ 496              		.loc 1 62 11 view .LVU140
  497 0010 67EE877A 		vmul.f32	s15, s15, s14
-ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccBEAgJi.s 			page 13
-
-
  498              	.LVL17:
-  67:Core/Src/oscillators.c ****     float t = osc->phase;   // phase
- 499              		.loc 1 67 5 is_stmt 1 view .LVU141
-  68:Core/Src/oscillators.c ****     float naiveSaw = (2.f * t) - 1.f;  // naive sawtooth (bipolar ramp)
- 500              		.loc 1 68 5 view .LVU142
-  68:Core/Src/oscillators.c ****     float naiveSaw = (2.f * t) - 1.f;  // naive sawtooth (bipolar ramp)
- 501              		.loc 1 68 11 is_stmt 0 view .LVU143
+  63:Core/Src/oscillators.c ****     float t = osc->phase;   // phase
+ 499              		.loc 1 63 5 is_stmt 1 view .LVU141
+  64:Core/Src/oscillators.c ****     float naiveSaw = (2.f * t) - 1.f;  // naive sawtooth (bipolar ramp)
+ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccqHetyi.s 			page 13
+
+
+ 500              		.loc 1 64 5 view .LVU142
+  64:Core/Src/oscillators.c ****     float naiveSaw = (2.f * t) - 1.f;  // naive sawtooth (bipolar ramp)
+ 501              		.loc 1 64 11 is_stmt 0 view .LVU143
  502 0014 F0EE005A 		vmov.f32	s11, #2.0e+0
-  70:Core/Src/oscillators.c ****     osc->phase = wrap(osc->phase, 1); // keep phase between 0 and 1
- 503              		.loc 1 70 16 view .LVU144
+  66:Core/Src/oscillators.c ****     osc->phase = wrap(osc->phase, 1); // keep phase between 0 and 1
+ 503              		.loc 1 66 16 view .LVU144
  504 0018 37EEA67A 		vadd.f32	s14, s15, s13
-  68:Core/Src/oscillators.c ****     float naiveSaw = (2.f * t) - 1.f;  // naive sawtooth (bipolar ramp)
- 505              		.loc 1 68 11 view .LVU145
+  64:Core/Src/oscillators.c ****     float naiveSaw = (2.f * t) - 1.f;  // naive sawtooth (bipolar ramp)
+ 505              		.loc 1 64 11 view .LVU145
  506 001c BFEE006A 		vmov.f32	s12, #-1.0e+0
  507              	.LBB76:
  508              	.LBB77:
@@ -743,14 +739,14 @@ ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccBEAgJi.s 			page 1
  511 0024 F1EE10FA 		vmrs	APSR_nzcv, FPSCR
  512              	.LBE77:
  513              	.LBE76:
-  68:Core/Src/oscillators.c **** 
- 514              		.loc 1 68 11 view .LVU147
+  64:Core/Src/oscillators.c **** 
+ 514              		.loc 1 64 11 view .LVU147
  515 0028 A6EEA56A 		vfma.f32	s12, s13, s11
  516              	.LVL18:
-  70:Core/Src/oscillators.c ****     osc->phase = wrap(osc->phase, 1); // keep phase between 0 and 1
- 517              		.loc 1 70 5 is_stmt 1 view .LVU148
-  71:Core/Src/oscillators.c **** 
- 518              		.loc 1 71 5 view .LVU149
+  66:Core/Src/oscillators.c ****     osc->phase = wrap(osc->phase, 1); // keep phase between 0 and 1
+ 517              		.loc 1 66 5 is_stmt 1 view .LVU148
+  67:Core/Src/oscillators.c **** 
+ 518              		.loc 1 67 5 view .LVU149
  519              	.LBB79:
  520              	.LBI76:
   38:Core/Inc/helper_functions.h **** {
@@ -778,13 +774,13 @@ ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccBEAgJi.s 			page 1
   43:Core/Inc/helper_functions.h **** 
  536              		.loc 2 43 15 is_stmt 0 view .LVU157
  537 0042 A8BF     		it	ge
-ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccBEAgJi.s 			page 14
-
-
  538 0044 37EE657A 		vsubge.f32	s14, s14, s11
  539              	.LVL20:
  540              		.loc 2 45 5 is_stmt 1 view .LVU158
  541              		.loc 2 45 5 is_stmt 0 view .LVU159
+ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccqHetyi.s 			page 14
+
+
  542              	.LBE78:
  543              	.LBE79:
  544              	.LBB80:
@@ -838,15 +834,15 @@ ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccBEAgJi.s 			page 1
  547              		.loc 3 45 8 view .LVU160
  548 0048 F4EEE67A 		vcmpe.f32	s15, s13
  549 004c F1EE10FA 		vmrs	APSR_nzcv, FPSCR
-ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccBEAgJi.s 			page 15
-
-
  550              	.LBE81:
  551              	.LBE80:
-  71:Core/Src/oscillators.c **** 
- 552              		.loc 1 71 16 view .LVU161
+  67:Core/Src/oscillators.c **** 
+ 552              		.loc 1 67 16 view .LVU161
+ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccqHetyi.s 			page 15
+
+
  553 0050 80ED027A 		vstr.32	s14, [r0, #8]
- 554              		.loc 1 74 5 is_stmt 1 view .LVU162
+ 554              		.loc 1 70 5 is_stmt 1 view .LVU162
  555              	.LVL21:
  556              	.LBB88:
  557              	.LBI80:
@@ -882,7 +878,7 @@ ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccBEAgJi.s 			page 1
  582              		.loc 3 48 14 view .LVU174
  583              	.LBE84:
  584              	.LBE88:
- 585              		.loc 1 74 40 view .LVU175
+ 585              		.loc 1 70 40 view .LVU175
  586 006e 36EE676A 		vsub.f32	s12, s12, s15
  587              	.LVL27:
  588              	.L38:
@@ -898,18 +894,18 @@ ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccBEAgJi.s 			page 1
  591              		.loc 3 55 5 is_stmt 1 view .LVU176
  592              		.loc 3 55 5 is_stmt 0 view .LVU177
  593              	.LBE85:
-ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccBEAgJi.s 			page 16
-
-
  594              	.LBE89:
- 595              		.loc 1 74 28 view .LVU178
+ 595              		.loc 1 70 28 view .LVU178
  596 0072 20EE060A 		vmul.f32	s0, s0, s12
- 597              		.loc 1 74 17 view .LVU179
+ 597              		.loc 1 70 17 view .LVU179
+ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccqHetyi.s 			page 16
+
+
  598 0076 80ED060A 		vstr.32	s0, [r0, #24]
-  75:Core/Src/oscillators.c ****     return osc->output;
- 599              		.loc 1 75 5 is_stmt 1 view .LVU180
-  76:Core/Src/oscillators.c **** }
- 600              		.loc 1 76 1 is_stmt 0 view .LVU181
+  71:Core/Src/oscillators.c ****     return osc->output;
+ 599              		.loc 1 71 5 is_stmt 1 view .LVU180
+  72:Core/Src/oscillators.c **** }
+ 600              		.loc 1 72 1 is_stmt 0 view .LVU181
  601 007a 7047     		bx	lr
  602              	.LVL28:
  603              	.L44:
@@ -958,16 +954,16 @@ ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccBEAgJi.s 			page 1
  635 009e 37EE277A 		vadd.f32	s14, s14, s15
   53:Core/Inc/oscillators.h ****     }
  636              		.loc 3 53 14 view .LVU194
-ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccBEAgJi.s 			page 17
-
-
  637 00a2 37EE257A 		vadd.f32	s14, s14, s11
  638              	.LBE83:
  639              	.LBE82:
  640              	.LBE86:
+ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccqHetyi.s 			page 17
+
+
  641              	.LBE90:
-  74:Core/Src/oscillators.c ****     return osc->output;
- 642              		.loc 1 74 40 view .LVU195
+  70:Core/Src/oscillators.c ****     return osc->output;
+ 642              		.loc 1 70 40 view .LVU195
  643 00a6 36EE476A 		vsub.f32	s12, s12, s14
  644              	.LVL34:
  645              	.LBB91:
@@ -976,20 +972,20 @@ ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccBEAgJi.s 			page 1
  648              		.loc 3 55 5 is_stmt 0 view .LVU197
  649              	.LBE87:
  650              	.LBE91:
-  74:Core/Src/oscillators.c ****     return osc->output;
- 651              		.loc 1 74 28 view .LVU198
+  70:Core/Src/oscillators.c ****     return osc->output;
+ 651              		.loc 1 70 28 view .LVU198
  652 00aa 20EE060A 		vmul.f32	s0, s0, s12
-  74:Core/Src/oscillators.c ****     return osc->output;
- 653              		.loc 1 74 17 view .LVU199
+  70:Core/Src/oscillators.c ****     return osc->output;
+ 653              		.loc 1 70 17 view .LVU199
  654 00ae 80ED060A 		vstr.32	s0, [r0, #24]
-  75:Core/Src/oscillators.c **** }
- 655              		.loc 1 75 5 is_stmt 1 view .LVU200
- 656              		.loc 1 76 1 is_stmt 0 view .LVU201
+  71:Core/Src/oscillators.c **** }
+ 655              		.loc 1 71 5 is_stmt 1 view .LVU200
+ 656              		.loc 1 72 1 is_stmt 0 view .LVU201
  657 00b2 7047     		bx	lr
  658              	.L46:
  659              		.align	2
  660              	.L45:
- 661 00b4 DF6AAE37 		.word	934177503
+ 661 00b4 BA6BBE37 		.word	935226298
  662              		.cfi_endproc
  663              	.LFE7:
  665              		.section	.text.osc_polyblepRect,"ax",%progbits
@@ -1002,44 +998,44 @@ ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccBEAgJi.s 			page 1
  673              	osc_polyblepRect:
  674              	.LVL35:
  675              	.LFB8:
-  77:Core/Src/oscillators.c **** 
-  78:Core/Src/oscillators.c **** float   osc_polyblepRect(oscillator_t * osc){
- 676              		.loc 1 78 45 is_stmt 1 view -0
+  73:Core/Src/oscillators.c **** 
+  74:Core/Src/oscillators.c **** float osc_polyblepRect(oscillator_t * osc){
+ 676              		.loc 1 74 43 is_stmt 1 view -0
  677              		.cfi_startproc
  678              		@ args = 0, pretend = 0, frame = 0
  679              		@ frame_needed = 0, uses_anonymous_args = 0
  680              		@ link register save eliminated.
-  79:Core/Src/oscillators.c ****     float dt = A0 * TS * osc->freq; // phase increment
- 681              		.loc 1 79 5 view .LVU203
- 682              		.loc 1 79 11 is_stmt 0 view .LVU204
+  75:Core/Src/oscillators.c ****     float dt = A0 * TS * osc->freq; // phase increment
+ 681              		.loc 1 75 5 view .LVU203
+ 682              		.loc 1 75 11 is_stmt 0 view .LVU204
  683 0000 DFED506A 		vldr.32	s13, .L78
  684 0004 90ED017A 		vldr.32	s14, [r0, #4]
-  80:Core/Src/oscillators.c ****     float t = osc->phase;   // phase
- 685              		.loc 1 80 11 view .LVU205
+  76:Core/Src/oscillators.c ****     float t = osc->phase;   // phase
+ 685              		.loc 1 76 11 view .LVU205
  686 0008 D0ED027A 		vldr.32	s15, [r0, #8]
-  81:Core/Src/oscillators.c ****     float pw = osc->pw;     // pulse width (duty cycle)
-ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccBEAgJi.s 			page 18
-
-
- 687              		.loc 1 81 11 view .LVU206
+  77:Core/Src/oscillators.c ****     float pw = osc->pw;     // pulse width (duty cycle)
+ 687              		.loc 1 77 11 view .LVU206
  688 000c 90ED056A 		vldr.32	s12, [r0, #20]
-  79:Core/Src/oscillators.c ****     float dt = A0 * TS * osc->freq; // phase increment
- 689              		.loc 1 79 11 view .LVU207
+  75:Core/Src/oscillators.c ****     float dt = A0 * TS * osc->freq; // phase increment
+ 689              		.loc 1 75 11 view .LVU207
+ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccqHetyi.s 			page 18
+
+
  690 0010 27EE267A 		vmul.f32	s14, s14, s13
  691              	.LVL36:
-  80:Core/Src/oscillators.c ****     float t = osc->phase;   // phase
- 692              		.loc 1 80 5 is_stmt 1 view .LVU208
- 693              		.loc 1 81 5 view .LVU209
-  82:Core/Src/oscillators.c ****     float Rect = (t >= pw) ? -1.f : 1.f; // naive rectangle
- 694              		.loc 1 82 5 view .LVU210
- 695              		.loc 1 82 35 is_stmt 0 view .LVU211
+  76:Core/Src/oscillators.c ****     float t = osc->phase;   // phase
+ 692              		.loc 1 76 5 is_stmt 1 view .LVU208
+ 693              		.loc 1 77 5 view .LVU209
+  78:Core/Src/oscillators.c ****     float Rect = (t >= pw) ? -1.f : 1.f; // naive rectangle
+ 694              		.loc 1 78 5 view .LVU210
+ 695              		.loc 1 78 35 is_stmt 0 view .LVU211
  696 0014 F4EEC67A 		vcmpe.f32	s15, s12
-  83:Core/Src/oscillators.c **** 
-  84:Core/Src/oscillators.c ****     osc->phase += dt;       
- 697              		.loc 1 84 16 view .LVU212
+  79:Core/Src/oscillators.c **** 
+  80:Core/Src/oscillators.c ****     osc->phase += dt;       
+ 697              		.loc 1 80 16 view .LVU212
  698 0018 77EE276A 		vadd.f32	s13, s14, s15
-  82:Core/Src/oscillators.c ****     float Rect = (t >= pw) ? -1.f : 1.f; // naive rectangle
- 699              		.loc 1 82 35 view .LVU213
+  78:Core/Src/oscillators.c ****     float Rect = (t >= pw) ? -1.f : 1.f; // naive rectangle
+ 699              		.loc 1 78 35 view .LVU213
  700 001c F1EE10FA 		vmrs	APSR_nzcv, FPSCR
  701 0020 F7EE005A 		vmov.f32	s11, #1.0e+0
  702              	.LBB104:
@@ -1049,15 +1045,15 @@ ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccBEAgJi.s 			page 1
  705 0024 F5EEC06A 		vcmpe.f32	s13, #0
  706              	.LBE105:
  707              	.LBE104:
-  82:Core/Src/oscillators.c ****     float Rect = (t >= pw) ? -1.f : 1.f; // naive rectangle
- 708              		.loc 1 82 35 view .LVU215
+  78:Core/Src/oscillators.c ****     float Rect = (t >= pw) ? -1.f : 1.f; // naive rectangle
+ 708              		.loc 1 78 35 view .LVU215
  709 0028 BFEE000A 		vmov.f32	s0, #-1.0e+0
  710 002c B8BF     		it	lt
  711 002e B0EE650A 		vmovlt.f32	s0, s11
  712              	.LVL37:
- 713              		.loc 1 84 5 is_stmt 1 view .LVU216
-  85:Core/Src/oscillators.c ****     osc->phase = wrap(osc->phase, 1); // keep phase between 0 and 1
- 714              		.loc 1 85 5 view .LVU217
+ 713              		.loc 1 80 5 is_stmt 1 view .LVU216
+  81:Core/Src/oscillators.c ****     osc->phase = wrap(osc->phase, 1); // keep phase between 0 and 1
+ 714              		.loc 1 81 5 view .LVU217
  715              	.LBB107:
  716              	.LBI104:
   38:Core/Inc/helper_functions.h **** {
@@ -1078,13 +1074,13 @@ ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccBEAgJi.s 			page 1
   42:Core/Inc/helper_functions.h ****         value -= max;
  727              		.loc 2 42 5 is_stmt 1 view .LVU223
   42:Core/Inc/helper_functions.h ****         value -= max;
-ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccBEAgJi.s 			page 19
-
-
  728              		.loc 2 42 8 is_stmt 0 view .LVU224
  729 003c F7EE005A 		vmov.f32	s11, #1.0e+0
  730 0040 F4EEE56A 		vcmpe.f32	s13, s11
  731 0044 F1EE10FA 		vmrs	APSR_nzcv, FPSCR
+ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccqHetyi.s 			page 19
+
+
   43:Core/Inc/helper_functions.h **** 
  732              		.loc 2 43 9 is_stmt 1 view .LVU225
   43:Core/Inc/helper_functions.h **** 
@@ -1104,11 +1100,11 @@ ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccBEAgJi.s 			page 1
  745 0052 F1EE10FA 		vmrs	APSR_nzcv, FPSCR
  746              	.LBE109:
  747              	.LBE108:
- 748              		.loc 1 85 16 view .LVU230
+ 748              		.loc 1 81 16 view .LVU230
  749 0056 C0ED026A 		vstr.32	s13, [r0, #8]
-  86:Core/Src/oscillators.c **** 
-  87:Core/Src/oscillators.c ****     Rect += polyblep(t, dt);
- 750              		.loc 1 87 5 is_stmt 1 view .LVU231
+  82:Core/Src/oscillators.c **** 
+  83:Core/Src/oscillators.c ****     Rect += polyblep(t, dt);
+ 750              		.loc 1 83 5 is_stmt 1 view .LVU231
  751              	.LVL40:
  752              	.LBB115:
  753              	.LBI108:
@@ -1138,13 +1134,13 @@ ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccBEAgJi.s 			page 1
  768              		.loc 3 48 14 view .LVU240
  769 0068 B7EE005A 		vmov.f32	s10, #1.0e+0
   48:Core/Inc/oscillators.h ****     }
-ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccBEAgJi.s 			page 20
-
-
  770              		.loc 3 48 22 view .LVU241
  771 006c E5EEA46A 		vfma.f32	s13, s11, s9
   48:Core/Inc/oscillators.h ****     }
  772              		.loc 3 48 14 view .LVU242
+ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccqHetyi.s 			page 20
+
+
  773 0070 76EEC56A 		vsub.f32	s13, s13, s10
  774              	.LVL42:
  775              	.L55:
@@ -1152,15 +1148,15 @@ ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccBEAgJi.s 			page 1
  777              		.loc 3 55 5 is_stmt 0 view .LVU244
  778              	.LBE112:
  779              	.LBE115:
-  88:Core/Src/oscillators.c ****     Rect -= polyblep(wrap(t - pw, 1.f), dt);
- 780              		.loc 1 88 13 view .LVU245
+  84:Core/Src/oscillators.c ****     Rect -= polyblep(wrap(t - pw, 1.f), dt);
+ 780              		.loc 1 84 13 view .LVU245
  781 0074 77EEC67A 		vsub.f32	s15, s15, s12
  782              	.LVL43:
-  87:Core/Src/oscillators.c ****     Rect -= polyblep(wrap(t - pw, 1.f), dt);
- 783              		.loc 1 87 10 view .LVU246
+  83:Core/Src/oscillators.c ****     Rect -= polyblep(wrap(t - pw, 1.f), dt);
+ 783              		.loc 1 83 10 view .LVU246
  784 0078 30EE260A 		vadd.f32	s0, s0, s13
  785              	.LVL44:
- 786              		.loc 1 88 5 is_stmt 1 view .LVU247
+ 786              		.loc 1 84 5 is_stmt 1 view .LVU247
  787              	.LBB116:
  788              	.LBI116:
   38:Core/Inc/helper_functions.h **** {
@@ -1198,13 +1194,13 @@ ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccBEAgJi.s 			page 1
  812              		.loc 2 45 5 is_stmt 0 view .LVU258
  813              	.LBE117:
  814              	.LBE116:
-ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccBEAgJi.s 			page 21
-
-
  815              	.LBB118:
  816              	.LBI118:
   43:Core/Inc/oscillators.h ****     float blep = 0.f;
  817              		.loc 3 43 14 is_stmt 1 view .LVU259
+ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccqHetyi.s 			page 21
+
+
  818              	.LBB119:
   44:Core/Inc/oscillators.h ****     if (t < dt)
  819              		.loc 3 44 5 view .LVU260
@@ -1246,7 +1242,7 @@ ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccBEAgJi.s 			page 1
  844              		.loc 3 48 14 view .LVU271
  845              	.LBE119:
  846              	.LBE118:
- 847              		.loc 1 88 10 view .LVU272
+ 847              		.loc 1 84 10 view .LVU272
  848 00c2 30EE670A 		vsub.f32	s0, s0, s15
  849              	.LVL52:
  850              	.L63:
@@ -1256,21 +1252,21 @@ ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccBEAgJi.s 			page 1
  854              		.loc 3 55 5 is_stmt 0 view .LVU274
  855              	.LBE124:
  856              	.LBE128:
-  89:Core/Src/oscillators.c **** 
-  90:Core/Src/oscillators.c ****     osc->output = osc->amp * Rect;
-ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccBEAgJi.s 			page 22
-
-
- 857              		.loc 1 90 5 is_stmt 1 view .LVU275
- 858              		.loc 1 90 28 is_stmt 0 view .LVU276
+  85:Core/Src/oscillators.c **** 
+  86:Core/Src/oscillators.c ****     osc->output = osc->amp * Rect;
+ 857              		.loc 1 86 5 is_stmt 1 view .LVU275
+ 858              		.loc 1 86 28 is_stmt 0 view .LVU276
  859 00c6 D0ED007A 		vldr.32	s15, [r0]
  860 00ca 20EE270A 		vmul.f32	s0, s0, s15
- 861              		.loc 1 90 17 view .LVU277
+ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccqHetyi.s 			page 22
+
+
+ 861              		.loc 1 86 17 view .LVU277
  862 00ce 80ED060A 		vstr.32	s0, [r0, #24]
-  91:Core/Src/oscillators.c ****     return osc->output;
- 863              		.loc 1 91 5 is_stmt 1 view .LVU278
-  92:Core/Src/oscillators.c **** }
- 864              		.loc 1 92 1 is_stmt 0 view .LVU279
+  87:Core/Src/oscillators.c ****     return osc->output;
+ 863              		.loc 1 87 5 is_stmt 1 view .LVU278
+  88:Core/Src/oscillators.c **** }
+ 864              		.loc 1 88 1 is_stmt 0 view .LVU279
  865 00d2 7047     		bx	lr
  866              	.LVL53:
  867              	.L75:
@@ -1318,13 +1314,13 @@ ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccBEAgJi.s 			page 1
  898              	.LVL57:
  899              		.loc 3 55 5 is_stmt 1 view .LVU291
  900              		.loc 3 55 5 is_stmt 0 view .LVU292
-ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccBEAgJi.s 			page 23
-
-
  901 00fe B9E7     		b	.L55
  902              	.LVL58:
  903              	.L77:
  904              		.loc 3 55 5 view .LVU293
+ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccqHetyi.s 			page 23
+
+
  905              	.LBE111:
  906              	.LBE110:
  907              	.LBE113:
@@ -1376,15 +1372,15 @@ ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccBEAgJi.s 			page 1
  942              	.LBE120:
  943              	.LBE125:
  944              	.LBE130:
-  90:Core/Src/oscillators.c ****     return osc->output;
- 945              		.loc 1 90 28 view .LVU306
-ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccBEAgJi.s 			page 24
-
-
+  86:Core/Src/oscillators.c ****     return osc->output;
+ 945              		.loc 1 86 28 view .LVU306
  946 0126 D0ED007A 		vldr.32	s15, [r0]
  947              	.LBB131:
  948              	.LBB126:
  949              	.LBB123:
+ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccqHetyi.s 			page 24
+
+
  950              	.LBB122:
   53:Core/Inc/oscillators.h ****     }
  951              		.loc 3 53 14 view .LVU307
@@ -1393,8 +1389,8 @@ ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccBEAgJi.s 			page 1
  954              	.LBE123:
  955              	.LBE126:
  956              	.LBE131:
-  88:Core/Src/oscillators.c **** 
- 957              		.loc 1 88 10 view .LVU308
+  84:Core/Src/oscillators.c **** 
+ 957              		.loc 1 84 10 view .LVU308
  958 012e 30EE660A 		vsub.f32	s0, s0, s13
  959              	.LVL64:
  960              	.LBB132:
@@ -1403,17 +1399,17 @@ ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccBEAgJi.s 			page 1
  963              		.loc 3 55 5 is_stmt 0 view .LVU310
  964              	.LBE127:
  965              	.LBE132:
-  90:Core/Src/oscillators.c ****     return osc->output;
- 966              		.loc 1 90 5 is_stmt 1 view .LVU311
-  90:Core/Src/oscillators.c ****     return osc->output;
- 967              		.loc 1 90 28 is_stmt 0 view .LVU312
+  86:Core/Src/oscillators.c ****     return osc->output;
+ 966              		.loc 1 86 5 is_stmt 1 view .LVU311
+  86:Core/Src/oscillators.c ****     return osc->output;
+ 967              		.loc 1 86 28 is_stmt 0 view .LVU312
  968 0132 20EE270A 		vmul.f32	s0, s0, s15
-  90:Core/Src/oscillators.c ****     return osc->output;
- 969              		.loc 1 90 17 view .LVU313
+  86:Core/Src/oscillators.c ****     return osc->output;
+ 969              		.loc 1 86 17 view .LVU313
  970 0136 80ED060A 		vstr.32	s0, [r0, #24]
-  91:Core/Src/oscillators.c **** }
- 971              		.loc 1 91 5 is_stmt 1 view .LVU314
- 972              		.loc 1 92 1 is_stmt 0 view .LVU315
+  87:Core/Src/oscillators.c **** }
+ 971              		.loc 1 87 5 is_stmt 1 view .LVU314
+ 972              		.loc 1 88 1 is_stmt 0 view .LVU315
  973 013a 7047     		bx	lr
  974              	.LVL65:
  975              	.L76:
@@ -1426,1185 +1422,1153 @@ ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccBEAgJi.s 			page 1
  981              	.L79:
  982 0142 00BF     		.align	2
  983              	.L78:
- 984 0144 DF6AAE37 		.word	934177503
+ 984 0144 BA6BBE37 		.word	935226298
  985 0148 00000000 		.word	0
  986              	.LBE114:
  987              	.LBE133:
  988              		.cfi_endproc
  989              	.LFE8:
- 991              		.global	osc7
- 992              		.global	osc6
- 993              		.global	osc5
- 994              		.global	osc4
- 995              		.global	osc3
- 996              		.global	osc2
-ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccBEAgJi.s 			page 25
+ 991              		.global	sub_osc
+ 992              		.global	osc2
+ 993              		.global	osc1
+ 994              		.global	lut_sine
+ 995              		.section	.ccmram,"aw"
+ 996              		.align	2
+ 997              		.set	.LANCHOR0,. + 0
+ 1000              	osc1:
+ 1001 0000 00000000 		.space	28
+ 1001      00000000 
+ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccqHetyi.s 			page 25
 
 
- 997              		.global	osc1
- 998              		.global	lut_sine
- 999              		.section	.ccmram,"aw"
- 1000              		.align	2
- 1001              		.set	.LANCHOR0,. + 0
- 1004              	osc1:
- 1005 0000 00000000 		.space	28
+ 1001      00000000 
+ 1001      00000000 
+ 1001      00000000 
+ 1004              	osc2:
+ 1005 001c 00000000 		.space	28
  1005      00000000 
  1005      00000000 
  1005      00000000 
  1005      00000000 
- 1008              	osc2:
- 1009 001c 00000000 		.space	28
+ 1008              	sub_osc:
+ 1009 0038 00000000 		.space	28
  1009      00000000 
  1009      00000000 
  1009      00000000 
  1009      00000000 
- 1012              	osc7:
- 1013 0038 00000000 		.space	28
- 1013      00000000 
- 1013      00000000 
- 1013      00000000 
- 1013      00000000 
- 1016              	osc6:
- 1017 0054 00000000 		.space	28
- 1017      00000000 
- 1017      00000000 
- 1017      00000000 
- 1017      00000000 
- 1020              	osc5:
- 1021 0070 00000000 		.space	28
- 1021      00000000 
- 1021      00000000 
- 1021      00000000 
- 1021      00000000 
- 1024              	osc4:
- 1025 008c 00000000 		.space	28
- 1025      00000000 
- 1025      00000000 
- 1025      00000000 
- 1025      00000000 
- 1028              	osc3:
- 1029 00a8 00000000 		.space	28
- 1029      00000000 
- 1029      00000000 
- 1029      00000000 
- 1029      00000000 
- 1030              		.section	.rodata.lut_sine,"a"
- 1031              		.align	2
- 1034              	lut_sine:
- 1035 0000 00000000 		.word	0
- 1036 0004 7E0FC93B 		.word	1003032446
- 1037 0008 920E493C 		.word	1011420818
- 1038 000c B6C9963C 		.word	1016514998
- 1039 0010 B10AC93C 		.word	1019808433
- 1040 0014 B849FB3C 		.word	1023101368
- 1041 0018 2BC3163D 		.word	1024901931
-ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccBEAgJi.s 			page 26
+ 1010              		.section	.rodata.lut_sine,"a"
+ 1011              		.align	2
+ 1014              	lut_sine:
+ 1015 0000 00000000 		.word	0
+ 1016 0004 7E0FC93B 		.word	1003032446
+ 1017 0008 920E493C 		.word	1011420818
+ 1018 000c B6C9963C 		.word	1016514998
+ 1019 0010 B10AC93C 		.word	1019808433
+ 1020 0014 B849FB3C 		.word	1023101368
+ 1021 0018 2BC3163D 		.word	1024901931
+ 1022 001c 07E02F3D 		.word	1026547719
+ 1023 0020 2EFB483D 		.word	1028193070
+ 1024 0024 6714623D 		.word	1029837927
+ 1025 0028 752B7B3D 		.word	1031482229
+ 1026 002c 0A208A3D 		.word	1032462346
+ 1027 0030 04A9963D 		.word	1033283844
+ 1028 0034 8C30A33D 		.word	1034104972
+ 1029 0038 80B6AF3D 		.word	1034925696
+ 1030 003c C43ABC3D 		.word	1035745988
+ 1031 0040 36BDC83D 		.word	1036565814
+ 1032 0044 B93DD53D 		.word	1037385145
+ 1033 0048 2FBCE13D 		.word	1038203951
+ 1034 004c 7638EE3D 		.word	1039022198
+ 1035 0050 73B2FA3D 		.word	1039839859
+ 1036 0054 0295033E 		.word	1040422146
+ 1037 0058 87CF093E 		.word	1040830343
+ 1038 005c B708103E 		.word	1041238199
+ 1039 0060 8340163E 		.word	1041645699
+ 1040 0064 DE761C3E 		.word	1042052830
+ 1041 0068 B5AB223E 		.word	1042459573
+ 1042 006c FCDE283E 		.word	1042865916
+ 1043 0070 A2102F3E 		.word	1043271842
+ 1044 0074 9840353E 		.word	1043677336
+ 1045 0078 CF6E3B3E 		.word	1044082383
+ 1046 007c 379B413E 		.word	1044486967
+ 1047 0080 C2C5473E 		.word	1044891074
+ 1048 0084 5FEE4D3E 		.word	1045294687
+ 1049 0088 0115543E 		.word	1045697793
+ 1050 008c 97395A3E 		.word	1046100375
+ 1051 0090 135C603E 		.word	1046502419
+ 1052 0094 667C663E 		.word	1046903910
+ 1053 0098 7F9A6C3E 		.word	1047304831
+ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccqHetyi.s 			page 26
 
 
- 1042 001c 07E02F3D 		.word	1026547719
- 1043 0020 2EFB483D 		.word	1028193070
- 1044 0024 6714623D 		.word	1029837927
- 1045 0028 752B7B3D 		.word	1031482229
- 1046 002c 0A208A3D 		.word	1032462346
- 1047 0030 04A9963D 		.word	1033283844
- 1048 0034 8C30A33D 		.word	1034104972
- 1049 0038 80B6AF3D 		.word	1034925696
- 1050 003c C43ABC3D 		.word	1035745988
- 1051 0040 36BDC83D 		.word	1036565814
- 1052 0044 B93DD53D 		.word	1037385145
- 1053 0048 2FBCE13D 		.word	1038203951
- 1054 004c 7638EE3D 		.word	1039022198
- 1055 0050 73B2FA3D 		.word	1039839859
- 1056 0054 0295033E 		.word	1040422146
- 1057 0058 87CF093E 		.word	1040830343
- 1058 005c B708103E 		.word	1041238199
- 1059 0060 8340163E 		.word	1041645699
- 1060 0064 DE761C3E 		.word	1042052830
- 1061 0068 B5AB223E 		.word	1042459573
- 1062 006c FCDE283E 		.word	1042865916
- 1063 0070 A2102F3E 		.word	1043271842
- 1064 0074 9840353E 		.word	1043677336
- 1065 0078 CF6E3B3E 		.word	1044082383
- 1066 007c 379B413E 		.word	1044486967
- 1067 0080 C2C5473E 		.word	1044891074
- 1068 0084 5FEE4D3E 		.word	1045294687
- 1069 0088 0115543E 		.word	1045697793
- 1070 008c 97395A3E 		.word	1046100375
- 1071 0090 135C603E 		.word	1046502419
- 1072 0094 667C663E 		.word	1046903910
- 1073 0098 7F9A6C3E 		.word	1047304831
- 1074 009c 51B6723E 		.word	1047705169
- 1075 00a0 CCCF783E 		.word	1048104908
- 1076 00a4 E1E67E3E 		.word	1048504033
- 1077 00a8 C07D823E 		.word	1048739264
- 1078 00ac CF86853E 		.word	1048938191
- 1079 00b0 938E883E 		.word	1049136787
- 1080 00b4 07958B3E 		.word	1049335047
- 1081 00b8 229A8E3E 		.word	1049532962
- 1082 00bc DD9D913E 		.word	1049730525
- 1083 00c0 32A0943E 		.word	1049927730
- 1084 00c4 17A1973E 		.word	1050124567
- 1085 00c8 86A09A3E 		.word	1050321030
- 1086 00cc 789E9D3E 		.word	1050517112
- 1087 00d0 E59AA03E 		.word	1050712805
- 1088 00d4 C595A33E 		.word	1050908101
- 1089 00d8 128FA63E 		.word	1051102994
- 1090 00dc C486A93E 		.word	1051297476
- 1091 00e0 D47CAC3E 		.word	1051491540
- 1092 00e4 3A71AF3E 		.word	1051685178
- 1093 00e8 EF63B23E 		.word	1051878383
- 1094 00ec EC54B53E 		.word	1052071148
- 1095 00f0 2A44B83E 		.word	1052263466
- 1096 00f4 A131BB3E 		.word	1052455329
- 1097 00f8 491DBE3E 		.word	1052646729
- 1098 00fc 1E07C13E 		.word	1052837662
-ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccBEAgJi.s 			page 27
+ 1054 009c 51B6723E 		.word	1047705169
+ 1055 00a0 CCCF783E 		.word	1048104908
+ 1056 00a4 E1E67E3E 		.word	1048504033
+ 1057 00a8 C07D823E 		.word	1048739264
+ 1058 00ac CF86853E 		.word	1048938191
+ 1059 00b0 938E883E 		.word	1049136787
+ 1060 00b4 07958B3E 		.word	1049335047
+ 1061 00b8 229A8E3E 		.word	1049532962
+ 1062 00bc DD9D913E 		.word	1049730525
+ 1063 00c0 32A0943E 		.word	1049927730
+ 1064 00c4 17A1973E 		.word	1050124567
+ 1065 00c8 86A09A3E 		.word	1050321030
+ 1066 00cc 789E9D3E 		.word	1050517112
+ 1067 00d0 E59AA03E 		.word	1050712805
+ 1068 00d4 C595A33E 		.word	1050908101
+ 1069 00d8 128FA63E 		.word	1051102994
+ 1070 00dc C486A93E 		.word	1051297476
+ 1071 00e0 D47CAC3E 		.word	1051491540
+ 1072 00e4 3A71AF3E 		.word	1051685178
+ 1073 00e8 EF63B23E 		.word	1051878383
+ 1074 00ec EC54B53E 		.word	1052071148
+ 1075 00f0 2A44B83E 		.word	1052263466
+ 1076 00f4 A131BB3E 		.word	1052455329
+ 1077 00f8 491DBE3E 		.word	1052646729
+ 1078 00fc 1E07C13E 		.word	1052837662
+ 1079 0100 15EFC33E 		.word	1053028117
+ 1080 0104 2AD5C63E 		.word	1053218090
+ 1081 0108 53B9C93E 		.word	1053407571
+ 1082 010c 8B9BCC3E 		.word	1053596555
+ 1083 0110 CA7BCF3E 		.word	1053785034
+ 1084 0114 095AD23E 		.word	1053973001
+ 1085 0118 4136D53E 		.word	1054160449
+ 1086 011c 6B10D83E 		.word	1054347371
+ 1087 0120 80E8DA3E 		.word	1054533760
+ 1088 0124 79BEDD3E 		.word	1054719609
+ 1089 0128 4F92E03E 		.word	1054904911
+ 1090 012c FA63E33E 		.word	1055089658
+ 1091 0130 7533E63E 		.word	1055273845
+ 1092 0134 B700E93E 		.word	1055457463
+ 1093 0138 BBCBEB3E 		.word	1055640507
+ 1094 013c 7994EE3E 		.word	1055822969
+ 1095 0140 EA5AF13E 		.word	1056004842
+ 1096 0144 071FF43E 		.word	1056186119
+ 1097 0148 CBE0F63E 		.word	1056366795
+ 1098 014c 2DA0F93E 		.word	1056546861
+ 1099 0150 275DFC3E 		.word	1056726311
+ 1100 0154 B217FF3E 		.word	1056905138
+ 1101 0158 E4E7003F 		.word	1057023972
+ 1102 015c B142023F 		.word	1057112753
+ 1103 0160 3D9C033F 		.word	1057201213
+ 1104 0164 84F4043F 		.word	1057289348
+ 1105 0168 824B063F 		.word	1057377154
+ 1106 016c 36A1073F 		.word	1057464630
+ 1107 0170 9BF5083F 		.word	1057551771
+ 1108 0174 AD480A3F 		.word	1057638573
+ 1109 0178 6B9A0B3F 		.word	1057725035
+ 1110 017c D0EA0C3F 		.word	1057811152
+ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccqHetyi.s 			page 27
 
 
- 1099 0100 15EFC33E 		.word	1053028117
- 1100 0104 2AD5C63E 		.word	1053218090
- 1101 0108 53B9C93E 		.word	1053407571
- 1102 010c 8B9BCC3E 		.word	1053596555
- 1103 0110 CA7BCF3E 		.word	1053785034
- 1104 0114 095AD23E 		.word	1053973001
- 1105 0118 4136D53E 		.word	1054160449
- 1106 011c 6B10D83E 		.word	1054347371
- 1107 0120 80E8DA3E 		.word	1054533760
- 1108 0124 79BEDD3E 		.word	1054719609
- 1109 0128 4F92E03E 		.word	1054904911
- 1110 012c FA63E33E 		.word	1055089658
- 1111 0130 7533E63E 		.word	1055273845
- 1112 0134 B700E93E 		.word	1055457463
- 1113 0138 BBCBEB3E 		.word	1055640507
- 1114 013c 7994EE3E 		.word	1055822969
- 1115 0140 EA5AF13E 		.word	1056004842
- 1116 0144 071FF43E 		.word	1056186119
- 1117 0148 CBE0F63E 		.word	1056366795
- 1118 014c 2DA0F93E 		.word	1056546861
- 1119 0150 275DFC3E 		.word	1056726311
- 1120 0154 B217FF3E 		.word	1056905138
- 1121 0158 E4E7003F 		.word	1057023972
- 1122 015c B142023F 		.word	1057112753
- 1123 0160 3D9C033F 		.word	1057201213
- 1124 0164 84F4043F 		.word	1057289348
- 1125 0168 824B063F 		.word	1057377154
- 1126 016c 36A1073F 		.word	1057464630
- 1127 0170 9BF5083F 		.word	1057551771
- 1128 0174 AD480A3F 		.word	1057638573
- 1129 0178 6B9A0B3F 		.word	1057725035
- 1130 017c D0EA0C3F 		.word	1057811152
- 1131 0180 DA390E3F 		.word	1057896922
- 1132 0184 84870F3F 		.word	1057982340
- 1133 0188 CDD3103F 		.word	1058067405
- 1134 018c B01E123F 		.word	1058152112
- 1135 0190 2A68133F 		.word	1058236458
- 1136 0194 39B0143F 		.word	1058320441
- 1137 0198 D9F6153F 		.word	1058404057
- 1138 019c 073C173F 		.word	1058487303
- 1139 01a0 C07F183F 		.word	1058570176
- 1140 01a4 00C2193F 		.word	1058652672
- 1141 01a8 C6021B3F 		.word	1058734790
- 1142 01ac 0C421C3F 		.word	1058816524
- 1143 01b0 D17F1D3F 		.word	1058897873
- 1144 01b4 12BC1E3F 		.word	1058978834
- 1145 01b8 CBF61F3F 		.word	1059059403
- 1146 01bc F92F213F 		.word	1059139577
- 1147 01c0 9967223F 		.word	1059219353
- 1148 01c4 A99D233F 		.word	1059298729
- 1149 01c8 25D2243F 		.word	1059377701
- 1150 01cc 0A05263F 		.word	1059456266
- 1151 01d0 5636273F 		.word	1059534422
- 1152 01d4 0566283F 		.word	1059612165
- 1153 01d8 1594293F 		.word	1059689493
- 1154 01dc 82C02A3F 		.word	1059766402
- 1155 01e0 4AEB2B3F 		.word	1059842890
-ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccBEAgJi.s 			page 28
+ 1111 0180 DA390E3F 		.word	1057896922
+ 1112 0184 84870F3F 		.word	1057982340
+ 1113 0188 CDD3103F 		.word	1058067405
+ 1114 018c B01E123F 		.word	1058152112
+ 1115 0190 2A68133F 		.word	1058236458
+ 1116 0194 39B0143F 		.word	1058320441
+ 1117 0198 D9F6153F 		.word	1058404057
+ 1118 019c 073C173F 		.word	1058487303
+ 1119 01a0 C07F183F 		.word	1058570176
+ 1120 01a4 00C2193F 		.word	1058652672
+ 1121 01a8 C6021B3F 		.word	1058734790
+ 1122 01ac 0C421C3F 		.word	1058816524
+ 1123 01b0 D17F1D3F 		.word	1058897873
+ 1124 01b4 12BC1E3F 		.word	1058978834
+ 1125 01b8 CBF61F3F 		.word	1059059403
+ 1126 01bc F92F213F 		.word	1059139577
+ 1127 01c0 9967223F 		.word	1059219353
+ 1128 01c4 A99D233F 		.word	1059298729
+ 1129 01c8 25D2243F 		.word	1059377701
+ 1130 01cc 0A05263F 		.word	1059456266
+ 1131 01d0 5636273F 		.word	1059534422
+ 1132 01d4 0566283F 		.word	1059612165
+ 1133 01d8 1594293F 		.word	1059689493
+ 1134 01dc 82C02A3F 		.word	1059766402
+ 1135 01e0 4AEB2B3F 		.word	1059842890
+ 1136 01e4 69142D3F 		.word	1059918953
+ 1137 01e8 DE3B2E3F 		.word	1059994590
+ 1138 01ec A5612F3F 		.word	1060069797
+ 1139 01f0 BB85303F 		.word	1060144571
+ 1140 01f4 1DA8313F 		.word	1060218909
+ 1141 01f8 C9C8323F 		.word	1060292809
+ 1142 01fc BCE7333F 		.word	1060366268
+ 1143 0200 F304353F 		.word	1060439283
+ 1144 0204 6C20363F 		.word	1060511852
+ 1145 0208 233A373F 		.word	1060583971
+ 1146 020c 1652383F 		.word	1060655638
+ 1147 0210 4268393F 		.word	1060726850
+ 1148 0214 A47C3A3F 		.word	1060797604
+ 1149 0218 3B8F3B3F 		.word	1060867899
+ 1150 021c 03A03C3F 		.word	1060937731
+ 1151 0220 F9AE3D3F 		.word	1061007097
+ 1152 0224 1BBC3E3F 		.word	1061075995
+ 1153 0228 67C73F3F 		.word	1061144423
+ 1154 022c DAD0403F 		.word	1061212378
+ 1155 0230 70D8413F 		.word	1061279856
+ 1156 0234 29DE423F 		.word	1061346857
+ 1157 0238 01E2433F 		.word	1061413377
+ 1158 023c F5E3443F 		.word	1061479413
+ 1159 0240 03E4453F 		.word	1061544963
+ 1160 0244 2AE2463F 		.word	1061610026
+ 1161 0248 65DE473F 		.word	1061674597
+ 1162 024c B4D8483F 		.word	1061738676
+ 1163 0250 12D1493F 		.word	1061802258
+ 1164 0254 7FC74A3F 		.word	1061865343
+ 1165 0258 F8BB4B3F 		.word	1061927928
+ 1166 025c 79AE4C3F 		.word	1061990009
+ 1167 0260 029F4D3F 		.word	1062051586
+ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccqHetyi.s 			page 28
 
 
- 1156 01e4 69142D3F 		.word	1059918953
- 1157 01e8 DE3B2E3F 		.word	1059994590
- 1158 01ec A5612F3F 		.word	1060069797
- 1159 01f0 BB85303F 		.word	1060144571
- 1160 01f4 1DA8313F 		.word	1060218909
- 1161 01f8 C9C8323F 		.word	1060292809
- 1162 01fc BCE7333F 		.word	1060366268
- 1163 0200 F304353F 		.word	1060439283
- 1164 0204 6C20363F 		.word	1060511852
- 1165 0208 233A373F 		.word	1060583971
- 1166 020c 1652383F 		.word	1060655638
- 1167 0210 4268393F 		.word	1060726850
- 1168 0214 A47C3A3F 		.word	1060797604
- 1169 0218 3B8F3B3F 		.word	1060867899
- 1170 021c 03A03C3F 		.word	1060937731
- 1171 0220 F9AE3D3F 		.word	1061007097
- 1172 0224 1BBC3E3F 		.word	1061075995
- 1173 0228 67C73F3F 		.word	1061144423
- 1174 022c DAD0403F 		.word	1061212378
- 1175 0230 70D8413F 		.word	1061279856
- 1176 0234 29DE423F 		.word	1061346857
- 1177 0238 01E2433F 		.word	1061413377
- 1178 023c F5E3443F 		.word	1061479413
- 1179 0240 03E4453F 		.word	1061544963
- 1180 0244 2AE2463F 		.word	1061610026
- 1181 0248 65DE473F 		.word	1061674597
- 1182 024c B4D8483F 		.word	1061738676
- 1183 0250 12D1493F 		.word	1061802258
- 1184 0254 7FC74A3F 		.word	1061865343
- 1185 0258 F8BB4B3F 		.word	1061927928
- 1186 025c 79AE4C3F 		.word	1061990009
- 1187 0260 029F4D3F 		.word	1062051586
- 1188 0264 908D4E3F 		.word	1062112656
- 1189 0268 207A4F3F 		.word	1062173216
- 1190 026c AF64503F 		.word	1062233263
- 1191 0270 3D4D513F 		.word	1062292797
- 1192 0274 C633523F 		.word	1062351814
- 1193 0278 4918533F 		.word	1062410313
- 1194 027c C3FA533F 		.word	1062468291
- 1195 0280 31DB543F 		.word	1062525745
- 1196 0284 93B9553F 		.word	1062582675
- 1197 0288 E595563F 		.word	1062639077
- 1198 028c 2670573F 		.word	1062694950
- 1199 0290 5348583F 		.word	1062750291
- 1200 0294 6A1E593F 		.word	1062805098
- 1201 0298 6AF2593F 		.word	1062859370
- 1202 029c 50C45A3F 		.word	1062913104
- 1203 02a0 1A945B3F 		.word	1062966298
- 1204 02a4 C7615C3F 		.word	1063018951
- 1205 02a8 532D5D3F 		.word	1063071059
- 1206 02ac BEF65D3F 		.word	1063122622
- 1207 02b0 05BE5E3F 		.word	1063173637
- 1208 02b4 27835F3F 		.word	1063224103
- 1209 02b8 2146603F 		.word	1063274017
- 1210 02bc F206613F 		.word	1063323378
- 1211 02c0 97C5613F 		.word	1063372183
- 1212 02c4 1082623F 		.word	1063420432
-ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccBEAgJi.s 			page 29
+ 1168 0264 908D4E3F 		.word	1062112656
+ 1169 0268 207A4F3F 		.word	1062173216
+ 1170 026c AF64503F 		.word	1062233263
+ 1171 0270 3D4D513F 		.word	1062292797
+ 1172 0274 C633523F 		.word	1062351814
+ 1173 0278 4918533F 		.word	1062410313
+ 1174 027c C3FA533F 		.word	1062468291
+ 1175 0280 31DB543F 		.word	1062525745
+ 1176 0284 93B9553F 		.word	1062582675
+ 1177 0288 E595563F 		.word	1062639077
+ 1178 028c 2670573F 		.word	1062694950
+ 1179 0290 5348583F 		.word	1062750291
+ 1180 0294 6A1E593F 		.word	1062805098
+ 1181 0298 6AF2593F 		.word	1062859370
+ 1182 029c 50C45A3F 		.word	1062913104
+ 1183 02a0 1A945B3F 		.word	1062966298
+ 1184 02a4 C7615C3F 		.word	1063018951
+ 1185 02a8 532D5D3F 		.word	1063071059
+ 1186 02ac BEF65D3F 		.word	1063122622
+ 1187 02b0 05BE5E3F 		.word	1063173637
+ 1188 02b4 27835F3F 		.word	1063224103
+ 1189 02b8 2146603F 		.word	1063274017
+ 1190 02bc F206613F 		.word	1063323378
+ 1191 02c0 97C5613F 		.word	1063372183
+ 1192 02c4 1082623F 		.word	1063420432
+ 1193 02c8 5A3C633F 		.word	1063468122
+ 1194 02cc 73F4633F 		.word	1063515251
+ 1195 02d0 59AA643F 		.word	1063561817
+ 1196 02d4 0B5E653F 		.word	1063607819
+ 1197 02d8 880F663F 		.word	1063653256
+ 1198 02dc CCBE663F 		.word	1063698124
+ 1199 02e0 D86B673F 		.word	1063742424
+ 1200 02e4 A816683F 		.word	1063786152
+ 1201 02e8 3CBF683F 		.word	1063829308
+ 1202 02ec 9165693F 		.word	1063871889
+ 1203 02f0 A7096A3F 		.word	1063913895
+ 1204 02f4 7BAB6A3F 		.word	1063955323
+ 1205 02f8 0C4B6B3F 		.word	1063996172
+ 1206 02fc 58E86B3F 		.word	1064036440
+ 1207 0300 5E836C3F 		.word	1064076126
+ 1208 0304 1D1C6D3F 		.word	1064115229
+ 1209 0308 93B26D3F 		.word	1064153747
+ 1210 030c BE466E3F 		.word	1064191678
+ 1211 0310 9ED86E3F 		.word	1064229022
+ 1212 0314 30686F3F 		.word	1064265776
+ 1213 0318 73F56F3F 		.word	1064301939
+ 1214 031c 6680703F 		.word	1064337510
+ 1215 0320 0809713F 		.word	1064372488
+ 1216 0324 578F713F 		.word	1064406871
+ 1217 0328 5213723F 		.word	1064440658
+ 1218 032c F894723F 		.word	1064473848
+ 1219 0330 4714733F 		.word	1064506439
+ 1220 0334 3F91733F 		.word	1064538431
+ 1221 0338 DD0B743F 		.word	1064569821
+ 1222 033c 2284743F 		.word	1064600610
+ 1223 0340 0BFA743F 		.word	1064630795
+ 1224 0344 976D753F 		.word	1064660375
+ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccqHetyi.s 			page 29
 
 
- 1213 02c8 5A3C633F 		.word	1063468122
- 1214 02cc 73F4633F 		.word	1063515251
- 1215 02d0 59AA643F 		.word	1063561817
- 1216 02d4 0B5E653F 		.word	1063607819
- 1217 02d8 880F663F 		.word	1063653256
- 1218 02dc CCBE663F 		.word	1063698124
- 1219 02e0 D86B673F 		.word	1063742424
- 1220 02e4 A816683F 		.word	1063786152
- 1221 02e8 3CBF683F 		.word	1063829308
- 1222 02ec 9165693F 		.word	1063871889
- 1223 02f0 A7096A3F 		.word	1063913895
- 1224 02f4 7BAB6A3F 		.word	1063955323
- 1225 02f8 0C4B6B3F 		.word	1063996172
- 1226 02fc 58E86B3F 		.word	1064036440
- 1227 0300 5E836C3F 		.word	1064076126
- 1228 0304 1D1C6D3F 		.word	1064115229
- 1229 0308 93B26D3F 		.word	1064153747
- 1230 030c BE466E3F 		.word	1064191678
- 1231 0310 9ED86E3F 		.word	1064229022
- 1232 0314 30686F3F 		.word	1064265776
- 1233 0318 73F56F3F 		.word	1064301939
- 1234 031c 6680703F 		.word	1064337510
- 1235 0320 0809713F 		.word	1064372488
- 1236 0324 578F713F 		.word	1064406871
- 1237 0328 5213723F 		.word	1064440658
- 1238 032c F894723F 		.word	1064473848
- 1239 0330 4714733F 		.word	1064506439
- 1240 0334 3F91733F 		.word	1064538431
- 1241 0338 DD0B743F 		.word	1064569821
- 1242 033c 2284743F 		.word	1064600610
- 1243 0340 0BFA743F 		.word	1064630795
- 1244 0344 976D753F 		.word	1064660375
- 1245 0348 C6DE753F 		.word	1064689350
- 1246 034c 974D763F 		.word	1064717719
- 1247 0350 07BA763F 		.word	1064745479
- 1248 0354 1724773F 		.word	1064772631
- 1249 0358 C58B773F 		.word	1064799173
- 1250 035c 10F1773F 		.word	1064825104
- 1251 0360 F853783F 		.word	1064850424
- 1252 0364 7BB4783F 		.word	1064875131
- 1253 0368 9812793F 		.word	1064899224
- 1254 036c 4E6E793F 		.word	1064922702
- 1255 0370 9DC7793F 		.word	1064945565
- 1256 0374 841E7A3F 		.word	1064967812
- 1257 0378 02737A3F 		.word	1064989442
- 1258 037c 16C57A3F 		.word	1065010454
- 1259 0380 BE147B3F 		.word	1065030846
- 1260 0384 FC617B3F 		.word	1065050620
- 1261 0388 CDAC7B3F 		.word	1065069773
- 1262 038c 31F57B3F 		.word	1065088305
- 1263 0390 283B7C3F 		.word	1065106216
- 1264 0394 B07E7C3F 		.word	1065123504
- 1265 0398 C9BF7C3F 		.word	1065140169
- 1266 039c 73FE7C3F 		.word	1065156211
- 1267 03a0 AC3A7D3F 		.word	1065171628
- 1268 03a4 74747D3F 		.word	1065186420
- 1269 03a8 CCAB7D3F 		.word	1065200588
-ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccBEAgJi.s 			page 30
+ 1225 0348 C6DE753F 		.word	1064689350
+ 1226 034c 974D763F 		.word	1064717719
+ 1227 0350 07BA763F 		.word	1064745479
+ 1228 0354 1724773F 		.word	1064772631
+ 1229 0358 C58B773F 		.word	1064799173
+ 1230 035c 10F1773F 		.word	1064825104
+ 1231 0360 F853783F 		.word	1064850424
+ 1232 0364 7BB4783F 		.word	1064875131
+ 1233 0368 9812793F 		.word	1064899224
+ 1234 036c 4E6E793F 		.word	1064922702
+ 1235 0370 9DC7793F 		.word	1064945565
+ 1236 0374 841E7A3F 		.word	1064967812
+ 1237 0378 02737A3F 		.word	1064989442
+ 1238 037c 16C57A3F 		.word	1065010454
+ 1239 0380 BE147B3F 		.word	1065030846
+ 1240 0384 FC617B3F 		.word	1065050620
+ 1241 0388 CDAC7B3F 		.word	1065069773
+ 1242 038c 31F57B3F 		.word	1065088305
+ 1243 0390 283B7C3F 		.word	1065106216
+ 1244 0394 B07E7C3F 		.word	1065123504
+ 1245 0398 C9BF7C3F 		.word	1065140169
+ 1246 039c 73FE7C3F 		.word	1065156211
+ 1247 03a0 AC3A7D3F 		.word	1065171628
+ 1248 03a4 74747D3F 		.word	1065186420
+ 1249 03a8 CCAB7D3F 		.word	1065200588
+ 1250 03ac B1E07D3F 		.word	1065214129
+ 1251 03b0 23137E3F 		.word	1065227043
+ 1252 03b4 23437E3F 		.word	1065239331
+ 1253 03b8 B0707E3F 		.word	1065250992
+ 1254 03bc C99B7E3F 		.word	1065262025
+ 1255 03c0 6DC47E3F 		.word	1065272429
+ 1256 03c4 9DEA7E3F 		.word	1065282205
+ 1257 03c8 580E7F3F 		.word	1065291352
+ 1258 03cc 9D2F7F3F 		.word	1065299869
+ 1259 03d0 6D4E7F3F 		.word	1065307757
+ 1260 03d4 C76A7F3F 		.word	1065315015
+ 1261 03d8 AB847F3F 		.word	1065321643
+ 1262 03dc 189C7F3F 		.word	1065327640
+ 1263 03e0 0FB17F3F 		.word	1065333007
+ 1264 03e4 8FC37F3F 		.word	1065337743
+ 1265 03e8 97D37F3F 		.word	1065341847
+ 1266 03ec 29E17F3F 		.word	1065345321
+ 1267 03f0 43EC7F3F 		.word	1065348163
+ 1268 03f4 E6F47F3F 		.word	1065350374
+ 1269 03f8 11FB7F3F 		.word	1065351953
+ 1270 03fc C4FE7F3F 		.word	1065352900
+ 1271 0400 0000803F 		.word	1065353216
+ 1272 0404 C4FE7F3F 		.word	1065352900
+ 1273 0408 11FB7F3F 		.word	1065351953
+ 1274 040c E6F47F3F 		.word	1065350374
+ 1275 0410 43EC7F3F 		.word	1065348163
+ 1276 0414 29E17F3F 		.word	1065345321
+ 1277 0418 97D37F3F 		.word	1065341847
+ 1278 041c 8FC37F3F 		.word	1065337743
+ 1279 0420 0FB17F3F 		.word	1065333007
+ 1280 0424 189C7F3F 		.word	1065327640
+ 1281 0428 AB847F3F 		.word	1065321643
+ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccqHetyi.s 			page 30
 
 
- 1270 03ac B1E07D3F 		.word	1065214129
- 1271 03b0 23137E3F 		.word	1065227043
- 1272 03b4 23437E3F 		.word	1065239331
- 1273 03b8 B0707E3F 		.word	1065250992
- 1274 03bc C99B7E3F 		.word	1065262025
- 1275 03c0 6DC47E3F 		.word	1065272429
- 1276 03c4 9DEA7E3F 		.word	1065282205
- 1277 03c8 580E7F3F 		.word	1065291352
- 1278 03cc 9D2F7F3F 		.word	1065299869
- 1279 03d0 6D4E7F3F 		.word	1065307757
- 1280 03d4 C76A7F3F 		.word	1065315015
- 1281 03d8 AB847F3F 		.word	1065321643
- 1282 03dc 189C7F3F 		.word	1065327640
- 1283 03e0 0FB17F3F 		.word	1065333007
- 1284 03e4 8FC37F3F 		.word	1065337743
- 1285 03e8 97D37F3F 		.word	1065341847
- 1286 03ec 29E17F3F 		.word	1065345321
- 1287 03f0 43EC7F3F 		.word	1065348163
- 1288 03f4 E6F47F3F 		.word	1065350374
- 1289 03f8 11FB7F3F 		.word	1065351953
- 1290 03fc C4FE7F3F 		.word	1065352900
- 1291 0400 0000803F 		.word	1065353216
- 1292 0404 C4FE7F3F 		.word	1065352900
- 1293 0408 11FB7F3F 		.word	1065351953
- 1294 040c E6F47F3F 		.word	1065350374
- 1295 0410 43EC7F3F 		.word	1065348163
- 1296 0414 29E17F3F 		.word	1065345321
- 1297 0418 97D37F3F 		.word	1065341847
- 1298 041c 8FC37F3F 		.word	1065337743
- 1299 0420 0FB17F3F 		.word	1065333007
- 1300 0424 189C7F3F 		.word	1065327640
- 1301 0428 AB847F3F 		.word	1065321643
- 1302 042c C76A7F3F 		.word	1065315015
- 1303 0430 6D4E7F3F 		.word	1065307757
- 1304 0434 9D2F7F3F 		.word	1065299869
- 1305 0438 580E7F3F 		.word	1065291352
- 1306 043c 9DEA7E3F 		.word	1065282205
- 1307 0440 6DC47E3F 		.word	1065272429
- 1308 0444 C99B7E3F 		.word	1065262025
- 1309 0448 B0707E3F 		.word	1065250992
- 1310 044c 23437E3F 		.word	1065239331
- 1311 0450 23137E3F 		.word	1065227043
- 1312 0454 B1E07D3F 		.word	1065214129
- 1313 0458 CCAB7D3F 		.word	1065200588
- 1314 045c 74747D3F 		.word	1065186420
- 1315 0460 AC3A7D3F 		.word	1065171628
- 1316 0464 73FE7C3F 		.word	1065156211
- 1317 0468 C9BF7C3F 		.word	1065140169
- 1318 046c B07E7C3F 		.word	1065123504
- 1319 0470 283B7C3F 		.word	1065106216
- 1320 0474 31F57B3F 		.word	1065088305
- 1321 0478 CDAC7B3F 		.word	1065069773
- 1322 047c FC617B3F 		.word	1065050620
- 1323 0480 BE147B3F 		.word	1065030846
- 1324 0484 16C57A3F 		.word	1065010454
- 1325 0488 02737A3F 		.word	1064989442
- 1326 048c 841E7A3F 		.word	1064967812
-ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccBEAgJi.s 			page 31
+ 1282 042c C76A7F3F 		.word	1065315015
+ 1283 0430 6D4E7F3F 		.word	1065307757
+ 1284 0434 9D2F7F3F 		.word	1065299869
+ 1285 0438 580E7F3F 		.word	1065291352
+ 1286 043c 9DEA7E3F 		.word	1065282205
+ 1287 0440 6DC47E3F 		.word	1065272429
+ 1288 0444 C99B7E3F 		.word	1065262025
+ 1289 0448 B0707E3F 		.word	1065250992
+ 1290 044c 23437E3F 		.word	1065239331
+ 1291 0450 23137E3F 		.word	1065227043
+ 1292 0454 B1E07D3F 		.word	1065214129
+ 1293 0458 CCAB7D3F 		.word	1065200588
+ 1294 045c 74747D3F 		.word	1065186420
+ 1295 0460 AC3A7D3F 		.word	1065171628
+ 1296 0464 73FE7C3F 		.word	1065156211
+ 1297 0468 C9BF7C3F 		.word	1065140169
+ 1298 046c B07E7C3F 		.word	1065123504
+ 1299 0470 283B7C3F 		.word	1065106216
+ 1300 0474 31F57B3F 		.word	1065088305
+ 1301 0478 CDAC7B3F 		.word	1065069773
+ 1302 047c FC617B3F 		.word	1065050620
+ 1303 0480 BE147B3F 		.word	1065030846
+ 1304 0484 16C57A3F 		.word	1065010454
+ 1305 0488 02737A3F 		.word	1064989442
+ 1306 048c 841E7A3F 		.word	1064967812
+ 1307 0490 9DC7793F 		.word	1064945565
+ 1308 0494 4E6E793F 		.word	1064922702
+ 1309 0498 9812793F 		.word	1064899224
+ 1310 049c 7BB4783F 		.word	1064875131
+ 1311 04a0 F853783F 		.word	1064850424
+ 1312 04a4 10F1773F 		.word	1064825104
+ 1313 04a8 C58B773F 		.word	1064799173
+ 1314 04ac 1724773F 		.word	1064772631
+ 1315 04b0 07BA763F 		.word	1064745479
+ 1316 04b4 974D763F 		.word	1064717719
+ 1317 04b8 C6DE753F 		.word	1064689350
+ 1318 04bc 976D753F 		.word	1064660375
+ 1319 04c0 0BFA743F 		.word	1064630795
+ 1320 04c4 2284743F 		.word	1064600610
+ 1321 04c8 DD0B743F 		.word	1064569821
+ 1322 04cc 3F91733F 		.word	1064538431
+ 1323 04d0 4714733F 		.word	1064506439
+ 1324 04d4 F894723F 		.word	1064473848
+ 1325 04d8 5213723F 		.word	1064440658
+ 1326 04dc 578F713F 		.word	1064406871
+ 1327 04e0 0809713F 		.word	1064372488
+ 1328 04e4 6680703F 		.word	1064337510
+ 1329 04e8 73F56F3F 		.word	1064301939
+ 1330 04ec 30686F3F 		.word	1064265776
+ 1331 04f0 9ED86E3F 		.word	1064229022
+ 1332 04f4 BE466E3F 		.word	1064191678
+ 1333 04f8 93B26D3F 		.word	1064153747
+ 1334 04fc 1D1C6D3F 		.word	1064115229
+ 1335 0500 5E836C3F 		.word	1064076126
+ 1336 0504 58E86B3F 		.word	1064036440
+ 1337 0508 0C4B6B3F 		.word	1063996172
+ 1338 050c 7BAB6A3F 		.word	1063955323
+ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccqHetyi.s 			page 31
 
 
- 1327 0490 9DC7793F 		.word	1064945565
- 1328 0494 4E6E793F 		.word	1064922702
- 1329 0498 9812793F 		.word	1064899224
- 1330 049c 7BB4783F 		.word	1064875131
- 1331 04a0 F853783F 		.word	1064850424
- 1332 04a4 10F1773F 		.word	1064825104
- 1333 04a8 C58B773F 		.word	1064799173
- 1334 04ac 1724773F 		.word	1064772631
- 1335 04b0 07BA763F 		.word	1064745479
- 1336 04b4 974D763F 		.word	1064717719
- 1337 04b8 C6DE753F 		.word	1064689350
- 1338 04bc 976D753F 		.word	1064660375
- 1339 04c0 0BFA743F 		.word	1064630795
- 1340 04c4 2284743F 		.word	1064600610
- 1341 04c8 DD0B743F 		.word	1064569821
- 1342 04cc 3F91733F 		.word	1064538431
- 1343 04d0 4714733F 		.word	1064506439
- 1344 04d4 F894723F 		.word	1064473848
- 1345 04d8 5213723F 		.word	1064440658
- 1346 04dc 578F713F 		.word	1064406871
- 1347 04e0 0809713F 		.word	1064372488
- 1348 04e4 6680703F 		.word	1064337510
- 1349 04e8 73F56F3F 		.word	1064301939
- 1350 04ec 30686F3F 		.word	1064265776
- 1351 04f0 9ED86E3F 		.word	1064229022
- 1352 04f4 BE466E3F 		.word	1064191678
- 1353 04f8 93B26D3F 		.word	1064153747
- 1354 04fc 1D1C6D3F 		.word	1064115229
- 1355 0500 5E836C3F 		.word	1064076126
- 1356 0504 58E86B3F 		.word	1064036440
- 1357 0508 0C4B6B3F 		.word	1063996172
- 1358 050c 7BAB6A3F 		.word	1063955323
- 1359 0510 A7096A3F 		.word	1063913895
- 1360 0514 9165693F 		.word	1063871889
- 1361 0518 3CBF683F 		.word	1063829308
- 1362 051c A816683F 		.word	1063786152
- 1363 0520 D86B673F 		.word	1063742424
- 1364 0524 CCBE663F 		.word	1063698124
- 1365 0528 880F663F 		.word	1063653256
- 1366 052c 0B5E653F 		.word	1063607819
- 1367 0530 59AA643F 		.word	1063561817
- 1368 0534 73F4633F 		.word	1063515251
- 1369 0538 5A3C633F 		.word	1063468122
- 1370 053c 1082623F 		.word	1063420432
- 1371 0540 97C5613F 		.word	1063372183
- 1372 0544 F206613F 		.word	1063323378
- 1373 0548 2146603F 		.word	1063274017
- 1374 054c 27835F3F 		.word	1063224103
- 1375 0550 05BE5E3F 		.word	1063173637
- 1376 0554 BEF65D3F 		.word	1063122622
- 1377 0558 532D5D3F 		.word	1063071059
- 1378 055c C7615C3F 		.word	1063018951
- 1379 0560 1A945B3F 		.word	1062966298
- 1380 0564 50C45A3F 		.word	1062913104
- 1381 0568 6AF2593F 		.word	1062859370
- 1382 056c 6A1E593F 		.word	1062805098
- 1383 0570 5348583F 		.word	1062750291
-ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccBEAgJi.s 			page 32
+ 1339 0510 A7096A3F 		.word	1063913895
+ 1340 0514 9165693F 		.word	1063871889
+ 1341 0518 3CBF683F 		.word	1063829308
+ 1342 051c A816683F 		.word	1063786152
+ 1343 0520 D86B673F 		.word	1063742424
+ 1344 0524 CCBE663F 		.word	1063698124
+ 1345 0528 880F663F 		.word	1063653256
+ 1346 052c 0B5E653F 		.word	1063607819
+ 1347 0530 59AA643F 		.word	1063561817
+ 1348 0534 73F4633F 		.word	1063515251
+ 1349 0538 5A3C633F 		.word	1063468122
+ 1350 053c 1082623F 		.word	1063420432
+ 1351 0540 97C5613F 		.word	1063372183
+ 1352 0544 F206613F 		.word	1063323378
+ 1353 0548 2146603F 		.word	1063274017
+ 1354 054c 27835F3F 		.word	1063224103
+ 1355 0550 05BE5E3F 		.word	1063173637
+ 1356 0554 BEF65D3F 		.word	1063122622
+ 1357 0558 532D5D3F 		.word	1063071059
+ 1358 055c C7615C3F 		.word	1063018951
+ 1359 0560 1A945B3F 		.word	1062966298
+ 1360 0564 50C45A3F 		.word	1062913104
+ 1361 0568 6AF2593F 		.word	1062859370
+ 1362 056c 6A1E593F 		.word	1062805098
+ 1363 0570 5348583F 		.word	1062750291
+ 1364 0574 2670573F 		.word	1062694950
+ 1365 0578 E595563F 		.word	1062639077
+ 1366 057c 93B9553F 		.word	1062582675
+ 1367 0580 31DB543F 		.word	1062525745
+ 1368 0584 C3FA533F 		.word	1062468291
+ 1369 0588 4918533F 		.word	1062410313
+ 1370 058c C633523F 		.word	1062351814
+ 1371 0590 3D4D513F 		.word	1062292797
+ 1372 0594 AF64503F 		.word	1062233263
+ 1373 0598 207A4F3F 		.word	1062173216
+ 1374 059c 908D4E3F 		.word	1062112656
+ 1375 05a0 029F4D3F 		.word	1062051586
+ 1376 05a4 79AE4C3F 		.word	1061990009
+ 1377 05a8 F8BB4B3F 		.word	1061927928
+ 1378 05ac 7FC74A3F 		.word	1061865343
+ 1379 05b0 12D1493F 		.word	1061802258
+ 1380 05b4 B4D8483F 		.word	1061738676
+ 1381 05b8 65DE473F 		.word	1061674597
+ 1382 05bc 2AE2463F 		.word	1061610026
+ 1383 05c0 03E4453F 		.word	1061544963
+ 1384 05c4 F5E3443F 		.word	1061479413
+ 1385 05c8 01E2433F 		.word	1061413377
+ 1386 05cc 29DE423F 		.word	1061346857
+ 1387 05d0 70D8413F 		.word	1061279856
+ 1388 05d4 DAD0403F 		.word	1061212378
+ 1389 05d8 67C73F3F 		.word	1061144423
+ 1390 05dc 1BBC3E3F 		.word	1061075995
+ 1391 05e0 F9AE3D3F 		.word	1061007097
+ 1392 05e4 03A03C3F 		.word	1060937731
+ 1393 05e8 3B8F3B3F 		.word	1060867899
+ 1394 05ec A47C3A3F 		.word	1060797604
+ 1395 05f0 4268393F 		.word	1060726850
+ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccqHetyi.s 			page 32
 
 
- 1384 0574 2670573F 		.word	1062694950
- 1385 0578 E595563F 		.word	1062639077
- 1386 057c 93B9553F 		.word	1062582675
- 1387 0580 31DB543F 		.word	1062525745
- 1388 0584 C3FA533F 		.word	1062468291
- 1389 0588 4918533F 		.word	1062410313
- 1390 058c C633523F 		.word	1062351814
- 1391 0590 3D4D513F 		.word	1062292797
- 1392 0594 AF64503F 		.word	1062233263
- 1393 0598 207A4F3F 		.word	1062173216
- 1394 059c 908D4E3F 		.word	1062112656
- 1395 05a0 029F4D3F 		.word	1062051586
- 1396 05a4 79AE4C3F 		.word	1061990009
- 1397 05a8 F8BB4B3F 		.word	1061927928
- 1398 05ac 7FC74A3F 		.word	1061865343
- 1399 05b0 12D1493F 		.word	1061802258
- 1400 05b4 B4D8483F 		.word	1061738676
- 1401 05b8 65DE473F 		.word	1061674597
- 1402 05bc 2AE2463F 		.word	1061610026
- 1403 05c0 03E4453F 		.word	1061544963
- 1404 05c4 F5E3443F 		.word	1061479413
- 1405 05c8 01E2433F 		.word	1061413377
- 1406 05cc 29DE423F 		.word	1061346857
- 1407 05d0 70D8413F 		.word	1061279856
- 1408 05d4 DAD0403F 		.word	1061212378
- 1409 05d8 67C73F3F 		.word	1061144423
- 1410 05dc 1BBC3E3F 		.word	1061075995
- 1411 05e0 F9AE3D3F 		.word	1061007097
- 1412 05e4 03A03C3F 		.word	1060937731
- 1413 05e8 3B8F3B3F 		.word	1060867899
- 1414 05ec A47C3A3F 		.word	1060797604
- 1415 05f0 4268393F 		.word	1060726850
- 1416 05f4 1652383F 		.word	1060655638
- 1417 05f8 233A373F 		.word	1060583971
- 1418 05fc 6C20363F 		.word	1060511852
- 1419 0600 F304353F 		.word	1060439283
- 1420 0604 BCE7333F 		.word	1060366268
- 1421 0608 C9C8323F 		.word	1060292809
- 1422 060c 1DA8313F 		.word	1060218909
- 1423 0610 BB85303F 		.word	1060144571
- 1424 0614 A5612F3F 		.word	1060069797
- 1425 0618 DE3B2E3F 		.word	1059994590
- 1426 061c 69142D3F 		.word	1059918953
- 1427 0620 4AEB2B3F 		.word	1059842890
- 1428 0624 82C02A3F 		.word	1059766402
- 1429 0628 1594293F 		.word	1059689493
- 1430 062c 0566283F 		.word	1059612165
- 1431 0630 5636273F 		.word	1059534422
- 1432 0634 0A05263F 		.word	1059456266
- 1433 0638 25D2243F 		.word	1059377701
- 1434 063c A99D233F 		.word	1059298729
- 1435 0640 9967223F 		.word	1059219353
- 1436 0644 F92F213F 		.word	1059139577
- 1437 0648 CBF61F3F 		.word	1059059403
- 1438 064c 12BC1E3F 		.word	1058978834
- 1439 0650 D17F1D3F 		.word	1058897873
- 1440 0654 0C421C3F 		.word	1058816524
-ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccBEAgJi.s 			page 33
+ 1396 05f4 1652383F 		.word	1060655638
+ 1397 05f8 233A373F 		.word	1060583971
+ 1398 05fc 6C20363F 		.word	1060511852
+ 1399 0600 F304353F 		.word	1060439283
+ 1400 0604 BCE7333F 		.word	1060366268
+ 1401 0608 C9C8323F 		.word	1060292809
+ 1402 060c 1DA8313F 		.word	1060218909
+ 1403 0610 BB85303F 		.word	1060144571
+ 1404 0614 A5612F3F 		.word	1060069797
+ 1405 0618 DE3B2E3F 		.word	1059994590
+ 1406 061c 69142D3F 		.word	1059918953
+ 1407 0620 4AEB2B3F 		.word	1059842890
+ 1408 0624 82C02A3F 		.word	1059766402
+ 1409 0628 1594293F 		.word	1059689493
+ 1410 062c 0566283F 		.word	1059612165
+ 1411 0630 5636273F 		.word	1059534422
+ 1412 0634 0A05263F 		.word	1059456266
+ 1413 0638 25D2243F 		.word	1059377701
+ 1414 063c A99D233F 		.word	1059298729
+ 1415 0640 9967223F 		.word	1059219353
+ 1416 0644 F92F213F 		.word	1059139577
+ 1417 0648 CBF61F3F 		.word	1059059403
+ 1418 064c 12BC1E3F 		.word	1058978834
+ 1419 0650 D17F1D3F 		.word	1058897873
+ 1420 0654 0C421C3F 		.word	1058816524
+ 1421 0658 C6021B3F 		.word	1058734790
+ 1422 065c 00C2193F 		.word	1058652672
+ 1423 0660 C07F183F 		.word	1058570176
+ 1424 0664 073C173F 		.word	1058487303
+ 1425 0668 D9F6153F 		.word	1058404057
+ 1426 066c 39B0143F 		.word	1058320441
+ 1427 0670 2A68133F 		.word	1058236458
+ 1428 0674 B01E123F 		.word	1058152112
+ 1429 0678 CDD3103F 		.word	1058067405
+ 1430 067c 84870F3F 		.word	1057982340
+ 1431 0680 DA390E3F 		.word	1057896922
+ 1432 0684 D0EA0C3F 		.word	1057811152
+ 1433 0688 6B9A0B3F 		.word	1057725035
+ 1434 068c AD480A3F 		.word	1057638573
+ 1435 0690 9BF5083F 		.word	1057551771
+ 1436 0694 36A1073F 		.word	1057464630
+ 1437 0698 824B063F 		.word	1057377154
+ 1438 069c 84F4043F 		.word	1057289348
+ 1439 06a0 3D9C033F 		.word	1057201213
+ 1440 06a4 B142023F 		.word	1057112753
+ 1441 06a8 E4E7003F 		.word	1057023972
+ 1442 06ac B217FF3E 		.word	1056905138
+ 1443 06b0 275DFC3E 		.word	1056726311
+ 1444 06b4 2DA0F93E 		.word	1056546861
+ 1445 06b8 CBE0F63E 		.word	1056366795
+ 1446 06bc 071FF43E 		.word	1056186119
+ 1447 06c0 EA5AF13E 		.word	1056004842
+ 1448 06c4 7994EE3E 		.word	1055822969
+ 1449 06c8 BBCBEB3E 		.word	1055640507
+ 1450 06cc B700E93E 		.word	1055457463
+ 1451 06d0 7533E63E 		.word	1055273845
+ 1452 06d4 FA63E33E 		.word	1055089658
+ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccqHetyi.s 			page 33
 
 
- 1441 0658 C6021B3F 		.word	1058734790
- 1442 065c 00C2193F 		.word	1058652672
- 1443 0660 C07F183F 		.word	1058570176
- 1444 0664 073C173F 		.word	1058487303
- 1445 0668 D9F6153F 		.word	1058404057
- 1446 066c 39B0143F 		.word	1058320441
- 1447 0670 2A68133F 		.word	1058236458
- 1448 0674 B01E123F 		.word	1058152112
- 1449 0678 CDD3103F 		.word	1058067405
- 1450 067c 84870F3F 		.word	1057982340
- 1451 0680 DA390E3F 		.word	1057896922
- 1452 0684 D0EA0C3F 		.word	1057811152
- 1453 0688 6B9A0B3F 		.word	1057725035
- 1454 068c AD480A3F 		.word	1057638573
- 1455 0690 9BF5083F 		.word	1057551771
- 1456 0694 36A1073F 		.word	1057464630
- 1457 0698 824B063F 		.word	1057377154
- 1458 069c 84F4043F 		.word	1057289348
- 1459 06a0 3D9C033F 		.word	1057201213
- 1460 06a4 B142023F 		.word	1057112753
- 1461 06a8 E4E7003F 		.word	1057023972
- 1462 06ac B217FF3E 		.word	1056905138
- 1463 06b0 275DFC3E 		.word	1056726311
- 1464 06b4 2DA0F93E 		.word	1056546861
- 1465 06b8 CBE0F63E 		.word	1056366795
- 1466 06bc 071FF43E 		.word	1056186119
- 1467 06c0 EA5AF13E 		.word	1056004842
- 1468 06c4 7994EE3E 		.word	1055822969
- 1469 06c8 BBCBEB3E 		.word	1055640507
- 1470 06cc B700E93E 		.word	1055457463
- 1471 06d0 7533E63E 		.word	1055273845
- 1472 06d4 FA63E33E 		.word	1055089658
- 1473 06d8 4F92E03E 		.word	1054904911
- 1474 06dc 79BEDD3E 		.word	1054719609
- 1475 06e0 80E8DA3E 		.word	1054533760
- 1476 06e4 6B10D83E 		.word	1054347371
- 1477 06e8 4136D53E 		.word	1054160449
- 1478 06ec 095AD23E 		.word	1053973001
- 1479 06f0 CA7BCF3E 		.word	1053785034
- 1480 06f4 8B9BCC3E 		.word	1053596555
- 1481 06f8 53B9C93E 		.word	1053407571
- 1482 06fc 2AD5C63E 		.word	1053218090
- 1483 0700 15EFC33E 		.word	1053028117
- 1484 0704 1E07C13E 		.word	1052837662
- 1485 0708 491DBE3E 		.word	1052646729
- 1486 070c A131BB3E 		.word	1052455329
- 1487 0710 2A44B83E 		.word	1052263466
- 1488 0714 EC54B53E 		.word	1052071148
- 1489 0718 EF63B23E 		.word	1051878383
- 1490 071c 3A71AF3E 		.word	1051685178
- 1491 0720 D47CAC3E 		.word	1051491540
- 1492 0724 C486A93E 		.word	1051297476
- 1493 0728 128FA63E 		.word	1051102994
- 1494 072c C595A33E 		.word	1050908101
- 1495 0730 E59AA03E 		.word	1050712805
- 1496 0734 789E9D3E 		.word	1050517112
- 1497 0738 86A09A3E 		.word	1050321030
-ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccBEAgJi.s 			page 34
+ 1453 06d8 4F92E03E 		.word	1054904911
+ 1454 06dc 79BEDD3E 		.word	1054719609
+ 1455 06e0 80E8DA3E 		.word	1054533760
+ 1456 06e4 6B10D83E 		.word	1054347371
+ 1457 06e8 4136D53E 		.word	1054160449
+ 1458 06ec 095AD23E 		.word	1053973001
+ 1459 06f0 CA7BCF3E 		.word	1053785034
+ 1460 06f4 8B9BCC3E 		.word	1053596555
+ 1461 06f8 53B9C93E 		.word	1053407571
+ 1462 06fc 2AD5C63E 		.word	1053218090
+ 1463 0700 15EFC33E 		.word	1053028117
+ 1464 0704 1E07C13E 		.word	1052837662
+ 1465 0708 491DBE3E 		.word	1052646729
+ 1466 070c A131BB3E 		.word	1052455329
+ 1467 0710 2A44B83E 		.word	1052263466
+ 1468 0714 EC54B53E 		.word	1052071148
+ 1469 0718 EF63B23E 		.word	1051878383
+ 1470 071c 3A71AF3E 		.word	1051685178
+ 1471 0720 D47CAC3E 		.word	1051491540
+ 1472 0724 C486A93E 		.word	1051297476
+ 1473 0728 128FA63E 		.word	1051102994
+ 1474 072c C595A33E 		.word	1050908101
+ 1475 0730 E59AA03E 		.word	1050712805
+ 1476 0734 789E9D3E 		.word	1050517112
+ 1477 0738 86A09A3E 		.word	1050321030
+ 1478 073c 17A1973E 		.word	1050124567
+ 1479 0740 32A0943E 		.word	1049927730
+ 1480 0744 DD9D913E 		.word	1049730525
+ 1481 0748 229A8E3E 		.word	1049532962
+ 1482 074c 07958B3E 		.word	1049335047
+ 1483 0750 938E883E 		.word	1049136787
+ 1484 0754 CF86853E 		.word	1048938191
+ 1485 0758 C07D823E 		.word	1048739264
+ 1486 075c E1E67E3E 		.word	1048504033
+ 1487 0760 CCCF783E 		.word	1048104908
+ 1488 0764 51B6723E 		.word	1047705169
+ 1489 0768 7F9A6C3E 		.word	1047304831
+ 1490 076c 667C663E 		.word	1046903910
+ 1491 0770 135C603E 		.word	1046502419
+ 1492 0774 97395A3E 		.word	1046100375
+ 1493 0778 0115543E 		.word	1045697793
+ 1494 077c 5FEE4D3E 		.word	1045294687
+ 1495 0780 C2C5473E 		.word	1044891074
+ 1496 0784 379B413E 		.word	1044486967
+ 1497 0788 CF6E3B3E 		.word	1044082383
+ 1498 078c 9840353E 		.word	1043677336
+ 1499 0790 A2102F3E 		.word	1043271842
+ 1500 0794 FCDE283E 		.word	1042865916
+ 1501 0798 B5AB223E 		.word	1042459573
+ 1502 079c DE761C3E 		.word	1042052830
+ 1503 07a0 8340163E 		.word	1041645699
+ 1504 07a4 B708103E 		.word	1041238199
+ 1505 07a8 87CF093E 		.word	1040830343
+ 1506 07ac 0295033E 		.word	1040422146
+ 1507 07b0 73B2FA3D 		.word	1039839859
+ 1508 07b4 7638EE3D 		.word	1039022198
+ 1509 07b8 2FBCE13D 		.word	1038203951
+ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccqHetyi.s 			page 34
 
 
- 1498 073c 17A1973E 		.word	1050124567
- 1499 0740 32A0943E 		.word	1049927730
- 1500 0744 DD9D913E 		.word	1049730525
- 1501 0748 229A8E3E 		.word	1049532962
- 1502 074c 07958B3E 		.word	1049335047
- 1503 0750 938E883E 		.word	1049136787
- 1504 0754 CF86853E 		.word	1048938191
- 1505 0758 C07D823E 		.word	1048739264
- 1506 075c E1E67E3E 		.word	1048504033
- 1507 0760 CCCF783E 		.word	1048104908
- 1508 0764 51B6723E 		.word	1047705169
- 1509 0768 7F9A6C3E 		.word	1047304831
- 1510 076c 667C663E 		.word	1046903910
- 1511 0770 135C603E 		.word	1046502419
- 1512 0774 97395A3E 		.word	1046100375
- 1513 0778 0115543E 		.word	1045697793
- 1514 077c 5FEE4D3E 		.word	1045294687
- 1515 0780 C2C5473E 		.word	1044891074
- 1516 0784 379B413E 		.word	1044486967
- 1517 0788 CF6E3B3E 		.word	1044082383
- 1518 078c 9840353E 		.word	1043677336
- 1519 0790 A2102F3E 		.word	1043271842
- 1520 0794 FCDE283E 		.word	1042865916
- 1521 0798 B5AB223E 		.word	1042459573
- 1522 079c DE761C3E 		.word	1042052830
- 1523 07a0 8340163E 		.word	1041645699
- 1524 07a4 B708103E 		.word	1041238199
- 1525 07a8 87CF093E 		.word	1040830343
- 1526 07ac 0295033E 		.word	1040422146
- 1527 07b0 73B2FA3D 		.word	1039839859
- 1528 07b4 7638EE3D 		.word	1039022198
- 1529 07b8 2FBCE13D 		.word	1038203951
- 1530 07bc B93DD53D 		.word	1037385145
- 1531 07c0 36BDC83D 		.word	1036565814
- 1532 07c4 C43ABC3D 		.word	1035745988
- 1533 07c8 80B6AF3D 		.word	1034925696
- 1534 07cc 8C30A33D 		.word	1034104972
- 1535 07d0 04A9963D 		.word	1033283844
- 1536 07d4 0A208A3D 		.word	1032462346
- 1537 07d8 752B7B3D 		.word	1031482229
- 1538 07dc 6714623D 		.word	1029837927
- 1539 07e0 2EFB483D 		.word	1028193070
- 1540 07e4 07E02F3D 		.word	1026547719
- 1541 07e8 2BC3163D 		.word	1024901931
- 1542 07ec B849FB3C 		.word	1023101368
- 1543 07f0 B10AC93C 		.word	1019808433
- 1544 07f4 B6C9963C 		.word	1016514998
- 1545 07f8 920E493C 		.word	1011420818
- 1546 07fc 7E0FC93B 		.word	1003032446
- 1547 0800 00000000 		.word	0
- 1548 0804 7E0FC9BB 		.word	-1144451202
- 1549 0808 920E49BC 		.word	-1136062830
- 1550 080c B6C996BC 		.word	-1130968650
- 1551 0810 B10AC9BC 		.word	-1127675215
- 1552 0814 B849FBBC 		.word	-1124382280
- 1553 0818 2BC316BD 		.word	-1122581717
- 1554 081c 07E02FBD 		.word	-1120935929
-ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccBEAgJi.s 			page 35
+ 1510 07bc B93DD53D 		.word	1037385145
+ 1511 07c0 36BDC83D 		.word	1036565814
+ 1512 07c4 C43ABC3D 		.word	1035745988
+ 1513 07c8 80B6AF3D 		.word	1034925696
+ 1514 07cc 8C30A33D 		.word	1034104972
+ 1515 07d0 04A9963D 		.word	1033283844
+ 1516 07d4 0A208A3D 		.word	1032462346
+ 1517 07d8 752B7B3D 		.word	1031482229
+ 1518 07dc 6714623D 		.word	1029837927
+ 1519 07e0 2EFB483D 		.word	1028193070
+ 1520 07e4 07E02F3D 		.word	1026547719
+ 1521 07e8 2BC3163D 		.word	1024901931
+ 1522 07ec B849FB3C 		.word	1023101368
+ 1523 07f0 B10AC93C 		.word	1019808433
+ 1524 07f4 B6C9963C 		.word	1016514998
+ 1525 07f8 920E493C 		.word	1011420818
+ 1526 07fc 7E0FC93B 		.word	1003032446
+ 1527 0800 00000000 		.word	0
+ 1528 0804 7E0FC9BB 		.word	-1144451202
+ 1529 0808 920E49BC 		.word	-1136062830
+ 1530 080c B6C996BC 		.word	-1130968650
+ 1531 0810 B10AC9BC 		.word	-1127675215
+ 1532 0814 B849FBBC 		.word	-1124382280
+ 1533 0818 2BC316BD 		.word	-1122581717
+ 1534 081c 07E02FBD 		.word	-1120935929
+ 1535 0820 2EFB48BD 		.word	-1119290578
+ 1536 0824 671462BD 		.word	-1117645721
+ 1537 0828 752B7BBD 		.word	-1116001419
+ 1538 082c 0A208ABD 		.word	-1115021302
+ 1539 0830 04A996BD 		.word	-1114199804
+ 1540 0834 8C30A3BD 		.word	-1113378676
+ 1541 0838 80B6AFBD 		.word	-1112557952
+ 1542 083c C43ABCBD 		.word	-1111737660
+ 1543 0840 36BDC8BD 		.word	-1110917834
+ 1544 0844 B93DD5BD 		.word	-1110098503
+ 1545 0848 2FBCE1BD 		.word	-1109279697
+ 1546 084c 7638EEBD 		.word	-1108461450
+ 1547 0850 73B2FABD 		.word	-1107643789
+ 1548 0854 029503BE 		.word	-1107061502
+ 1549 0858 87CF09BE 		.word	-1106653305
+ 1550 085c B70810BE 		.word	-1106245449
+ 1551 0860 834016BE 		.word	-1105837949
+ 1552 0864 DE761CBE 		.word	-1105430818
+ 1553 0868 B5AB22BE 		.word	-1105024075
+ 1554 086c FCDE28BE 		.word	-1104617732
+ 1555 0870 A2102FBE 		.word	-1104211806
+ 1556 0874 984035BE 		.word	-1103806312
+ 1557 0878 CF6E3BBE 		.word	-1103401265
+ 1558 087c 379B41BE 		.word	-1102996681
+ 1559 0880 C2C547BE 		.word	-1102592574
+ 1560 0884 5FEE4DBE 		.word	-1102188961
+ 1561 0888 011554BE 		.word	-1101785855
+ 1562 088c 97395ABE 		.word	-1101383273
+ 1563 0890 135C60BE 		.word	-1100981229
+ 1564 0894 667C66BE 		.word	-1100579738
+ 1565 0898 7F9A6CBE 		.word	-1100178817
+ 1566 089c 51B672BE 		.word	-1099778479
+ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccqHetyi.s 			page 35
 
 
- 1555 0820 2EFB48BD 		.word	-1119290578
- 1556 0824 671462BD 		.word	-1117645721
- 1557 0828 752B7BBD 		.word	-1116001419
- 1558 082c 0A208ABD 		.word	-1115021302
- 1559 0830 04A996BD 		.word	-1114199804
- 1560 0834 8C30A3BD 		.word	-1113378676
- 1561 0838 80B6AFBD 		.word	-1112557952
- 1562 083c C43ABCBD 		.word	-1111737660
- 1563 0840 36BDC8BD 		.word	-1110917834
- 1564 0844 B93DD5BD 		.word	-1110098503
- 1565 0848 2FBCE1BD 		.word	-1109279697
- 1566 084c 7638EEBD 		.word	-1108461450
- 1567 0850 73B2FABD 		.word	-1107643789
- 1568 0854 029503BE 		.word	-1107061502
- 1569 0858 87CF09BE 		.word	-1106653305
- 1570 085c B70810BE 		.word	-1106245449
- 1571 0860 834016BE 		.word	-1105837949
- 1572 0864 DE761CBE 		.word	-1105430818
- 1573 0868 B5AB22BE 		.word	-1105024075
- 1574 086c FCDE28BE 		.word	-1104617732
- 1575 0870 A2102FBE 		.word	-1104211806
- 1576 0874 984035BE 		.word	-1103806312
- 1577 0878 CF6E3BBE 		.word	-1103401265
- 1578 087c 379B41BE 		.word	-1102996681
- 1579 0880 C2C547BE 		.word	-1102592574
- 1580 0884 5FEE4DBE 		.word	-1102188961
- 1581 0888 011554BE 		.word	-1101785855
- 1582 088c 97395ABE 		.word	-1101383273
- 1583 0890 135C60BE 		.word	-1100981229
- 1584 0894 667C66BE 		.word	-1100579738
- 1585 0898 7F9A6CBE 		.word	-1100178817
- 1586 089c 51B672BE 		.word	-1099778479
- 1587 08a0 CCCF78BE 		.word	-1099378740
- 1588 08a4 E1E67EBE 		.word	-1098979615
- 1589 08a8 C07D82BE 		.word	-1098744384
- 1590 08ac CF8685BE 		.word	-1098545457
- 1591 08b0 938E88BE 		.word	-1098346861
- 1592 08b4 07958BBE 		.word	-1098148601
- 1593 08b8 229A8EBE 		.word	-1097950686
- 1594 08bc DD9D91BE 		.word	-1097753123
- 1595 08c0 32A094BE 		.word	-1097555918
- 1596 08c4 17A197BE 		.word	-1097359081
- 1597 08c8 86A09ABE 		.word	-1097162618
- 1598 08cc 789E9DBE 		.word	-1096966536
- 1599 08d0 E59AA0BE 		.word	-1096770843
- 1600 08d4 C595A3BE 		.word	-1096575547
- 1601 08d8 128FA6BE 		.word	-1096380654
- 1602 08dc C486A9BE 		.word	-1096186172
- 1603 08e0 D47CACBE 		.word	-1095992108
- 1604 08e4 3A71AFBE 		.word	-1095798470
- 1605 08e8 EF63B2BE 		.word	-1095605265
- 1606 08ec EC54B5BE 		.word	-1095412500
- 1607 08f0 2A44B8BE 		.word	-1095220182
- 1608 08f4 A131BBBE 		.word	-1095028319
- 1609 08f8 491DBEBE 		.word	-1094836919
- 1610 08fc 1E07C1BE 		.word	-1094645986
- 1611 0900 15EFC3BE 		.word	-1094455531
-ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccBEAgJi.s 			page 36
+ 1567 08a0 CCCF78BE 		.word	-1099378740
+ 1568 08a4 E1E67EBE 		.word	-1098979615
+ 1569 08a8 C07D82BE 		.word	-1098744384
+ 1570 08ac CF8685BE 		.word	-1098545457
+ 1571 08b0 938E88BE 		.word	-1098346861
+ 1572 08b4 07958BBE 		.word	-1098148601
+ 1573 08b8 229A8EBE 		.word	-1097950686
+ 1574 08bc DD9D91BE 		.word	-1097753123
+ 1575 08c0 32A094BE 		.word	-1097555918
+ 1576 08c4 17A197BE 		.word	-1097359081
+ 1577 08c8 86A09ABE 		.word	-1097162618
+ 1578 08cc 789E9DBE 		.word	-1096966536
+ 1579 08d0 E59AA0BE 		.word	-1096770843
+ 1580 08d4 C595A3BE 		.word	-1096575547
+ 1581 08d8 128FA6BE 		.word	-1096380654
+ 1582 08dc C486A9BE 		.word	-1096186172
+ 1583 08e0 D47CACBE 		.word	-1095992108
+ 1584 08e4 3A71AFBE 		.word	-1095798470
+ 1585 08e8 EF63B2BE 		.word	-1095605265
+ 1586 08ec EC54B5BE 		.word	-1095412500
+ 1587 08f0 2A44B8BE 		.word	-1095220182
+ 1588 08f4 A131BBBE 		.word	-1095028319
+ 1589 08f8 491DBEBE 		.word	-1094836919
+ 1590 08fc 1E07C1BE 		.word	-1094645986
+ 1591 0900 15EFC3BE 		.word	-1094455531
+ 1592 0904 2AD5C6BE 		.word	-1094265558
+ 1593 0908 53B9C9BE 		.word	-1094076077
+ 1594 090c 8B9BCCBE 		.word	-1093887093
+ 1595 0910 CA7BCFBE 		.word	-1093698614
+ 1596 0914 095AD2BE 		.word	-1093510647
+ 1597 0918 4136D5BE 		.word	-1093323199
+ 1598 091c 6B10D8BE 		.word	-1093136277
+ 1599 0920 80E8DABE 		.word	-1092949888
+ 1600 0924 79BEDDBE 		.word	-1092764039
+ 1601 0928 4F92E0BE 		.word	-1092578737
+ 1602 092c FA63E3BE 		.word	-1092393990
+ 1603 0930 7533E6BE 		.word	-1092209803
+ 1604 0934 B700E9BE 		.word	-1092026185
+ 1605 0938 BBCBEBBE 		.word	-1091843141
+ 1606 093c 7994EEBE 		.word	-1091660679
+ 1607 0940 EA5AF1BE 		.word	-1091478806
+ 1608 0944 071FF4BE 		.word	-1091297529
+ 1609 0948 CBE0F6BE 		.word	-1091116853
+ 1610 094c 2DA0F9BE 		.word	-1090936787
+ 1611 0950 275DFCBE 		.word	-1090757337
+ 1612 0954 B217FFBE 		.word	-1090578510
+ 1613 0958 E4E700BF 		.word	-1090459676
+ 1614 095c B14202BF 		.word	-1090370895
+ 1615 0960 3D9C03BF 		.word	-1090282435
+ 1616 0964 84F404BF 		.word	-1090194300
+ 1617 0968 824B06BF 		.word	-1090106494
+ 1618 096c 36A107BF 		.word	-1090019018
+ 1619 0970 9BF508BF 		.word	-1089931877
+ 1620 0974 AD480ABF 		.word	-1089845075
+ 1621 0978 6B9A0BBF 		.word	-1089758613
+ 1622 097c D0EA0CBF 		.word	-1089672496
+ 1623 0980 DA390EBF 		.word	-1089586726
+ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccqHetyi.s 			page 36
 
 
- 1612 0904 2AD5C6BE 		.word	-1094265558
- 1613 0908 53B9C9BE 		.word	-1094076077
- 1614 090c 8B9BCCBE 		.word	-1093887093
- 1615 0910 CA7BCFBE 		.word	-1093698614
- 1616 0914 095AD2BE 		.word	-1093510647
- 1617 0918 4136D5BE 		.word	-1093323199
- 1618 091c 6B10D8BE 		.word	-1093136277
- 1619 0920 80E8DABE 		.word	-1092949888
- 1620 0924 79BEDDBE 		.word	-1092764039
- 1621 0928 4F92E0BE 		.word	-1092578737
- 1622 092c FA63E3BE 		.word	-1092393990
- 1623 0930 7533E6BE 		.word	-1092209803
- 1624 0934 B700E9BE 		.word	-1092026185
- 1625 0938 BBCBEBBE 		.word	-1091843141
- 1626 093c 7994EEBE 		.word	-1091660679
- 1627 0940 EA5AF1BE 		.word	-1091478806
- 1628 0944 071FF4BE 		.word	-1091297529
- 1629 0948 CBE0F6BE 		.word	-1091116853
- 1630 094c 2DA0F9BE 		.word	-1090936787
- 1631 0950 275DFCBE 		.word	-1090757337
- 1632 0954 B217FFBE 		.word	-1090578510
- 1633 0958 E4E700BF 		.word	-1090459676
- 1634 095c B14202BF 		.word	-1090370895
- 1635 0960 3D9C03BF 		.word	-1090282435
- 1636 0964 84F404BF 		.word	-1090194300
- 1637 0968 824B06BF 		.word	-1090106494
- 1638 096c 36A107BF 		.word	-1090019018
- 1639 0970 9BF508BF 		.word	-1089931877
- 1640 0974 AD480ABF 		.word	-1089845075
- 1641 0978 6B9A0BBF 		.word	-1089758613
- 1642 097c D0EA0CBF 		.word	-1089672496
- 1643 0980 DA390EBF 		.word	-1089586726
- 1644 0984 84870FBF 		.word	-1089501308
- 1645 0988 CDD310BF 		.word	-1089416243
- 1646 098c B01E12BF 		.word	-1089331536
- 1647 0990 2A6813BF 		.word	-1089247190
- 1648 0994 39B014BF 		.word	-1089163207
- 1649 0998 D9F615BF 		.word	-1089079591
- 1650 099c 073C17BF 		.word	-1088996345
- 1651 09a0 C07F18BF 		.word	-1088913472
- 1652 09a4 00C219BF 		.word	-1088830976
- 1653 09a8 C6021BBF 		.word	-1088748858
- 1654 09ac 0C421CBF 		.word	-1088667124
- 1655 09b0 D17F1DBF 		.word	-1088585775
- 1656 09b4 12BC1EBF 		.word	-1088504814
- 1657 09b8 CBF61FBF 		.word	-1088424245
- 1658 09bc F92F21BF 		.word	-1088344071
- 1659 09c0 996722BF 		.word	-1088264295
- 1660 09c4 A99D23BF 		.word	-1088184919
- 1661 09c8 25D224BF 		.word	-1088105947
- 1662 09cc 0A0526BF 		.word	-1088027382
- 1663 09d0 563627BF 		.word	-1087949226
- 1664 09d4 056628BF 		.word	-1087871483
- 1665 09d8 159429BF 		.word	-1087794155
- 1666 09dc 82C02ABF 		.word	-1087717246
- 1667 09e0 4AEB2BBF 		.word	-1087640758
- 1668 09e4 69142DBF 		.word	-1087564695
-ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccBEAgJi.s 			page 37
+ 1624 0984 84870FBF 		.word	-1089501308
+ 1625 0988 CDD310BF 		.word	-1089416243
+ 1626 098c B01E12BF 		.word	-1089331536
+ 1627 0990 2A6813BF 		.word	-1089247190
+ 1628 0994 39B014BF 		.word	-1089163207
+ 1629 0998 D9F615BF 		.word	-1089079591
+ 1630 099c 073C17BF 		.word	-1088996345
+ 1631 09a0 C07F18BF 		.word	-1088913472
+ 1632 09a4 00C219BF 		.word	-1088830976
+ 1633 09a8 C6021BBF 		.word	-1088748858
+ 1634 09ac 0C421CBF 		.word	-1088667124
+ 1635 09b0 D17F1DBF 		.word	-1088585775
+ 1636 09b4 12BC1EBF 		.word	-1088504814
+ 1637 09b8 CBF61FBF 		.word	-1088424245
+ 1638 09bc F92F21BF 		.word	-1088344071
+ 1639 09c0 996722BF 		.word	-1088264295
+ 1640 09c4 A99D23BF 		.word	-1088184919
+ 1641 09c8 25D224BF 		.word	-1088105947
+ 1642 09cc 0A0526BF 		.word	-1088027382
+ 1643 09d0 563627BF 		.word	-1087949226
+ 1644 09d4 056628BF 		.word	-1087871483
+ 1645 09d8 159429BF 		.word	-1087794155
+ 1646 09dc 82C02ABF 		.word	-1087717246
+ 1647 09e0 4AEB2BBF 		.word	-1087640758
+ 1648 09e4 69142DBF 		.word	-1087564695
+ 1649 09e8 DE3B2EBF 		.word	-1087489058
+ 1650 09ec A5612FBF 		.word	-1087413851
+ 1651 09f0 BB8530BF 		.word	-1087339077
+ 1652 09f4 1DA831BF 		.word	-1087264739
+ 1653 09f8 C9C832BF 		.word	-1087190839
+ 1654 09fc BCE733BF 		.word	-1087117380
+ 1655 0a00 F30435BF 		.word	-1087044365
+ 1656 0a04 6C2036BF 		.word	-1086971796
+ 1657 0a08 233A37BF 		.word	-1086899677
+ 1658 0a0c 165238BF 		.word	-1086828010
+ 1659 0a10 426839BF 		.word	-1086756798
+ 1660 0a14 A47C3ABF 		.word	-1086686044
+ 1661 0a18 3B8F3BBF 		.word	-1086615749
+ 1662 0a1c 03A03CBF 		.word	-1086545917
+ 1663 0a20 F9AE3DBF 		.word	-1086476551
+ 1664 0a24 1BBC3EBF 		.word	-1086407653
+ 1665 0a28 67C73FBF 		.word	-1086339225
+ 1666 0a2c DAD040BF 		.word	-1086271270
+ 1667 0a30 70D841BF 		.word	-1086203792
+ 1668 0a34 29DE42BF 		.word	-1086136791
+ 1669 0a38 01E243BF 		.word	-1086070271
+ 1670 0a3c F5E344BF 		.word	-1086004235
+ 1671 0a40 03E445BF 		.word	-1085938685
+ 1672 0a44 2AE246BF 		.word	-1085873622
+ 1673 0a48 65DE47BF 		.word	-1085809051
+ 1674 0a4c B4D848BF 		.word	-1085744972
+ 1675 0a50 12D149BF 		.word	-1085681390
+ 1676 0a54 7FC74ABF 		.word	-1085618305
+ 1677 0a58 F8BB4BBF 		.word	-1085555720
+ 1678 0a5c 79AE4CBF 		.word	-1085493639
+ 1679 0a60 029F4DBF 		.word	-1085432062
+ 1680 0a64 908D4EBF 		.word	-1085370992
+ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccqHetyi.s 			page 37
 
 
- 1669 09e8 DE3B2EBF 		.word	-1087489058
- 1670 09ec A5612FBF 		.word	-1087413851
- 1671 09f0 BB8530BF 		.word	-1087339077
- 1672 09f4 1DA831BF 		.word	-1087264739
- 1673 09f8 C9C832BF 		.word	-1087190839
- 1674 09fc BCE733BF 		.word	-1087117380
- 1675 0a00 F30435BF 		.word	-1087044365
- 1676 0a04 6C2036BF 		.word	-1086971796
- 1677 0a08 233A37BF 		.word	-1086899677
- 1678 0a0c 165238BF 		.word	-1086828010
- 1679 0a10 426839BF 		.word	-1086756798
- 1680 0a14 A47C3ABF 		.word	-1086686044
- 1681 0a18 3B8F3BBF 		.word	-1086615749
- 1682 0a1c 03A03CBF 		.word	-1086545917
- 1683 0a20 F9AE3DBF 		.word	-1086476551
- 1684 0a24 1BBC3EBF 		.word	-1086407653
- 1685 0a28 67C73FBF 		.word	-1086339225
- 1686 0a2c DAD040BF 		.word	-1086271270
- 1687 0a30 70D841BF 		.word	-1086203792
- 1688 0a34 29DE42BF 		.word	-1086136791
- 1689 0a38 01E243BF 		.word	-1086070271
- 1690 0a3c F5E344BF 		.word	-1086004235
- 1691 0a40 03E445BF 		.word	-1085938685
- 1692 0a44 2AE246BF 		.word	-1085873622
- 1693 0a48 65DE47BF 		.word	-1085809051
- 1694 0a4c B4D848BF 		.word	-1085744972
- 1695 0a50 12D149BF 		.word	-1085681390
- 1696 0a54 7FC74ABF 		.word	-1085618305
- 1697 0a58 F8BB4BBF 		.word	-1085555720
- 1698 0a5c 79AE4CBF 		.word	-1085493639
- 1699 0a60 029F4DBF 		.word	-1085432062
- 1700 0a64 908D4EBF 		.word	-1085370992
- 1701 0a68 207A4FBF 		.word	-1085310432
- 1702 0a6c AF6450BF 		.word	-1085250385
- 1703 0a70 3D4D51BF 		.word	-1085190851
- 1704 0a74 C63352BF 		.word	-1085131834
- 1705 0a78 491853BF 		.word	-1085073335
- 1706 0a7c C3FA53BF 		.word	-1085015357
- 1707 0a80 31DB54BF 		.word	-1084957903
- 1708 0a84 93B955BF 		.word	-1084900973
- 1709 0a88 E59556BF 		.word	-1084844571
- 1710 0a8c 267057BF 		.word	-1084788698
- 1711 0a90 534858BF 		.word	-1084733357
- 1712 0a94 6A1E59BF 		.word	-1084678550
- 1713 0a98 6AF259BF 		.word	-1084624278
- 1714 0a9c 50C45ABF 		.word	-1084570544
- 1715 0aa0 1A945BBF 		.word	-1084517350
- 1716 0aa4 C7615CBF 		.word	-1084464697
- 1717 0aa8 532D5DBF 		.word	-1084412589
- 1718 0aac BEF65DBF 		.word	-1084361026
- 1719 0ab0 05BE5EBF 		.word	-1084310011
- 1720 0ab4 27835FBF 		.word	-1084259545
- 1721 0ab8 214660BF 		.word	-1084209631
- 1722 0abc F20661BF 		.word	-1084160270
- 1723 0ac0 97C561BF 		.word	-1084111465
- 1724 0ac4 108262BF 		.word	-1084063216
- 1725 0ac8 5A3C63BF 		.word	-1084015526
-ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccBEAgJi.s 			page 38
+ 1681 0a68 207A4FBF 		.word	-1085310432
+ 1682 0a6c AF6450BF 		.word	-1085250385
+ 1683 0a70 3D4D51BF 		.word	-1085190851
+ 1684 0a74 C63352BF 		.word	-1085131834
+ 1685 0a78 491853BF 		.word	-1085073335
+ 1686 0a7c C3FA53BF 		.word	-1085015357
+ 1687 0a80 31DB54BF 		.word	-1084957903
+ 1688 0a84 93B955BF 		.word	-1084900973
+ 1689 0a88 E59556BF 		.word	-1084844571
+ 1690 0a8c 267057BF 		.word	-1084788698
+ 1691 0a90 534858BF 		.word	-1084733357
+ 1692 0a94 6A1E59BF 		.word	-1084678550
+ 1693 0a98 6AF259BF 		.word	-1084624278
+ 1694 0a9c 50C45ABF 		.word	-1084570544
+ 1695 0aa0 1A945BBF 		.word	-1084517350
+ 1696 0aa4 C7615CBF 		.word	-1084464697
+ 1697 0aa8 532D5DBF 		.word	-1084412589
+ 1698 0aac BEF65DBF 		.word	-1084361026
+ 1699 0ab0 05BE5EBF 		.word	-1084310011
+ 1700 0ab4 27835FBF 		.word	-1084259545
+ 1701 0ab8 214660BF 		.word	-1084209631
+ 1702 0abc F20661BF 		.word	-1084160270
+ 1703 0ac0 97C561BF 		.word	-1084111465
+ 1704 0ac4 108262BF 		.word	-1084063216
+ 1705 0ac8 5A3C63BF 		.word	-1084015526
+ 1706 0acc 73F463BF 		.word	-1083968397
+ 1707 0ad0 59AA64BF 		.word	-1083921831
+ 1708 0ad4 0B5E65BF 		.word	-1083875829
+ 1709 0ad8 880F66BF 		.word	-1083830392
+ 1710 0adc CCBE66BF 		.word	-1083785524
+ 1711 0ae0 D86B67BF 		.word	-1083741224
+ 1712 0ae4 A81668BF 		.word	-1083697496
+ 1713 0ae8 3CBF68BF 		.word	-1083654340
+ 1714 0aec 916569BF 		.word	-1083611759
+ 1715 0af0 A7096ABF 		.word	-1083569753
+ 1716 0af4 7BAB6ABF 		.word	-1083528325
+ 1717 0af8 0C4B6BBF 		.word	-1083487476
+ 1718 0afc 58E86BBF 		.word	-1083447208
+ 1719 0b00 5E836CBF 		.word	-1083407522
+ 1720 0b04 1D1C6DBF 		.word	-1083368419
+ 1721 0b08 93B26DBF 		.word	-1083329901
+ 1722 0b0c BE466EBF 		.word	-1083291970
+ 1723 0b10 9ED86EBF 		.word	-1083254626
+ 1724 0b14 30686FBF 		.word	-1083217872
+ 1725 0b18 73F56FBF 		.word	-1083181709
+ 1726 0b1c 668070BF 		.word	-1083146138
+ 1727 0b20 080971BF 		.word	-1083111160
+ 1728 0b24 578F71BF 		.word	-1083076777
+ 1729 0b28 521372BF 		.word	-1083042990
+ 1730 0b2c F89472BF 		.word	-1083009800
+ 1731 0b30 471473BF 		.word	-1082977209
+ 1732 0b34 3F9173BF 		.word	-1082945217
+ 1733 0b38 DD0B74BF 		.word	-1082913827
+ 1734 0b3c 228474BF 		.word	-1082883038
+ 1735 0b40 0BFA74BF 		.word	-1082852853
+ 1736 0b44 976D75BF 		.word	-1082823273
+ 1737 0b48 C6DE75BF 		.word	-1082794298
+ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccqHetyi.s 			page 38
 
 
- 1726 0acc 73F463BF 		.word	-1083968397
- 1727 0ad0 59AA64BF 		.word	-1083921831
- 1728 0ad4 0B5E65BF 		.word	-1083875829
- 1729 0ad8 880F66BF 		.word	-1083830392
- 1730 0adc CCBE66BF 		.word	-1083785524
- 1731 0ae0 D86B67BF 		.word	-1083741224
- 1732 0ae4 A81668BF 		.word	-1083697496
- 1733 0ae8 3CBF68BF 		.word	-1083654340
- 1734 0aec 916569BF 		.word	-1083611759
- 1735 0af0 A7096ABF 		.word	-1083569753
- 1736 0af4 7BAB6ABF 		.word	-1083528325
- 1737 0af8 0C4B6BBF 		.word	-1083487476
- 1738 0afc 58E86BBF 		.word	-1083447208
- 1739 0b00 5E836CBF 		.word	-1083407522
- 1740 0b04 1D1C6DBF 		.word	-1083368419
- 1741 0b08 93B26DBF 		.word	-1083329901
- 1742 0b0c BE466EBF 		.word	-1083291970
- 1743 0b10 9ED86EBF 		.word	-1083254626
- 1744 0b14 30686FBF 		.word	-1083217872
- 1745 0b18 73F56FBF 		.word	-1083181709
- 1746 0b1c 668070BF 		.word	-1083146138
- 1747 0b20 080971BF 		.word	-1083111160
- 1748 0b24 578F71BF 		.word	-1083076777
- 1749 0b28 521372BF 		.word	-1083042990
- 1750 0b2c F89472BF 		.word	-1083009800
- 1751 0b30 471473BF 		.word	-1082977209
- 1752 0b34 3F9173BF 		.word	-1082945217
- 1753 0b38 DD0B74BF 		.word	-1082913827
- 1754 0b3c 228474BF 		.word	-1082883038
- 1755 0b40 0BFA74BF 		.word	-1082852853
- 1756 0b44 976D75BF 		.word	-1082823273
- 1757 0b48 C6DE75BF 		.word	-1082794298
- 1758 0b4c 974D76BF 		.word	-1082765929
- 1759 0b50 07BA76BF 		.word	-1082738169
- 1760 0b54 172477BF 		.word	-1082711017
- 1761 0b58 C58B77BF 		.word	-1082684475
- 1762 0b5c 10F177BF 		.word	-1082658544
- 1763 0b60 F85378BF 		.word	-1082633224
- 1764 0b64 7BB478BF 		.word	-1082608517
- 1765 0b68 981279BF 		.word	-1082584424
- 1766 0b6c 4E6E79BF 		.word	-1082560946
- 1767 0b70 9DC779BF 		.word	-1082538083
- 1768 0b74 841E7ABF 		.word	-1082515836
- 1769 0b78 02737ABF 		.word	-1082494206
- 1770 0b7c 16C57ABF 		.word	-1082473194
- 1771 0b80 BE147BBF 		.word	-1082452802
- 1772 0b84 FC617BBF 		.word	-1082433028
- 1773 0b88 CDAC7BBF 		.word	-1082413875
- 1774 0b8c 31F57BBF 		.word	-1082395343
- 1775 0b90 283B7CBF 		.word	-1082377432
- 1776 0b94 B07E7CBF 		.word	-1082360144
- 1777 0b98 C9BF7CBF 		.word	-1082343479
- 1778 0b9c 73FE7CBF 		.word	-1082327437
- 1779 0ba0 AC3A7DBF 		.word	-1082312020
- 1780 0ba4 74747DBF 		.word	-1082297228
- 1781 0ba8 CCAB7DBF 		.word	-1082283060
- 1782 0bac B1E07DBF 		.word	-1082269519
-ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccBEAgJi.s 			page 39
+ 1738 0b4c 974D76BF 		.word	-1082765929
+ 1739 0b50 07BA76BF 		.word	-1082738169
+ 1740 0b54 172477BF 		.word	-1082711017
+ 1741 0b58 C58B77BF 		.word	-1082684475
+ 1742 0b5c 10F177BF 		.word	-1082658544
+ 1743 0b60 F85378BF 		.word	-1082633224
+ 1744 0b64 7BB478BF 		.word	-1082608517
+ 1745 0b68 981279BF 		.word	-1082584424
+ 1746 0b6c 4E6E79BF 		.word	-1082560946
+ 1747 0b70 9DC779BF 		.word	-1082538083
+ 1748 0b74 841E7ABF 		.word	-1082515836
+ 1749 0b78 02737ABF 		.word	-1082494206
+ 1750 0b7c 16C57ABF 		.word	-1082473194
+ 1751 0b80 BE147BBF 		.word	-1082452802
+ 1752 0b84 FC617BBF 		.word	-1082433028
+ 1753 0b88 CDAC7BBF 		.word	-1082413875
+ 1754 0b8c 31F57BBF 		.word	-1082395343
+ 1755 0b90 283B7CBF 		.word	-1082377432
+ 1756 0b94 B07E7CBF 		.word	-1082360144
+ 1757 0b98 C9BF7CBF 		.word	-1082343479
+ 1758 0b9c 73FE7CBF 		.word	-1082327437
+ 1759 0ba0 AC3A7DBF 		.word	-1082312020
+ 1760 0ba4 74747DBF 		.word	-1082297228
+ 1761 0ba8 CCAB7DBF 		.word	-1082283060
+ 1762 0bac B1E07DBF 		.word	-1082269519
+ 1763 0bb0 23137EBF 		.word	-1082256605
+ 1764 0bb4 23437EBF 		.word	-1082244317
+ 1765 0bb8 B0707EBF 		.word	-1082232656
+ 1766 0bbc C99B7EBF 		.word	-1082221623
+ 1767 0bc0 6DC47EBF 		.word	-1082211219
+ 1768 0bc4 9DEA7EBF 		.word	-1082201443
+ 1769 0bc8 580E7FBF 		.word	-1082192296
+ 1770 0bcc 9D2F7FBF 		.word	-1082183779
+ 1771 0bd0 6D4E7FBF 		.word	-1082175891
+ 1772 0bd4 C76A7FBF 		.word	-1082168633
+ 1773 0bd8 AB847FBF 		.word	-1082162005
+ 1774 0bdc 189C7FBF 		.word	-1082156008
+ 1775 0be0 0FB17FBF 		.word	-1082150641
+ 1776 0be4 8FC37FBF 		.word	-1082145905
+ 1777 0be8 97D37FBF 		.word	-1082141801
+ 1778 0bec 29E17FBF 		.word	-1082138327
+ 1779 0bf0 43EC7FBF 		.word	-1082135485
+ 1780 0bf4 E6F47FBF 		.word	-1082133274
+ 1781 0bf8 11FB7FBF 		.word	-1082131695
+ 1782 0bfc C4FE7FBF 		.word	-1082130748
+ 1783 0c00 000080BF 		.word	-1082130432
+ 1784 0c04 C4FE7FBF 		.word	-1082130748
+ 1785 0c08 11FB7FBF 		.word	-1082131695
+ 1786 0c0c E6F47FBF 		.word	-1082133274
+ 1787 0c10 43EC7FBF 		.word	-1082135485
+ 1788 0c14 29E17FBF 		.word	-1082138327
+ 1789 0c18 97D37FBF 		.word	-1082141801
+ 1790 0c1c 8FC37FBF 		.word	-1082145905
+ 1791 0c20 0FB17FBF 		.word	-1082150641
+ 1792 0c24 189C7FBF 		.word	-1082156008
+ 1793 0c28 AB847FBF 		.word	-1082162005
+ 1794 0c2c C76A7FBF 		.word	-1082168633
+ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccqHetyi.s 			page 39
 
 
- 1783 0bb0 23137EBF 		.word	-1082256605
- 1784 0bb4 23437EBF 		.word	-1082244317
- 1785 0bb8 B0707EBF 		.word	-1082232656
- 1786 0bbc C99B7EBF 		.word	-1082221623
- 1787 0bc0 6DC47EBF 		.word	-1082211219
- 1788 0bc4 9DEA7EBF 		.word	-1082201443
- 1789 0bc8 580E7FBF 		.word	-1082192296
- 1790 0bcc 9D2F7FBF 		.word	-1082183779
- 1791 0bd0 6D4E7FBF 		.word	-1082175891
- 1792 0bd4 C76A7FBF 		.word	-1082168633
- 1793 0bd8 AB847FBF 		.word	-1082162005
- 1794 0bdc 189C7FBF 		.word	-1082156008
- 1795 0be0 0FB17FBF 		.word	-1082150641
- 1796 0be4 8FC37FBF 		.word	-1082145905
- 1797 0be8 97D37FBF 		.word	-1082141801
- 1798 0bec 29E17FBF 		.word	-1082138327
- 1799 0bf0 43EC7FBF 		.word	-1082135485
- 1800 0bf4 E6F47FBF 		.word	-1082133274
- 1801 0bf8 11FB7FBF 		.word	-1082131695
- 1802 0bfc C4FE7FBF 		.word	-1082130748
- 1803 0c00 000080BF 		.word	-1082130432
- 1804 0c04 C4FE7FBF 		.word	-1082130748
- 1805 0c08 11FB7FBF 		.word	-1082131695
- 1806 0c0c E6F47FBF 		.word	-1082133274
- 1807 0c10 43EC7FBF 		.word	-1082135485
- 1808 0c14 29E17FBF 		.word	-1082138327
- 1809 0c18 97D37FBF 		.word	-1082141801
- 1810 0c1c 8FC37FBF 		.word	-1082145905
- 1811 0c20 0FB17FBF 		.word	-1082150641
- 1812 0c24 189C7FBF 		.word	-1082156008
- 1813 0c28 AB847FBF 		.word	-1082162005
- 1814 0c2c C76A7FBF 		.word	-1082168633
- 1815 0c30 6D4E7FBF 		.word	-1082175891
- 1816 0c34 9D2F7FBF 		.word	-1082183779
- 1817 0c38 580E7FBF 		.word	-1082192296
- 1818 0c3c 9DEA7EBF 		.word	-1082201443
- 1819 0c40 6DC47EBF 		.word	-1082211219
- 1820 0c44 C99B7EBF 		.word	-1082221623
- 1821 0c48 B0707EBF 		.word	-1082232656
- 1822 0c4c 23437EBF 		.word	-1082244317
- 1823 0c50 23137EBF 		.word	-1082256605
- 1824 0c54 B1E07DBF 		.word	-1082269519
- 1825 0c58 CCAB7DBF 		.word	-1082283060
- 1826 0c5c 74747DBF 		.word	-1082297228
- 1827 0c60 AC3A7DBF 		.word	-1082312020
- 1828 0c64 73FE7CBF 		.word	-1082327437
- 1829 0c68 C9BF7CBF 		.word	-1082343479
- 1830 0c6c B07E7CBF 		.word	-1082360144
- 1831 0c70 283B7CBF 		.word	-1082377432
- 1832 0c74 31F57BBF 		.word	-1082395343
- 1833 0c78 CDAC7BBF 		.word	-1082413875
- 1834 0c7c FC617BBF 		.word	-1082433028
- 1835 0c80 BE147BBF 		.word	-1082452802
- 1836 0c84 16C57ABF 		.word	-1082473194
- 1837 0c88 02737ABF 		.word	-1082494206
- 1838 0c8c 841E7ABF 		.word	-1082515836
- 1839 0c90 9DC779BF 		.word	-1082538083
-ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccBEAgJi.s 			page 40
+ 1795 0c30 6D4E7FBF 		.word	-1082175891
+ 1796 0c34 9D2F7FBF 		.word	-1082183779
+ 1797 0c38 580E7FBF 		.word	-1082192296
+ 1798 0c3c 9DEA7EBF 		.word	-1082201443
+ 1799 0c40 6DC47EBF 		.word	-1082211219
+ 1800 0c44 C99B7EBF 		.word	-1082221623
+ 1801 0c48 B0707EBF 		.word	-1082232656
+ 1802 0c4c 23437EBF 		.word	-1082244317
+ 1803 0c50 23137EBF 		.word	-1082256605
+ 1804 0c54 B1E07DBF 		.word	-1082269519
+ 1805 0c58 CCAB7DBF 		.word	-1082283060
+ 1806 0c5c 74747DBF 		.word	-1082297228
+ 1807 0c60 AC3A7DBF 		.word	-1082312020
+ 1808 0c64 73FE7CBF 		.word	-1082327437
+ 1809 0c68 C9BF7CBF 		.word	-1082343479
+ 1810 0c6c B07E7CBF 		.word	-1082360144
+ 1811 0c70 283B7CBF 		.word	-1082377432
+ 1812 0c74 31F57BBF 		.word	-1082395343
+ 1813 0c78 CDAC7BBF 		.word	-1082413875
+ 1814 0c7c FC617BBF 		.word	-1082433028
+ 1815 0c80 BE147BBF 		.word	-1082452802
+ 1816 0c84 16C57ABF 		.word	-1082473194
+ 1817 0c88 02737ABF 		.word	-1082494206
+ 1818 0c8c 841E7ABF 		.word	-1082515836
+ 1819 0c90 9DC779BF 		.word	-1082538083
+ 1820 0c94 4E6E79BF 		.word	-1082560946
+ 1821 0c98 981279BF 		.word	-1082584424
+ 1822 0c9c 7BB478BF 		.word	-1082608517
+ 1823 0ca0 F85378BF 		.word	-1082633224
+ 1824 0ca4 10F177BF 		.word	-1082658544
+ 1825 0ca8 C58B77BF 		.word	-1082684475
+ 1826 0cac 172477BF 		.word	-1082711017
+ 1827 0cb0 07BA76BF 		.word	-1082738169
+ 1828 0cb4 974D76BF 		.word	-1082765929
+ 1829 0cb8 C6DE75BF 		.word	-1082794298
+ 1830 0cbc 976D75BF 		.word	-1082823273
+ 1831 0cc0 0BFA74BF 		.word	-1082852853
+ 1832 0cc4 228474BF 		.word	-1082883038
+ 1833 0cc8 DD0B74BF 		.word	-1082913827
+ 1834 0ccc 3F9173BF 		.word	-1082945217
+ 1835 0cd0 471473BF 		.word	-1082977209
+ 1836 0cd4 F89472BF 		.word	-1083009800
+ 1837 0cd8 521372BF 		.word	-1083042990
+ 1838 0cdc 578F71BF 		.word	-1083076777
+ 1839 0ce0 080971BF 		.word	-1083111160
+ 1840 0ce4 668070BF 		.word	-1083146138
+ 1841 0ce8 73F56FBF 		.word	-1083181709
+ 1842 0cec 30686FBF 		.word	-1083217872
+ 1843 0cf0 9ED86EBF 		.word	-1083254626
+ 1844 0cf4 BE466EBF 		.word	-1083291970
+ 1845 0cf8 93B26DBF 		.word	-1083329901
+ 1846 0cfc 1D1C6DBF 		.word	-1083368419
+ 1847 0d00 5E836CBF 		.word	-1083407522
+ 1848 0d04 58E86BBF 		.word	-1083447208
+ 1849 0d08 0C4B6BBF 		.word	-1083487476
+ 1850 0d0c 7BAB6ABF 		.word	-1083528325
+ 1851 0d10 A7096ABF 		.word	-1083569753
+ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccqHetyi.s 			page 40
 
 
- 1840 0c94 4E6E79BF 		.word	-1082560946
- 1841 0c98 981279BF 		.word	-1082584424
- 1842 0c9c 7BB478BF 		.word	-1082608517
- 1843 0ca0 F85378BF 		.word	-1082633224
- 1844 0ca4 10F177BF 		.word	-1082658544
- 1845 0ca8 C58B77BF 		.word	-1082684475
- 1846 0cac 172477BF 		.word	-1082711017
- 1847 0cb0 07BA76BF 		.word	-1082738169
- 1848 0cb4 974D76BF 		.word	-1082765929
- 1849 0cb8 C6DE75BF 		.word	-1082794298
- 1850 0cbc 976D75BF 		.word	-1082823273
- 1851 0cc0 0BFA74BF 		.word	-1082852853
- 1852 0cc4 228474BF 		.word	-1082883038
- 1853 0cc8 DD0B74BF 		.word	-1082913827
- 1854 0ccc 3F9173BF 		.word	-1082945217
- 1855 0cd0 471473BF 		.word	-1082977209
- 1856 0cd4 F89472BF 		.word	-1083009800
- 1857 0cd8 521372BF 		.word	-1083042990
- 1858 0cdc 578F71BF 		.word	-1083076777
- 1859 0ce0 080971BF 		.word	-1083111160
- 1860 0ce4 668070BF 		.word	-1083146138
- 1861 0ce8 73F56FBF 		.word	-1083181709
- 1862 0cec 30686FBF 		.word	-1083217872
- 1863 0cf0 9ED86EBF 		.word	-1083254626
- 1864 0cf4 BE466EBF 		.word	-1083291970
- 1865 0cf8 93B26DBF 		.word	-1083329901
- 1866 0cfc 1D1C6DBF 		.word	-1083368419
- 1867 0d00 5E836CBF 		.word	-1083407522
- 1868 0d04 58E86BBF 		.word	-1083447208
- 1869 0d08 0C4B6BBF 		.word	-1083487476
- 1870 0d0c 7BAB6ABF 		.word	-1083528325
- 1871 0d10 A7096ABF 		.word	-1083569753
- 1872 0d14 916569BF 		.word	-1083611759
- 1873 0d18 3CBF68BF 		.word	-1083654340
- 1874 0d1c A81668BF 		.word	-1083697496
- 1875 0d20 D86B67BF 		.word	-1083741224
- 1876 0d24 CCBE66BF 		.word	-1083785524
- 1877 0d28 880F66BF 		.word	-1083830392
- 1878 0d2c 0B5E65BF 		.word	-1083875829
- 1879 0d30 59AA64BF 		.word	-1083921831
- 1880 0d34 73F463BF 		.word	-1083968397
- 1881 0d38 5A3C63BF 		.word	-1084015526
- 1882 0d3c 108262BF 		.word	-1084063216
- 1883 0d40 97C561BF 		.word	-1084111465
- 1884 0d44 F20661BF 		.word	-1084160270
- 1885 0d48 214660BF 		.word	-1084209631
- 1886 0d4c 27835FBF 		.word	-1084259545
- 1887 0d50 05BE5EBF 		.word	-1084310011
- 1888 0d54 BEF65DBF 		.word	-1084361026
- 1889 0d58 532D5DBF 		.word	-1084412589
- 1890 0d5c C7615CBF 		.word	-1084464697
- 1891 0d60 1A945BBF 		.word	-1084517350
- 1892 0d64 50C45ABF 		.word	-1084570544
- 1893 0d68 6AF259BF 		.word	-1084624278
- 1894 0d6c 6A1E59BF 		.word	-1084678550
- 1895 0d70 534858BF 		.word	-1084733357
- 1896 0d74 267057BF 		.word	-1084788698
-ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccBEAgJi.s 			page 41
+ 1852 0d14 916569BF 		.word	-1083611759
+ 1853 0d18 3CBF68BF 		.word	-1083654340
+ 1854 0d1c A81668BF 		.word	-1083697496
+ 1855 0d20 D86B67BF 		.word	-1083741224
+ 1856 0d24 CCBE66BF 		.word	-1083785524
+ 1857 0d28 880F66BF 		.word	-1083830392
+ 1858 0d2c 0B5E65BF 		.word	-1083875829
+ 1859 0d30 59AA64BF 		.word	-1083921831
+ 1860 0d34 73F463BF 		.word	-1083968397
+ 1861 0d38 5A3C63BF 		.word	-1084015526
+ 1862 0d3c 108262BF 		.word	-1084063216
+ 1863 0d40 97C561BF 		.word	-1084111465
+ 1864 0d44 F20661BF 		.word	-1084160270
+ 1865 0d48 214660BF 		.word	-1084209631
+ 1866 0d4c 27835FBF 		.word	-1084259545
+ 1867 0d50 05BE5EBF 		.word	-1084310011
+ 1868 0d54 BEF65DBF 		.word	-1084361026
+ 1869 0d58 532D5DBF 		.word	-1084412589
+ 1870 0d5c C7615CBF 		.word	-1084464697
+ 1871 0d60 1A945BBF 		.word	-1084517350
+ 1872 0d64 50C45ABF 		.word	-1084570544
+ 1873 0d68 6AF259BF 		.word	-1084624278
+ 1874 0d6c 6A1E59BF 		.word	-1084678550
+ 1875 0d70 534858BF 		.word	-1084733357
+ 1876 0d74 267057BF 		.word	-1084788698
+ 1877 0d78 E59556BF 		.word	-1084844571
+ 1878 0d7c 93B955BF 		.word	-1084900973
+ 1879 0d80 31DB54BF 		.word	-1084957903
+ 1880 0d84 C3FA53BF 		.word	-1085015357
+ 1881 0d88 491853BF 		.word	-1085073335
+ 1882 0d8c C63352BF 		.word	-1085131834
+ 1883 0d90 3D4D51BF 		.word	-1085190851
+ 1884 0d94 AF6450BF 		.word	-1085250385
+ 1885 0d98 207A4FBF 		.word	-1085310432
+ 1886 0d9c 908D4EBF 		.word	-1085370992
+ 1887 0da0 029F4DBF 		.word	-1085432062
+ 1888 0da4 79AE4CBF 		.word	-1085493639
+ 1889 0da8 F8BB4BBF 		.word	-1085555720
+ 1890 0dac 7FC74ABF 		.word	-1085618305
+ 1891 0db0 12D149BF 		.word	-1085681390
+ 1892 0db4 B4D848BF 		.word	-1085744972
+ 1893 0db8 65DE47BF 		.word	-1085809051
+ 1894 0dbc 2AE246BF 		.word	-1085873622
+ 1895 0dc0 03E445BF 		.word	-1085938685
+ 1896 0dc4 F5E344BF 		.word	-1086004235
+ 1897 0dc8 01E243BF 		.word	-1086070271
+ 1898 0dcc 29DE42BF 		.word	-1086136791
+ 1899 0dd0 70D841BF 		.word	-1086203792
+ 1900 0dd4 DAD040BF 		.word	-1086271270
+ 1901 0dd8 67C73FBF 		.word	-1086339225
+ 1902 0ddc 1BBC3EBF 		.word	-1086407653
+ 1903 0de0 F9AE3DBF 		.word	-1086476551
+ 1904 0de4 03A03CBF 		.word	-1086545917
+ 1905 0de8 3B8F3BBF 		.word	-1086615749
+ 1906 0dec A47C3ABF 		.word	-1086686044
+ 1907 0df0 426839BF 		.word	-1086756798
+ 1908 0df4 165238BF 		.word	-1086828010
+ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccqHetyi.s 			page 41
 
 
- 1897 0d78 E59556BF 		.word	-1084844571
- 1898 0d7c 93B955BF 		.word	-1084900973
- 1899 0d80 31DB54BF 		.word	-1084957903
- 1900 0d84 C3FA53BF 		.word	-1085015357
- 1901 0d88 491853BF 		.word	-1085073335
- 1902 0d8c C63352BF 		.word	-1085131834
- 1903 0d90 3D4D51BF 		.word	-1085190851
- 1904 0d94 AF6450BF 		.word	-1085250385
- 1905 0d98 207A4FBF 		.word	-1085310432
- 1906 0d9c 908D4EBF 		.word	-1085370992
- 1907 0da0 029F4DBF 		.word	-1085432062
- 1908 0da4 79AE4CBF 		.word	-1085493639
- 1909 0da8 F8BB4BBF 		.word	-1085555720
- 1910 0dac 7FC74ABF 		.word	-1085618305
- 1911 0db0 12D149BF 		.word	-1085681390
- 1912 0db4 B4D848BF 		.word	-1085744972
- 1913 0db8 65DE47BF 		.word	-1085809051
- 1914 0dbc 2AE246BF 		.word	-1085873622
- 1915 0dc0 03E445BF 		.word	-1085938685
- 1916 0dc4 F5E344BF 		.word	-1086004235
- 1917 0dc8 01E243BF 		.word	-1086070271
- 1918 0dcc 29DE42BF 		.word	-1086136791
- 1919 0dd0 70D841BF 		.word	-1086203792
- 1920 0dd4 DAD040BF 		.word	-1086271270
- 1921 0dd8 67C73FBF 		.word	-1086339225
- 1922 0ddc 1BBC3EBF 		.word	-1086407653
- 1923 0de0 F9AE3DBF 		.word	-1086476551
- 1924 0de4 03A03CBF 		.word	-1086545917
- 1925 0de8 3B8F3BBF 		.word	-1086615749
- 1926 0dec A47C3ABF 		.word	-1086686044
- 1927 0df0 426839BF 		.word	-1086756798
- 1928 0df4 165238BF 		.word	-1086828010
- 1929 0df8 233A37BF 		.word	-1086899677
- 1930 0dfc 6C2036BF 		.word	-1086971796
- 1931 0e00 F30435BF 		.word	-1087044365
- 1932 0e04 BCE733BF 		.word	-1087117380
- 1933 0e08 C9C832BF 		.word	-1087190839
- 1934 0e0c 1DA831BF 		.word	-1087264739
- 1935 0e10 BB8530BF 		.word	-1087339077
- 1936 0e14 A5612FBF 		.word	-1087413851
- 1937 0e18 DE3B2EBF 		.word	-1087489058
- 1938 0e1c 69142DBF 		.word	-1087564695
- 1939 0e20 4AEB2BBF 		.word	-1087640758
- 1940 0e24 82C02ABF 		.word	-1087717246
- 1941 0e28 159429BF 		.word	-1087794155
- 1942 0e2c 056628BF 		.word	-1087871483
- 1943 0e30 563627BF 		.word	-1087949226
- 1944 0e34 0A0526BF 		.word	-1088027382
- 1945 0e38 25D224BF 		.word	-1088105947
- 1946 0e3c A99D23BF 		.word	-1088184919
- 1947 0e40 996722BF 		.word	-1088264295
- 1948 0e44 F92F21BF 		.word	-1088344071
- 1949 0e48 CBF61FBF 		.word	-1088424245
- 1950 0e4c 12BC1EBF 		.word	-1088504814
- 1951 0e50 D17F1DBF 		.word	-1088585775
- 1952 0e54 0C421CBF 		.word	-1088667124
- 1953 0e58 C6021BBF 		.word	-1088748858
-ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccBEAgJi.s 			page 42
+ 1909 0df8 233A37BF 		.word	-1086899677
+ 1910 0dfc 6C2036BF 		.word	-1086971796
+ 1911 0e00 F30435BF 		.word	-1087044365
+ 1912 0e04 BCE733BF 		.word	-1087117380
+ 1913 0e08 C9C832BF 		.word	-1087190839
+ 1914 0e0c 1DA831BF 		.word	-1087264739
+ 1915 0e10 BB8530BF 		.word	-1087339077
+ 1916 0e14 A5612FBF 		.word	-1087413851
+ 1917 0e18 DE3B2EBF 		.word	-1087489058
+ 1918 0e1c 69142DBF 		.word	-1087564695
+ 1919 0e20 4AEB2BBF 		.word	-1087640758
+ 1920 0e24 82C02ABF 		.word	-1087717246
+ 1921 0e28 159429BF 		.word	-1087794155
+ 1922 0e2c 056628BF 		.word	-1087871483
+ 1923 0e30 563627BF 		.word	-1087949226
+ 1924 0e34 0A0526BF 		.word	-1088027382
+ 1925 0e38 25D224BF 		.word	-1088105947
+ 1926 0e3c A99D23BF 		.word	-1088184919
+ 1927 0e40 996722BF 		.word	-1088264295
+ 1928 0e44 F92F21BF 		.word	-1088344071
+ 1929 0e48 CBF61FBF 		.word	-1088424245
+ 1930 0e4c 12BC1EBF 		.word	-1088504814
+ 1931 0e50 D17F1DBF 		.word	-1088585775
+ 1932 0e54 0C421CBF 		.word	-1088667124
+ 1933 0e58 C6021BBF 		.word	-1088748858
+ 1934 0e5c 00C219BF 		.word	-1088830976
+ 1935 0e60 C07F18BF 		.word	-1088913472
+ 1936 0e64 073C17BF 		.word	-1088996345
+ 1937 0e68 D9F615BF 		.word	-1089079591
+ 1938 0e6c 39B014BF 		.word	-1089163207
+ 1939 0e70 2A6813BF 		.word	-1089247190
+ 1940 0e74 B01E12BF 		.word	-1089331536
+ 1941 0e78 CDD310BF 		.word	-1089416243
+ 1942 0e7c 84870FBF 		.word	-1089501308
+ 1943 0e80 DA390EBF 		.word	-1089586726
+ 1944 0e84 D0EA0CBF 		.word	-1089672496
+ 1945 0e88 6B9A0BBF 		.word	-1089758613
+ 1946 0e8c AD480ABF 		.word	-1089845075
+ 1947 0e90 9BF508BF 		.word	-1089931877
+ 1948 0e94 36A107BF 		.word	-1090019018
+ 1949 0e98 824B06BF 		.word	-1090106494
+ 1950 0e9c 84F404BF 		.word	-1090194300
+ 1951 0ea0 3D9C03BF 		.word	-1090282435
+ 1952 0ea4 B14202BF 		.word	-1090370895
+ 1953 0ea8 E4E700BF 		.word	-1090459676
+ 1954 0eac B217FFBE 		.word	-1090578510
+ 1955 0eb0 275DFCBE 		.word	-1090757337
+ 1956 0eb4 2DA0F9BE 		.word	-1090936787
+ 1957 0eb8 CBE0F6BE 		.word	-1091116853
+ 1958 0ebc 071FF4BE 		.word	-1091297529
+ 1959 0ec0 EA5AF1BE 		.word	-1091478806
+ 1960 0ec4 7994EEBE 		.word	-1091660679
+ 1961 0ec8 BBCBEBBE 		.word	-1091843141
+ 1962 0ecc B700E9BE 		.word	-1092026185
+ 1963 0ed0 7533E6BE 		.word	-1092209803
+ 1964 0ed4 FA63E3BE 		.word	-1092393990
+ 1965 0ed8 4F92E0BE 		.word	-1092578737
+ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccqHetyi.s 			page 42
 
 
- 1954 0e5c 00C219BF 		.word	-1088830976
- 1955 0e60 C07F18BF 		.word	-1088913472
- 1956 0e64 073C17BF 		.word	-1088996345
- 1957 0e68 D9F615BF 		.word	-1089079591
- 1958 0e6c 39B014BF 		.word	-1089163207
- 1959 0e70 2A6813BF 		.word	-1089247190
- 1960 0e74 B01E12BF 		.word	-1089331536
- 1961 0e78 CDD310BF 		.word	-1089416243
- 1962 0e7c 84870FBF 		.word	-1089501308
- 1963 0e80 DA390EBF 		.word	-1089586726
- 1964 0e84 D0EA0CBF 		.word	-1089672496
- 1965 0e88 6B9A0BBF 		.word	-1089758613
- 1966 0e8c AD480ABF 		.word	-1089845075
- 1967 0e90 9BF508BF 		.word	-1089931877
- 1968 0e94 36A107BF 		.word	-1090019018
- 1969 0e98 824B06BF 		.word	-1090106494
- 1970 0e9c 84F404BF 		.word	-1090194300
- 1971 0ea0 3D9C03BF 		.word	-1090282435
- 1972 0ea4 B14202BF 		.word	-1090370895
- 1973 0ea8 E4E700BF 		.word	-1090459676
- 1974 0eac B217FFBE 		.word	-1090578510
- 1975 0eb0 275DFCBE 		.word	-1090757337
- 1976 0eb4 2DA0F9BE 		.word	-1090936787
- 1977 0eb8 CBE0F6BE 		.word	-1091116853
- 1978 0ebc 071FF4BE 		.word	-1091297529
- 1979 0ec0 EA5AF1BE 		.word	-1091478806
- 1980 0ec4 7994EEBE 		.word	-1091660679
- 1981 0ec8 BBCBEBBE 		.word	-1091843141
- 1982 0ecc B700E9BE 		.word	-1092026185
- 1983 0ed0 7533E6BE 		.word	-1092209803
- 1984 0ed4 FA63E3BE 		.word	-1092393990
- 1985 0ed8 4F92E0BE 		.word	-1092578737
- 1986 0edc 79BEDDBE 		.word	-1092764039
- 1987 0ee0 80E8DABE 		.word	-1092949888
- 1988 0ee4 6B10D8BE 		.word	-1093136277
- 1989 0ee8 4136D5BE 		.word	-1093323199
- 1990 0eec 095AD2BE 		.word	-1093510647
- 1991 0ef0 CA7BCFBE 		.word	-1093698614
- 1992 0ef4 8B9BCCBE 		.word	-1093887093
- 1993 0ef8 53B9C9BE 		.word	-1094076077
- 1994 0efc 2AD5C6BE 		.word	-1094265558
- 1995 0f00 15EFC3BE 		.word	-1094455531
- 1996 0f04 1E07C1BE 		.word	-1094645986
- 1997 0f08 491DBEBE 		.word	-1094836919
- 1998 0f0c A131BBBE 		.word	-1095028319
- 1999 0f10 2A44B8BE 		.word	-1095220182
- 2000 0f14 EC54B5BE 		.word	-1095412500
- 2001 0f18 EF63B2BE 		.word	-1095605265
- 2002 0f1c 3A71AFBE 		.word	-1095798470
- 2003 0f20 D47CACBE 		.word	-1095992108
- 2004 0f24 C486A9BE 		.word	-1096186172
- 2005 0f28 128FA6BE 		.word	-1096380654
- 2006 0f2c C595A3BE 		.word	-1096575547
- 2007 0f30 E59AA0BE 		.word	-1096770843
- 2008 0f34 789E9DBE 		.word	-1096966536
- 2009 0f38 86A09ABE 		.word	-1097162618
- 2010 0f3c 17A197BE 		.word	-1097359081
-ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccBEAgJi.s 			page 43
+ 1966 0edc 79BEDDBE 		.word	-1092764039
+ 1967 0ee0 80E8DABE 		.word	-1092949888
+ 1968 0ee4 6B10D8BE 		.word	-1093136277
+ 1969 0ee8 4136D5BE 		.word	-1093323199
+ 1970 0eec 095AD2BE 		.word	-1093510647
+ 1971 0ef0 CA7BCFBE 		.word	-1093698614
+ 1972 0ef4 8B9BCCBE 		.word	-1093887093
+ 1973 0ef8 53B9C9BE 		.word	-1094076077
+ 1974 0efc 2AD5C6BE 		.word	-1094265558
+ 1975 0f00 15EFC3BE 		.word	-1094455531
+ 1976 0f04 1E07C1BE 		.word	-1094645986
+ 1977 0f08 491DBEBE 		.word	-1094836919
+ 1978 0f0c A131BBBE 		.word	-1095028319
+ 1979 0f10 2A44B8BE 		.word	-1095220182
+ 1980 0f14 EC54B5BE 		.word	-1095412500
+ 1981 0f18 EF63B2BE 		.word	-1095605265
+ 1982 0f1c 3A71AFBE 		.word	-1095798470
+ 1983 0f20 D47CACBE 		.word	-1095992108
+ 1984 0f24 C486A9BE 		.word	-1096186172
+ 1985 0f28 128FA6BE 		.word	-1096380654
+ 1986 0f2c C595A3BE 		.word	-1096575547
+ 1987 0f30 E59AA0BE 		.word	-1096770843
+ 1988 0f34 789E9DBE 		.word	-1096966536
+ 1989 0f38 86A09ABE 		.word	-1097162618
+ 1990 0f3c 17A197BE 		.word	-1097359081
+ 1991 0f40 32A094BE 		.word	-1097555918
+ 1992 0f44 DD9D91BE 		.word	-1097753123
+ 1993 0f48 229A8EBE 		.word	-1097950686
+ 1994 0f4c 07958BBE 		.word	-1098148601
+ 1995 0f50 938E88BE 		.word	-1098346861
+ 1996 0f54 CF8685BE 		.word	-1098545457
+ 1997 0f58 C07D82BE 		.word	-1098744384
+ 1998 0f5c E1E67EBE 		.word	-1098979615
+ 1999 0f60 CCCF78BE 		.word	-1099378740
+ 2000 0f64 51B672BE 		.word	-1099778479
+ 2001 0f68 7F9A6CBE 		.word	-1100178817
+ 2002 0f6c 667C66BE 		.word	-1100579738
+ 2003 0f70 135C60BE 		.word	-1100981229
+ 2004 0f74 97395ABE 		.word	-1101383273
+ 2005 0f78 011554BE 		.word	-1101785855
+ 2006 0f7c 5FEE4DBE 		.word	-1102188961
+ 2007 0f80 C2C547BE 		.word	-1102592574
+ 2008 0f84 379B41BE 		.word	-1102996681
+ 2009 0f88 CF6E3BBE 		.word	-1103401265
+ 2010 0f8c 984035BE 		.word	-1103806312
+ 2011 0f90 A2102FBE 		.word	-1104211806
+ 2012 0f94 FCDE28BE 		.word	-1104617732
+ 2013 0f98 B5AB22BE 		.word	-1105024075
+ 2014 0f9c DE761CBE 		.word	-1105430818
+ 2015 0fa0 834016BE 		.word	-1105837949
+ 2016 0fa4 B70810BE 		.word	-1106245449
+ 2017 0fa8 87CF09BE 		.word	-1106653305
+ 2018 0fac 029503BE 		.word	-1107061502
+ 2019 0fb0 73B2FABD 		.word	-1107643789
+ 2020 0fb4 7638EEBD 		.word	-1108461450
+ 2021 0fb8 2FBCE1BD 		.word	-1109279697
+ 2022 0fbc B93DD5BD 		.word	-1110098503
+ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccqHetyi.s 			page 43
 
 
- 2011 0f40 32A094BE 		.word	-1097555918
- 2012 0f44 DD9D91BE 		.word	-1097753123
- 2013 0f48 229A8EBE 		.word	-1097950686
- 2014 0f4c 07958BBE 		.word	-1098148601
- 2015 0f50 938E88BE 		.word	-1098346861
- 2016 0f54 CF8685BE 		.word	-1098545457
- 2017 0f58 C07D82BE 		.word	-1098744384
- 2018 0f5c E1E67EBE 		.word	-1098979615
- 2019 0f60 CCCF78BE 		.word	-1099378740
- 2020 0f64 51B672BE 		.word	-1099778479
- 2021 0f68 7F9A6CBE 		.word	-1100178817
- 2022 0f6c 667C66BE 		.word	-1100579738
- 2023 0f70 135C60BE 		.word	-1100981229
- 2024 0f74 97395ABE 		.word	-1101383273
- 2025 0f78 011554BE 		.word	-1101785855
- 2026 0f7c 5FEE4DBE 		.word	-1102188961
- 2027 0f80 C2C547BE 		.word	-1102592574
- 2028 0f84 379B41BE 		.word	-1102996681
- 2029 0f88 CF6E3BBE 		.word	-1103401265
- 2030 0f8c 984035BE 		.word	-1103806312
- 2031 0f90 A2102FBE 		.word	-1104211806
- 2032 0f94 FCDE28BE 		.word	-1104617732
- 2033 0f98 B5AB22BE 		.word	-1105024075
- 2034 0f9c DE761CBE 		.word	-1105430818
- 2035 0fa0 834016BE 		.word	-1105837949
- 2036 0fa4 B70810BE 		.word	-1106245449
- 2037 0fa8 87CF09BE 		.word	-1106653305
- 2038 0fac 029503BE 		.word	-1107061502
- 2039 0fb0 73B2FABD 		.word	-1107643789
- 2040 0fb4 7638EEBD 		.word	-1108461450
- 2041 0fb8 2FBCE1BD 		.word	-1109279697
- 2042 0fbc B93DD5BD 		.word	-1110098503
- 2043 0fc0 36BDC8BD 		.word	-1110917834
- 2044 0fc4 C43ABCBD 		.word	-1111737660
- 2045 0fc8 80B6AFBD 		.word	-1112557952
- 2046 0fcc 8C30A3BD 		.word	-1113378676
- 2047 0fd0 04A996BD 		.word	-1114199804
- 2048 0fd4 0A208ABD 		.word	-1115021302
- 2049 0fd8 752B7BBD 		.word	-1116001419
- 2050 0fdc 671462BD 		.word	-1117645721
- 2051 0fe0 2EFB48BD 		.word	-1119290578
- 2052 0fe4 07E02FBD 		.word	-1120935929
- 2053 0fe8 2BC316BD 		.word	-1122581717
- 2054 0fec B849FBBC 		.word	-1124382280
- 2055 0ff0 B10AC9BC 		.word	-1127675215
- 2056 0ff4 B6C996BC 		.word	-1130968650
- 2057 0ff8 920E49BC 		.word	-1136062830
- 2058 0ffc 7E0FC9BB 		.word	-1144451202
- 2059 1000 00000000 		.word	0
- 2060              		.text
- 2061              	.Letext0:
- 2062              		.file 4 "/Users/johannes/Library/Application Support/Code/User/globalStorage/bmd.stm32-for-vscode/
- 2063              		.file 5 "/Users/johannes/Library/Application Support/Code/User/globalStorage/bmd.stm32-for-vscode/
- 2064              		.file 6 "Core/Inc/lut_sine.h"
-ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccBEAgJi.s 			page 44
+ 2023 0fc0 36BDC8BD 		.word	-1110917834
+ 2024 0fc4 C43ABCBD 		.word	-1111737660
+ 2025 0fc8 80B6AFBD 		.word	-1112557952
+ 2026 0fcc 8C30A3BD 		.word	-1113378676
+ 2027 0fd0 04A996BD 		.word	-1114199804
+ 2028 0fd4 0A208ABD 		.word	-1115021302
+ 2029 0fd8 752B7BBD 		.word	-1116001419
+ 2030 0fdc 671462BD 		.word	-1117645721
+ 2031 0fe0 2EFB48BD 		.word	-1119290578
+ 2032 0fe4 07E02FBD 		.word	-1120935929
+ 2033 0fe8 2BC316BD 		.word	-1122581717
+ 2034 0fec B849FBBC 		.word	-1124382280
+ 2035 0ff0 B10AC9BC 		.word	-1127675215
+ 2036 0ff4 B6C996BC 		.word	-1130968650
+ 2037 0ff8 920E49BC 		.word	-1136062830
+ 2038 0ffc 7E0FC9BB 		.word	-1144451202
+ 2039 1000 00000000 		.word	0
+ 2040              		.text
+ 2041              	.Letext0:
+ 2042              		.file 4 "/Users/johannes/Library/Application Support/Code/User/globalStorage/bmd.stm32-for-vscode/
+ 2043              		.file 5 "/Users/johannes/Library/Application Support/Code/User/globalStorage/bmd.stm32-for-vscode/
+ 2044              		.file 6 "Core/Inc/lut_sine.h"
+ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccqHetyi.s 			page 44
 
 
 DEFINED SYMBOLS
                             *ABS*:0000000000000000 oscillators.c
-/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccBEAgJi.s:20     .text.osc_init:0000000000000000 $t
-/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccBEAgJi.s:27     .text.osc_init:0000000000000000 osc_init
-/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccBEAgJi.s:69     .text.osc_init:0000000000000024 $d
-/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccBEAgJi.s:74     .text.osc_Sine:0000000000000000 $t
-/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccBEAgJi.s:81     .text.osc_Sine:0000000000000000 osc_Sine
-/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccBEAgJi.s:182    .text.osc_Sine:000000000000006c $d
-/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccBEAgJi.s:1034   .rodata.lut_sine:0000000000000000 lut_sine
-/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccBEAgJi.s:189    .text.osc_FM2OP:0000000000000000 $t
-/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccBEAgJi.s:196    .text.osc_FM2OP:0000000000000000 osc_FM2OP
-/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccBEAgJi.s:462    .text.osc_FM2OP:00000000000000fc $d
-/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccBEAgJi.s:473    .text.osc_polyblepSaw:0000000000000000 $t
-/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccBEAgJi.s:480    .text.osc_polyblepSaw:0000000000000000 osc_polyblepSaw
-/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccBEAgJi.s:661    .text.osc_polyblepSaw:00000000000000b4 $d
-/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccBEAgJi.s:666    .text.osc_polyblepRect:0000000000000000 $t
-/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccBEAgJi.s:673    .text.osc_polyblepRect:0000000000000000 osc_polyblepRect
-/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccBEAgJi.s:984    .text.osc_polyblepRect:0000000000000144 $d
-/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccBEAgJi.s:1012   .ccmram:0000000000000038 osc7
-/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccBEAgJi.s:1016   .ccmram:0000000000000054 osc6
-/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccBEAgJi.s:1020   .ccmram:0000000000000070 osc5
-/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccBEAgJi.s:1024   .ccmram:000000000000008c osc4
-/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccBEAgJi.s:1028   .ccmram:00000000000000a8 osc3
-/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccBEAgJi.s:1008   .ccmram:000000000000001c osc2
-/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccBEAgJi.s:1004   .ccmram:0000000000000000 osc1
-/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccBEAgJi.s:1000   .ccmram:0000000000000000 $d
-/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccBEAgJi.s:1031   .rodata.lut_sine:0000000000000000 $d
+/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccqHetyi.s:20     .text.osc_init:0000000000000000 $t
+/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccqHetyi.s:27     .text.osc_init:0000000000000000 osc_init
+/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccqHetyi.s:69     .text.osc_init:0000000000000024 $d
+/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccqHetyi.s:74     .text.osc_Sine:0000000000000000 $t
+/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccqHetyi.s:81     .text.osc_Sine:0000000000000000 osc_Sine
+/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccqHetyi.s:182    .text.osc_Sine:000000000000006c $d
+/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccqHetyi.s:1014   .rodata.lut_sine:0000000000000000 lut_sine
+/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccqHetyi.s:189    .text.osc_FM2OP:0000000000000000 $t
+/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccqHetyi.s:196    .text.osc_FM2OP:0000000000000000 osc_FM2OP
+/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccqHetyi.s:462    .text.osc_FM2OP:00000000000000fc $d
+/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccqHetyi.s:473    .text.osc_polyblepSaw:0000000000000000 $t
+/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccqHetyi.s:480    .text.osc_polyblepSaw:0000000000000000 osc_polyblepSaw
+/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccqHetyi.s:661    .text.osc_polyblepSaw:00000000000000b4 $d
+/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccqHetyi.s:666    .text.osc_polyblepRect:0000000000000000 $t
+/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccqHetyi.s:673    .text.osc_polyblepRect:0000000000000000 osc_polyblepRect
+/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccqHetyi.s:984    .text.osc_polyblepRect:0000000000000144 $d
+/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccqHetyi.s:1008   .ccmram:0000000000000038 sub_osc
+/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccqHetyi.s:1004   .ccmram:000000000000001c osc2
+/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccqHetyi.s:1000   .ccmram:0000000000000000 osc1
+/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccqHetyi.s:996    .ccmram:0000000000000000 $d
+/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccqHetyi.s:1011   .rodata.lut_sine:0000000000000000 $d
 
 UNDEFINED SYMBOLS
 interp_lin_lut

@@ -163,7 +163,7 @@ void ProcessMIDI(midi_package_t pack)
 		uint8_t cc_number = pack.evnt1;
 		uint8_t cc_value = pack.evnt2;
 		// SEGGER_RTT_printf(0, "CC#  %u %u\r\n", cc_number, cc_value); // debug
-		switch (pack.evnt1) // CC number
+		switch (pack.evnt1) // CC number --> implement CC actions
 		{
 		case 20:
 			break;

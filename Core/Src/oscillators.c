@@ -2,8 +2,8 @@
  * @file oscillators.c
  * @author johannes regnier
  * @brief Various oscillators
- * General architecture and FM2OP inspired from  Xavier Halgand's Dekrispator
- * 2-sample polyblep oscillators from:
+ *  General architecture and FM2OP from Xavier Halgand's Dekrispator
+ *  2-sample polyblep oscillators from:
  *  Välimäki, V., Pekonen, J., & Nam, J. (2012). Perceptually informed synthesis of bandlimited classical
  *  waveforms using integrated polynomial interpolation. 
  * @version 0.1
@@ -19,14 +19,10 @@
 #include "lut_sine.h"
 #include "helper_functions.h"
 
-/*------------------------------------------------------------------------*/
 oscillator_t osc1 _CCM_;
 oscillator_t osc2 _CCM_;
-oscillator_t osc3 _CCM_;
-oscillator_t osc4 _CCM_;
-oscillator_t osc5 _CCM_;
-oscillator_t osc6 _CCM_;
-oscillator_t osc7 _CCM_;
+oscillator_t sub_osc _CCM_;
+
 
 void osc_init(oscillator_t *osc, float amp, float freq, float mod, float freq_mult, float pw)
 {
@@ -75,7 +71,7 @@ float osc_polyblepSaw(oscillator_t *osc)
     return osc->output;
 }
 
-float   osc_polyblepRect(oscillator_t * osc){
+float osc_polyblepRect(oscillator_t * osc){
     float dt = A0 * TS * osc->freq; // phase increment
     float t = osc->phase;   // phase
     float pw = osc->pw;     // pulse width (duty cycle)
