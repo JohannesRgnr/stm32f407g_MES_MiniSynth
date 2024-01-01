@@ -44,8 +44,11 @@ build/main.o: Core/Src/main.c Core/Inc/main.h \
  Middlewares/ST/STM32_USB_Host_Library/Core/Inc/usbh_core.h \
  Middlewares/ST/STM32_USB_Host_Library/Core/Inc/usbh_pipes.h \
  Middlewares/ST/STM32_USB_Host_Library/Core/Inc/usbh_ctlreq.h \
- Core/Inc/MIDI_application.h Core/Inc/i2c.h Core/Inc/main.h \
- Core/Inc/i2s.h Core/Inc/spi.h Core/Inc/gpio.h Core/Inc/MIDI_event.h
+ Core/Inc/MIDI_application.h Core/Inc/oscillators.h \
+ Core/Inc/ADSR_envelope.h Core/Inc/ladder_filter.h \
+ Core/Inc/stereo_delay.h Core/Inc/helper_functions.h Core/Inc/filters.h \
+ Core/Inc/i2c.h Core/Inc/main.h Core/Inc/i2s.h Core/Inc/spi.h \
+ Core/Inc/gpio.h Core/Inc/MIDI_event.h
 Core/Inc/main.h:
 Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal.h:
 Core/Inc/stm32f4xx_hal_conf.h:
@@ -98,6 +101,12 @@ Middlewares/ST/STM32_USB_Host_Library/Core/Inc/usbh_core.h:
 Middlewares/ST/STM32_USB_Host_Library/Core/Inc/usbh_pipes.h:
 Middlewares/ST/STM32_USB_Host_Library/Core/Inc/usbh_ctlreq.h:
 Core/Inc/MIDI_application.h:
+Core/Inc/oscillators.h:
+Core/Inc/ADSR_envelope.h:
+Core/Inc/ladder_filter.h:
+Core/Inc/stereo_delay.h:
+Core/Inc/helper_functions.h:
+Core/Inc/filters.h:
 Core/Inc/i2c.h:
 Core/Inc/main.h:
 Core/Inc/i2s.h:

@@ -66,7 +66,7 @@ void ADSR_init(ADSR_t *env)
     env->target = 1.0;
     env->value = 0.0;
     env->state = OFF;
-    env->atk_time = 0.001;
+    env->atk_time = 0.003;
     env->dcy_time = 0.1;
     env->sust_level = 0.8;
     env->rel_time = 2; 

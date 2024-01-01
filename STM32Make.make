@@ -22,7 +22,7 @@ TARGET = stm32f407g_MES_Minisynth
 # debug build?
 DEBUG = 1
 # optimization
-OPT = -O2
+OPT = -O3
 
 
 #######################################
@@ -42,49 +42,29 @@ Core/Src/MIDI_event.c \
 Core/Src/SEGGER_RTT.c \
 Core/Src/SEGGER_RTT_printf.c \
 Core/Src/audio.c \
+Core/Src/bitcrusher.c \
 Core/Src/console.c \
 Core/Src/consoleCommands.c \
 Core/Src/consoleIo.c \
-Core/Src/filter.c \
+Core/Src/filters.c \
 Core/Src/gpio.c \
 Core/Src/helper_functions.c \
 Core/Src/i2c.c \
 Core/Src/i2s.c \
+Core/Src/ladder_filter.c \
+Core/Src/lut_tan.c \
 Core/Src/main.c \
 Core/Src/oscillators.c \
 Core/Src/spi.c \
+Core/Src/stereo_delay.c \
 Core/Src/stm32f4xx_hal_msp.c \
 Core/Src/stm32f4xx_it.c \
 Core/Src/system_stm32f4xx.c \
 Core/Src/usbh_MIDI.c \
 Core/Src/usbh_conf.c \
 Drivers/BSP/Components/cs43l22/cs43l22.c \
-Drivers/BSP/Components/dp83848/dp83848.c \
-Drivers/BSP/Components/exc7200/exc7200.c \
-Drivers/BSP/Components/ft3x67/ft3x67.c \
-Drivers/BSP/Components/ft6x06/ft6x06.c \
-Drivers/BSP/Components/i3g4250d/i3g4250d.c \
-Drivers/BSP/Components/ili9325/ili9325.c \
-Drivers/BSP/Components/ili9341/ili9341.c \
-Drivers/BSP/Components/l3gd20/l3gd20.c \
-Drivers/BSP/Components/lan8742/lan8742.c \
 Drivers/BSP/Components/lis302dl/lis302dl.c \
 Drivers/BSP/Components/lis3dsh/lis3dsh.c \
-Drivers/BSP/Components/ls016b8uy/ls016b8uy.c \
-Drivers/BSP/Components/lsm303agr/lsm303agr.c \
-Drivers/BSP/Components/lsm303dlhc/lsm303dlhc.c \
-Drivers/BSP/Components/mfxstm32l152/mfxstm32l152.c \
-Drivers/BSP/Components/nt35510/nt35510.c \
-Drivers/BSP/Components/otm8009a/otm8009a.c \
-Drivers/BSP/Components/ov2640/ov2640.c \
-Drivers/BSP/Components/ov5640/ov5640.c \
-Drivers/BSP/Components/s5k5cag/s5k5cag.c \
-Drivers/BSP/Components/st7735/st7735.c \
-Drivers/BSP/Components/st7789h2/st7789h2.c \
-Drivers/BSP/Components/stmpe1600/stmpe1600.c \
-Drivers/BSP/Components/stmpe811/stmpe811.c \
-Drivers/BSP/Components/ts3510/ts3510.c \
-Drivers/BSP/Components/wm8994/wm8994.c \
 Drivers/BSP/STM32F4-Discovery/stm32f4_discovery.c \
 Drivers/BSP/STM32F4-Discovery/stm32f4_discovery_accelerometer.c \
 Drivers/BSP/STM32F4-Discovery/stm32f4_discovery_audio.c \
@@ -189,39 +169,9 @@ C_INCLUDES =  \
 -ICore/Inc \
 -ICore/Inc/Config \
 -IDrivers/BSP/Components/Common \
--IDrivers/BSP/Components/ampire480272 \
--IDrivers/BSP/Components/ampire640480 \
 -IDrivers/BSP/Components/cs43l22 \
--IDrivers/BSP/Components/dp83848 \
--IDrivers/BSP/Components/exc7200 \
--IDrivers/BSP/Components/ft3x67 \
--IDrivers/BSP/Components/ft6x06 \
--IDrivers/BSP/Components/i3g4250d \
--IDrivers/BSP/Components/ili9325 \
--IDrivers/BSP/Components/ili9341 \
--IDrivers/BSP/Components/l3gd20 \
--IDrivers/BSP/Components/lan8742 \
 -IDrivers/BSP/Components/lis302dl \
 -IDrivers/BSP/Components/lis3dsh \
--IDrivers/BSP/Components/ls016b8uy \
--IDrivers/BSP/Components/lsm303agr \
--IDrivers/BSP/Components/lsm303dlhc \
--IDrivers/BSP/Components/mfxstm32l152 \
--IDrivers/BSP/Components/n25q128a \
--IDrivers/BSP/Components/n25q256a \
--IDrivers/BSP/Components/n25q512a \
--IDrivers/BSP/Components/nt35510 \
--IDrivers/BSP/Components/otm8009a \
--IDrivers/BSP/Components/ov2640 \
--IDrivers/BSP/Components/ov5640 \
--IDrivers/BSP/Components/s25fl512s \
--IDrivers/BSP/Components/s5k5cag \
--IDrivers/BSP/Components/st7735 \
--IDrivers/BSP/Components/st7789h2 \
--IDrivers/BSP/Components/stmpe1600 \
--IDrivers/BSP/Components/stmpe811 \
--IDrivers/BSP/Components/ts3510 \
--IDrivers/BSP/Components/wm8994 \
 -IDrivers/BSP/STM32F4-Discovery \
 -IDrivers/CMSIS/Device/ST/STM32F4xx/Include \
 -IDrivers/CMSIS/Include \

@@ -1,0 +1,657 @@
+ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccFRe056.s 			page 1
+
+
+   1              		.cpu cortex-m4
+   2              		.arch armv7e-m
+   3              		.fpu fpv4-sp-d16
+   4              		.eabi_attribute 27, 1
+   5              		.eabi_attribute 28, 1
+   6              		.eabi_attribute 20, 1
+   7              		.eabi_attribute 21, 1
+   8              		.eabi_attribute 23, 3
+   9              		.eabi_attribute 24, 1
+  10              		.eabi_attribute 25, 1
+  11              		.eabi_attribute 26, 1
+  12              		.eabi_attribute 30, 2
+  13              		.eabi_attribute 34, 1
+  14              		.eabi_attribute 18, 4
+  15              		.file	"ladder_filter.c"
+  16              		.text
+  17              	.Ltext0:
+  18              		.cfi_sections	.debug_frame
+  19              		.section	.text.MoogLP_init,"ax",%progbits
+  20              		.align	1
+  21              		.p2align 2,,3
+  22              		.global	MoogLP_init
+  23              		.syntax unified
+  24              		.thumb
+  25              		.thumb_func
+  27              	MoogLP_init:
+  28              	.LVL0:
+  29              	.LFB3:
+  30              		.file 1 "Core/Src/ladder_filter.c"
+   1:Core/Src/ladder_filter.c **** /**
+   2:Core/Src/ladder_filter.c ****  * @file ladder_filter.c
+   3:Core/Src/ladder_filter.c ****  * @author johannes regnier
+   4:Core/Src/ladder_filter.c ****  * @brief Zero delay feedback 4-pole ladder filter
+   5:Core/Src/ladder_filter.c ****  * @note Simple implementation following Vadim Zavalishin (2008) - Preserving the LTI system topolo
+   6:Core/Src/ladder_filter.c ****  * @version 0.1
+   7:Core/Src/ladder_filter.c ****  * @date 2023-12-31
+   8:Core/Src/ladder_filter.c ****  * 
+   9:Core/Src/ladder_filter.c ****  * @copyright Copyright (c) 2023
+  10:Core/Src/ladder_filter.c ****  * 
+  11:Core/Src/ladder_filter.c ****  */
+  12:Core/Src/ladder_filter.c **** 
+  13:Core/Src/ladder_filter.c **** #include "ladder_filter.h"
+  14:Core/Src/ladder_filter.c **** #include "helper_functions.h"
+  15:Core/Src/ladder_filter.c **** #include "CONSTS.h"
+  16:Core/Src/ladder_filter.c **** #include "lut_tan.h"
+  17:Core/Src/ladder_filter.c **** 
+  18:Core/Src/ladder_filter.c **** ZDFLadder_t Moog_filter _CCM_;
+  19:Core/Src/ladder_filter.c **** 
+  20:Core/Src/ladder_filter.c **** 
+  21:Core/Src/ladder_filter.c **** void MoogLP_init(ZDFLadder_t * filter){
+  31              		.loc 1 21 39 view -0
+  32              		.cfi_startproc
+  33              		@ args = 0, pretend = 0, frame = 0
+  34              		@ frame_needed = 0, uses_anonymous_args = 0
+  35              		@ link register save eliminated.
+  22:Core/Src/ladder_filter.c ****     filter->cutoff = 100.0f;
+  36              		.loc 1 22 5 view .LVU1
+ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccFRe056.s 			page 2
+
+
+  23:Core/Src/ladder_filter.c ****     filter->s1 = 0.0f;
+  37              		.loc 1 23 16 is_stmt 0 view .LVU2
+  38 0000 0023     		movs	r3, #0
+  22:Core/Src/ladder_filter.c ****     filter->cutoff = 100.0f;
+  39              		.loc 1 22 20 view .LVU3
+  40 0002 0449     		ldr	r1, .L3
+  24:Core/Src/ladder_filter.c ****     filter->s2 = 0.0f;
+  25:Core/Src/ladder_filter.c ****     filter->s3 = 0.0f;
+  26:Core/Src/ladder_filter.c ****     filter->s4 = 0.0f;
+  27:Core/Src/ladder_filter.c ****     filter->k = 3.5f;
+  41              		.loc 1 27 15 view .LVU4
+  42 0004 044A     		ldr	r2, .L3+4
+  22:Core/Src/ladder_filter.c ****     filter->s1 = 0.0f;
+  43              		.loc 1 22 20 view .LVU5
+  44 0006 0160     		str	r1, [r0]	@ float
+  23:Core/Src/ladder_filter.c ****     filter->s1 = 0.0f;
+  45              		.loc 1 23 5 is_stmt 1 view .LVU6
+  23:Core/Src/ladder_filter.c ****     filter->s1 = 0.0f;
+  46              		.loc 1 23 16 is_stmt 0 view .LVU7
+  47 0008 4360     		str	r3, [r0, #4]	@ float
+  24:Core/Src/ladder_filter.c ****     filter->s2 = 0.0f;
+  48              		.loc 1 24 5 is_stmt 1 view .LVU8
+  24:Core/Src/ladder_filter.c ****     filter->s2 = 0.0f;
+  49              		.loc 1 24 16 is_stmt 0 view .LVU9
+  50 000a 8360     		str	r3, [r0, #8]	@ float
+  25:Core/Src/ladder_filter.c ****     filter->s4 = 0.0f;
+  51              		.loc 1 25 5 is_stmt 1 view .LVU10
+  25:Core/Src/ladder_filter.c ****     filter->s4 = 0.0f;
+  52              		.loc 1 25 16 is_stmt 0 view .LVU11
+  53 000c C360     		str	r3, [r0, #12]	@ float
+  26:Core/Src/ladder_filter.c ****     filter->k = 3.5f;
+  54              		.loc 1 26 5 is_stmt 1 view .LVU12
+  26:Core/Src/ladder_filter.c ****     filter->k = 3.5f;
+  55              		.loc 1 26 16 is_stmt 0 view .LVU13
+  56 000e 0361     		str	r3, [r0, #16]	@ float
+  57              		.loc 1 27 5 is_stmt 1 view .LVU14
+  58              		.loc 1 27 15 is_stmt 0 view .LVU15
+  59 0010 4261     		str	r2, [r0, #20]	@ float
+  28:Core/Src/ladder_filter.c **** }
+  60              		.loc 1 28 1 view .LVU16
+  61 0012 7047     		bx	lr
+  62              	.L4:
+  63              		.align	2
+  64              	.L3:
+  65 0014 0000C842 		.word	1120403456
+  66 0018 00006040 		.word	1080033280
+  67              		.cfi_endproc
+  68              	.LFE3:
+  70              		.global	__aeabi_f2d
+  71              		.global	__aeabi_dmul
+  72              		.global	__aeabi_d2f
+  73              		.section	.text.MoogLP_compute,"ax",%progbits
+  74              		.align	1
+  75              		.p2align 2,,3
+  76              		.global	MoogLP_compute
+  77              		.syntax unified
+  78              		.thumb
+ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccFRe056.s 			page 3
+
+
+  79              		.thumb_func
+  81              	MoogLP_compute:
+  82              	.LVL1:
+  83              	.LFB4:
+  29:Core/Src/ladder_filter.c **** 
+  30:Core/Src/ladder_filter.c **** 
+  31:Core/Src/ladder_filter.c **** 
+  32:Core/Src/ladder_filter.c **** 
+  33:Core/Src/ladder_filter.c **** float MoogLP_compute(ZDFLadder_t * filter, float input)
+  34:Core/Src/ladder_filter.c **** {
+  84              		.loc 1 34 1 is_stmt 1 view -0
+  85              		.cfi_startproc
+  86              		@ args = 0, pretend = 0, frame = 0
+  87              		@ frame_needed = 0, uses_anonymous_args = 0
+  35:Core/Src/ladder_filter.c **** 	float f, one_over_oneplusf, g, G, y1, y2, y3, y4, feedback;
+  88              		.loc 1 35 2 view .LVU18
+  36:Core/Src/ladder_filter.c ****     f = interp_lin_lut(LUT_TAN_SIZE * (PI * filter->cutoff * TS), LUT_TAN_SIZE, tan_lut);
+  89              		.loc 1 36 5 view .LVU19
+  34:Core/Src/ladder_filter.c **** 	float f, one_over_oneplusf, g, G, y1, y2, y3, y4, feedback;
+  90              		.loc 1 34 1 is_stmt 0 view .LVU20
+  91 0000 10B5     		push	{r4, lr}
+  92              		.cfi_def_cfa_offset 8
+  93              		.cfi_offset 4, -8
+  94              		.cfi_offset 14, -4
+  95 0002 0446     		mov	r4, r0
+  96 0004 2DED028B 		vpush.64	{d8}
+  97              		.cfi_def_cfa_offset 16
+  98              		.cfi_offset 80, -16
+  99              		.cfi_offset 81, -12
+ 100              		.loc 1 36 51 view .LVU21
+ 101 0008 0068     		ldr	r0, [r0]	@ float
+ 102              	.LVL2:
+  34:Core/Src/ladder_filter.c **** 	float f, one_over_oneplusf, g, G, y1, y2, y3, y4, feedback;
+ 103              		.loc 1 34 1 view .LVU22
+ 104 000a B0EE408A 		vmov.f32	s16, s0
+ 105              		.loc 1 36 51 view .LVU23
+ 106 000e FFF7FEFF 		bl	__aeabi_f2d
+ 107              	.LVL3:
+ 108              		.loc 1 36 43 view .LVU24
+ 109 0012 61A3     		adr	r3, .L14+8
+ 110 0014 D3E90023 		ldrd	r2, [r3]
+ 111 0018 FFF7FEFF 		bl	__aeabi_dmul
+ 112              	.LVL4:
+ 113              		.loc 1 36 60 view .LVU25
+ 114 001c 60A3     		adr	r3, .L14+16
+ 115 001e D3E90023 		ldrd	r2, [r3]
+ 116 0022 FFF7FEFF 		bl	__aeabi_dmul
+ 117              	.LVL5:
+ 118              		.loc 1 36 37 view .LVU26
+ 119 0026 5A4B     		ldr	r3, .L14
+ 120 0028 0022     		movs	r2, #0
+ 121 002a FFF7FEFF 		bl	__aeabi_dmul
+ 122              	.LVL6:
+ 123              		.loc 1 36 9 view .LVU27
+ 124 002e FFF7FEFF 		bl	__aeabi_d2f
+ 125              	.LVL7:
+ 126 0032 5849     		ldr	r1, .L14+4
+ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccFRe056.s 			page 4
+
+
+ 127 0034 00EE100A 		vmov	s0, r0
+ 128 0038 4FF40060 		mov	r0, #2048
+ 129 003c FFF7FEFF 		bl	interp_lin_lut
+ 130              	.LVL8:
+  37:Core/Src/ladder_filter.c ****     // f = tanf(PI * filter->cutoff * TS);
+  38:Core/Src/ladder_filter.c **** 	one_over_oneplusf = 1 / (1 + f);
+ 131              		.loc 1 38 29 view .LVU28
+ 132 0040 F7EE006A 		vmov.f32	s13, #1.0e+0
+ 133 0044 70EE267A 		vadd.f32	s15, s0, s13
+  39:Core/Src/ladder_filter.c **** 	g = f * one_over_oneplusf;
+  40:Core/Src/ladder_filter.c **** 	G = g*g*g*g;
+  41:Core/Src/ladder_filter.c **** 	// at output of 4th stage
+  42:Core/Src/ladder_filter.c **** 	y4 = ((one_over_oneplusf)*(filter->s4 + g*filter->s3 + g*g*filter->s2 + g*g*g*filter->s1) + G*inpu
+ 134              		.loc 1 42 50 view .LVU29
+ 135 0048 94ED036A 		vldr.32	s12, [r4, #12]
+ 136              		.loc 1 42 40 view .LVU30
+ 137 004c D4ED044A 		vldr.32	s9, [r4, #16]
+ 138              		.loc 1 42 86 view .LVU31
+ 139 0050 94ED017A 		vldr.32	s14, [r4, #4]
+ 140              		.loc 1 42 116 view .LVU32
+ 141 0054 94ED054A 		vldr.32	s8, [r4, #20]
+  38:Core/Src/ladder_filter.c **** 	g = f * one_over_oneplusf;
+ 142              		.loc 1 38 20 view .LVU33
+ 143 0058 C6EEA73A 		vdiv.f32	s7, s13, s15
+ 144              		.loc 1 42 67 view .LVU34
+ 145 005c D4ED027A 		vldr.32	s15, [r4, #8]
+  39:Core/Src/ladder_filter.c **** 	g = f * one_over_oneplusf;
+ 146              		.loc 1 39 4 view .LVU35
+ 147 0060 20EE235A 		vmul.f32	s10, s0, s7
+ 148              	.LBB14:
+ 149              	.LBB15:
+ 150              		.file 2 "Core/Inc/helper_functions.h"
+   1:Core/Inc/helper_functions.h **** /**
+   2:Core/Inc/helper_functions.h ****  * @file helper_functions.h
+   3:Core/Inc/helper_functions.h ****  * @author johannes regnier
+   4:Core/Inc/helper_functions.h ****  * @brief Various math tools 
+   5:Core/Inc/helper_functions.h ****  * @version 0.1
+   6:Core/Inc/helper_functions.h ****  * @date 2023-12-30
+   7:Core/Inc/helper_functions.h ****  * 
+   8:Core/Inc/helper_functions.h ****  * @copyright Copyright (c) 2023
+   9:Core/Inc/helper_functions.h ****  * 
+  10:Core/Inc/helper_functions.h ****  */
+  11:Core/Inc/helper_functions.h **** 
+  12:Core/Inc/helper_functions.h **** #ifndef _HELPER_FUNCTIONS_H
+  13:Core/Inc/helper_functions.h **** #define _HELPER_FUNCTIONS_H
+  14:Core/Inc/helper_functions.h **** 
+  15:Core/Inc/helper_functions.h **** 
+  16:Core/Inc/helper_functions.h **** #include <math.h>
+  17:Core/Inc/helper_functions.h **** #include <stdint.h>
+  18:Core/Inc/helper_functions.h **** 
+  19:Core/Inc/helper_functions.h **** #ifndef NOMINMAX
+  20:Core/Inc/helper_functions.h **** 
+  21:Core/Inc/helper_functions.h **** #ifndef max
+  22:Core/Inc/helper_functions.h **** #define max(a,b)            (((a) > (b)) ? (a) : (b))
+  23:Core/Inc/helper_functions.h **** #endif
+  24:Core/Inc/helper_functions.h **** 
+  25:Core/Inc/helper_functions.h **** #ifndef min
+ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccFRe056.s 			page 5
+
+
+  26:Core/Inc/helper_functions.h **** #define min(a,b)            (((a) < (b)) ? (a) : (b))
+  27:Core/Inc/helper_functions.h **** #endif
+  28:Core/Inc/helper_functions.h **** 
+  29:Core/Inc/helper_functions.h **** #endif  /* NOMINMAX */
+  30:Core/Inc/helper_functions.h **** 
+  31:Core/Inc/helper_functions.h **** /**
+  32:Core/Inc/helper_functions.h ****  * @brief Keep value between 0 and max
+  33:Core/Inc/helper_functions.h ****  * 
+  34:Core/Inc/helper_functions.h ****  * @param value 
+  35:Core/Inc/helper_functions.h ****  * @param max 
+  36:Core/Inc/helper_functions.h ****  * @return float 
+  37:Core/Inc/helper_functions.h ****  */
+  38:Core/Inc/helper_functions.h **** inline float wrap(float value, float max)   
+  39:Core/Inc/helper_functions.h **** {
+  40:Core/Inc/helper_functions.h ****     if (value < 0.f)
+  41:Core/Inc/helper_functions.h ****         value += max;
+  42:Core/Inc/helper_functions.h ****     if (value >= max)
+  43:Core/Inc/helper_functions.h ****         value -= max;
+  44:Core/Inc/helper_functions.h **** 
+  45:Core/Inc/helper_functions.h ****     return value;
+  46:Core/Inc/helper_functions.h **** }
+  47:Core/Inc/helper_functions.h **** 
+  48:Core/Inc/helper_functions.h **** inline float Crossfade(float a, float b, float fade)
+  49:Core/Inc/helper_functions.h **** {
+  50:Core/Inc/helper_functions.h ****     return a + (b - a) * fade;
+  51:Core/Inc/helper_functions.h **** }
+  52:Core/Inc/helper_functions.h **** 
+  53:Core/Inc/helper_functions.h **** 
+  54:Core/Inc/helper_functions.h **** /**
+  55:Core/Inc/helper_functions.h ****  * @brief Pade-approximation of tanh for soft clipping
+  56:Core/Inc/helper_functions.h ****  * @ from https://www.musicdsp.org/en/latest/Other/238-rational-tanh-approximation.html 
+  57:Core/Inc/helper_functions.h ****  * @param x 
+  58:Core/Inc/helper_functions.h ****  * @return float 
+  59:Core/Inc/helper_functions.h ****  */
+  60:Core/Inc/helper_functions.h **** inline float SoftClip(float x)
+  61:Core/Inc/helper_functions.h **** {
+  62:Core/Inc/helper_functions.h ****     if (x < -3.0f)
+ 151              		.loc 2 62 8 view .LVU36
+ 152 0064 F8EE081A 		vmov.f32	s3, #-3.0e+0
+ 153              	.LBE15:
+ 154              	.LBE14:
+ 155              		.loc 1 42 40 view .LVU37
+ 156 0068 E6EE054A 		vfma.f32	s9, s12, s10
+  40:Core/Src/ladder_filter.c **** 	// at output of 4th stage
+ 157              		.loc 1 40 7 view .LVU38
+ 158 006c 25EE053A 		vmul.f32	s6, s10, s10
+ 159              	.LBB23:
+ 160              	.LBB18:
+ 161              		.loc 2 62 8 view .LVU39
+ 162 0070 B4EEE18A 		vcmpe.f32	s16, s3
+ 163              	.LBE18:
+ 164              	.LBE23:
+ 165              		.loc 1 42 55 view .LVU40
+ 166 0074 E3EE274A 		vfma.f32	s9, s6, s15
+  40:Core/Src/ladder_filter.c **** 	// at output of 4th stage
+ 167              		.loc 1 40 9 view .LVU41
+ 168 0078 23EE052A 		vmul.f32	s4, s6, s10
+ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccFRe056.s 			page 6
+
+
+ 169              	.LBB24:
+ 170              	.LBB19:
+ 171              		.loc 2 62 8 view .LVU42
+ 172 007c F1EE10FA 		vmrs	APSR_nzcv, FPSCR
+ 173              	.LBE19:
+ 174              	.LBE24:
+  40:Core/Src/ladder_filter.c **** 	// at output of 4th stage
+ 175              		.loc 1 40 4 view .LVU43
+ 176 0080 62EE052A 		vmul.f32	s5, s4, s10
+ 177              		.loc 1 42 72 view .LVU44
+ 178 0084 E2EE074A 		vfma.f32	s9, s4, s14
+ 179              		.loc 1 42 95 view .LVU45
+ 180 0088 22EE883A 		vmul.f32	s6, s5, s16
+ 181              		.loc 1 42 108 view .LVU46
+ 182 008c B0EE662A 		vmov.f32	s4, s13
+ 183 0090 A4EE222A 		vfma.f32	s4, s8, s5
+ 184              		.loc 1 42 92 view .LVU47
+ 185 0094 A4EEA33A 		vfma.f32	s6, s9, s7
+  36:Core/Src/ladder_filter.c ****     // f = tanf(PI * filter->cutoff * TS);
+ 186              		.loc 1 36 9 view .LVU48
+ 187 0098 F0EE405A 		vmov.f32	s11, s0
+ 188              	.LVL9:
+  38:Core/Src/ladder_filter.c **** 	g = f * one_over_oneplusf;
+ 189              		.loc 1 38 2 is_stmt 1 view .LVU49
+  39:Core/Src/ladder_filter.c **** 	G = g*g*g*g;
+ 190              		.loc 1 39 2 view .LVU50
+  40:Core/Src/ladder_filter.c **** 	// at output of 4th stage
+ 191              		.loc 1 40 2 view .LVU51
+ 192              		.loc 1 42 2 view .LVU52
+ 193              		.loc 1 42 5 is_stmt 0 view .LVU53
+ 194 009c 83EE020A 		vdiv.f32	s0, s6, s4
+ 195              	.LVL10:
+  43:Core/Src/ladder_filter.c **** 	// at other outputs
+  44:Core/Src/ladder_filter.c **** 	feedback = (SoftClip(input) - SoftClip(filter->k*y4)); // naive but good enough
+ 196              		.loc 1 44 2 is_stmt 1 view .LVU54
+ 197              	.LBB25:
+ 198              	.LBI14:
+  60:Core/Inc/helper_functions.h **** {
+ 199              		.loc 2 60 14 view .LVU55
+ 200              	.LBB20:
+ 201              		.loc 2 62 5 view .LVU56
+ 202              		.loc 2 62 8 is_stmt 0 view .LVU57
+ 203 00a0 72D4     		bmi	.L8
+  63:Core/Inc/helper_functions.h ****     {
+  64:Core/Inc/helper_functions.h ****         return -1.0f;
+  65:Core/Inc/helper_functions.h ****     }
+  66:Core/Inc/helper_functions.h ****     else if (x > 3.0f)
+ 204              		.loc 2 66 10 is_stmt 1 view .LVU58
+ 205              		.loc 2 66 13 is_stmt 0 view .LVU59
+ 206 00a2 F0EE084A 		vmov.f32	s9, #3.0e+0
+ 207 00a6 B4EEE48A 		vcmpe.f32	s16, s9
+ 208 00aa F1EE10FA 		vmrs	APSR_nzcv, FPSCR
+ 209 00ae 55DD     		ble	.L13
+ 210              	.LVL11:
+ 211              	.L6:
+ 212              		.loc 2 66 13 view .LVU60
+ 213              	.LBE20:
+ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccFRe056.s 			page 7
+
+
+ 214              	.LBE25:
+ 215              		.loc 1 44 32 view .LVU61
+ 216 00b0 64EE004A 		vmul.f32	s9, s8, s0
+ 217              	.LVL12:
+ 218              	.LBB26:
+ 219              	.LBI26:
+  60:Core/Inc/helper_functions.h **** {
+ 220              		.loc 2 60 14 is_stmt 1 view .LVU62
+ 221              	.LBB27:
+  62:Core/Inc/helper_functions.h ****     {
+ 222              		.loc 2 62 5 view .LVU63
+  62:Core/Inc/helper_functions.h ****     {
+ 223              		.loc 2 62 8 is_stmt 0 view .LVU64
+ 224 00b4 B8EE084A 		vmov.f32	s8, #-3.0e+0
+ 225 00b8 F4EEC44A 		vcmpe.f32	s9, s8
+ 226 00bc F1EE10FA 		vmrs	APSR_nzcv, FPSCR
+ 227 00c0 5FD4     		bmi	.L10
+ 228              		.loc 2 66 10 is_stmt 1 view .LVU65
+ 229              		.loc 2 66 13 is_stmt 0 view .LVU66
+ 230 00c2 B0EE084A 		vmov.f32	s8, #3.0e+0
+ 231 00c6 F4EEC44A 		vcmpe.f32	s9, s8
+ 232 00ca F1EE10FA 		vmrs	APSR_nzcv, FPSCR
+ 233 00ce 42DC     		bgt	.L11
+ 234              	.LVL13:
+ 235              	.LBB28:
+ 236              	.LBI28:
+  60:Core/Inc/helper_functions.h **** {
+ 237              		.loc 2 60 14 is_stmt 1 view .LVU67
+ 238              	.LBB29:
+  67:Core/Inc/helper_functions.h ****     {
+  68:Core/Inc/helper_functions.h ****         return 1.0f;
+  69:Core/Inc/helper_functions.h ****     }
+  70:Core/Inc/helper_functions.h ****     else
+  71:Core/Inc/helper_functions.h ****     {
+  72:Core/Inc/helper_functions.h ****         return x * (27.0f + x * x) / (27.0f + 9.0f * x * x);
+ 239              		.loc 2 72 9 view .LVU68
+ 240              		.loc 2 72 27 is_stmt 0 view .LVU69
+ 241 00d0 B3EE0B4A 		vmov.f32	s8, #2.7e+1
+ 242              		.loc 2 72 52 view .LVU70
+ 243 00d4 F2EE022A 		vmov.f32	s5, #9.0e+0
+ 244 00d8 64EEA22A 		vmul.f32	s5, s9, s5
+ 245              		.loc 2 72 27 view .LVU71
+ 246 00dc B0EE442A 		vmov.f32	s4, s8
+ 247 00e0 A4EEA42A 		vfma.f32	s4, s9, s9
+ 248              		.loc 2 72 45 view .LVU72
+ 249 00e4 A4EEA24A 		vfma.f32	s8, s9, s5
+ 250              		.loc 2 72 18 view .LVU73
+ 251 00e8 64EE824A 		vmul.f32	s9, s9, s4
+ 252              	.LVL14:
+ 253              		.loc 2 72 45 view .LVU74
+ 254 00ec B0EE443A 		vmov.f32	s6, s8
+ 255              		.loc 2 72 36 view .LVU75
+ 256 00f0 84EE834A 		vdiv.f32	s8, s9, s6
+ 257              	.LVL15:
+ 258              	.L7:
+ 259              		.loc 2 72 36 view .LVU76
+ 260              	.LBE29:
+ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccFRe056.s 			page 8
+
+
+ 261              	.LBE28:
+ 262              	.LBE27:
+ 263              	.LBE26:
+  45:Core/Src/ladder_filter.c **** 	y1 = g*feedback + (filter->s1) * one_over_oneplusf;
+  46:Core/Src/ladder_filter.c **** 	y2 = g*y1 + filter->s2 * one_over_oneplusf;
+  47:Core/Src/ladder_filter.c **** 	y3 = g*y2 + filter->s3 * one_over_oneplusf;
+  48:Core/Src/ladder_filter.c **** 	//update states s = y + v = y + f*(x-y) (=2v + s = 2*f(x-y) + s)
+  49:Core/Src/ladder_filter.c **** 	filter->s1 = y1 + f*(feedback - y1);
+  50:Core/Src/ladder_filter.c **** 	filter->s2 = y2 + f*(y1 - y2);
+  51:Core/Src/ladder_filter.c **** 	filter->s3 = y3 + f*(y2 - y3);
+  52:Core/Src/ladder_filter.c **** 	filter->s4 = y4 + f*(y3 - y4);
+  53:Core/Src/ladder_filter.c **** 	return(y4);
+  54:Core/Src/ladder_filter.c **** }...
+ 264              		.loc 1 54 1 view .LVU77
+ 265 00f4 BDEC028B 		vldm	sp!, {d8}
+ 266              		.cfi_remember_state
+ 267              		.cfi_restore 80
+ 268              		.cfi_restore 81
+ 269              		.cfi_def_cfa_offset 8
+  44:Core/Src/ladder_filter.c **** 	feedback = (SoftClip(input) - SoftClip(filter->k*y4)); // naive but good enough
+ 270              		.loc 1 44 11 view .LVU78
+ 271 00f8 76EEC46A 		vsub.f32	s13, s13, s8
+ 272              	.LVL16:
+  45:Core/Src/ladder_filter.c **** 	y1 = g*feedback + (filter->s1) * one_over_oneplusf;
+ 273              		.loc 1 45 2 is_stmt 1 view .LVU79
+  45:Core/Src/ladder_filter.c **** 	y1 = g*feedback + (filter->s1) * one_over_oneplusf;
+ 274              		.loc 1 45 33 is_stmt 0 view .LVU80
+ 275 00fc 27EE237A 		vmul.f32	s14, s14, s7
+  46:Core/Src/ladder_filter.c **** 	y2 = g*y1 + filter->s2 * one_over_oneplusf;
+ 276              		.loc 1 46 25 view .LVU81
+ 277 0100 67EEA37A 		vmul.f32	s15, s15, s7
+  45:Core/Src/ladder_filter.c **** 	y1 = g*feedback + (filter->s1) * one_over_oneplusf;
+ 278              		.loc 1 45 5 view .LVU82
+ 279 0104 A5EE267A 		vfma.f32	s14, s10, s13
+ 280              	.LVL17:
+  46:Core/Src/ladder_filter.c **** 	y2 = g*y1 + filter->s2 * one_over_oneplusf;
+ 281              		.loc 1 46 2 is_stmt 1 view .LVU83
+  47:Core/Src/ladder_filter.c **** 	y3 = g*y2 + filter->s3 * one_over_oneplusf;
+ 282              		.loc 1 47 25 is_stmt 0 view .LVU84
+ 283 0108 26EE236A 		vmul.f32	s12, s12, s7
+  46:Core/Src/ladder_filter.c **** 	y2 = g*y1 + filter->s2 * one_over_oneplusf;
+ 284              		.loc 1 46 5 view .LVU85
+ 285 010c E5EE077A 		vfma.f32	s15, s10, s14
+ 286              	.LVL18:
+  47:Core/Src/ladder_filter.c **** 	y3 = g*y2 + filter->s3 * one_over_oneplusf;
+ 287              		.loc 1 47 2 is_stmt 1 view .LVU86
+  49:Core/Src/ladder_filter.c **** 	filter->s1 = y1 + f*(feedback - y1);
+ 288              		.loc 1 49 32 is_stmt 0 view .LVU87
+ 289 0110 76EEC76A 		vsub.f32	s13, s13, s14
+ 290              	.LVL19:
+  49:Core/Src/ladder_filter.c **** 	filter->s1 = y1 + f*(feedback - y1);
+ 291              		.loc 1 49 18 view .LVU88
+ 292 0114 F0EE474A 		vmov.f32	s9, s14
+ 293 0118 E6EEA54A 		vfma.f32	s9, s13, s11
+  47:Core/Src/ladder_filter.c **** 	y3 = g*y2 + filter->s3 * one_over_oneplusf;
+ 294              		.loc 1 47 5 view .LVU89
+ 295 011c F0EE466A 		vmov.f32	s13, s12
+ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccFRe056.s 			page 9
+
+
+ 296 0120 E5EE276A 		vfma.f32	s13, s10, s15
+ 297              	.LVL20:
+  49:Core/Src/ladder_filter.c **** 	filter->s1 = y1 + f*(feedback - y1);
+ 298              		.loc 1 49 2 is_stmt 1 view .LVU90
+  50:Core/Src/ladder_filter.c **** 	filter->s2 = y2 + f*(y1 - y2);
+ 299              		.loc 1 50 26 is_stmt 0 view .LVU91
+ 300 0124 37EE677A 		vsub.f32	s14, s14, s15
+ 301              	.LVL21:
+  50:Core/Src/ladder_filter.c **** 	filter->s2 = y2 + f*(y1 - y2);
+ 302              		.loc 1 50 18 view .LVU92
+ 303 0128 B0EE676A 		vmov.f32	s12, s15
+  51:Core/Src/ladder_filter.c **** 	filter->s3 = y3 + f*(y2 - y3);
+ 304              		.loc 1 51 26 view .LVU93
+ 305 012c 77EEE67A 		vsub.f32	s15, s15, s13
+ 306              	.LVL22:
+  50:Core/Src/ladder_filter.c **** 	filter->s2 = y2 + f*(y1 - y2);
+ 307              		.loc 1 50 18 view .LVU94
+ 308 0130 A7EE256A 		vfma.f32	s12, s14, s11
+ 309              	.LVL23:
+  52:Core/Src/ladder_filter.c **** 	filter->s4 = y4 + f*(y3 - y4);
+ 310              		.loc 1 52 26 view .LVU95
+ 311 0134 36EEC07A 		vsub.f32	s14, s13, s0
+  51:Core/Src/ladder_filter.c **** 	filter->s3 = y3 + f*(y2 - y3);
+ 312              		.loc 1 51 18 view .LVU96
+ 313 0138 E7EEA56A 		vfma.f32	s13, s15, s11
+ 314              	.LVL24:
+  52:Core/Src/ladder_filter.c **** 	filter->s4 = y4 + f*(y3 - y4);
+ 315              		.loc 1 52 18 view .LVU97
+ 316 013c F0EE407A 		vmov.f32	s15, s0
+ 317 0140 E7EE257A 		vfma.f32	s15, s14, s11
+  49:Core/Src/ladder_filter.c **** 	filter->s1 = y1 + f*(feedback - y1);
+ 318              		.loc 1 49 13 view .LVU98
+ 319 0144 C4ED014A 		vstr.32	s9, [r4, #4]
+  50:Core/Src/ladder_filter.c **** 	filter->s2 = y2 + f*(y1 - y2);
+ 320              		.loc 1 50 2 is_stmt 1 view .LVU99
+  50:Core/Src/ladder_filter.c **** 	filter->s2 = y2 + f*(y1 - y2);
+ 321              		.loc 1 50 13 is_stmt 0 view .LVU100
+ 322 0148 84ED026A 		vstr.32	s12, [r4, #8]
+  51:Core/Src/ladder_filter.c **** 	filter->s3 = y3 + f*(y2 - y3);
+ 323              		.loc 1 51 2 is_stmt 1 view .LVU101
+  51:Core/Src/ladder_filter.c **** 	filter->s3 = y3 + f*(y2 - y3);
+ 324              		.loc 1 51 13 is_stmt 0 view .LVU102
+ 325 014c C4ED036A 		vstr.32	s13, [r4, #12]
+  52:Core/Src/ladder_filter.c **** 	filter->s4 = y4 + f*(y3 - y4);
+ 326              		.loc 1 52 2 is_stmt 1 view .LVU103
+  52:Core/Src/ladder_filter.c **** 	filter->s4 = y4 + f*(y3 - y4);
+ 327              		.loc 1 52 13 is_stmt 0 view .LVU104
+ 328 0150 C4ED047A 		vstr.32	s15, [r4, #16]
+  53:Core/Src/ladder_filter.c **** 	return(y4);
+ 329              		.loc 1 53 2 is_stmt 1 view .LVU105
+ 330              		.loc 1 54 1 is_stmt 0 view .LVU106
+ 331 0154 10BD     		pop	{r4, pc}
+ 332              	.LVL25:
+ 333              	.L11:
+ 334              		.cfi_restore_state
+ 335              	.LBB32:
+ 336              	.LBB30:
+ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccFRe056.s 			page 10
+
+
+  68:Core/Inc/helper_functions.h ****     }
+ 337              		.loc 2 68 16 view .LVU107
+ 338 0156 B7EE004A 		vmov.f32	s8, #1.0e+0
+ 339 015a CBE7     		b	.L7
+ 340              	.LVL26:
+ 341              	.L13:
+  68:Core/Inc/helper_functions.h ****     }
+ 342              		.loc 2 68 16 view .LVU108
+ 343              	.LBE30:
+ 344              	.LBE32:
+ 345              	.LBB33:
+ 346              	.LBB21:
+ 347              	.LBB16:
+ 348              	.LBI16:
+  60:Core/Inc/helper_functions.h **** {
+ 349              		.loc 2 60 14 is_stmt 1 view .LVU109
+ 350              	.LBB17:
+ 351              		.loc 2 72 9 view .LVU110
+ 352              		.loc 2 72 27 is_stmt 0 view .LVU111
+ 353 015c F3EE0B6A 		vmov.f32	s13, #2.7e+1
+ 354              		.loc 2 72 52 view .LVU112
+ 355 0160 B2EE023A 		vmov.f32	s6, #9.0e+0
+ 356 0164 28EE033A 		vmul.f32	s6, s16, s6
+ 357              		.loc 2 72 27 view .LVU113
+ 358 0168 F0EE662A 		vmov.f32	s5, s13
+ 359              	.LVL27:
+ 360              		.loc 2 72 27 view .LVU114
+ 361 016c E8EE082A 		vfma.f32	s5, s16, s16
+ 362              		.loc 2 72 45 view .LVU115
+ 363 0170 E8EE036A 		vfma.f32	s13, s16, s6
+ 364              		.loc 2 72 18 view .LVU116
+ 365 0174 28EE228A 		vmul.f32	s16, s16, s5
+ 366              	.LVL28:
+ 367              		.loc 2 72 45 view .LVU117
+ 368 0178 F0EE664A 		vmov.f32	s9, s13
+ 369              		.loc 2 72 36 view .LVU118
+ 370 017c C8EE246A 		vdiv.f32	s13, s16, s9
+ 371              	.LVL29:
+ 372              		.loc 2 72 36 view .LVU119
+ 373 0180 96E7     		b	.L6
+ 374              	.LVL30:
+ 375              	.L10:
+ 376              		.loc 2 72 36 view .LVU120
+ 377              	.LBE17:
+ 378              	.LBE16:
+ 379              	.LBE21:
+ 380              	.LBE33:
+ 381              	.LBB34:
+ 382              	.LBB31:
+  64:Core/Inc/helper_functions.h ****     }
+ 383              		.loc 2 64 16 view .LVU121
+ 384 0182 BFEE004A 		vmov.f32	s8, #-1.0e+0
+ 385 0186 B5E7     		b	.L7
+ 386              	.LVL31:
+ 387              	.L8:
+  64:Core/Inc/helper_functions.h ****     }
+ 388              		.loc 2 64 16 view .LVU122
+ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccFRe056.s 			page 11
+
+
+ 389              	.LBE31:
+ 390              	.LBE34:
+ 391              	.LBB35:
+ 392              	.LBB22:
+ 393 0188 FFEE006A 		vmov.f32	s13, #-1.0e+0
+ 394 018c 90E7     		b	.L6
+ 395              	.L15:
+ 396 018e 00BF     		.align	3
+ 397              	.L14:
+ 398 0190 0000A040 		.word	1084227584
+ 399 0194 00000000 		.word	tan_lut
+ 400 0198 EA2E4454 		.word	1413754602
+ 401 019c FB210940 		.word	1074340347
+ 402 01a0 000000C0 		.word	-1073741824
+ 403 01a4 67D8F53E 		.word	1056299111
+ 404              	.LBE22:
+ 405              	.LBE35:
+ 406              		.cfi_endproc
+ 407              	.LFE4:
+ 409              		.global	Moog_filter
+ 410              		.section	.ccmram,"aw"
+ 411              		.align	2
+ 414              	Moog_filter:
+ 415 0000 00000000 		.space	24
+ 415      00000000 
+ 415      00000000 
+ 415      00000000 
+ 415      00000000 
+ 416              		.text
+ 417              	.Letext0:
+ 418              		.file 3 "Core/Inc/ladder_filter.h"
+ 419              		.file 4 "/Users/johannes/Library/Application Support/Code/User/globalStorage/bmd.stm32-for-vscode/
+ 420              		.file 5 "/Users/johannes/Library/Application Support/Code/User/globalStorage/bmd.stm32-for-vscode/
+ 421              		.file 6 "Core/Inc/lut_tan.h"
+ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccFRe056.s 			page 12
+
+
+DEFINED SYMBOLS
+                            *ABS*:0000000000000000 ladder_filter.c
+/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccFRe056.s:20     .text.MoogLP_init:0000000000000000 $t
+/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccFRe056.s:27     .text.MoogLP_init:0000000000000000 MoogLP_init
+/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccFRe056.s:65     .text.MoogLP_init:0000000000000014 $d
+/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccFRe056.s:74     .text.MoogLP_compute:0000000000000000 $t
+/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccFRe056.s:81     .text.MoogLP_compute:0000000000000000 MoogLP_compute
+/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccFRe056.s:398    .text.MoogLP_compute:0000000000000190 $d
+/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccFRe056.s:414    .ccmram:0000000000000000 Moog_filter
+/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccFRe056.s:411    .ccmram:0000000000000000 $d
+
+UNDEFINED SYMBOLS
+__aeabi_f2d
+__aeabi_dmul
+__aeabi_d2f
+interp_lin_lut
+tan_lut

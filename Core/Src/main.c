@@ -10,6 +10,7 @@
  *
  */
 /* USER CODE END Header */
+
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
 #include "i2c.h"
@@ -107,7 +108,7 @@ int main(void)
 	MIDI_eventInit();
 	AUDIO_Init();
 
-	ConsoleInit();
+	// ConsoleInit();
 
 	/* USER CODE END 2 */
 

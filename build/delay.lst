@@ -1,0 +1,1033 @@
+ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccZJTXXA.s 			page 1
+
+
+   1              		.cpu cortex-m4
+   2              		.arch armv7e-m
+   3              		.fpu fpv4-sp-d16
+   4              		.eabi_attribute 27, 1
+   5              		.eabi_attribute 28, 1
+   6              		.eabi_attribute 20, 1
+   7              		.eabi_attribute 21, 1
+   8              		.eabi_attribute 23, 3
+   9              		.eabi_attribute 24, 1
+  10              		.eabi_attribute 25, 1
+  11              		.eabi_attribute 26, 1
+  12              		.eabi_attribute 30, 2
+  13              		.eabi_attribute 34, 1
+  14              		.eabi_attribute 18, 4
+  15              		.file	"delay.c"
+  16              		.text
+  17              	.Ltext0:
+  18              		.cfi_sections	.debug_frame
+  19              		.section	.text.Delay_init,"ax",%progbits
+  20              		.align	1
+  21              		.p2align 2,,3
+  22              		.global	Delay_init
+  23              		.syntax unified
+  24              		.thumb
+  25              		.thumb_func
+  27              	Delay_init:
+  28              	.LFB3:
+  29              		.file 1 "Core/Src/delay.c"
+   1:Core/Src/delay.c **** /**
+   2:Core/Src/delay.c ****  ******************************************************************************
+   3:Core/Src/delay.c ****  * File Name		: delay.c
+   4:Core/Src/delay.c ****  * Author			: Xavier Halgand
+   5:Core/Src/delay.c ****  * Date				:
+   6:Core/Src/delay.c ****  * Description		: simple delay/echo effect with low pass filter in the feedback loop
+   7:Core/Src/delay.c ****  ******************************************************************************
+   8:Core/Src/delay.c ****  */
+   9:Core/Src/delay.c **** /*
+  10:Core/Src/delay.c **** * This program is free software; you can redistribute it and/or modify
+  11:Core/Src/delay.c **** * it under the terms of the GNU General Public License as published by
+  12:Core/Src/delay.c **** * the Free Software Foundation; either version 2 of the License, or
+  13:Core/Src/delay.c **** * (at your option) any later version.
+  14:Core/Src/delay.c **** *
+  15:Core/Src/delay.c **** * This program is distributed in the hope that it will be useful,
+  16:Core/Src/delay.c **** * but WITHOUT ANY WARRANTY; without even the implied warranty of
+  17:Core/Src/delay.c **** * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+  18:Core/Src/delay.c **** * GNU General Public License for more details.
+  19:Core/Src/delay.c **** *
+  20:Core/Src/delay.c **** * You should have received a copy of the GNU General Public License
+  21:Core/Src/delay.c **** * along with this program; if not, write to the Free Software
+  22:Core/Src/delay.c **** * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+  23:Core/Src/delay.c **** *
+  24:Core/Src/delay.c **** */
+  25:Core/Src/delay.c **** #include "delay.h"
+  26:Core/Src/delay.c **** 
+  27:Core/Src/delay.c **** 
+  28:Core/Src/delay.c **** /*-------------------------------------------------------------------------------------------*/
+  29:Core/Src/delay.c **** /* Delay effect variables  */
+ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccZJTXXA.s 			page 2
+
+
+  30:Core/Src/delay.c **** static float		delaylineL[DELAY_BUFF_SIZE ];
+  31:Core/Src/delay.c **** static float		delaylineR[DELAY_BUFF_SIZE ];
+  32:Core/Src/delay.c **** static float		*readptrL _CCM_, *readptrR _CCM_; // output pointer of delay line
+  33:Core/Src/delay.c **** static float      	*writeptrL _CCM_, *writeptrR _CCM_; // input pointer of delay line
+  34:Core/Src/delay.c **** static uint16_t		delay_time_L _CCM_, delay_time_R _CCM_;
+  35:Core/Src/delay.c **** 
+  36:Core/Src/delay.c **** // static float 		sampleL, previous_sampleL, sampleR, previous_sampleR;
+  37:Core/Src/delay.c **** static float		feedback = INIT_FEEDB;
+  38:Core/Src/delay.c **** static float		wet = INIT_WET;
+  39:Core/Src/delay.c **** 
+  40:Core/Src/delay.c **** extern ZDFLP_t lp_L;
+  41:Core/Src/delay.c **** extern ZDFLP_t lp_R;
+  42:Core/Src/delay.c **** 
+  43:Core/Src/delay.c **** /*-------------------------------------------------------------------------------------------*/
+  44:Core/Src/delay.c **** 
+  45:Core/Src/delay.c **** 
+  46:Core/Src/delay.c **** 
+  47:Core/Src/delay.c **** 
+  48:Core/Src/delay.c **** void Delay_init(void)
+  49:Core/Src/delay.c **** {
+  30              		.loc 1 49 1 view -0
+  31              		.cfi_startproc
+  32              		@ args = 0, pretend = 0, frame = 0
+  33              		@ frame_needed = 0, uses_anonymous_args = 0
+  50:Core/Src/delay.c **** 	/* initialize pointers positions for delay effect */
+  51:Core/Src/delay.c **** 	delay_time_L = INIT_DELAY_L;
+  34              		.loc 1 51 2 view .LVU1
+  52:Core/Src/delay.c **** 	delay_time_R = INIT_DELAY_R;
+  35              		.loc 1 52 2 view .LVU2
+  53:Core/Src/delay.c **** 	readptrL = delaylineL;
+  36              		.loc 1 53 2 view .LVU3
+  49:Core/Src/delay.c **** 	/* initialize pointers positions for delay effect */
+  37              		.loc 1 49 1 is_stmt 0 view .LVU4
+  38 0000 10B5     		push	{r4, lr}
+  39              		.cfi_def_cfa_offset 8
+  40              		.cfi_offset 4, -8
+  41              		.cfi_offset 14, -4
+  42              		.loc 1 53 11 view .LVU5
+  43 0002 094B     		ldr	r3, .L4
+  54:Core/Src/delay.c **** 	readptrR = delaylineR;
+  44              		.loc 1 54 11 view .LVU6
+  45 0004 094A     		ldr	r2, .L4+4
+  53:Core/Src/delay.c **** 	readptrL = delaylineL;
+  46              		.loc 1 53 11 view .LVU7
+  47 0006 0A4C     		ldr	r4, .L4+8
+  48 0008 1C60     		str	r4, [r3]
+  49              		.loc 1 54 2 is_stmt 1 view .LVU8
+  55:Core/Src/delay.c **** 	writeptrL = delaylineL + delay_time_L;
+  50              		.loc 1 55 12 is_stmt 0 view .LVU9
+  51 000a 0A4C     		ldr	r4, .L4+12
+  56:Core/Src/delay.c **** 	writeptrR = delaylineR + delay_time_R;
+  57:Core/Src/delay.c **** 	SVF_LP_init(&lp_L);
+  52              		.loc 1 57 2 view .LVU10
+  53 000c 0A48     		ldr	r0, .L4+16
+  56:Core/Src/delay.c **** 	writeptrR = delaylineR + delay_time_R;
+  54              		.loc 1 56 12 view .LVU11
+  55 000e 02F5FA41 		add	r1, r2, #32000
+ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccZJTXXA.s 			page 3
+
+
+  55:Core/Src/delay.c **** 	writeptrL = delaylineL + delay_time_L;
+  56              		.loc 1 55 12 view .LVU12
+  57 0012 C3E90124 		strd	r2, r4, [r3, #4]
+  56:Core/Src/delay.c **** 	writeptrR = delaylineR + delay_time_R;
+  58              		.loc 1 56 2 is_stmt 1 view .LVU13
+  56:Core/Src/delay.c **** 	writeptrR = delaylineR + delay_time_R;
+  59              		.loc 1 56 12 is_stmt 0 view .LVU14
+  60 0016 D960     		str	r1, [r3, #12]
+  61              		.loc 1 57 2 is_stmt 1 view .LVU15
+  62 0018 FFF7FEFF 		bl	SVF_LP_init
+  63              	.LVL0:
+  58:Core/Src/delay.c **** 	SVF_LP_init(&lp_R);
+  64              		.loc 1 58 2 view .LVU16
+  59:Core/Src/delay.c **** }
+  65              		.loc 1 59 1 is_stmt 0 view .LVU17
+  66 001c BDE81040 		pop	{r4, lr}
+  67              		.cfi_restore 14
+  68              		.cfi_restore 4
+  69              		.cfi_def_cfa_offset 0
+  58:Core/Src/delay.c **** 	SVF_LP_init(&lp_R);
+  70              		.loc 1 58 2 view .LVU18
+  71 0020 0648     		ldr	r0, .L4+20
+  72 0022 FFF7FEBF 		b	SVF_LP_init
+  73              	.LVL1:
+  74              	.L5:
+  75 0026 00BF     		.align	2
+  76              	.L4:
+  77 0028 00000000 		.word	.LANCHOR0
+  78 002c 00000000 		.word	delaylineR
+  79 0030 00000000 		.word	delaylineL
+  80 0034 80BB0000 		.word	delaylineL+48000
+  81 0038 00000000 		.word	lp_L
+  82 003c 00000000 		.word	lp_R
+  83              		.cfi_endproc
+  84              	.LFE3:
+  86              		.section	.text.Delay_time_set,"ax",%progbits
+  87              		.align	1
+  88              		.p2align 2,,3
+  89              		.global	Delay_time_set
+  90              		.syntax unified
+  91              		.thumb
+  92              		.thumb_func
+  94              	Delay_time_set:
+  95              	.LVL2:
+  96              	.LFB4:
+  60:Core/Src/delay.c **** /*-------------------------------------------------------------------------------------------*/
+  61:Core/Src/delay.c **** 
+  62:Core/Src/delay.c **** 
+  63:Core/Src/delay.c **** /*-------------------------------------------------------------------------------------------*/
+  64:Core/Src/delay.c **** void Delay_time_set(uint8_t val)
+  65:Core/Src/delay.c **** {
+  97              		.loc 1 65 1 is_stmt 1 view -0
+  98              		.cfi_startproc
+  99              		@ args = 0, pretend = 0, frame = 0
+ 100              		@ frame_needed = 0, uses_anonymous_args = 0
+  66:Core/Src/delay.c **** 	float 	*pos;
+ 101              		.loc 1 66 2 view .LVU20
+ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccZJTXXA.s 			page 4
+
+
+  67:Core/Src/delay.c **** 	delay_time_L = (uint32_t) lrintf((DELAY_BUFF_SIZE - 1 - MIN_DELAY)/MIDI_MAX * val + MIN_DELAY);
+ 102              		.loc 1 67 2 view .LVU21
+ 103              		.loc 1 67 78 is_stmt 0 view .LVU22
+ 104 0000 07EE900A 		vmov	s15, r0	@ int
+ 105              		.loc 1 67 28 view .LVU23
+ 106 0004 9FED0B7A 		vldr.32	s14, .L9
+ 107 0008 9FED0B0A 		vldr.32	s0, .L9+4
+ 108              		.loc 1 67 78 view .LVU24
+ 109 000c F8EEE77A 		vcvt.f32.s32	s15, s15
+  65:Core/Src/delay.c **** 	float 	*pos;
+ 110              		.loc 1 65 1 view .LVU25
+ 111 0010 08B5     		push	{r3, lr}
+ 112              		.cfi_def_cfa_offset 8
+ 113              		.cfi_offset 3, -8
+ 114              		.cfi_offset 14, -4
+ 115              		.loc 1 67 28 view .LVU26
+ 116 0012 A7EE870A 		vfma.f32	s0, s15, s14
+ 117 0016 FFF7FEFF 		bl	lrintf
+ 118              	.LVL3:
+  68:Core/Src/delay.c **** 	pos = writeptrL - delay_time_L;
+ 119              		.loc 1 68 2 is_stmt 1 view .LVU27
+ 120              		.loc 1 68 18 is_stmt 0 view .LVU28
+ 121 001a 084A     		ldr	r2, .L9+8
+  69:Core/Src/delay.c **** 	if (pos >= delaylineL)
+ 122              		.loc 1 69 5 view .LVU29
+ 123 001c 0849     		ldr	r1, .L9+12
+  68:Core/Src/delay.c **** 	pos = writeptrL - delay_time_L;
+ 124              		.loc 1 68 6 view .LVU30
+ 125 001e 9368     		ldr	r3, [r2, #8]
+  68:Core/Src/delay.c **** 	pos = writeptrL - delay_time_L;
+ 126              		.loc 1 68 18 view .LVU31
+ 127 0020 80B2     		uxth	r0, r0
+  68:Core/Src/delay.c **** 	pos = writeptrL - delay_time_L;
+ 128              		.loc 1 68 6 view .LVU32
+ 129 0022 A3EB8003 		sub	r3, r3, r0, lsl #2
+ 130              	.LVL4:
+ 131              		.loc 1 69 2 is_stmt 1 view .LVU33
+  70:Core/Src/delay.c **** 		readptrL = pos;
+  71:Core/Src/delay.c **** 	else
+  72:Core/Src/delay.c **** 		readptrL = pos + DELAY_BUFF_SIZE - 1;
+ 132              		.loc 1 72 3 view .LVU34
+  69:Core/Src/delay.c **** 	if (pos >= delaylineL)
+ 133              		.loc 1 69 5 is_stmt 0 view .LVU35
+ 134 0026 8B42     		cmp	r3, r1
+ 135              		.loc 1 72 36 view .LVU36
+ 136 0028 3CBF     		itt	cc
+ 137 002a 03F53B43 		addcc	r3, r3, #47872
+ 138              	.LVL5:
+ 139              		.loc 1 72 36 view .LVU37
+ 140 002e 7C33     		addcc	r3, r3, #124
+ 141 0030 1360     		str	r3, [r2]
+  73:Core/Src/delay.c **** 
+  74:Core/Src/delay.c **** }
+ 142              		.loc 1 74 1 view .LVU38
+ 143 0032 08BD     		pop	{r3, pc}
+ 144              	.L10:
+ 145              		.align	2
+ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccZJTXXA.s 			page 5
+
+
+ 146              	.L9:
+ 147 0034 0C06B942 		.word	1119421964
+ 148 0038 00007A43 		.word	1132068864
+ 149 003c 00000000 		.word	.LANCHOR0
+ 150 0040 00000000 		.word	delaylineL
+ 151              		.cfi_endproc
+ 152              	.LFE4:
+ 154              		.section	.text.Delay_feedback_inc,"ax",%progbits
+ 155              		.align	1
+ 156              		.p2align 2,,3
+ 157              		.global	Delay_feedback_inc
+ 158              		.syntax unified
+ 159              		.thumb
+ 160              		.thumb_func
+ 162              	Delay_feedback_inc:
+ 163              	.LFB5:
+  75:Core/Src/delay.c **** /*-------------------------------------------------------------------------------------------*/
+  76:Core/Src/delay.c **** void Delay_feedback_inc(void)
+  77:Core/Src/delay.c **** {
+ 164              		.loc 1 77 1 is_stmt 1 view -0
+ 165              		.cfi_startproc
+ 166              		@ args = 0, pretend = 0, frame = 0
+ 167              		@ frame_needed = 0, uses_anonymous_args = 0
+ 168              		@ link register save eliminated.
+  78:Core/Src/delay.c **** 	/* increment feedback delay */
+  79:Core/Src/delay.c **** 
+  80:Core/Src/delay.c **** 	feedback *= 1.05f ;//
+ 169              		.loc 1 80 2 view .LVU40
+ 170              		.loc 1 80 11 is_stmt 0 view .LVU41
+ 171 0000 044B     		ldr	r3, .L12
+ 172 0002 9FED057A 		vldr.32	s14, .L12+4
+ 173 0006 D3ED007A 		vldr.32	s15, [r3]
+ 174 000a 67EE877A 		vmul.f32	s15, s15, s14
+ 175 000e C3ED007A 		vstr.32	s15, [r3]
+  81:Core/Src/delay.c **** }
+ 176              		.loc 1 81 1 view .LVU42
+ 177 0012 7047     		bx	lr
+ 178              	.L13:
+ 179              		.align	2
+ 180              	.L12:
+ 181 0014 00000000 		.word	.LANCHOR1
+ 182 0018 6666863F 		.word	1065772646
+ 183              		.cfi_endproc
+ 184              	.LFE5:
+ 186              		.section	.text.Delay_feedback_dec,"ax",%progbits
+ 187              		.align	1
+ 188              		.p2align 2,,3
+ 189              		.global	Delay_feedback_dec
+ 190              		.syntax unified
+ 191              		.thumb
+ 192              		.thumb_func
+ 194              	Delay_feedback_dec:
+ 195              	.LFB6:
+  82:Core/Src/delay.c **** /*-------------------------------------------------------------------------------------------*/
+  83:Core/Src/delay.c **** void Delay_feedback_dec(void)
+  84:Core/Src/delay.c **** {
+ 196              		.loc 1 84 1 is_stmt 1 view -0
+ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccZJTXXA.s 			page 6
+
+
+ 197              		.cfi_startproc
+ 198              		@ args = 0, pretend = 0, frame = 0
+ 199              		@ frame_needed = 0, uses_anonymous_args = 0
+ 200              		@ link register save eliminated.
+  85:Core/Src/delay.c **** 	/* decrement feedback delay */
+  86:Core/Src/delay.c **** 
+  87:Core/Src/delay.c **** 	feedback *= 0.95f ;//
+ 201              		.loc 1 87 2 view .LVU44
+ 202              		.loc 1 87 11 is_stmt 0 view .LVU45
+ 203 0000 044B     		ldr	r3, .L15
+ 204 0002 9FED057A 		vldr.32	s14, .L15+4
+ 205 0006 D3ED007A 		vldr.32	s15, [r3]
+ 206 000a 67EE877A 		vmul.f32	s15, s15, s14
+ 207 000e C3ED007A 		vstr.32	s15, [r3]
+  88:Core/Src/delay.c **** }
+ 208              		.loc 1 88 1 view .LVU46
+ 209 0012 7047     		bx	lr
+ 210              	.L16:
+ 211              		.align	2
+ 212              	.L15:
+ 213 0014 00000000 		.word	.LANCHOR1
+ 214 0018 3333733F 		.word	1064514355
+ 215              		.cfi_endproc
+ 216              	.LFE6:
+ 218              		.section	.text.DelayFeedback_set,"ax",%progbits
+ 219              		.align	1
+ 220              		.p2align 2,,3
+ 221              		.global	DelayFeedback_set
+ 222              		.syntax unified
+ 223              		.thumb
+ 224              		.thumb_func
+ 226              	DelayFeedback_set:
+ 227              	.LVL6:
+ 228              	.LFB7:
+  89:Core/Src/delay.c **** /*-------------------------------------------------------------------------------------------*/
+  90:Core/Src/delay.c **** void DelayFeedback_set(uint8_t val)
+  91:Core/Src/delay.c **** {
+ 229              		.loc 1 91 1 is_stmt 1 view -0
+ 230              		.cfi_startproc
+ 231              		@ args = 0, pretend = 0, frame = 0
+ 232              		@ frame_needed = 0, uses_anonymous_args = 0
+ 233              		@ link register save eliminated.
+  92:Core/Src/delay.c **** 	feedback = val / MIDI_MAX;
+ 234              		.loc 1 92 2 view .LVU48
+ 235              		.loc 1 92 17 is_stmt 0 view .LVU49
+ 236 0000 07EE900A 		vmov	s15, r0	@ int
+ 237 0004 DFED046A 		vldr.32	s13, .L18
+ 238              		.loc 1 92 11 view .LVU50
+ 239 0008 044B     		ldr	r3, .L18+4
+ 240              		.loc 1 92 17 view .LVU51
+ 241 000a F8EEE77A 		vcvt.f32.s32	s15, s15
+ 242 000e 87EEA67A 		vdiv.f32	s14, s15, s13
+ 243              		.loc 1 92 11 view .LVU52
+ 244 0012 83ED007A 		vstr.32	s14, [r3]
+  93:Core/Src/delay.c **** }
+ 245              		.loc 1 93 1 view .LVU53
+ 246 0016 7047     		bx	lr
+ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccZJTXXA.s 			page 7
+
+
+ 247              	.L19:
+ 248              		.align	2
+ 249              	.L18:
+ 250 0018 0000FE42 		.word	1123942400
+ 251 001c 00000000 		.word	.LANCHOR1
+ 252              		.cfi_endproc
+ 253              	.LFE7:
+ 255              		.section	.text.DelayWet_set,"ax",%progbits
+ 256              		.align	1
+ 257              		.p2align 2,,3
+ 258              		.global	DelayWet_set
+ 259              		.syntax unified
+ 260              		.thumb
+ 261              		.thumb_func
+ 263              	DelayWet_set:
+ 264              	.LVL7:
+ 265              	.LFB8:
+  94:Core/Src/delay.c **** /*-------------------------------------------------------------------------------------------*/
+  95:Core/Src/delay.c **** void DelayWet_set(uint8_t val)
+  96:Core/Src/delay.c **** {
+ 266              		.loc 1 96 1 is_stmt 1 view -0
+ 267              		.cfi_startproc
+ 268              		@ args = 0, pretend = 0, frame = 0
+ 269              		@ frame_needed = 0, uses_anonymous_args = 0
+ 270              		@ link register save eliminated.
+  97:Core/Src/delay.c **** 	wet = val / MIDI_MAX;
+ 271              		.loc 1 97 2 view .LVU55
+ 272              		.loc 1 97 12 is_stmt 0 view .LVU56
+ 273 0000 07EE900A 		vmov	s15, r0	@ int
+ 274 0004 DFED046A 		vldr.32	s13, .L21
+ 275              		.loc 1 97 6 view .LVU57
+ 276 0008 044B     		ldr	r3, .L21+4
+ 277              		.loc 1 97 12 view .LVU58
+ 278 000a F8EEE77A 		vcvt.f32.s32	s15, s15
+ 279 000e 87EEA67A 		vdiv.f32	s14, s15, s13
+ 280              		.loc 1 97 6 view .LVU59
+ 281 0012 83ED007A 		vstr.32	s14, [r3]
+  98:Core/Src/delay.c **** }
+ 282              		.loc 1 98 1 view .LVU60
+ 283 0016 7047     		bx	lr
+ 284              	.L22:
+ 285              		.align	2
+ 286              	.L21:
+ 287 0018 0000FE42 		.word	1123942400
+ 288 001c 00000000 		.word	.LANCHOR2
+ 289              		.cfi_endproc
+ 290              	.LFE8:
+ 292              		.section	.text.stDelay_compute,"ax",%progbits
+ 293              		.align	1
+ 294              		.p2align 2,,3
+ 295              		.global	stDelay_compute
+ 296              		.syntax unified
+ 297              		.thumb
+ 298              		.thumb_func
+ 300              	stDelay_compute:
+ 301              	.LVL8:
+ 302              	.LFB9:
+ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccZJTXXA.s 			page 8
+
+
+  99:Core/Src/delay.c **** /*-------------------------------------------------------------------------------------------*/
+ 100:Core/Src/delay.c **** 
+ 101:Core/Src/delay.c **** 
+ 102:Core/Src/delay.c **** void stDelay_compute (float x, float * delayLOut, float * delayROut)
+ 103:Core/Src/delay.c **** {
+ 303              		.loc 1 103 1 is_stmt 1 view -0
+ 304              		.cfi_startproc
+ 305              		@ args = 0, pretend = 0, frame = 0
+ 306              		@ frame_needed = 0, uses_anonymous_args = 0
+ 104:Core/Src/delay.c **** 	float previous_sampleL, previous_sampleR, sampleL, sampleR;
+ 307              		.loc 1 104 2 view .LVU62
+ 105:Core/Src/delay.c **** 	previous_sampleL = SVF_LP_compute(&lp_L, *readptrL);
+ 308              		.loc 1 105 2 view .LVU63
+ 103:Core/Src/delay.c **** 	float previous_sampleL, previous_sampleR, sampleL, sampleR;
+ 309              		.loc 1 103 1 is_stmt 0 view .LVU64
+ 310 0000 F8B5     		push	{r3, r4, r5, r6, r7, lr}
+ 311              		.cfi_def_cfa_offset 24
+ 312              		.cfi_offset 3, -24
+ 313              		.cfi_offset 4, -20
+ 314              		.cfi_offset 5, -16
+ 315              		.cfi_offset 6, -12
+ 316              		.cfi_offset 7, -8
+ 317              		.cfi_offset 14, -4
+ 318              		.loc 1 105 21 view .LVU65
+ 319 0002 534C     		ldr	r4, .L36
+ 106:Core/Src/delay.c **** 	sampleL = x + feedback * previous_sampleL;
+ 320              		.loc 1 106 25 view .LVU66
+ 321 0004 534D     		ldr	r5, .L36+4
+ 105:Core/Src/delay.c **** 	previous_sampleL = SVF_LP_compute(&lp_L, *readptrL);
+ 322              		.loc 1 105 21 view .LVU67
+ 323 0006 2368     		ldr	r3, [r4]
+ 103:Core/Src/delay.c **** 	float previous_sampleL, previous_sampleR, sampleL, sampleR;
+ 324              		.loc 1 103 1 view .LVU68
+ 325 0008 2DED028B 		vpush.64	{d8}
+ 326              		.cfi_def_cfa_offset 32
+ 327              		.cfi_offset 80, -32
+ 328              		.cfi_offset 81, -28
+ 103:Core/Src/delay.c **** 	float previous_sampleL, previous_sampleR, sampleL, sampleR;
+ 329              		.loc 1 103 1 view .LVU69
+ 330 000c 0746     		mov	r7, r0
+ 331 000e B0EE408A 		vmov.f32	s16, s0
+ 105:Core/Src/delay.c **** 	previous_sampleL = SVF_LP_compute(&lp_L, *readptrL);
+ 332              		.loc 1 105 21 view .LVU70
+ 333 0012 5148     		ldr	r0, .L36+8
+ 334              	.LVL9:
+ 105:Core/Src/delay.c **** 	previous_sampleL = SVF_LP_compute(&lp_L, *readptrL);
+ 335              		.loc 1 105 21 view .LVU71
+ 336 0014 93ED000A 		vldr.32	s0, [r3]
+ 337              	.LVL10:
+ 103:Core/Src/delay.c **** 	float previous_sampleL, previous_sampleR, sampleL, sampleR;
+ 338              		.loc 1 103 1 view .LVU72
+ 339 0018 0E46     		mov	r6, r1
+ 105:Core/Src/delay.c **** 	previous_sampleL = SVF_LP_compute(&lp_L, *readptrL);
+ 340              		.loc 1 105 21 view .LVU73
+ 341 001a FFF7FEFF 		bl	SVF_LP_compute
+ 342              	.LVL11:
+ 343              		.loc 1 106 2 is_stmt 1 view .LVU74
+ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccZJTXXA.s 			page 9
+
+
+ 344              		.loc 1 106 10 is_stmt 0 view .LVU75
+ 345 001e D5ED007A 		vldr.32	s15, [r5]
+ 107:Core/Src/delay.c **** 
+ 108:Core/Src/delay.c **** 	previous_sampleR = SVF_LP_compute(&lp_R, *readptrR);
+ 346              		.loc 1 108 21 view .LVU76
+ 347 0022 6368     		ldr	r3, [r4, #4]
+ 348 0024 4D48     		ldr	r0, .L36+12
+ 106:Core/Src/delay.c **** 	sampleL = x + feedback * previous_sampleL;
+ 349              		.loc 1 106 10 view .LVU77
+ 350 0026 F0EE488A 		vmov.f32	s17, s16
+ 351 002a E7EE808A 		vfma.f32	s17, s15, s0
+ 352              	.LVL12:
+ 353              		.loc 1 108 2 is_stmt 1 view .LVU78
+ 354              		.loc 1 108 21 is_stmt 0 view .LVU79
+ 355 002e 93ED000A 		vldr.32	s0, [r3]
+ 356              	.LVL13:
+ 357              		.loc 1 108 21 view .LVU80
+ 358 0032 FFF7FEFF 		bl	SVF_LP_compute
+ 359              	.LVL14:
+ 109:Core/Src/delay.c **** 	sampleR = x + feedback * previous_sampleR;
+ 360              		.loc 1 109 2 is_stmt 1 view .LVU81
+ 361              	.LBB14:
+ 362              	.LBB15:
+ 363              		.file 2 "Core/Inc/helper_functions.h"
+   1:Core/Inc/helper_functions.h **** /**
+   2:Core/Inc/helper_functions.h ****  * @file helper_functions.h
+   3:Core/Inc/helper_functions.h ****  * @author johannes regnier
+   4:Core/Inc/helper_functions.h ****  * @brief Various math tools 
+   5:Core/Inc/helper_functions.h ****  * @version 0.1
+   6:Core/Inc/helper_functions.h ****  * @date 2023-12-30
+   7:Core/Inc/helper_functions.h ****  * 
+   8:Core/Inc/helper_functions.h ****  * @copyright Copyright (c) 2023
+   9:Core/Inc/helper_functions.h ****  * 
+  10:Core/Inc/helper_functions.h ****  */
+  11:Core/Inc/helper_functions.h **** 
+  12:Core/Inc/helper_functions.h **** #ifndef _HELPER_FUNCTIONS_H
+  13:Core/Inc/helper_functions.h **** #define _HELPER_FUNCTIONS_H
+  14:Core/Inc/helper_functions.h **** 
+  15:Core/Inc/helper_functions.h **** 
+  16:Core/Inc/helper_functions.h **** #include <math.h>
+  17:Core/Inc/helper_functions.h **** #include <stdint.h>
+  18:Core/Inc/helper_functions.h **** 
+  19:Core/Inc/helper_functions.h **** #ifndef NOMINMAX
+  20:Core/Inc/helper_functions.h **** 
+  21:Core/Inc/helper_functions.h **** #ifndef max
+  22:Core/Inc/helper_functions.h **** #define max(a,b)            (((a) > (b)) ? (a) : (b))
+  23:Core/Inc/helper_functions.h **** #endif
+  24:Core/Inc/helper_functions.h **** 
+  25:Core/Inc/helper_functions.h **** #ifndef min
+  26:Core/Inc/helper_functions.h **** #define min(a,b)            (((a) < (b)) ? (a) : (b))
+  27:Core/Inc/helper_functions.h **** #endif
+  28:Core/Inc/helper_functions.h **** 
+  29:Core/Inc/helper_functions.h **** #endif  /* NOMINMAX */
+  30:Core/Inc/helper_functions.h **** 
+  31:Core/Inc/helper_functions.h **** /**
+  32:Core/Inc/helper_functions.h ****  * @brief Keep value between 0 and max
+  33:Core/Inc/helper_functions.h ****  * 
+ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccZJTXXA.s 			page 10
+
+
+  34:Core/Inc/helper_functions.h ****  * @param value 
+  35:Core/Inc/helper_functions.h ****  * @param max 
+  36:Core/Inc/helper_functions.h ****  * @return float 
+  37:Core/Inc/helper_functions.h ****  */
+  38:Core/Inc/helper_functions.h **** inline float wrap(float value, float max)   
+  39:Core/Inc/helper_functions.h **** {
+  40:Core/Inc/helper_functions.h ****     if (value < 0.f)
+  41:Core/Inc/helper_functions.h ****         value += max;
+  42:Core/Inc/helper_functions.h ****     if (value >= max)
+  43:Core/Inc/helper_functions.h ****         value -= max;
+  44:Core/Inc/helper_functions.h **** 
+  45:Core/Inc/helper_functions.h ****     return value;
+  46:Core/Inc/helper_functions.h **** }
+  47:Core/Inc/helper_functions.h **** 
+  48:Core/Inc/helper_functions.h **** inline float Crossfade(float a, float b, float fade)
+  49:Core/Inc/helper_functions.h **** {
+  50:Core/Inc/helper_functions.h ****     return a + (b - a) * fade;
+  51:Core/Inc/helper_functions.h **** }
+  52:Core/Inc/helper_functions.h **** 
+  53:Core/Inc/helper_functions.h **** 
+  54:Core/Inc/helper_functions.h **** /**
+  55:Core/Inc/helper_functions.h ****  * @brief Pade-approximation of tanh for soft clipping
+  56:Core/Inc/helper_functions.h ****  * @ from https://www.musicdsp.org/en/latest/Other/238-rational-tanh-approximation.html 
+  57:Core/Inc/helper_functions.h ****  * @param x 
+  58:Core/Inc/helper_functions.h ****  * @return float 
+  59:Core/Inc/helper_functions.h ****  */
+  60:Core/Inc/helper_functions.h **** inline float SoftClip(float x)
+  61:Core/Inc/helper_functions.h **** {
+  62:Core/Inc/helper_functions.h ****     if (x < -3.0f)
+ 364              		.loc 2 62 8 is_stmt 0 view .LVU82
+ 365 0036 B8EE087A 		vmov.f32	s14, #-3.0e+0
+ 366              	.LBE15:
+ 367              	.LBE14:
+ 368              		.loc 1 109 10 view .LVU83
+ 369 003a D5ED006A 		vldr.32	s13, [r5]
+ 370              	.LBB23:
+ 371              	.LBB18:
+ 372              		.loc 2 62 8 view .LVU84
+ 373 003e F4EEC78A 		vcmpe.f32	s17, s14
+ 374              	.LBE18:
+ 375              	.LBE23:
+ 376              		.loc 1 109 10 view .LVU85
+ 377 0042 F0EE487A 		vmov.f32	s15, s16
+ 378              	.LBB24:
+ 379              	.LBB19:
+ 380              		.loc 2 62 8 view .LVU86
+ 381 0046 F1EE10FA 		vmrs	APSR_nzcv, FPSCR
+ 382              	.LBE19:
+ 383              	.LBE24:
+ 384              		.loc 1 109 10 view .LVU87
+ 385 004a E6EE807A 		vfma.f32	s15, s13, s0
+ 386              	.LVL15:
+ 110:Core/Src/delay.c **** 
+ 111:Core/Src/delay.c **** 	sampleL = SoftClip(sampleL);
+ 387              		.loc 1 111 2 is_stmt 1 view .LVU88
+ 388              	.LBB25:
+ 389              	.LBI14:
+ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccZJTXXA.s 			page 11
+
+
+  60:Core/Inc/helper_functions.h **** {
+ 390              		.loc 2 60 14 view .LVU89
+ 391              	.LBB20:
+ 392              		.loc 2 62 5 view .LVU90
+ 393              		.loc 2 62 8 is_stmt 0 view .LVU91
+ 394 004e 78D4     		bmi	.L30
+  63:Core/Inc/helper_functions.h ****     {
+  64:Core/Inc/helper_functions.h ****         return -1.0f;
+  65:Core/Inc/helper_functions.h ****     }
+  66:Core/Inc/helper_functions.h ****     else if (x > 3.0f)
+ 395              		.loc 2 66 10 is_stmt 1 view .LVU92
+ 396              		.loc 2 66 13 is_stmt 0 view .LVU93
+ 397 0050 B0EE087A 		vmov.f32	s14, #3.0e+0
+ 398 0054 F4EEC78A 		vcmpe.f32	s17, s14
+ 399 0058 F1EE10FA 		vmrs	APSR_nzcv, FPSCR
+ 400 005c 65DC     		bgt	.L31
+ 401              	.LVL16:
+ 402              	.LBB16:
+ 403              	.LBI16:
+  60:Core/Inc/helper_functions.h **** {
+ 404              		.loc 2 60 14 is_stmt 1 view .LVU94
+ 405              	.LBB17:
+  67:Core/Inc/helper_functions.h ****     {
+  68:Core/Inc/helper_functions.h ****         return 1.0f;
+  69:Core/Inc/helper_functions.h ****     }
+  70:Core/Inc/helper_functions.h ****     else
+  71:Core/Inc/helper_functions.h ****     {
+  72:Core/Inc/helper_functions.h ****         return x * (27.0f + x * x) / (27.0f + 9.0f * x * x);
+ 406              		.loc 2 72 9 view .LVU95
+ 407              		.loc 2 72 27 is_stmt 0 view .LVU96
+ 408 005e B3EE0B7A 		vmov.f32	s14, #2.7e+1
+ 409 0062 B0EE476A 		vmov.f32	s12, s14
+ 410              		.loc 2 72 52 view .LVU97
+ 411 0066 F2EE026A 		vmov.f32	s13, #9.0e+0
+ 412              		.loc 2 72 27 view .LVU98
+ 413 006a A8EEA86A 		vfma.f32	s12, s17, s17
+ 414              		.loc 2 72 52 view .LVU99
+ 415 006e 68EEA66A 		vmul.f32	s13, s17, s13
+ 416              		.loc 2 72 45 view .LVU100
+ 417 0072 A8EEA67A 		vfma.f32	s14, s17, s13
+ 418              		.loc 2 72 18 view .LVU101
+ 419 0076 68EE868A 		vmul.f32	s17, s17, s12
+ 420              	.LVL17:
+ 421              		.loc 2 72 36 view .LVU102
+ 422 007a 88EE876A 		vdiv.f32	s12, s17, s14
+ 423              	.L24:
+ 424              	.LVL18:
+ 425              		.loc 2 72 36 view .LVU103
+ 426              	.LBE17:
+ 427              	.LBE16:
+ 428              	.LBE20:
+ 429              	.LBE25:
+ 112:Core/Src/delay.c **** 	sampleR = SoftClip(sampleR);
+ 430              		.loc 1 112 2 is_stmt 1 view .LVU104
+ 431              	.LBB26:
+ 432              	.LBI26:
+  60:Core/Inc/helper_functions.h **** {
+ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccZJTXXA.s 			page 12
+
+
+ 433              		.loc 2 60 14 view .LVU105
+ 434              	.LBB27:
+  62:Core/Inc/helper_functions.h ****     {
+ 435              		.loc 2 62 5 view .LVU106
+  62:Core/Inc/helper_functions.h ****     {
+ 436              		.loc 2 62 8 is_stmt 0 view .LVU107
+ 437 007e B8EE087A 		vmov.f32	s14, #-3.0e+0
+ 438 0082 F4EEC77A 		vcmpe.f32	s15, s14
+ 439 0086 F1EE10FA 		vmrs	APSR_nzcv, FPSCR
+ 440 008a 57D4     		bmi	.L32
+ 441              	.L35:
+  66:Core/Inc/helper_functions.h ****     {
+ 442              		.loc 2 66 10 is_stmt 1 view .LVU108
+  66:Core/Inc/helper_functions.h ****     {
+ 443              		.loc 2 66 13 is_stmt 0 view .LVU109
+ 444 008c B0EE087A 		vmov.f32	s14, #3.0e+0
+ 445 0090 F4EEC77A 		vcmpe.f32	s15, s14
+ 446 0094 F1EE10FA 		vmrs	APSR_nzcv, FPSCR
+ 447 0098 56DC     		bgt	.L33
+ 448              	.LVL19:
+ 449              	.LBB28:
+ 450              	.LBI28:
+  60:Core/Inc/helper_functions.h **** {
+ 451              		.loc 2 60 14 is_stmt 1 view .LVU110
+ 452              	.LBB29:
+ 453              		.loc 2 72 9 view .LVU111
+ 454              		.loc 2 72 27 is_stmt 0 view .LVU112
+ 455 009a B3EE0B7A 		vmov.f32	s14, #2.7e+1
+ 456 009e F0EE475A 		vmov.f32	s11, s14
+ 457              		.loc 2 72 52 view .LVU113
+ 458 00a2 F2EE026A 		vmov.f32	s13, #9.0e+0
+ 459 00a6 67EEA66A 		vmul.f32	s13, s15, s13
+ 460              		.loc 2 72 27 view .LVU114
+ 461 00aa E7EEA75A 		vfma.f32	s11, s15, s15
+ 462              		.loc 2 72 45 view .LVU115
+ 463 00ae A7EEA67A 		vfma.f32	s14, s15, s13
+ 464              		.loc 2 72 18 view .LVU116
+ 465 00b2 67EEA57A 		vmul.f32	s15, s15, s11
+ 466              	.LVL20:
+ 467              		.loc 2 72 36 view .LVU117
+ 468 00b6 C7EE876A 		vdiv.f32	s13, s15, s14
+ 469              	.LVL21:
+ 470              	.L25:
+ 471              		.loc 2 72 36 view .LVU118
+ 472              	.LBE29:
+ 473              	.LBE28:
+ 474              	.LBE27:
+ 475              	.LBE26:
+ 113:Core/Src/delay.c **** 	*writeptrL = sampleR; 
+ 476              		.loc 1 113 2 is_stmt 1 view .LVU119
+ 114:Core/Src/delay.c **** 	*writeptrR = sampleL; 
+ 115:Core/Src/delay.c **** 
+ 116:Core/Src/delay.c **** 	/* update the delay line pointers : */
+ 117:Core/Src/delay.c **** 	writeptrL++;
+ 118:Core/Src/delay.c **** 	readptrL++;
+ 119:Core/Src/delay.c **** 	writeptrR++;
+ 120:Core/Src/delay.c **** 	readptrR++;
+ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccZJTXXA.s 			page 13
+
+
+ 121:Core/Src/delay.c **** 
+ 122:Core/Src/delay.c **** 	if ((writeptrL - delaylineL) >= DELAY_BUFF_SIZE)
+ 123:Core/Src/delay.c **** 		writeptrL = delaylineL; // wrap pointer
+ 124:Core/Src/delay.c **** 
+ 125:Core/Src/delay.c **** 	if ((readptrL - delaylineL) >= DELAY_BUFF_SIZE)
+ 126:Core/Src/delay.c **** 		readptrL = delaylineL;  // wrap pointer
+ 127:Core/Src/delay.c **** 
+ 128:Core/Src/delay.c **** 	if ((writeptrR - delaylineR) >= DELAY_BUFF_SIZE)
+ 129:Core/Src/delay.c **** 		writeptrR = delaylineR; // wrap pointer
+ 130:Core/Src/delay.c **** 
+ 131:Core/Src/delay.c **** 	if ((readptrR - delaylineR) >= DELAY_BUFF_SIZE)
+ 132:Core/Src/delay.c **** 		readptrR = delaylineR;  // wrap pointer
+ 133:Core/Src/delay.c **** 
+ 134:Core/Src/delay.c **** 	*delayLOut = (wet * sampleL + (1 - wet) * x);
+ 477              		.loc 1 134 20 is_stmt 0 view .LVU120
+ 478 00ba 294B     		ldr	r3, .L36+16
+ 128:Core/Src/delay.c **** 		writeptrR = delaylineR; // wrap pointer
+ 479              		.loc 1 128 17 view .LVU121
+ 480 00bc 2948     		ldr	r0, .L36+20
+ 114:Core/Src/delay.c **** 	*writeptrR = sampleL; 
+ 481              		.loc 1 114 13 view .LVU122
+ 482 00be D4E90252 		ldrd	r5, r2, [r4, #8]
+ 122:Core/Src/delay.c **** 		writeptrL = delaylineL; // wrap pointer
+ 483              		.loc 1 122 5 view .LVU123
+ 484 00c2 4BF67C3C 		movw	ip, #47996
+ 485              		.loc 1 134 20 view .LVU124
+ 486 00c6 93ED007A 		vldr.32	s14, [r3]
+ 113:Core/Src/delay.c **** 	*writeptrR = sampleL; 
+ 487              		.loc 1 113 13 view .LVU125
+ 488 00ca E5EC016A 		vstmia.32	r5!, {s13}
+ 114:Core/Src/delay.c **** 
+ 489              		.loc 1 114 2 is_stmt 1 view .LVU126
+ 490              		.loc 1 134 35 is_stmt 0 view .LVU127
+ 491 00ce F7EE007A 		vmov.f32	s15, #1.0e+0
+ 492 00d2 77EEC77A 		vsub.f32	s15, s15, s14
+ 120:Core/Src/delay.c **** 
+ 493              		.loc 1 120 10 view .LVU128
+ 494 00d6 D4E90013 		ldrd	r1, r3, [r4]
+ 495              		.loc 1 134 42 view .LVU129
+ 496 00da 27EE880A 		vmul.f32	s0, s15, s16
+ 497              	.LVL22:
+ 114:Core/Src/delay.c **** 
+ 498              		.loc 1 114 13 view .LVU130
+ 499 00de A2EC016A 		vstmia.32	r2!, {s12}
+ 117:Core/Src/delay.c **** 	readptrL++;
+ 500              		.loc 1 117 2 is_stmt 1 view .LVU131
+ 118:Core/Src/delay.c **** 	writeptrR++;
+ 501              		.loc 1 118 2 view .LVU132
+ 502              		.loc 1 134 30 is_stmt 0 view .LVU133
+ 503 00e2 F0EE407A 		vmov.f32	s15, s0
+ 504 00e6 E7EE067A 		vfma.f32	s15, s14, s12
+ 118:Core/Src/delay.c **** 	writeptrR++;
+ 505              		.loc 1 118 10 view .LVU134
+ 506 00ea 0431     		adds	r1, r1, #4
+ 119:Core/Src/delay.c **** 	readptrR++;
+ 507              		.loc 1 119 2 is_stmt 1 view .LVU135
+ 120:Core/Src/delay.c **** 
+ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccZJTXXA.s 			page 14
+
+
+ 508              		.loc 1 120 2 view .LVU136
+ 135:Core/Src/delay.c **** 	*delayROut = (wet * sampleR + (1 - wet) * x);
+ 136:Core/Src/delay.c **** 	
+ 137:Core/Src/delay.c **** }
+ 509              		.loc 1 137 1 is_stmt 0 view .LVU137
+ 510 00ec BDEC028B 		vldm	sp!, {d8}
+ 511              		.cfi_remember_state
+ 512              		.cfi_restore 80
+ 513              		.cfi_restore 81
+ 514              		.cfi_def_cfa_offset 24
+ 515              	.LVL23:
+ 135:Core/Src/delay.c **** 	*delayROut = (wet * sampleR + (1 - wet) * x);
+ 516              		.loc 1 135 30 view .LVU138
+ 517 00f0 A7EE260A 		vfma.f32	s0, s14, s13
+ 120:Core/Src/delay.c **** 
+ 518              		.loc 1 120 10 view .LVU139
+ 519 00f4 0433     		adds	r3, r3, #4
+ 122:Core/Src/delay.c **** 		writeptrL = delaylineL; // wrap pointer
+ 520              		.loc 1 122 2 is_stmt 1 view .LVU140
+ 134:Core/Src/delay.c **** 	*delayROut = (wet * sampleR + (1 - wet) * x);
+ 521              		.loc 1 134 13 is_stmt 0 view .LVU141
+ 522 00f6 C7ED007A 		vstr.32	s15, [r7]
+ 135:Core/Src/delay.c **** 	*delayROut = (wet * sampleR + (1 - wet) * x);
+ 523              		.loc 1 135 13 view .LVU142
+ 524 00fa 86ED000A 		vstr.32	s0, [r6]
+ 122:Core/Src/delay.c **** 		writeptrL = delaylineL; // wrap pointer
+ 525              		.loc 1 122 17 view .LVU143
+ 526 00fe 1A4E     		ldr	r6, .L36+24
+ 527              	.LVL24:
+ 122:Core/Src/delay.c **** 		writeptrL = delaylineL; // wrap pointer
+ 528              		.loc 1 122 17 view .LVU144
+ 529 0100 AF1B     		subs	r7, r5, r6
+ 530              	.LVL25:
+ 123:Core/Src/delay.c **** 
+ 531              		.loc 1 123 13 view .LVU145
+ 532 0102 6745     		cmp	r7, ip
+ 533 0104 C8BF     		it	gt
+ 534 0106 3546     		movgt	r5, r6
+ 535 0108 A560     		str	r5, [r4, #8]
+ 125:Core/Src/delay.c **** 		readptrL = delaylineL;  // wrap pointer
+ 536              		.loc 1 125 2 is_stmt 1 view .LVU146
+ 125:Core/Src/delay.c **** 		readptrL = delaylineL;  // wrap pointer
+ 537              		.loc 1 125 16 is_stmt 0 view .LVU147
+ 538 010a 8D1B     		subs	r5, r1, r6
+ 126:Core/Src/delay.c **** 
+ 539              		.loc 1 126 12 view .LVU148
+ 540 010c 6545     		cmp	r5, ip
+ 541 010e C8BF     		it	gt
+ 542 0110 3146     		movgt	r1, r6
+ 543 0112 2160     		str	r1, [r4]
+ 128:Core/Src/delay.c **** 		writeptrR = delaylineR; // wrap pointer
+ 544              		.loc 1 128 2 is_stmt 1 view .LVU149
+ 128:Core/Src/delay.c **** 		writeptrR = delaylineR; // wrap pointer
+ 545              		.loc 1 128 17 is_stmt 0 view .LVU150
+ 546 0114 111A     		subs	r1, r2, r0
+ 129:Core/Src/delay.c **** 
+ 547              		.loc 1 129 13 view .LVU151
+ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccZJTXXA.s 			page 15
+
+
+ 548 0116 6145     		cmp	r1, ip
+ 549 0118 C8BF     		it	gt
+ 550 011a 0246     		movgt	r2, r0
+ 551 011c E260     		str	r2, [r4, #12]
+ 131:Core/Src/delay.c **** 		readptrR = delaylineR;  // wrap pointer
+ 552              		.loc 1 131 2 is_stmt 1 view .LVU152
+ 131:Core/Src/delay.c **** 		readptrR = delaylineR;  // wrap pointer
+ 553              		.loc 1 131 16 is_stmt 0 view .LVU153
+ 554 011e 1A1A     		subs	r2, r3, r0
+ 132:Core/Src/delay.c **** 
+ 555              		.loc 1 132 12 view .LVU154
+ 556 0120 6245     		cmp	r2, ip
+ 557 0122 C8BF     		it	gt
+ 558 0124 0346     		movgt	r3, r0
+ 559 0126 6360     		str	r3, [r4, #4]
+ 134:Core/Src/delay.c **** 	*delayROut = (wet * sampleR + (1 - wet) * x);
+ 560              		.loc 1 134 2 is_stmt 1 view .LVU155
+ 135:Core/Src/delay.c **** 	
+ 561              		.loc 1 135 2 view .LVU156
+ 562              		.loc 1 137 1 is_stmt 0 view .LVU157
+ 563 0128 F8BD     		pop	{r3, r4, r5, r6, r7, pc}
+ 564              	.LVL26:
+ 565              	.L31:
+ 566              		.cfi_restore_state
+ 567              	.LBB33:
+ 568              	.LBB30:
+  62:Core/Inc/helper_functions.h ****     {
+ 569              		.loc 2 62 8 view .LVU158
+ 570 012a B8EE087A 		vmov.f32	s14, #-3.0e+0
+ 571 012e F4EEC77A 		vcmpe.f32	s15, s14
+ 572 0132 F1EE10FA 		vmrs	APSR_nzcv, FPSCR
+ 573              	.LBE30:
+ 574              	.LBE33:
+ 575              	.LBB34:
+ 576              	.LBB21:
+  68:Core/Inc/helper_functions.h ****     }
+ 577              		.loc 2 68 16 view .LVU159
+ 578 0136 B7EE006A 		vmov.f32	s12, #1.0e+0
+ 579              	.LVL27:
+  68:Core/Inc/helper_functions.h ****     }
+ 580              		.loc 2 68 16 view .LVU160
+ 581              	.LBE21:
+ 582              	.LBE34:
+ 112:Core/Src/delay.c **** 	*writeptrL = sampleR; 
+ 583              		.loc 1 112 2 is_stmt 1 view .LVU161
+ 584              	.LBB35:
+  60:Core/Inc/helper_functions.h **** {
+ 585              		.loc 2 60 14 view .LVU162
+ 586              	.LBB31:
+  62:Core/Inc/helper_functions.h ****     {
+ 587              		.loc 2 62 5 view .LVU163
+  62:Core/Inc/helper_functions.h ****     {
+ 588              		.loc 2 62 8 is_stmt 0 view .LVU164
+ 589 013a A7D5     		bpl	.L35
+ 590              	.L32:
+  64:Core/Inc/helper_functions.h ****     }
+ 591              		.loc 2 64 16 view .LVU165
+ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccZJTXXA.s 			page 16
+
+
+ 592 013c FFEE006A 		vmov.f32	s13, #-1.0e+0
+ 593 0140 BBE7     		b	.L25
+ 594              	.LVL28:
+ 595              	.L30:
+  64:Core/Inc/helper_functions.h ****     }
+ 596              		.loc 2 64 16 view .LVU166
+ 597              	.LBE31:
+ 598              	.LBE35:
+ 599              	.LBB36:
+ 600              	.LBB22:
+ 601 0142 BFEE006A 		vmov.f32	s12, #-1.0e+0
+ 602 0146 9AE7     		b	.L24
+ 603              	.LVL29:
+ 604              	.L33:
+  64:Core/Inc/helper_functions.h ****     }
+ 605              		.loc 2 64 16 view .LVU167
+ 606              	.LBE22:
+ 607              	.LBE36:
+ 608              	.LBB37:
+ 609              	.LBB32:
+  68:Core/Inc/helper_functions.h ****     }
+ 610              		.loc 2 68 16 view .LVU168
+ 611 0148 F7EE006A 		vmov.f32	s13, #1.0e+0
+ 612 014c B5E7     		b	.L25
+ 613              	.L37:
+ 614 014e 00BF     		.align	2
+ 615              	.L36:
+ 616 0150 00000000 		.word	.LANCHOR0
+ 617 0154 00000000 		.word	.LANCHOR1
+ 618 0158 00000000 		.word	lp_L
+ 619 015c 00000000 		.word	lp_R
+ 620 0160 00000000 		.word	.LANCHOR2
+ 621 0164 00000000 		.word	delaylineR
+ 622 0168 00000000 		.word	delaylineL
+ 623              	.LBE32:
+ 624              	.LBE37:
+ 625              		.cfi_endproc
+ 626              	.LFE9:
+ 628              		.section	.bss.delaylineL,"aw",%nobits
+ 629              		.align	2
+ 632              	delaylineL:
+ 633 0000 00000000 		.space	48000
+ 633      00000000 
+ 633      00000000 
+ 633      00000000 
+ 633      00000000 
+ 634              		.section	.bss.delaylineR,"aw",%nobits
+ 635              		.align	2
+ 638              	delaylineR:
+ 639 0000 00000000 		.space	48000
+ 639      00000000 
+ 639      00000000 
+ 639      00000000 
+ 639      00000000 
+ 640              		.section	.ccmram,"aw"
+ 641              		.align	2
+ 642              		.set	.LANCHOR0,. + 0
+ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccZJTXXA.s 			page 17
+
+
+ 645              	readptrL:
+ 646 0000 00000000 		.space	4
+ 649              	readptrR:
+ 650 0004 00000000 		.space	4
+ 653              	writeptrL:
+ 654 0008 00000000 		.space	4
+ 657              	writeptrR:
+ 658 000c 00000000 		.space	4
+ 659              		.section	.data.feedback,"aw"
+ 660              		.align	2
+ 661              		.set	.LANCHOR1,. + 0
+ 664              	feedback:
+ 665 0000 6666663F 		.word	1063675494
+ 666              		.section	.data.wet,"aw"
+ 667              		.align	2
+ 668              		.set	.LANCHOR2,. + 0
+ 671              	wet:
+ 672 0000 0000003F 		.word	1056964608
+ 673              		.text
+ 674              	.Letext0:
+ 675              		.file 3 "/Users/johannes/Library/Application Support/Code/User/globalStorage/bmd.stm32-for-vscode/
+ 676              		.file 4 "/Users/johannes/Library/Application Support/Code/User/globalStorage/bmd.stm32-for-vscode/
+ 677              		.file 5 "Core/Inc/filters.h"
+ 678              		.file 6 "/Users/johannes/Library/Application Support/Code/User/globalStorage/bmd.stm32-for-vscode/
+ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccZJTXXA.s 			page 18
+
+
+DEFINED SYMBOLS
+                            *ABS*:0000000000000000 delay.c
+/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccZJTXXA.s:20     .text.Delay_init:0000000000000000 $t
+/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccZJTXXA.s:27     .text.Delay_init:0000000000000000 Delay_init
+/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccZJTXXA.s:77     .text.Delay_init:0000000000000028 $d
+/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccZJTXXA.s:638    .bss.delaylineR:0000000000000000 delaylineR
+/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccZJTXXA.s:632    .bss.delaylineL:0000000000000000 delaylineL
+/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccZJTXXA.s:87     .text.Delay_time_set:0000000000000000 $t
+/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccZJTXXA.s:94     .text.Delay_time_set:0000000000000000 Delay_time_set
+/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccZJTXXA.s:147    .text.Delay_time_set:0000000000000034 $d
+/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccZJTXXA.s:155    .text.Delay_feedback_inc:0000000000000000 $t
+/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccZJTXXA.s:162    .text.Delay_feedback_inc:0000000000000000 Delay_feedback_inc
+/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccZJTXXA.s:181    .text.Delay_feedback_inc:0000000000000014 $d
+/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccZJTXXA.s:187    .text.Delay_feedback_dec:0000000000000000 $t
+/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccZJTXXA.s:194    .text.Delay_feedback_dec:0000000000000000 Delay_feedback_dec
+/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccZJTXXA.s:213    .text.Delay_feedback_dec:0000000000000014 $d
+/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccZJTXXA.s:219    .text.DelayFeedback_set:0000000000000000 $t
+/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccZJTXXA.s:226    .text.DelayFeedback_set:0000000000000000 DelayFeedback_set
+/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccZJTXXA.s:250    .text.DelayFeedback_set:0000000000000018 $d
+/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccZJTXXA.s:256    .text.DelayWet_set:0000000000000000 $t
+/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccZJTXXA.s:263    .text.DelayWet_set:0000000000000000 DelayWet_set
+/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccZJTXXA.s:287    .text.DelayWet_set:0000000000000018 $d
+/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccZJTXXA.s:293    .text.stDelay_compute:0000000000000000 $t
+/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccZJTXXA.s:300    .text.stDelay_compute:0000000000000000 stDelay_compute
+/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccZJTXXA.s:616    .text.stDelay_compute:0000000000000150 $d
+/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccZJTXXA.s:629    .bss.delaylineL:0000000000000000 $d
+/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccZJTXXA.s:635    .bss.delaylineR:0000000000000000 $d
+/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccZJTXXA.s:641    .ccmram:0000000000000000 $d
+/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccZJTXXA.s:645    .ccmram:0000000000000000 readptrL
+/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccZJTXXA.s:649    .ccmram:0000000000000004 readptrR
+/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccZJTXXA.s:653    .ccmram:0000000000000008 writeptrL
+/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccZJTXXA.s:657    .ccmram:000000000000000c writeptrR
+/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccZJTXXA.s:660    .data.feedback:0000000000000000 $d
+/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccZJTXXA.s:664    .data.feedback:0000000000000000 feedback
+/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccZJTXXA.s:667    .data.wet:0000000000000000 $d
+/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccZJTXXA.s:671    .data.wet:0000000000000000 wet
+
+UNDEFINED SYMBOLS
+SVF_LP_init
+lp_L
+lp_R
+lrintf
+SVF_LP_compute

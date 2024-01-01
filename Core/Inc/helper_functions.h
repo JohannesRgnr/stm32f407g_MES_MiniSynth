@@ -37,7 +37,7 @@
  */
 inline float wrap(float value, float max)   
 {
-    if (value < 0)
+    if (value < 0.f)
         value += max;
     if (value >= max)
         value -= max;

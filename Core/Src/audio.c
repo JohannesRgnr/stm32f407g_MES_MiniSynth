@@ -1,8 +1,8 @@
 /**
  * @file audio.c
  * @author johannes regnier
- * @brief Functions to make sound! 
- * @note  Most of it from Tom Erbe:
+ * @brief Functions to make sound and main audio block function 
+ * @note  Essential initialization functions from Tom Erbe:	
  * @note  http://synthnotes.ucsd.edu/wp4/index.php/2019/09/24/setting-up-the-stmf4-to-connect-to-the-codec-and-make-sound/
  * @version 0.1
  * @date 2023-12-12
@@ -16,22 +16,40 @@
 #include "audio.h"
 #include "oscillators.h"
 #include "ADSR_envelope.h"
-#include "filter.h"
+#include "ladder_filter.h"
+#include "bitcrusher.h"
+#include "stereo_delay.h"
 #include "MIDI_lut.h"
 #include <stdint.h>
 #include "helper_functions.h"
 
 
 
+/**
+ * @brief Audio Buffer - x samples X 2 channels = 2 * x samples
+ * @note Channels are interleaved - LRLRLRLRLRLRLRLRLRLRLR - audioBuffer[frame << 1] audioBuffer[(frame << 1) + 1]
+ */
+int16_t audioBuffer[BUFFER_SIZE]; 
 
-uint16_t audioBuffer[BUFFER_SIZE]; // 256 samples X 2 channels = 512 samples
 
-
-extern int8_t currentPitch;
-extern int8_t velocity;
+extern uint8_t currentPitch;
+extern uint8_t velocity;
 extern ADSR_t adsr_amp, adsr_filt;
-extern ZDFLadder_t Moog_filterL, Moog_filterR;
-extern oscillator_t osc1, osc2, osc3, osc4, osc5, osc6, osc7;
+extern ZDFLadder_t Moog_filter;
+extern oscillator_t osc1, osc2, osc3;
+
+
+static float f0 _CCM_;
+static float f_sub _CCM_;
+// static float vol _CCM_;
+static float amp_env _CCM_;
+static float filt_env _CCM_;
+
+
+static float delayLOut _CCM_;
+static float delayROut _CCM_;
+
+
 
 /**
  * @brief Initialize audio
@@ -40,106 +58,109 @@ extern oscillator_t osc1, osc2, osc3, osc4, osc5, osc6, osc7;
 void AUDIO_Init()
 {
     BSP_AUDIO_OUT_Init(OUTPUT_DEVICE_HEADPHONE, INITIAL_VOLUME, FS);
-	BSP_AUDIO_OUT_Play((uint16_t *)&audioBuffer[0], 2*BUFFER_SIZE); // 1024 samples
+
+	/**
+	 * @brief Ping pong buffer
+	 * @note While one audiobuffer is transmitted via DMA, another one is computed
+	 * @note Hence size = 2 * (audiobuffer size)
+	 */
+	BSP_AUDIO_OUT_Play((uint16_t *)&audioBuffer[0], 2*BUFFER_SIZE); 
 
 	
 	
 	osc_init(&osc1, 0.5, 1000, 0, 0, 0.5);
 	osc_init(&osc2, 0.5, 440, 0, 0, 0.5);
 	osc_init(&osc3, 0.5, 440, 0, 0, 0.5);
-	osc_init(&osc4, 0.5, 440, 0, 0, 0.5);
-	osc_init(&osc5, 0.5, 440, 0, 0, 0.5);
-	osc_init(&osc6, 0.5, 440, 0, 0, 0.5);
-	osc_init(&osc7, 0.5, 440, 0, 0, 0.5);
+
 
 	ADSR_init(&adsr_amp);
 	ADSR_init(&adsr_filt);
-	MoogLP_init(&Moog_filterL);
-	MoogLP_init(&Moog_filterR);
-
+	MoogLP_init(&Moog_filter);
+	Delay_init();
+	
 }
 
-
-void
-OpSetFreq(oscillator_t * op, float f)
+void OpSetFreq(oscillator_t * op, float f)
 {
 	op->freq = A0 * f;
 }
 
 
-static float f0 _CCM_;
-static float f_sub _CCM_;
-// static float vol _CCM_;
-static float amp_env _CCM_;
-static float filt_env _CCM_;
-static float ssawL _CCM_;
-static float ssawR _CCM_;
 
+/**
+ * @brief Main audio function. This is where the audio samples are computed, then the audio buffer is filled
+ * 
+ * @param buffer 
+ * @param samples 
+ */
 void audioBlock(uint16_t *buffer, uint16_t samples)
 {
-	//osc1.freq = 440.f;
-	//osc2.freq = 110;
 	int i;
-	uint16_t *output;
+	int16_t *output;
 	output = buffer;
-	float yL, yR;
+	float sample, sampleL, sampleR;
 	uint16_t valueL, valueR;
 	
 
 	for (i = 0; i < samples; i++)
 	{
-		
-		// osc_Sine(&osc1);
-
-		
 
 		f0 = mtof[currentPitch];
 		
-
-		
 		/* test with 3 sawtooth*/
-		// OpSetFreq(&osc1, f0);
-		// OpSetFreq(&osc2, f0 + 0.1);
+		OpSetFreq(&osc1, f0);
+		OpSetFreq(&osc2, f0 + 0.1);
 
-		// OpSetFreq(&osc4, f0 - 0.2);
-		// OpSetFreq(&osc5, f0 + 1);
-		// OpSetFreq(&osc6, f0 + 5);
-		// f_sub = mtof[max(currentPitch - 12, 0)];
-		// OpSetFreq(&osc3, f_sub);
-		// yL = osc_polyblepSaw(&osc1) + osc_polyblepSaw(&osc2) + osc_polyblepRect(&osc3) + osc_polyblepSaw(&osc4) + osc_polyblepSaw(&osc5) + osc_polyblepRect(&osc6);
+		f_sub = mtof[max(currentPitch - 12, 0)];
+		OpSetFreq(&osc3, f_sub);
+		sample = osc_polyblepSaw(&osc1) + osc_polyblepSaw(&osc2) + osc_polyblepRect(&osc3);
 	
 
 		/* test with supersaw */
-		OpSetFreq(&osc1, f0);
-		OpSetFreq(&osc2, f0 * (1 - 0.3 * 0.01953125));
-		OpSetFreq(&osc3, f0 * (1 + 0.3 * 0.01953125));
-		OpSetFreq(&osc4, f0 * (1 + 0.3 * 0.0625));
-		OpSetFreq(&osc5, f0 * (1 - 0.3 * 0.109375));
-		OpSetFreq(&osc6, f0 * (1 + 0.3 * 0.109375));
-		yL = 0.25 * (0.707 * osc_polyblepSaw(&osc1) + osc_polyblepSaw(&osc2) + osc_polyblepSaw(&osc3) + osc_polyblepSaw(&osc4));
-    	yR = 0.25 * (0.707 * osc_polyblepSaw(&osc1) + osc_polyblepSaw(&osc5) + osc_polyblepSaw(&osc6) );
-		// OpSetFreq(&osc6, f0 + 5);
-
-		/*--- compute ADSR amplitude envelope --*/
-		amp_env = ADSR_compute(&adsr_amp);
-		yL *= amp_env;
-		yR *= amp_env;
+		// OpSetFreq(&osc1, f0);
+		// OpSetFreq(&osc2, f0 * (1 - 0.3 * 0.01953125));
+		// OpSetFreq(&osc3, f0 * (1 + 0.3 * 0.01953125));
+		// OpSetFreq(&osc4, f0 * (1 + 0.3 * 0.0625));
+		// OpSetFreq(&osc5, f0 * (1 - 0.3 * 0.109375));
+		// OpSetFreq(&osc6, f0 * (1 + 0.3 * 0.109375));
+		// yL = 0.25 * (0.707 * osc_polyblepSaw(&osc1) + osc_polyblepSaw(&osc2) + osc_polyblepSaw(&osc3) + osc_polyblepSaw(&osc4));
+    	// yR = 0.25 * (0.707 * osc_polyblepSaw(&osc1) + osc_polyblepSaw(&osc5) + osc_polyblepSaw(&osc6) );
 		
-		/*--- compute ADSR filter envelope --*/
+
+		/****************** Apply filter ***********************/
 		filt_env = ADSR_compute(&adsr_filt);
-		Moog_filterL.cutoff = 600 * filt_env;
-		Moog_filterR.cutoff = 600 * filt_env;
-		yL = MoogLP_compute(&Moog_filterL, yL);
-		yR = MoogLP_compute(&Moog_filterR, yR);
-		
-		/* clip between - 1 and 1 */
-		yL = SoftClip(yL);
-		yR = SoftClip(yR);
+		Moog_filter.cutoff = 600 * filt_env;
+		// Moog_filterR.cutoff = 1600 * filt_env;
+		sample = MoogLP_compute(&Moog_filter, sample);
+	
 
-		valueL = (uint16_t) ((int16_t) ((32767.0f) * yL)); 
-		valueR = (uint16_t) ((int16_t) ((32767.0f) * yR));
-		*output++ = valueL; // left channel sample
-		*output++ = valueR; // right channel sample
+		/************** Apply amplitude envelope ****************/
+		amp_env = ADSR_compute(&adsr_amp);
+		sample *= amp_env;
+
+		
+		/************** Apply bitcrushing effect ***************/
+		// sample = decimator(sample, 1., 4);
+
+		/************** Apply delay effect ****************/
+		// pingpongDelay_compute(sample, &delayLOut, &delayROut);
+		pingpongDelay_compute(sample, &delayLOut, &delayROut);
+		sampleL = delayLOut;
+		sampleR = delayROut;
+
+		/****************** softclip outputs ********************/
+		sampleL = SoftClip(sampleL);
+		sampleR = SoftClip(sampleR);
+
+		/*************** Convert to 16 bits int *****************/
+		valueL = ((int16_t) ((32767.0f) * sampleL)); 
+		valueR = ((int16_t) ((32767.0f) * sampleR));
+
+		/*************** Output to audio buffer *****************/
+		output[i<<1] = valueL ;			// LEFT channel
+	    output[(i<<1) + 1] = valueR;	// RIGHT channel
+		// *output++ = valueL; // left channel sample
+		// *output++ = valueR; // right channel sample
 		
 	}
 }

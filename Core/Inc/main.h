@@ -40,6 +40,11 @@ extern "C" {
 #include "usbh_MIDI.h"
 #endif
 #include "MIDI_application.h"
+#include "audio.h"
+#include "oscillators.h"
+#include "ADSR_envelope.h"
+#include "ladder_filter.h"
+#include "stereo_delay.h"
 /* USER CODE END Includes */
 
 /* Exported types ------------------------------------------------------------*/

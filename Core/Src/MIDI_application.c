@@ -22,7 +22,7 @@ extern int8_t midi1, midi2;
 #define RX_BUFF_SIZE   64  /* Max Received data 64 bytes */
 
 
-uint8_t MIDI_RX_Buffer[RX_BUFF_SIZE]; // MIDI reception buffer
+uint8_t MIDI_RX_Buffer[RX_BUFF_SIZE] _CCM_; // MIDI reception buffer
 
 /* Private function prototypes -----------------------------------------------*/
 void ProcessReceivedMidiDatas(void);

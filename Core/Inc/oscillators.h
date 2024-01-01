@@ -60,7 +60,7 @@ float   osc_Sine(oscillator_t * osc);
 float   osc_FM2OP(float freq);
 float   osc_polyblepSaw(oscillator_t * osc);
 float   osc_polyblepRect(oscillator_t * osc);
-void    osc_superSaw(float freq, float detune, float * outL, float * outR);
+
 
 
 #endif // !_OSCILLATORS_H

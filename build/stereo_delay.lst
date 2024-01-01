@@ -1,0 +1,968 @@
+ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccyrTMeK.s 			page 1
+
+
+   1              		.cpu cortex-m4
+   2              		.arch armv7e-m
+   3              		.fpu fpv4-sp-d16
+   4              		.eabi_attribute 27, 1
+   5              		.eabi_attribute 28, 1
+   6              		.eabi_attribute 20, 1
+   7              		.eabi_attribute 21, 1
+   8              		.eabi_attribute 23, 3
+   9              		.eabi_attribute 24, 1
+  10              		.eabi_attribute 25, 1
+  11              		.eabi_attribute 26, 1
+  12              		.eabi_attribute 30, 2
+  13              		.eabi_attribute 34, 1
+  14              		.eabi_attribute 18, 4
+  15              		.file	"stereo_delay.c"
+  16              		.text
+  17              	.Ltext0:
+  18              		.cfi_sections	.debug_frame
+  19              		.section	.text.Delay_init,"ax",%progbits
+  20              		.align	1
+  21              		.p2align 2,,3
+  22              		.global	Delay_init
+  23              		.syntax unified
+  24              		.thumb
+  25              		.thumb_func
+  27              	Delay_init:
+  28              	.LFB3:
+  29              		.file 1 "Core/Src/stereo_delay.c"
+   1:Core/Src/stereo_delay.c **** /**
+   2:Core/Src/stereo_delay.c ****  * @file stereo_delay.h
+   3:Core/Src/stereo_delay.c ****  * @author johannes regnier, modified from Xavier Halgand
+   4:Core/Src/stereo_delay.c ****  * @brief stereo ping pon delay effect
+   5:Core/Src/stereo_delay.c ****  * @version 0.1
+   6:Core/Src/stereo_delay.c ****  * @date 2024-01-01
+   7:Core/Src/stereo_delay.c ****  * 
+   8:Core/Src/stereo_delay.c ****  * @copyright Copyright (c) 2024
+   9:Core/Src/stereo_delay.c ****  * 
+  10:Core/Src/stereo_delay.c ****  */
+  11:Core/Src/stereo_delay.c **** #include "stereo_delay.h"
+  12:Core/Src/stereo_delay.c **** 
+  13:Core/Src/stereo_delay.c **** 
+  14:Core/Src/stereo_delay.c **** /*-------------------------------------------------------------------------------------------*/
+  15:Core/Src/stereo_delay.c **** /* Delay effect variables  */
+  16:Core/Src/stereo_delay.c **** static float		delaylineL[DELAY_BUFF_SIZE ];
+  17:Core/Src/stereo_delay.c **** static float		delaylineR[DELAY_BUFF_SIZE ];
+  18:Core/Src/stereo_delay.c **** static float		*readptrL _CCM_, *readptrR _CCM_; 	// output pointer of delay line
+  19:Core/Src/stereo_delay.c **** static float 		*writeptrL _CCM_, *writeptrR _CCM_; // input pointer of delay line
+  20:Core/Src/stereo_delay.c **** static uint16_t		delay_time_L _CCM_, delay_time_R _CCM_;
+  21:Core/Src/stereo_delay.c **** 
+  22:Core/Src/stereo_delay.c **** 
+  23:Core/Src/stereo_delay.c **** static float		feedback = INIT_FEEDB;
+  24:Core/Src/stereo_delay.c **** static float		delay_wet = INIT_DELAY_WET;
+  25:Core/Src/stereo_delay.c **** 
+  26:Core/Src/stereo_delay.c **** extern ZDFLP_t lp_L;
+  27:Core/Src/stereo_delay.c **** extern ZDFLP_t lp_R;
+  28:Core/Src/stereo_delay.c **** 
+  29:Core/Src/stereo_delay.c **** /*-------------------------------------------------------------------------------------------*/
+ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccyrTMeK.s 			page 2
+
+
+  30:Core/Src/stereo_delay.c **** 
+  31:Core/Src/stereo_delay.c **** 
+  32:Core/Src/stereo_delay.c **** 
+  33:Core/Src/stereo_delay.c **** 
+  34:Core/Src/stereo_delay.c **** void Delay_init(void)
+  35:Core/Src/stereo_delay.c **** {
+  30              		.loc 1 35 1 view -0
+  31              		.cfi_startproc
+  32              		@ args = 0, pretend = 0, frame = 0
+  33              		@ frame_needed = 0, uses_anonymous_args = 0
+  36:Core/Src/stereo_delay.c **** 	/* initialize pointers positions for delay effect */
+  37:Core/Src/stereo_delay.c **** 	delay_time_L = INIT_DELAY_L;
+  34              		.loc 1 37 2 view .LVU1
+  38:Core/Src/stereo_delay.c **** 	delay_time_R = INIT_DELAY_R;
+  35              		.loc 1 38 2 view .LVU2
+  39:Core/Src/stereo_delay.c **** 	readptrL = delaylineL;
+  36              		.loc 1 39 2 view .LVU3
+  35:Core/Src/stereo_delay.c **** 	/* initialize pointers positions for delay effect */
+  37              		.loc 1 35 1 is_stmt 0 view .LVU4
+  38 0000 10B5     		push	{r4, lr}
+  39              		.cfi_def_cfa_offset 8
+  40              		.cfi_offset 4, -8
+  41              		.cfi_offset 14, -4
+  42              		.loc 1 39 11 view .LVU5
+  43 0002 094B     		ldr	r3, .L4
+  40:Core/Src/stereo_delay.c **** 	readptrR = delaylineR;
+  44              		.loc 1 40 11 view .LVU6
+  45 0004 094A     		ldr	r2, .L4+4
+  39:Core/Src/stereo_delay.c **** 	readptrL = delaylineL;
+  46              		.loc 1 39 11 view .LVU7
+  47 0006 0A4C     		ldr	r4, .L4+8
+  48 0008 1C60     		str	r4, [r3]
+  49              		.loc 1 40 2 is_stmt 1 view .LVU8
+  41:Core/Src/stereo_delay.c **** 	writeptrL = delaylineL + delay_time_L;
+  50              		.loc 1 41 12 is_stmt 0 view .LVU9
+  51 000a 0A4C     		ldr	r4, .L4+12
+  42:Core/Src/stereo_delay.c **** 	writeptrR = delaylineR + delay_time_R;
+  43:Core/Src/stereo_delay.c **** 
+  44:Core/Src/stereo_delay.c **** 	SVF_LP_init(&lp_L);
+  52              		.loc 1 44 2 view .LVU10
+  53 000c 0A48     		ldr	r0, .L4+16
+  42:Core/Src/stereo_delay.c **** 	writeptrR = delaylineR + delay_time_R;
+  54              		.loc 1 42 12 view .LVU11
+  55 000e 02F5FA41 		add	r1, r2, #32000
+  41:Core/Src/stereo_delay.c **** 	writeptrL = delaylineL + delay_time_L;
+  56              		.loc 1 41 12 view .LVU12
+  57 0012 C3E90124 		strd	r2, r4, [r3, #4]
+  42:Core/Src/stereo_delay.c **** 	writeptrR = delaylineR + delay_time_R;
+  58              		.loc 1 42 2 is_stmt 1 view .LVU13
+  42:Core/Src/stereo_delay.c **** 	writeptrR = delaylineR + delay_time_R;
+  59              		.loc 1 42 12 is_stmt 0 view .LVU14
+  60 0016 D960     		str	r1, [r3, #12]
+  61              		.loc 1 44 2 is_stmt 1 view .LVU15
+  62 0018 FFF7FEFF 		bl	SVF_LP_init
+  63              	.LVL0:
+  45:Core/Src/stereo_delay.c **** 	SVF_LP_init(&lp_R);
+  64              		.loc 1 45 2 view .LVU16
+ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccyrTMeK.s 			page 3
+
+
+  46:Core/Src/stereo_delay.c **** }
+  65              		.loc 1 46 1 is_stmt 0 view .LVU17
+  66 001c BDE81040 		pop	{r4, lr}
+  67              		.cfi_restore 14
+  68              		.cfi_restore 4
+  69              		.cfi_def_cfa_offset 0
+  45:Core/Src/stereo_delay.c **** 	SVF_LP_init(&lp_R);
+  70              		.loc 1 45 2 view .LVU18
+  71 0020 0648     		ldr	r0, .L4+20
+  72 0022 FFF7FEBF 		b	SVF_LP_init
+  73              	.LVL1:
+  74              	.L5:
+  75 0026 00BF     		.align	2
+  76              	.L4:
+  77 0028 00000000 		.word	.LANCHOR0
+  78 002c 00000000 		.word	delaylineR
+  79 0030 00000000 		.word	delaylineL
+  80 0034 C05D0000 		.word	delaylineL+24000
+  81 0038 00000000 		.word	lp_L
+  82 003c 00000000 		.word	lp_R
+  83              		.cfi_endproc
+  84              	.LFE3:
+  86              		.section	.text.Delay_time_set,"ax",%progbits
+  87              		.align	1
+  88              		.p2align 2,,3
+  89              		.global	Delay_time_set
+  90              		.syntax unified
+  91              		.thumb
+  92              		.thumb_func
+  94              	Delay_time_set:
+  95              	.LVL2:
+  96              	.LFB4:
+  47:Core/Src/stereo_delay.c **** /*-------------------------------------------------------------------------------------------*/
+  48:Core/Src/stereo_delay.c **** 
+  49:Core/Src/stereo_delay.c **** 
+  50:Core/Src/stereo_delay.c **** /*-------------------------------------------------------------------------------------------*/
+  51:Core/Src/stereo_delay.c **** void Delay_time_set(uint8_t val)
+  52:Core/Src/stereo_delay.c **** {
+  97              		.loc 1 52 1 is_stmt 1 view -0
+  98              		.cfi_startproc
+  99              		@ args = 0, pretend = 0, frame = 0
+ 100              		@ frame_needed = 0, uses_anonymous_args = 0
+  53:Core/Src/stereo_delay.c **** 	float 	*pos;
+ 101              		.loc 1 53 2 view .LVU20
+  54:Core/Src/stereo_delay.c **** 	delay_time_L = (uint32_t) lrintf((DELAY_BUFF_SIZE - 1 - MIN_DELAY)/MIDI_MAX * val + MIN_DELAY);
+ 102              		.loc 1 54 2 view .LVU21
+ 103              		.loc 1 54 78 is_stmt 0 view .LVU22
+ 104 0000 07EE900A 		vmov	s15, r0	@ int
+ 105              		.loc 1 54 28 view .LVU23
+ 106 0004 9FED0B7A 		vldr.32	s14, .L9
+ 107 0008 9FED0B0A 		vldr.32	s0, .L9+4
+ 108              		.loc 1 54 78 view .LVU24
+ 109 000c F8EEE77A 		vcvt.f32.s32	s15, s15
+  52:Core/Src/stereo_delay.c **** 	float 	*pos;
+ 110              		.loc 1 52 1 view .LVU25
+ 111 0010 08B5     		push	{r3, lr}
+ 112              		.cfi_def_cfa_offset 8
+ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccyrTMeK.s 			page 4
+
+
+ 113              		.cfi_offset 3, -8
+ 114              		.cfi_offset 14, -4
+ 115              		.loc 1 54 28 view .LVU26
+ 116 0012 A7EE870A 		vfma.f32	s0, s15, s14
+ 117 0016 FFF7FEFF 		bl	lrintf
+ 118              	.LVL3:
+  55:Core/Src/stereo_delay.c **** 	pos = writeptrL - delay_time_L;
+ 119              		.loc 1 55 2 is_stmt 1 view .LVU27
+ 120              		.loc 1 55 18 is_stmt 0 view .LVU28
+ 121 001a 084A     		ldr	r2, .L9+8
+  56:Core/Src/stereo_delay.c **** 	if (pos >= delaylineL)
+ 122              		.loc 1 56 5 view .LVU29
+ 123 001c 0849     		ldr	r1, .L9+12
+  55:Core/Src/stereo_delay.c **** 	pos = writeptrL - delay_time_L;
+ 124              		.loc 1 55 6 view .LVU30
+ 125 001e 9368     		ldr	r3, [r2, #8]
+  55:Core/Src/stereo_delay.c **** 	pos = writeptrL - delay_time_L;
+ 126              		.loc 1 55 18 view .LVU31
+ 127 0020 80B2     		uxth	r0, r0
+  55:Core/Src/stereo_delay.c **** 	pos = writeptrL - delay_time_L;
+ 128              		.loc 1 55 6 view .LVU32
+ 129 0022 A3EB8003 		sub	r3, r3, r0, lsl #2
+ 130              	.LVL4:
+ 131              		.loc 1 56 2 is_stmt 1 view .LVU33
+  57:Core/Src/stereo_delay.c **** 		readptrL = pos;
+  58:Core/Src/stereo_delay.c **** 	else
+  59:Core/Src/stereo_delay.c **** 		readptrL = pos + DELAY_BUFF_SIZE - 1;
+ 132              		.loc 1 59 3 view .LVU34
+  56:Core/Src/stereo_delay.c **** 	if (pos >= delaylineL)
+ 133              		.loc 1 56 5 is_stmt 0 view .LVU35
+ 134 0026 8B42     		cmp	r3, r1
+ 135              		.loc 1 59 36 view .LVU36
+ 136 0028 3CBF     		itt	cc
+ 137 002a 03F5FF43 		addcc	r3, r3, #32640
+ 138              	.LVL5:
+ 139              		.loc 1 59 36 view .LVU37
+ 140 002e 7C33     		addcc	r3, r3, #124
+ 141 0030 1360     		str	r3, [r2]
+  60:Core/Src/stereo_delay.c **** 
+  61:Core/Src/stereo_delay.c **** }
+ 142              		.loc 1 61 1 view .LVU38
+ 143 0032 08BD     		pop	{r3, pc}
+ 144              	.L10:
+ 145              		.align	2
+ 146              	.L9:
+ 147 0034 381C7A42 		.word	1115298872
+ 148 0038 00007A43 		.word	1132068864
+ 149 003c 00000000 		.word	.LANCHOR0
+ 150 0040 00000000 		.word	delaylineL
+ 151              		.cfi_endproc
+ 152              	.LFE4:
+ 154              		.section	.text.Delay_feedback_inc,"ax",%progbits
+ 155              		.align	1
+ 156              		.p2align 2,,3
+ 157              		.global	Delay_feedback_inc
+ 158              		.syntax unified
+ 159              		.thumb
+ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccyrTMeK.s 			page 5
+
+
+ 160              		.thumb_func
+ 162              	Delay_feedback_inc:
+ 163              	.LFB5:
+  62:Core/Src/stereo_delay.c **** /*-------------------------------------------------------------------------------------------*/
+  63:Core/Src/stereo_delay.c **** void Delay_feedback_inc(void)
+  64:Core/Src/stereo_delay.c **** {
+ 164              		.loc 1 64 1 is_stmt 1 view -0
+ 165              		.cfi_startproc
+ 166              		@ args = 0, pretend = 0, frame = 0
+ 167              		@ frame_needed = 0, uses_anonymous_args = 0
+ 168              		@ link register save eliminated.
+  65:Core/Src/stereo_delay.c **** 	/* increment feedback delay */
+  66:Core/Src/stereo_delay.c **** 
+  67:Core/Src/stereo_delay.c **** 	feedback *= 1.05f ;//
+ 169              		.loc 1 67 2 view .LVU40
+ 170              		.loc 1 67 11 is_stmt 0 view .LVU41
+ 171 0000 044B     		ldr	r3, .L12
+ 172 0002 9FED057A 		vldr.32	s14, .L12+4
+ 173 0006 D3ED007A 		vldr.32	s15, [r3]
+ 174 000a 67EE877A 		vmul.f32	s15, s15, s14
+ 175 000e C3ED007A 		vstr.32	s15, [r3]
+  68:Core/Src/stereo_delay.c **** }
+ 176              		.loc 1 68 1 view .LVU42
+ 177 0012 7047     		bx	lr
+ 178              	.L13:
+ 179              		.align	2
+ 180              	.L12:
+ 181 0014 00000000 		.word	.LANCHOR1
+ 182 0018 6666863F 		.word	1065772646
+ 183              		.cfi_endproc
+ 184              	.LFE5:
+ 186              		.section	.text.Delay_feedback_dec,"ax",%progbits
+ 187              		.align	1
+ 188              		.p2align 2,,3
+ 189              		.global	Delay_feedback_dec
+ 190              		.syntax unified
+ 191              		.thumb
+ 192              		.thumb_func
+ 194              	Delay_feedback_dec:
+ 195              	.LFB6:
+  69:Core/Src/stereo_delay.c **** /*-------------------------------------------------------------------------------------------*/
+  70:Core/Src/stereo_delay.c **** void Delay_feedback_dec(void)
+  71:Core/Src/stereo_delay.c **** {
+ 196              		.loc 1 71 1 is_stmt 1 view -0
+ 197              		.cfi_startproc
+ 198              		@ args = 0, pretend = 0, frame = 0
+ 199              		@ frame_needed = 0, uses_anonymous_args = 0
+ 200              		@ link register save eliminated.
+  72:Core/Src/stereo_delay.c **** 	/* decrement feedback delay */
+  73:Core/Src/stereo_delay.c **** 
+  74:Core/Src/stereo_delay.c **** 	feedback *= 0.95f ;//
+ 201              		.loc 1 74 2 view .LVU44
+ 202              		.loc 1 74 11 is_stmt 0 view .LVU45
+ 203 0000 044B     		ldr	r3, .L15
+ 204 0002 9FED057A 		vldr.32	s14, .L15+4
+ 205 0006 D3ED007A 		vldr.32	s15, [r3]
+ 206 000a 67EE877A 		vmul.f32	s15, s15, s14
+ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccyrTMeK.s 			page 6
+
+
+ 207 000e C3ED007A 		vstr.32	s15, [r3]
+  75:Core/Src/stereo_delay.c **** }
+ 208              		.loc 1 75 1 view .LVU46
+ 209 0012 7047     		bx	lr
+ 210              	.L16:
+ 211              		.align	2
+ 212              	.L15:
+ 213 0014 00000000 		.word	.LANCHOR1
+ 214 0018 3333733F 		.word	1064514355
+ 215              		.cfi_endproc
+ 216              	.LFE6:
+ 218              		.section	.text.DelayFeedback_set,"ax",%progbits
+ 219              		.align	1
+ 220              		.p2align 2,,3
+ 221              		.global	DelayFeedback_set
+ 222              		.syntax unified
+ 223              		.thumb
+ 224              		.thumb_func
+ 226              	DelayFeedback_set:
+ 227              	.LVL6:
+ 228              	.LFB7:
+  76:Core/Src/stereo_delay.c **** /*-------------------------------------------------------------------------------------------*/
+  77:Core/Src/stereo_delay.c **** void DelayFeedback_set(uint8_t val)
+  78:Core/Src/stereo_delay.c **** {
+ 229              		.loc 1 78 1 is_stmt 1 view -0
+ 230              		.cfi_startproc
+ 231              		@ args = 0, pretend = 0, frame = 0
+ 232              		@ frame_needed = 0, uses_anonymous_args = 0
+ 233              		@ link register save eliminated.
+  79:Core/Src/stereo_delay.c **** 	feedback = val / MIDI_MAX;
+ 234              		.loc 1 79 2 view .LVU48
+ 235              		.loc 1 79 17 is_stmt 0 view .LVU49
+ 236 0000 07EE900A 		vmov	s15, r0	@ int
+ 237 0004 DFED046A 		vldr.32	s13, .L18
+ 238              		.loc 1 79 11 view .LVU50
+ 239 0008 044B     		ldr	r3, .L18+4
+ 240              		.loc 1 79 17 view .LVU51
+ 241 000a F8EEE77A 		vcvt.f32.s32	s15, s15
+ 242 000e 87EEA67A 		vdiv.f32	s14, s15, s13
+ 243              		.loc 1 79 11 view .LVU52
+ 244 0012 83ED007A 		vstr.32	s14, [r3]
+  80:Core/Src/stereo_delay.c **** }
+ 245              		.loc 1 80 1 view .LVU53
+ 246 0016 7047     		bx	lr
+ 247              	.L19:
+ 248              		.align	2
+ 249              	.L18:
+ 250 0018 0000FE42 		.word	1123942400
+ 251 001c 00000000 		.word	.LANCHOR1
+ 252              		.cfi_endproc
+ 253              	.LFE7:
+ 255              		.section	.text.Delaydelay_wet_set,"ax",%progbits
+ 256              		.align	1
+ 257              		.p2align 2,,3
+ 258              		.global	Delaydelay_wet_set
+ 259              		.syntax unified
+ 260              		.thumb
+ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccyrTMeK.s 			page 7
+
+
+ 261              		.thumb_func
+ 263              	Delaydelay_wet_set:
+ 264              	.LVL7:
+ 265              	.LFB8:
+  81:Core/Src/stereo_delay.c **** /*-------------------------------------------------------------------------------------------*/
+  82:Core/Src/stereo_delay.c **** void Delaydelay_wet_set(uint8_t val)
+  83:Core/Src/stereo_delay.c **** {
+ 266              		.loc 1 83 1 is_stmt 1 view -0
+ 267              		.cfi_startproc
+ 268              		@ args = 0, pretend = 0, frame = 0
+ 269              		@ frame_needed = 0, uses_anonymous_args = 0
+ 270              		@ link register save eliminated.
+  84:Core/Src/stereo_delay.c **** 	delay_wet = val / MIDI_MAX;
+ 271              		.loc 1 84 2 view .LVU55
+ 272              		.loc 1 84 18 is_stmt 0 view .LVU56
+ 273 0000 07EE900A 		vmov	s15, r0	@ int
+ 274 0004 DFED046A 		vldr.32	s13, .L21
+ 275              		.loc 1 84 12 view .LVU57
+ 276 0008 044B     		ldr	r3, .L21+4
+ 277              		.loc 1 84 18 view .LVU58
+ 278 000a F8EEE77A 		vcvt.f32.s32	s15, s15
+ 279 000e 87EEA67A 		vdiv.f32	s14, s15, s13
+ 280              		.loc 1 84 12 view .LVU59
+ 281 0012 83ED007A 		vstr.32	s14, [r3]
+  85:Core/Src/stereo_delay.c **** }
+ 282              		.loc 1 85 1 view .LVU60
+ 283 0016 7047     		bx	lr
+ 284              	.L22:
+ 285              		.align	2
+ 286              	.L21:
+ 287 0018 0000FE42 		.word	1123942400
+ 288 001c 00000000 		.word	.LANCHOR2
+ 289              		.cfi_endproc
+ 290              	.LFE8:
+ 292              		.section	.text.pingpongDelay_compute,"ax",%progbits
+ 293              		.align	1
+ 294              		.p2align 2,,3
+ 295              		.global	pingpongDelay_compute
+ 296              		.syntax unified
+ 297              		.thumb
+ 298              		.thumb_func
+ 300              	pingpongDelay_compute:
+ 301              	.LVL8:
+ 302              	.LFB9:
+  86:Core/Src/stereo_delay.c **** /*-------------------------------------------------------------------------------------------*/
+  87:Core/Src/stereo_delay.c **** 
+  88:Core/Src/stereo_delay.c **** /**
+  89:Core/Src/stereo_delay.c ****  * @brief Ping pong delay effect, with crossfeedback, softclip and lowpass filtering
+  90:Core/Src/stereo_delay.c ****  * @note requires 2 delay lines (L and R)
+  91:Core/Src/stereo_delay.c ****  * 
+  92:Core/Src/stereo_delay.c ****  * @param x 
+  93:Core/Src/stereo_delay.c ****  * @param delayLOut 
+  94:Core/Src/stereo_delay.c ****  * @param delayROut 
+  95:Core/Src/stereo_delay.c ****  */
+  96:Core/Src/stereo_delay.c **** void pingpongDelay_compute (float input_sample, float * delayLOut, float * delayROut)
+  97:Core/Src/stereo_delay.c **** {
+ 303              		.loc 1 97 1 is_stmt 1 view -0
+ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccyrTMeK.s 			page 8
+
+
+ 304              		.cfi_startproc
+ 305              		@ args = 0, pretend = 0, frame = 0
+ 306              		@ frame_needed = 0, uses_anonymous_args = 0
+  98:Core/Src/stereo_delay.c **** 	float delayed_sampleL, delayed_sampleR, sampleL, sampleR;
+ 307              		.loc 1 98 2 view .LVU62
+  99:Core/Src/stereo_delay.c **** 	float mask = DELAY_BUFF_SIZE - 1;
+ 308              		.loc 1 99 2 view .LVU63
+ 100:Core/Src/stereo_delay.c **** 	// read first so that we can have feedback
+ 101:Core/Src/stereo_delay.c **** 	delayed_sampleL = SVF_LP_compute(&lp_L, *readptrL);
+ 309              		.loc 1 101 2 view .LVU64
+  97:Core/Src/stereo_delay.c **** 	float delayed_sampleL, delayed_sampleR, sampleL, sampleR;
+ 310              		.loc 1 97 1 is_stmt 0 view .LVU65
+ 311 0000 F8B5     		push	{r3, r4, r5, r6, r7, lr}
+ 312              		.cfi_def_cfa_offset 24
+ 313              		.cfi_offset 3, -24
+ 314              		.cfi_offset 4, -20
+ 315              		.cfi_offset 5, -16
+ 316              		.cfi_offset 6, -12
+ 317              		.cfi_offset 7, -8
+ 318              		.cfi_offset 14, -4
+ 319              		.loc 1 101 20 view .LVU66
+ 320 0002 504C     		ldr	r4, .L35
+ 321 0004 2368     		ldr	r3, [r4]
+  97:Core/Src/stereo_delay.c **** 	float delayed_sampleL, delayed_sampleR, sampleL, sampleR;
+ 322              		.loc 1 97 1 view .LVU67
+ 323 0006 2DED028B 		vpush.64	{d8}
+ 324              		.cfi_def_cfa_offset 32
+ 325              		.cfi_offset 80, -32
+ 326              		.cfi_offset 81, -28
+  97:Core/Src/stereo_delay.c **** 	float delayed_sampleL, delayed_sampleR, sampleL, sampleR;
+ 327              		.loc 1 97 1 view .LVU68
+ 328 000a 0746     		mov	r7, r0
+ 329 000c B0EE408A 		vmov.f32	s16, s0
+ 330              		.loc 1 101 20 view .LVU69
+ 331 0010 4D48     		ldr	r0, .L35+4
+ 332              	.LVL9:
+ 333              		.loc 1 101 20 view .LVU70
+ 334 0012 93ED000A 		vldr.32	s0, [r3]
+ 335              	.LVL10:
+  97:Core/Src/stereo_delay.c **** 	float delayed_sampleL, delayed_sampleR, sampleL, sampleR;
+ 336              		.loc 1 97 1 view .LVU71
+ 337 0016 0E46     		mov	r6, r1
+ 338              		.loc 1 101 20 view .LVU72
+ 339 0018 FFF7FEFF 		bl	SVF_LP_compute
+ 340              	.LVL11:
+ 102:Core/Src/stereo_delay.c **** 	delayed_sampleR = SVF_LP_compute(&lp_R, *readptrR);
+ 341              		.loc 1 102 20 view .LVU73
+ 342 001c 6368     		ldr	r3, [r4, #4]
+ 343 001e 4B48     		ldr	r0, .L35+8
+ 101:Core/Src/stereo_delay.c **** 	delayed_sampleR = SVF_LP_compute(&lp_R, *readptrR);
+ 344              		.loc 1 101 20 view .LVU74
+ 345 0020 F0EE408A 		vmov.f32	s17, s0
+ 346              	.LVL12:
+ 347              		.loc 1 102 2 is_stmt 1 view .LVU75
+ 348              		.loc 1 102 20 is_stmt 0 view .LVU76
+ 349 0024 93ED000A 		vldr.32	s0, [r3]
+ 350              	.LVL13:
+ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccyrTMeK.s 			page 9
+
+
+ 351              		.loc 1 102 20 view .LVU77
+ 352 0028 FFF7FEFF 		bl	SVF_LP_compute
+ 353              	.LVL14:
+ 103:Core/Src/stereo_delay.c **** 
+ 104:Core/Src/stereo_delay.c **** 	// apply soft clipping 
+ 105:Core/Src/stereo_delay.c **** 	sampleL = SoftClip(input_sample + feedback * delayed_sampleL);
+ 354              		.loc 1 105 45 view .LVU78
+ 355 002c 484B     		ldr	r3, .L35+12
+ 356 002e 93ED007A 		vldr.32	s14, [r3]
+ 357              	.LVL15:
+ 358              		.loc 1 105 2 is_stmt 1 view .LVU79
+ 359              		.loc 1 105 12 is_stmt 0 view .LVU80
+ 360 0032 F0EE487A 		vmov.f32	s15, s16
+ 361 0036 E7EE287A 		vfma.f32	s15, s14, s17
+ 362              	.LVL16:
+ 363              	.LBB14:
+ 364              	.LBI14:
+ 365              		.file 2 "Core/Inc/helper_functions.h"
+   1:Core/Inc/helper_functions.h **** /**
+   2:Core/Inc/helper_functions.h ****  * @file helper_functions.h
+   3:Core/Inc/helper_functions.h ****  * @author johannes regnier
+   4:Core/Inc/helper_functions.h ****  * @brief Various math tools 
+   5:Core/Inc/helper_functions.h ****  * @version 0.1
+   6:Core/Inc/helper_functions.h ****  * @date 2023-12-30
+   7:Core/Inc/helper_functions.h ****  * 
+   8:Core/Inc/helper_functions.h ****  * @copyright Copyright (c) 2023
+   9:Core/Inc/helper_functions.h ****  * 
+  10:Core/Inc/helper_functions.h ****  */
+  11:Core/Inc/helper_functions.h **** 
+  12:Core/Inc/helper_functions.h **** #ifndef _HELPER_FUNCTIONS_H
+  13:Core/Inc/helper_functions.h **** #define _HELPER_FUNCTIONS_H
+  14:Core/Inc/helper_functions.h **** 
+  15:Core/Inc/helper_functions.h **** 
+  16:Core/Inc/helper_functions.h **** #include <math.h>
+  17:Core/Inc/helper_functions.h **** #include <stdint.h>
+  18:Core/Inc/helper_functions.h **** 
+  19:Core/Inc/helper_functions.h **** #ifndef NOMINMAX
+  20:Core/Inc/helper_functions.h **** 
+  21:Core/Inc/helper_functions.h **** #ifndef max
+  22:Core/Inc/helper_functions.h **** #define max(a,b)            (((a) > (b)) ? (a) : (b))
+  23:Core/Inc/helper_functions.h **** #endif
+  24:Core/Inc/helper_functions.h **** 
+  25:Core/Inc/helper_functions.h **** #ifndef min
+  26:Core/Inc/helper_functions.h **** #define min(a,b)            (((a) < (b)) ? (a) : (b))
+  27:Core/Inc/helper_functions.h **** #endif
+  28:Core/Inc/helper_functions.h **** 
+  29:Core/Inc/helper_functions.h **** #endif  /* NOMINMAX */
+  30:Core/Inc/helper_functions.h **** 
+  31:Core/Inc/helper_functions.h **** /**
+  32:Core/Inc/helper_functions.h ****  * @brief Keep value between 0 and max
+  33:Core/Inc/helper_functions.h ****  * 
+  34:Core/Inc/helper_functions.h ****  * @param value 
+  35:Core/Inc/helper_functions.h ****  * @param max 
+  36:Core/Inc/helper_functions.h ****  * @return float 
+  37:Core/Inc/helper_functions.h ****  */
+  38:Core/Inc/helper_functions.h **** inline float wrap(float value, float max)   
+  39:Core/Inc/helper_functions.h **** {
+ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccyrTMeK.s 			page 10
+
+
+  40:Core/Inc/helper_functions.h ****     if (value < 0.f)
+  41:Core/Inc/helper_functions.h ****         value += max;
+  42:Core/Inc/helper_functions.h ****     if (value >= max)
+  43:Core/Inc/helper_functions.h ****         value -= max;
+  44:Core/Inc/helper_functions.h **** 
+  45:Core/Inc/helper_functions.h ****     return value;
+  46:Core/Inc/helper_functions.h **** }
+  47:Core/Inc/helper_functions.h **** 
+  48:Core/Inc/helper_functions.h **** inline float Crossfade(float a, float b, float fade)
+  49:Core/Inc/helper_functions.h **** {
+  50:Core/Inc/helper_functions.h ****     return a + (b - a) * fade;
+  51:Core/Inc/helper_functions.h **** }
+  52:Core/Inc/helper_functions.h **** 
+  53:Core/Inc/helper_functions.h **** 
+  54:Core/Inc/helper_functions.h **** /**
+  55:Core/Inc/helper_functions.h ****  * @brief Pade-approximation of tanh for soft clipping
+  56:Core/Inc/helper_functions.h ****  * @ from https://www.musicdsp.org/en/latest/Other/238-rational-tanh-approximation.html 
+  57:Core/Inc/helper_functions.h ****  * @param x 
+  58:Core/Inc/helper_functions.h ****  * @return float 
+  59:Core/Inc/helper_functions.h ****  */
+  60:Core/Inc/helper_functions.h **** inline float SoftClip(float x)
+ 366              		.loc 2 60 14 is_stmt 1 view .LVU81
+ 367              	.LBB15:
+  61:Core/Inc/helper_functions.h **** {
+  62:Core/Inc/helper_functions.h ****     if (x < -3.0f)
+ 368              		.loc 2 62 5 view .LVU82
+ 369              		.loc 2 62 8 is_stmt 0 view .LVU83
+ 370 003a F8EE086A 		vmov.f32	s13, #-3.0e+0
+ 371 003e F4EEE67A 		vcmpe.f32	s15, s13
+ 372 0042 F1EE10FA 		vmrs	APSR_nzcv, FPSCR
+ 373 0046 73D4     		bmi	.L30
+  63:Core/Inc/helper_functions.h ****     {
+  64:Core/Inc/helper_functions.h ****         return -1.0f;
+  65:Core/Inc/helper_functions.h ****     }
+  66:Core/Inc/helper_functions.h ****     else if (x > 3.0f)
+ 374              		.loc 2 66 10 is_stmt 1 view .LVU84
+ 375              		.loc 2 66 13 is_stmt 0 view .LVU85
+ 376 0048 F0EE086A 		vmov.f32	s13, #3.0e+0
+ 377 004c F4EEE67A 		vcmpe.f32	s15, s13
+ 378 0050 F1EE10FA 		vmrs	APSR_nzcv, FPSCR
+ 379 0054 69DC     		bgt	.L31
+ 380              	.LVL17:
+ 381              	.LBB16:
+ 382              	.LBI16:
+  60:Core/Inc/helper_functions.h **** {
+ 383              		.loc 2 60 14 is_stmt 1 view .LVU86
+ 384              	.LBB17:
+  67:Core/Inc/helper_functions.h ****     {
+  68:Core/Inc/helper_functions.h ****         return 1.0f;
+  69:Core/Inc/helper_functions.h ****     }
+  70:Core/Inc/helper_functions.h ****     else
+  71:Core/Inc/helper_functions.h ****     {
+  72:Core/Inc/helper_functions.h ****         return x * (27.0f + x * x) / (27.0f + 9.0f * x * x);
+ 385              		.loc 2 72 9 view .LVU87
+ 386              		.loc 2 72 27 is_stmt 0 view .LVU88
+ 387 0056 F3EE0B6A 		vmov.f32	s13, #2.7e+1
+ 388 005a F0EE665A 		vmov.f32	s11, s13
+ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccyrTMeK.s 			page 11
+
+
+ 389              		.loc 2 72 52 view .LVU89
+ 390 005e B2EE026A 		vmov.f32	s12, #9.0e+0
+ 391 0062 27EE866A 		vmul.f32	s12, s15, s12
+ 392              		.loc 2 72 27 view .LVU90
+ 393 0066 E7EEA75A 		vfma.f32	s11, s15, s15
+ 394              		.loc 2 72 45 view .LVU91
+ 395 006a E7EE866A 		vfma.f32	s13, s15, s12
+ 396              		.loc 2 72 18 view .LVU92
+ 397 006e 67EEA57A 		vmul.f32	s15, s15, s11
+ 398              	.LVL18:
+ 399              		.loc 2 72 36 view .LVU93
+ 400 0072 87EEA66A 		vdiv.f32	s12, s15, s13
+ 401              	.LVL19:
+ 402              	.L24:
+ 403              		.loc 2 72 36 view .LVU94
+ 404              	.LBE17:
+ 405              	.LBE16:
+ 406              	.LBE15:
+ 407              	.LBE14:
+ 106:Core/Src/stereo_delay.c **** 	sampleR = SoftClip(input_sample + feedback * delayed_sampleR);
+ 408              		.loc 1 106 2 is_stmt 1 view .LVU95
+ 409              		.loc 1 106 12 is_stmt 0 view .LVU96
+ 410 0076 F0EE487A 		vmov.f32	s15, s16
+ 411 007a E7EE007A 		vfma.f32	s15, s14, s0
+ 412              	.LVL20:
+ 413              	.LBB19:
+ 414              	.LBI19:
+  60:Core/Inc/helper_functions.h **** {
+ 415              		.loc 2 60 14 is_stmt 1 view .LVU97
+ 416              	.LBB20:
+  62:Core/Inc/helper_functions.h ****     {
+ 417              		.loc 2 62 5 view .LVU98
+  62:Core/Inc/helper_functions.h ****     {
+ 418              		.loc 2 62 8 is_stmt 0 view .LVU99
+ 419 007e B8EE087A 		vmov.f32	s14, #-3.0e+0
+ 420 0082 F4EEC77A 		vcmpe.f32	s15, s14
+ 421 0086 F1EE10FA 		vmrs	APSR_nzcv, FPSCR
+ 422 008a 54D4     		bmi	.L32
+  66:Core/Inc/helper_functions.h ****     {
+ 423              		.loc 2 66 10 is_stmt 1 view .LVU100
+  66:Core/Inc/helper_functions.h ****     {
+ 424              		.loc 2 66 13 is_stmt 0 view .LVU101
+ 425 008c B0EE087A 		vmov.f32	s14, #3.0e+0
+ 426 0090 F4EEC77A 		vcmpe.f32	s15, s14
+ 427 0094 F1EE10FA 		vmrs	APSR_nzcv, FPSCR
+ 428 0098 50DC     		bgt	.L33
+ 429              	.LVL21:
+ 430              	.LBB21:
+ 431              	.LBI21:
+  60:Core/Inc/helper_functions.h **** {
+ 432              		.loc 2 60 14 is_stmt 1 view .LVU102
+ 433              	.LBB22:
+ 434              		.loc 2 72 9 view .LVU103
+ 435              		.loc 2 72 27 is_stmt 0 view .LVU104
+ 436 009a B3EE0B7A 		vmov.f32	s14, #2.7e+1
+ 437 009e F0EE475A 		vmov.f32	s11, s14
+ 438              		.loc 2 72 52 view .LVU105
+ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccyrTMeK.s 			page 12
+
+
+ 439 00a2 F2EE026A 		vmov.f32	s13, #9.0e+0
+ 440 00a6 67EEA66A 		vmul.f32	s13, s15, s13
+ 441              		.loc 2 72 27 view .LVU106
+ 442 00aa E7EEA75A 		vfma.f32	s11, s15, s15
+ 443              		.loc 2 72 45 view .LVU107
+ 444 00ae A7EEA67A 		vfma.f32	s14, s15, s13
+ 445              		.loc 2 72 18 view .LVU108
+ 446 00b2 67EEA57A 		vmul.f32	s15, s15, s11
+ 447              	.LVL22:
+ 448              		.loc 2 72 36 view .LVU109
+ 449 00b6 C7EE876A 		vdiv.f32	s13, s15, s14
+ 450              	.LVL23:
+ 451              	.L25:
+ 452              		.loc 2 72 36 view .LVU110
+ 453              	.LBE22:
+ 454              	.LBE21:
+ 455              	.LBE20:
+ 456              	.LBE19:
+ 107:Core/Src/stereo_delay.c **** 
+ 108:Core/Src/stereo_delay.c **** 	// write then update pointers
+ 109:Core/Src/stereo_delay.c **** 	*writeptrL = sampleR; 
+ 457              		.loc 1 109 2 is_stmt 1 view .LVU111
+ 110:Core/Src/stereo_delay.c **** 	*writeptrR = sampleL; 
+ 111:Core/Src/stereo_delay.c **** 	writeptrL++;
+ 112:Core/Src/stereo_delay.c **** 	readptrL++;
+ 113:Core/Src/stereo_delay.c **** 	writeptrR++;
+ 114:Core/Src/stereo_delay.c **** 	readptrR++;
+ 115:Core/Src/stereo_delay.c **** 
+ 116:Core/Src/stereo_delay.c **** 	if ((writeptrL - delaylineL) >= DELAY_BUFF_SIZE)
+ 117:Core/Src/stereo_delay.c **** 		writeptrL = delaylineL;
+ 118:Core/Src/stereo_delay.c **** 
+ 119:Core/Src/stereo_delay.c **** 	if ((readptrL - delaylineL) >= DELAY_BUFF_SIZE)
+ 120:Core/Src/stereo_delay.c **** 		readptrL = delaylineL;
+ 121:Core/Src/stereo_delay.c **** 
+ 122:Core/Src/stereo_delay.c **** 	if ((writeptrR - delaylineR) >= DELAY_BUFF_SIZE)
+ 123:Core/Src/stereo_delay.c **** 		writeptrR = delaylineR;
+ 124:Core/Src/stereo_delay.c **** 
+ 125:Core/Src/stereo_delay.c **** 	if ((readptrR - delaylineR) >= DELAY_BUFF_SIZE)
+ 126:Core/Src/stereo_delay.c **** 		readptrR = delaylineR;
+ 127:Core/Src/stereo_delay.c **** 
+ 128:Core/Src/stereo_delay.c **** 	*delayLOut = (delay_wet * sampleL + (1 - delay_wet) * input_sample);
+ 458              		.loc 1 128 26 is_stmt 0 view .LVU112
+ 459 00ba 264B     		ldr	r3, .L35+16
+ 122:Core/Src/stereo_delay.c **** 		writeptrR = delaylineR;
+ 460              		.loc 1 122 17 view .LVU113
+ 461 00bc 2648     		ldr	r0, .L35+20
+ 110:Core/Src/stereo_delay.c **** 	*writeptrR = sampleL; 
+ 462              		.loc 1 110 13 view .LVU114
+ 463 00be D4E90252 		ldrd	r5, r2, [r4, #8]
+ 116:Core/Src/stereo_delay.c **** 		writeptrL = delaylineL;
+ 464              		.loc 1 116 5 view .LVU115
+ 465 00c2 47F6FC7C 		movw	ip, #32764
+ 466              		.loc 1 128 26 view .LVU116
+ 467 00c6 93ED007A 		vldr.32	s14, [r3]
+ 109:Core/Src/stereo_delay.c **** 	*writeptrR = sampleL; 
+ 468              		.loc 1 109 13 view .LVU117
+ 469 00ca E5EC016A 		vstmia.32	r5!, {s13}
+ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccyrTMeK.s 			page 13
+
+
+ 110:Core/Src/stereo_delay.c **** 	writeptrL++;
+ 470              		.loc 1 110 2 is_stmt 1 view .LVU118
+ 471              		.loc 1 128 41 is_stmt 0 view .LVU119
+ 472 00ce F7EE007A 		vmov.f32	s15, #1.0e+0
+ 473 00d2 77EEC77A 		vsub.f32	s15, s15, s14
+ 114:Core/Src/stereo_delay.c **** 
+ 474              		.loc 1 114 10 view .LVU120
+ 475 00d6 D4E90013 		ldrd	r1, r3, [r4]
+ 476              		.loc 1 128 54 view .LVU121
+ 477 00da 27EE880A 		vmul.f32	s0, s15, s16
+ 478              	.LVL24:
+ 110:Core/Src/stereo_delay.c **** 	writeptrL++;
+ 479              		.loc 1 110 13 view .LVU122
+ 480 00de A2EC016A 		vstmia.32	r2!, {s12}
+ 111:Core/Src/stereo_delay.c **** 	readptrL++;
+ 481              		.loc 1 111 2 is_stmt 1 view .LVU123
+ 112:Core/Src/stereo_delay.c **** 	writeptrR++;
+ 482              		.loc 1 112 2 view .LVU124
+ 483              		.loc 1 128 36 is_stmt 0 view .LVU125
+ 484 00e2 F0EE407A 		vmov.f32	s15, s0
+ 485 00e6 E7EE067A 		vfma.f32	s15, s14, s12
+ 112:Core/Src/stereo_delay.c **** 	writeptrR++;
+ 486              		.loc 1 112 10 view .LVU126
+ 487 00ea 0431     		adds	r1, r1, #4
+ 113:Core/Src/stereo_delay.c **** 	readptrR++;
+ 488              		.loc 1 113 2 is_stmt 1 view .LVU127
+ 114:Core/Src/stereo_delay.c **** 
+ 489              		.loc 1 114 2 view .LVU128
+ 129:Core/Src/stereo_delay.c **** 	*delayROut = (delay_wet * sampleR + (1 - delay_wet) * input_sample);	
+ 130:Core/Src/stereo_delay.c **** }
+ 490              		.loc 1 130 1 is_stmt 0 view .LVU129
+ 491 00ec BDEC028B 		vldm	sp!, {d8}
+ 492              		.cfi_remember_state
+ 493              		.cfi_restore 80
+ 494              		.cfi_restore 81
+ 495              		.cfi_def_cfa_offset 24
+ 496              	.LVL25:
+ 129:Core/Src/stereo_delay.c **** 	*delayROut = (delay_wet * sampleR + (1 - delay_wet) * input_sample);	
+ 497              		.loc 1 129 36 view .LVU130
+ 498 00f0 A7EE260A 		vfma.f32	s0, s14, s13
+ 114:Core/Src/stereo_delay.c **** 
+ 499              		.loc 1 114 10 view .LVU131
+ 500 00f4 0433     		adds	r3, r3, #4
+ 116:Core/Src/stereo_delay.c **** 		writeptrL = delaylineL;
+ 501              		.loc 1 116 2 is_stmt 1 view .LVU132
+ 128:Core/Src/stereo_delay.c **** 	*delayROut = (delay_wet * sampleR + (1 - delay_wet) * input_sample);	
+ 502              		.loc 1 128 13 is_stmt 0 view .LVU133
+ 503 00f6 C7ED007A 		vstr.32	s15, [r7]
+ 129:Core/Src/stereo_delay.c **** 	*delayROut = (delay_wet * sampleR + (1 - delay_wet) * input_sample);	
+ 504              		.loc 1 129 13 view .LVU134
+ 505 00fa 86ED000A 		vstr.32	s0, [r6]
+ 116:Core/Src/stereo_delay.c **** 		writeptrL = delaylineL;
+ 506              		.loc 1 116 17 view .LVU135
+ 507 00fe 174E     		ldr	r6, .L35+24
+ 508              	.LVL26:
+ 116:Core/Src/stereo_delay.c **** 		writeptrL = delaylineL;
+ 509              		.loc 1 116 17 view .LVU136
+ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccyrTMeK.s 			page 14
+
+
+ 510 0100 AF1B     		subs	r7, r5, r6
+ 511              	.LVL27:
+ 117:Core/Src/stereo_delay.c **** 
+ 512              		.loc 1 117 13 view .LVU137
+ 513 0102 6745     		cmp	r7, ip
+ 514 0104 C8BF     		it	gt
+ 515 0106 3546     		movgt	r5, r6
+ 516 0108 A560     		str	r5, [r4, #8]
+ 119:Core/Src/stereo_delay.c **** 		readptrL = delaylineL;
+ 517              		.loc 1 119 2 is_stmt 1 view .LVU138
+ 119:Core/Src/stereo_delay.c **** 		readptrL = delaylineL;
+ 518              		.loc 1 119 16 is_stmt 0 view .LVU139
+ 519 010a 8D1B     		subs	r5, r1, r6
+ 120:Core/Src/stereo_delay.c **** 
+ 520              		.loc 1 120 12 view .LVU140
+ 521 010c 6545     		cmp	r5, ip
+ 522 010e C8BF     		it	gt
+ 523 0110 3146     		movgt	r1, r6
+ 524 0112 2160     		str	r1, [r4]
+ 122:Core/Src/stereo_delay.c **** 		writeptrR = delaylineR;
+ 525              		.loc 1 122 2 is_stmt 1 view .LVU141
+ 122:Core/Src/stereo_delay.c **** 		writeptrR = delaylineR;
+ 526              		.loc 1 122 17 is_stmt 0 view .LVU142
+ 527 0114 111A     		subs	r1, r2, r0
+ 123:Core/Src/stereo_delay.c **** 
+ 528              		.loc 1 123 13 view .LVU143
+ 529 0116 6145     		cmp	r1, ip
+ 530 0118 C8BF     		it	gt
+ 531 011a 0246     		movgt	r2, r0
+ 532 011c E260     		str	r2, [r4, #12]
+ 125:Core/Src/stereo_delay.c **** 		readptrR = delaylineR;
+ 533              		.loc 1 125 2 is_stmt 1 view .LVU144
+ 125:Core/Src/stereo_delay.c **** 		readptrR = delaylineR;
+ 534              		.loc 1 125 16 is_stmt 0 view .LVU145
+ 535 011e 1A1A     		subs	r2, r3, r0
+ 126:Core/Src/stereo_delay.c **** 
+ 536              		.loc 1 126 12 view .LVU146
+ 537 0120 6245     		cmp	r2, ip
+ 538 0122 C8BF     		it	gt
+ 539 0124 0346     		movgt	r3, r0
+ 540 0126 6360     		str	r3, [r4, #4]
+ 128:Core/Src/stereo_delay.c **** 	*delayROut = (delay_wet * sampleR + (1 - delay_wet) * input_sample);	
+ 541              		.loc 1 128 2 is_stmt 1 view .LVU147
+ 129:Core/Src/stereo_delay.c **** }
+ 542              		.loc 1 129 2 view .LVU148
+ 543              		.loc 1 130 1 is_stmt 0 view .LVU149
+ 544 0128 F8BD     		pop	{r3, r4, r5, r6, r7, pc}
+ 545              	.LVL28:
+ 546              	.L31:
+ 547              		.cfi_restore_state
+ 548              	.LBB24:
+ 549              	.LBB18:
+  68:Core/Inc/helper_functions.h ****     }
+ 550              		.loc 2 68 16 view .LVU150
+ 551 012a B7EE006A 		vmov.f32	s12, #1.0e+0
+ 552 012e A2E7     		b	.L24
+ 553              	.L30:
+ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccyrTMeK.s 			page 15
+
+
+  64:Core/Inc/helper_functions.h ****     }
+ 554              		.loc 2 64 16 view .LVU151
+ 555 0130 BFEE006A 		vmov.f32	s12, #-1.0e+0
+ 556 0134 9FE7     		b	.L24
+ 557              	.LVL29:
+ 558              	.L32:
+  64:Core/Inc/helper_functions.h ****     }
+ 559              		.loc 2 64 16 view .LVU152
+ 560              	.LBE18:
+ 561              	.LBE24:
+ 562              	.LBB25:
+ 563              	.LBB23:
+ 564 0136 FFEE006A 		vmov.f32	s13, #-1.0e+0
+ 565 013a BEE7     		b	.L25
+ 566              	.L33:
+  68:Core/Inc/helper_functions.h ****     }
+ 567              		.loc 2 68 16 view .LVU153
+ 568 013c F7EE006A 		vmov.f32	s13, #1.0e+0
+ 569 0140 BBE7     		b	.L25
+ 570              	.L36:
+ 571 0142 00BF     		.align	2
+ 572              	.L35:
+ 573 0144 00000000 		.word	.LANCHOR0
+ 574 0148 00000000 		.word	lp_L
+ 575 014c 00000000 		.word	lp_R
+ 576 0150 00000000 		.word	.LANCHOR1
+ 577 0154 00000000 		.word	.LANCHOR2
+ 578 0158 00000000 		.word	delaylineR
+ 579 015c 00000000 		.word	delaylineL
+ 580              	.LBE23:
+ 581              	.LBE25:
+ 582              		.cfi_endproc
+ 583              	.LFE9:
+ 585              		.section	.bss.delaylineL,"aw",%nobits
+ 586              		.align	2
+ 589              	delaylineL:
+ 590 0000 00000000 		.space	32768
+ 590      00000000 
+ 590      00000000 
+ 590      00000000 
+ 590      00000000 
+ 591              		.section	.bss.delaylineR,"aw",%nobits
+ 592              		.align	2
+ 595              	delaylineR:
+ 596 0000 00000000 		.space	32768
+ 596      00000000 
+ 596      00000000 
+ 596      00000000 
+ 596      00000000 
+ 597              		.section	.ccmram,"aw"
+ 598              		.align	2
+ 599              		.set	.LANCHOR0,. + 0
+ 602              	readptrL:
+ 603 0000 00000000 		.space	4
+ 606              	readptrR:
+ 607 0004 00000000 		.space	4
+ 610              	writeptrL:
+ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccyrTMeK.s 			page 16
+
+
+ 611 0008 00000000 		.space	4
+ 614              	writeptrR:
+ 615 000c 00000000 		.space	4
+ 616              		.section	.data.delay_wet,"aw"
+ 617              		.align	2
+ 618              		.set	.LANCHOR2,. + 0
+ 621              	delay_wet:
+ 622 0000 0000003F 		.word	1056964608
+ 623              		.section	.data.feedback,"aw"
+ 624              		.align	2
+ 625              		.set	.LANCHOR1,. + 0
+ 628              	feedback:
+ 629 0000 6666663F 		.word	1063675494
+ 630              		.text
+ 631              	.Letext0:
+ 632              		.file 3 "/Users/johannes/Library/Application Support/Code/User/globalStorage/bmd.stm32-for-vscode/
+ 633              		.file 4 "/Users/johannes/Library/Application Support/Code/User/globalStorage/bmd.stm32-for-vscode/
+ 634              		.file 5 "Core/Inc/filters.h"
+ 635              		.file 6 "/Users/johannes/Library/Application Support/Code/User/globalStorage/bmd.stm32-for-vscode/
+ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccyrTMeK.s 			page 17
+
+
+DEFINED SYMBOLS
+                            *ABS*:0000000000000000 stereo_delay.c
+/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccyrTMeK.s:20     .text.Delay_init:0000000000000000 $t
+/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccyrTMeK.s:27     .text.Delay_init:0000000000000000 Delay_init
+/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccyrTMeK.s:77     .text.Delay_init:0000000000000028 $d
+/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccyrTMeK.s:595    .bss.delaylineR:0000000000000000 delaylineR
+/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccyrTMeK.s:589    .bss.delaylineL:0000000000000000 delaylineL
+/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccyrTMeK.s:87     .text.Delay_time_set:0000000000000000 $t
+/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccyrTMeK.s:94     .text.Delay_time_set:0000000000000000 Delay_time_set
+/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccyrTMeK.s:147    .text.Delay_time_set:0000000000000034 $d
+/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccyrTMeK.s:155    .text.Delay_feedback_inc:0000000000000000 $t
+/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccyrTMeK.s:162    .text.Delay_feedback_inc:0000000000000000 Delay_feedback_inc
+/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccyrTMeK.s:181    .text.Delay_feedback_inc:0000000000000014 $d
+/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccyrTMeK.s:187    .text.Delay_feedback_dec:0000000000000000 $t
+/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccyrTMeK.s:194    .text.Delay_feedback_dec:0000000000000000 Delay_feedback_dec
+/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccyrTMeK.s:213    .text.Delay_feedback_dec:0000000000000014 $d
+/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccyrTMeK.s:219    .text.DelayFeedback_set:0000000000000000 $t
+/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccyrTMeK.s:226    .text.DelayFeedback_set:0000000000000000 DelayFeedback_set
+/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccyrTMeK.s:250    .text.DelayFeedback_set:0000000000000018 $d
+/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccyrTMeK.s:256    .text.Delaydelay_wet_set:0000000000000000 $t
+/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccyrTMeK.s:263    .text.Delaydelay_wet_set:0000000000000000 Delaydelay_wet_set
+/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccyrTMeK.s:287    .text.Delaydelay_wet_set:0000000000000018 $d
+/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccyrTMeK.s:293    .text.pingpongDelay_compute:0000000000000000 $t
+/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccyrTMeK.s:300    .text.pingpongDelay_compute:0000000000000000 pingpongDelay_compute
+/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccyrTMeK.s:573    .text.pingpongDelay_compute:0000000000000144 $d
+/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccyrTMeK.s:586    .bss.delaylineL:0000000000000000 $d
+/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccyrTMeK.s:592    .bss.delaylineR:0000000000000000 $d
+/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccyrTMeK.s:598    .ccmram:0000000000000000 $d
+/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccyrTMeK.s:602    .ccmram:0000000000000000 readptrL
+/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccyrTMeK.s:606    .ccmram:0000000000000004 readptrR
+/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccyrTMeK.s:610    .ccmram:0000000000000008 writeptrL
+/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccyrTMeK.s:614    .ccmram:000000000000000c writeptrR
+/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccyrTMeK.s:617    .data.delay_wet:0000000000000000 $d
+/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccyrTMeK.s:621    .data.delay_wet:0000000000000000 delay_wet
+/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccyrTMeK.s:624    .data.feedback:0000000000000000 $d
+/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccyrTMeK.s:628    .data.feedback:0000000000000000 feedback
+
+UNDEFINED SYMBOLS
+SVF_LP_init
+lp_L
+lp_R
+lrintf
+SVF_LP_compute

@@ -46,6 +46,8 @@ build/MIDI_event.o: Core/Src/MIDI_event.c Core/Inc/MIDI_event.h \
  Core/Inc/../../Drivers/BSP/STM32F4-Discovery/../../../Middlewares/ST/STM32_Audio/Addons/PDM/Inc/pdm2pcm_glo.h \
  Core/Inc/CONSTS.h Core/Inc/SEGGER_RTT.h \
  Core/Inc/Config/SEGGER_RTT_Conf.h Core/Inc/console.h \
+ Core/Inc/oscillators.h Core/Inc/ADSR_envelope.h Core/Inc/ladder_filter.h \
+ Core/Inc/stereo_delay.h Core/Inc/helper_functions.h Core/Inc/filters.h \
  Core/Inc/SEGGER_RTT.h Core/Inc/CONSTS.h Core/Inc/helper_functions.h \
  Core/Inc/ADSR_envelope.h
 Core/Inc/MIDI_event.h:
@@ -102,6 +104,12 @@ Core/Inc/CONSTS.h:
 Core/Inc/SEGGER_RTT.h:
 Core/Inc/Config/SEGGER_RTT_Conf.h:
 Core/Inc/console.h:
+Core/Inc/oscillators.h:
+Core/Inc/ADSR_envelope.h:
+Core/Inc/ladder_filter.h:
+Core/Inc/stereo_delay.h:
+Core/Inc/helper_functions.h:
+Core/Inc/filters.h:
 Core/Inc/SEGGER_RTT.h:
 Core/Inc/CONSTS.h:
 Core/Inc/helper_functions.h:

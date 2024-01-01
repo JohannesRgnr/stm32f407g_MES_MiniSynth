@@ -13,7 +13,7 @@
  *
  */
 
-#include <math.h>
+// #include <math.h>
 #include "oscillators.h"
 #include "CONSTS.h"
 #include "lut_sine.h"
@@ -91,19 +91,4 @@ float   osc_polyblepRect(oscillator_t * osc){
     return osc->output;
 }
 
-void osc_superSaw(float freq, float detune, float *superSaw_outL, float *superSaw_outR)
-{
-    osc1.freq = A0 * freq;
-    osc2.freq = osc1.freq * (1 - detune * 0.01953125);
-    osc3.freq = osc1.freq * (1 + detune * 0.0625);
-    osc4.freq = osc1.freq * (1 - detune * 0.109375);
-    osc5.freq = osc1.freq * (1 + detune * 0.01953125);
-    osc6.freq = osc1.freq * (1 - detune * 0.0625);
-    osc7.freq = osc1.freq * (1 + detune * 0.109375);
 
-    // *superSaw_outL = 0.25 * (0.707 * osc_polyblepSaw(&osc1) + osc_polyblepSaw(&osc2) + osc_polyblepSaw(&osc3) + osc_polyblepSaw(&osc4));
-    // *superSaw_outR = 0.25 * (0.707 * osc_polyblepSaw(&osc1) + osc_polyblepSaw(&osc5) + osc_polyblepSaw(&osc6) + osc_polyblepSaw(&osc7));
-    *superSaw_outL = 0.25 * (0.707 * osc_polyblepSaw(&osc1) + osc_polyblepSaw(&osc2));
-    *superSaw_outR = 0.25 * (0.707 * osc_polyblepSaw(&osc1) + osc_polyblepSaw(&osc5));
-
-}

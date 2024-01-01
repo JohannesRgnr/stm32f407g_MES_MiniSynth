@@ -1,0 +1,160 @@
+ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//cccfePX6.s 			page 1
+
+
+   1              		.cpu cortex-m4
+   2              		.arch armv7e-m
+   3              		.fpu fpv4-sp-d16
+   4              		.eabi_attribute 27, 1
+   5              		.eabi_attribute 28, 1
+   6              		.eabi_attribute 20, 1
+   7              		.eabi_attribute 21, 1
+   8              		.eabi_attribute 23, 3
+   9              		.eabi_attribute 24, 1
+  10              		.eabi_attribute 25, 1
+  11              		.eabi_attribute 26, 1
+  12              		.eabi_attribute 30, 2
+  13              		.eabi_attribute 34, 1
+  14              		.eabi_attribute 18, 4
+  15              		.file	"bitcrusher.c"
+  16              		.text
+  17              	.Ltext0:
+  18              		.cfi_sections	.debug_frame
+  19              		.section	.text.decimator,"ax",%progbits
+  20              		.align	1
+  21              		.p2align 2,,3
+  22              		.global	decimator
+  23              		.syntax unified
+  24              		.thumb
+  25              		.thumb_func
+  27              	decimator:
+  28              	.LVL0:
+  29              	.LFB0:
+  30              		.file 1 "Core/Src/bitcrusher.c"
+   1:Core/Src/bitcrusher.c **** 
+   2:Core/Src/bitcrusher.c **** 
+   3:Core/Src/bitcrusher.c **** #include "bitcrusher.h"
+   4:Core/Src/bitcrusher.c **** 
+   5:Core/Src/bitcrusher.c **** 
+   6:Core/Src/bitcrusher.c **** 
+   7:Core/Src/bitcrusher.c **** float cnt = 0;
+   8:Core/Src/bitcrusher.c **** 
+   9:Core/Src/bitcrusher.c **** 
+  10:Core/Src/bitcrusher.c **** float decimator(float sample, float rate, int bit){
+  31              		.loc 1 10 51 view -0
+  32              		.cfi_startproc
+  33              		@ args = 0, pretend = 0, frame = 0
+  34              		@ frame_needed = 0, uses_anonymous_args = 0
+  35              		@ link register save eliminated.
+  11:Core/Src/bitcrusher.c ****     float sampRate = rate * 0.995f + 0.005f; 
+  36              		.loc 1 11 5 view .LVU1
+  37              		.loc 1 11 11 is_stmt 0 view .LVU2
+  38 0000 9FED147A 		vldr.32	s14, .L8
+  39 0004 DFED147A 		vldr.32	s15, .L8+4
+  12:Core/Src/bitcrusher.c ****     uint32_t m = 1 << (bit - 1);
+  13:Core/Src/bitcrusher.c ****     cnt += sampRate;
+  40              		.loc 1 13 9 view .LVU3
+  41 0008 144B     		ldr	r3, .L8+8
+  11:Core/Src/bitcrusher.c ****     float sampRate = rate * 0.995f + 0.005f; 
+  42              		.loc 1 11 11 view .LVU4
+  43 000a E0EE877A 		vfma.f32	s15, s1, s14
+  44              	.LVL1:
+ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//cccfePX6.s 			page 2
+
+
+  12:Core/Src/bitcrusher.c ****     uint32_t m = 1 << (bit - 1);
+  45              		.loc 1 12 5 is_stmt 1 view .LVU5
+  46              		.loc 1 13 9 is_stmt 0 view .LVU6
+  47 000e 93ED007A 		vldr.32	s14, [r3]
+  48 0012 77EE877A 		vadd.f32	s15, s15, s14
+  49              	.LVL2:
+  14:Core/Src/bitcrusher.c ****     if (cnt >= 1)
+  50              		.loc 1 14 8 view .LVU7
+  51 0016 F7EE006A 		vmov.f32	s13, #1.0e+0
+  52 001a F4EEE67A 		vcmpe.f32	s15, s13
+  53 001e F1EE10FA 		vmrs	APSR_nzcv, FPSCR
+  13:Core/Src/bitcrusher.c ****     if (cnt >= 1)
+  54              		.loc 1 13 9 view .LVU8
+  55 0022 C3ED007A 		vstr.32	s15, [r3]
+  56              	.LVL3:
+  13:Core/Src/bitcrusher.c ****     if (cnt >= 1)
+  57              		.loc 1 13 5 is_stmt 1 view .LVU9
+  58              		.loc 1 14 5 view .LVU10
+  59              		.loc 1 14 8 is_stmt 0 view .LVU11
+  60 0026 00DA     		bge	.L7
+  61              	.LVL4:
+  15:Core/Src/bitcrusher.c ****     {
+  16:Core/Src/bitcrusher.c ****         cnt -= 1;
+  17:Core/Src/bitcrusher.c ****         return (int32_t)(sample * m) / (float)m;
+  18:Core/Src/bitcrusher.c ****         } 
+  19:Core/Src/bitcrusher.c **** }...
+  62              		.loc 1 19 1 view .LVU12
+  63 0028 7047     		bx	lr
+  64              	.LVL5:
+  65              	.L7:
+  16:Core/Src/bitcrusher.c ****         cnt -= 1;
+  66              		.loc 1 16 9 is_stmt 1 view .LVU13
+  12:Core/Src/bitcrusher.c ****     uint32_t m = 1 << (bit - 1);
+  67              		.loc 1 12 28 is_stmt 0 view .LVU14
+  68 002a 0138     		subs	r0, r0, #1
+  69              	.LVL6:
+  12:Core/Src/bitcrusher.c ****     uint32_t m = 1 << (bit - 1);
+  70              		.loc 1 12 20 view .LVU15
+  71 002c 0122     		movs	r2, #1
+  72 002e 8240     		lsls	r2, r2, r0
+  17:Core/Src/bitcrusher.c ****         return (int32_t)(sample * m) / (float)m;
+  73              		.loc 1 17 33 view .LVU16
+  74 0030 07EE102A 		vmov	s14, r2	@ int
+  75 0034 B8EE477A 		vcvt.f32.u32	s14, s14
+  16:Core/Src/bitcrusher.c ****         cnt -= 1;
+  76              		.loc 1 16 13 view .LVU17
+  77 0038 77EEE67A 		vsub.f32	s15, s15, s13
+  17:Core/Src/bitcrusher.c ****         return (int32_t)(sample * m) / (float)m;
+  78              		.loc 1 17 33 view .LVU18
+  79 003c 27EE000A 		vmul.f32	s0, s14, s0
+  80              	.LVL7:
+  16:Core/Src/bitcrusher.c ****         cnt -= 1;
+  81              		.loc 1 16 13 view .LVU19
+  82 0040 C3ED007A 		vstr.32	s15, [r3]
+  17:Core/Src/bitcrusher.c ****         return (int32_t)(sample * m) / (float)m;
+  83              		.loc 1 17 9 is_stmt 1 view .LVU20
+  17:Core/Src/bitcrusher.c ****         return (int32_t)(sample * m) / (float)m;
+ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//cccfePX6.s 			page 3
+
+
+  84              		.loc 1 17 16 is_stmt 0 view .LVU21
+  85 0044 FDEEC07A 		vcvt.s32.f32	s15, s0
+  17:Core/Src/bitcrusher.c ****         return (int32_t)(sample * m) / (float)m;
+  86              		.loc 1 17 38 view .LVU22
+  87 0048 F8EEE77A 		vcvt.f32.s32	s15, s15
+  88 004c 87EE870A 		vdiv.f32	s0, s15, s14
+  89 0050 7047     		bx	lr
+  90              	.L9:
+  91 0052 00BF     		.align	2
+  92              	.L8:
+  93 0054 52B87E3F 		.word	1065269330
+  94 0058 0AD7A33B 		.word	1000593162
+  95 005c 00000000 		.word	.LANCHOR0
+  96              		.cfi_endproc
+  97              	.LFE0:
+  99              		.global	cnt
+ 100              		.section	.bss.cnt,"aw",%nobits
+ 101              		.align	2
+ 102              		.set	.LANCHOR0,. + 0
+ 105              	cnt:
+ 106 0000 00000000 		.space	4
+ 107              		.text
+ 108              	.Letext0:
+ 109              		.file 2 "/Users/johannes/Library/Application Support/Code/User/globalStorage/bmd.stm32-for-vscode/
+ 110              		.file 3 "/Users/johannes/Library/Application Support/Code/User/globalStorage/bmd.stm32-for-vscode/
+ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//cccfePX6.s 			page 4
+
+
+DEFINED SYMBOLS
+                            *ABS*:0000000000000000 bitcrusher.c
+/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//cccfePX6.s:20     .text.decimator:0000000000000000 $t
+/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//cccfePX6.s:27     .text.decimator:0000000000000000 decimator
+/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//cccfePX6.s:93     .text.decimator:0000000000000054 $d
+/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//cccfePX6.s:105    .bss.cnt:0000000000000000 cnt
+/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//cccfePX6.s:101    .bss.cnt:0000000000000000 $d
+
+NO UNDEFINED SYMBOLS

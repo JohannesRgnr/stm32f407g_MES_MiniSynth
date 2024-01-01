@@ -24,11 +24,11 @@
 USBH_HandleTypeDef hUSBHost; /* USB Host handle */
 MIDI_ApplicationTypeDef Appli_state = MIDI_APPLICATION_IDLE;
 
-uint16_t pitchbend;
-uint8_t currentPitch;
-uint8_t velocity;
+uint16_t pitchbend _CCM_;
+uint8_t currentPitch _CCM_;
+uint8_t velocity _CCM_;
 uint8_t notes_Active[128] = {0}; // at most, 128 MIDI notes are active
-int8_t notesCount = 0;			 // number of notes active
+int8_t notesCount = 0 ;			 // number of notes active
 extern ADSR_t adsr_amp;
 extern ADSR_t adsr_filt;
 
