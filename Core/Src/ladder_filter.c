@@ -15,7 +15,7 @@
 #include "CONSTS.h"
 #include "lut_tan.h"
 
-ZDFLadder_t Moog_filter _CCM_;
+ZDFLadder_t Moog_filter;
 
 
 void MoogLP_init(ZDFLadder_t * filter){

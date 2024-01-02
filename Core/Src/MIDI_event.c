@@ -24,9 +24,9 @@
 USBH_HandleTypeDef hUSBHost; /* USB Host handle */
 MIDI_ApplicationTypeDef Appli_state = MIDI_APPLICATION_IDLE;
 
-uint16_t pitchbend _CCM_;
-uint8_t currentPitch _CCM_;
-uint8_t velocity _CCM_;
+uint16_t pitchbend ;
+uint8_t currentPitch ;
+uint8_t velocity ;
 uint8_t notes_Active[128] = {0}; // at most, 128 MIDI notes are active
 int8_t notesCount = 0 ;			 // number of notes active
 extern ADSR_t adsr_amp;
@@ -160,8 +160,8 @@ void ProcessMIDI(midi_package_t pack)
 	case 0xA0: 	// Polyphonic Pressure
 		break;
 	case 0xB0:	// Control Change
-		uint8_t cc_number = pack.evnt1;
-		uint8_t cc_value = pack.evnt2;
+		// uint8_t cc_number = pack.evnt1;
+		// uint8_t cc_value = pack.evnt2;
 		// SEGGER_RTT_printf(0, "CC#  %u %u\r\n", cc_number, cc_value); // debug
 		switch (pack.evnt1) // CC number --> implement CC actions
 		{

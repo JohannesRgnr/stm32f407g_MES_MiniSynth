@@ -37,7 +37,7 @@ void AUDIO_Init();
  * @param output 
  * @param samples 
  */
-void audioBlock(uint16_t *output, uint16_t samples);
+void audioBlock(int16_t *output, uint16_t samples);
 
 
 #endif // !AUDIO_H

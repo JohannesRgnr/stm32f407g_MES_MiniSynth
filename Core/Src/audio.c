@@ -22,6 +22,9 @@
 #include "MIDI_lut.h"
 #include <stdint.h>
 #include "helper_functions.h"
+#include "stdlib.h"
+
+
 
 
 
@@ -39,15 +42,15 @@ extern ZDFLadder_t Moog_filter;
 extern oscillator_t osc1, osc2, sub_osc;
 
 
-static float f0 _CCM_;			// frequency of oscillators 1 & 2
-static float f_sub _CCM_;		// frequency of sub oscillator
-// static float vol _CCM_;
-static float amp_env _CCM_;		// amplitude envelope
-static float filt_env _CCM_;	// filter envelope
+static float f0 ;			// frequency of oscillators 1 & 2
+static float f_sub ;		// frequency of sub oscillator
+static float amp_env ;		// amplitude envelope
+static float filt_env ;	// filter envelope
 
 
-static float delayLOut _CCM_;	// left output of ping pong delay
-static float delayROut _CCM_;	// right output of ping pong delay
+float delayLOut = 0 ;	// left output of ping pong delay
+float delayROut = 0;	// right output of ping pong delay
+
 
 
 
@@ -93,7 +96,7 @@ void OpSetFreq(oscillator_t * op, float f)
  * @param buffer 
  * @param samples 
  */
-void audioBlock(uint16_t *buffer, uint16_t samples)
+void audioBlock(int16_t *buffer, uint16_t samples)
 {
 	int i;
 	int16_t *output;
@@ -101,7 +104,6 @@ void audioBlock(uint16_t *buffer, uint16_t samples)
 	float sample, sampleL, sampleR;
 	uint16_t valueL, valueR;
 	
-
 	for (i = 0; i < samples; i++)
 	{
 
@@ -109,8 +111,8 @@ void audioBlock(uint16_t *buffer, uint16_t samples)
 		
 		/* test with 3 oscillators*/
 		OpSetFreq(&osc1, f0);
-		OpSetFreq(&osc2, f0 + 1);
-
+		OpSetFreq(&osc2, f0 + 5);
+		
 		f_sub = mtof[max(currentPitch - 12, 0)];
 		OpSetFreq(&sub_osc, f_sub);
 		sample = 0.5*(osc_polyblepSaw(&osc1) + osc_polyblepSaw(&osc2) + osc_polyblepRect(&sub_osc));
@@ -133,6 +135,7 @@ void audioBlock(uint16_t *buffer, uint16_t samples)
 		pingpongDelay_compute(sample, &delayLOut, &delayROut);
 		sampleL = delayLOut;
 		sampleR = delayROut;
+		
 
 		/****************** softclip outputs ********************/
 		sampleL = SoftClip(sampleL);

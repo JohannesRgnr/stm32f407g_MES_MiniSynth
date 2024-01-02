@@ -52,26 +52,25 @@
 #include "lut_log.h"
 #include "helper_functions.h"
 
-/*---------------------------------------------------------------------------*/
 
-ADSR_t			adsr_amp _CCM_;
-ADSR_t			adsr_filt _CCM_;
 
-/*---------------------------------------------------------------------------*/
+ADSR_t			adsr_amp ;
+ADSR_t			adsr_filt ;
+
 
 
 
 void ADSR_init(ADSR_t *env)
 {
-    env->target = 1.0;
+    env->target = 1.3;
     env->value = 0.0;
     env->state = OFF;
     env->atk_time = 0.005;
-    env->dcy_time = 5;
-    env->sust_level = 0.1;
+    env->dcy_time = 2;
+    env->sust_level = 0.3;
     env->rel_time = 2; 
     env->atk_mult = ADSR_calculateMultiplier(ADSR_MIN_LEVEL, env->target, env->atk_time); 
-    env->dcy_mult = ADSR_calculateMultiplier(env->target, env->sust_level, env->dcy_time); 
+    env->dcy_mult = ADSR_calculateMultiplier(1, env->sust_level, env->dcy_time); 
     env->rel_mult = ADSR_calculateMultiplier(env->sust_level, ADSR_MIN_LEVEL, env->rel_time);
 }
 
@@ -87,9 +86,6 @@ void ADSR_keyOff(ADSR_t *env)
 	env->target = 0.0;
 	env->state = RELEASE;
 }
-
-
-
 
 
 void ADSR_setAttackTime(ADSR_t *env, float time)
@@ -172,9 +168,9 @@ float ADSR_compute(ADSR_t *env)
 
     case ATTACK:
         env->value *= env->atk_mult;
-        if (env->value >= env->target)
+        if (env->value >= 1)
         {
-            env->value = env->target;
+            env->value = 1;
             env->target = env->sust_level;
             env->state = DECAY;
         }

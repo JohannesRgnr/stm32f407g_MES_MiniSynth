@@ -1,0 +1,518 @@
+ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//cc0CoQjj.s 			page 1
+
+
+   1              		.cpu cortex-m4
+   2              		.arch armv7e-m
+   3              		.fpu fpv4-sp-d16
+   4              		.eabi_attribute 27, 1
+   5              		.eabi_attribute 28, 1
+   6              		.eabi_attribute 20, 1
+   7              		.eabi_attribute 21, 1
+   8              		.eabi_attribute 23, 3
+   9              		.eabi_attribute 24, 1
+  10              		.eabi_attribute 25, 1
+  11              		.eabi_attribute 26, 1
+  12              		.eabi_attribute 30, 2
+  13              		.eabi_attribute 34, 1
+  14              		.eabi_attribute 18, 4
+  15              		.file	"lv_async.c"
+  16              		.text
+  17              	.Ltext0:
+  18              		.cfi_sections	.debug_frame
+  19              		.section	.text.lv_async_timer_cb,"ax",%progbits
+  20              		.align	1
+  21              		.p2align 2,,3
+  22              		.syntax unified
+  23              		.thumb
+  24              		.thumb_func
+  26              	lv_async_timer_cb:
+  27              	.LVL0:
+  28              	.LFB4:
+  29              		.file 1 "Drivers/lvgl/src/misc/lv_async.c"
+   1:Drivers/lvgl/src/misc/lv_async.c **** /**
+   2:Drivers/lvgl/src/misc/lv_async.c ****  * @file lv_async.c
+   3:Drivers/lvgl/src/misc/lv_async.c ****  *
+   4:Drivers/lvgl/src/misc/lv_async.c ****  */
+   5:Drivers/lvgl/src/misc/lv_async.c **** 
+   6:Drivers/lvgl/src/misc/lv_async.c **** /*********************
+   7:Drivers/lvgl/src/misc/lv_async.c ****  *      INCLUDES
+   8:Drivers/lvgl/src/misc/lv_async.c ****  *********************/
+   9:Drivers/lvgl/src/misc/lv_async.c **** 
+  10:Drivers/lvgl/src/misc/lv_async.c **** #include "lv_async.h"
+  11:Drivers/lvgl/src/misc/lv_async.c **** #include "lv_mem.h"
+  12:Drivers/lvgl/src/misc/lv_async.c **** #include "lv_timer.h"
+  13:Drivers/lvgl/src/misc/lv_async.c **** 
+  14:Drivers/lvgl/src/misc/lv_async.c **** /*********************
+  15:Drivers/lvgl/src/misc/lv_async.c ****  *      DEFINES
+  16:Drivers/lvgl/src/misc/lv_async.c ****  *********************/
+  17:Drivers/lvgl/src/misc/lv_async.c **** 
+  18:Drivers/lvgl/src/misc/lv_async.c **** /**********************
+  19:Drivers/lvgl/src/misc/lv_async.c ****  *      TYPEDEFS
+  20:Drivers/lvgl/src/misc/lv_async.c ****  **********************/
+  21:Drivers/lvgl/src/misc/lv_async.c **** 
+  22:Drivers/lvgl/src/misc/lv_async.c **** typedef struct _lv_async_info_t {
+  23:Drivers/lvgl/src/misc/lv_async.c ****     lv_async_cb_t cb;
+  24:Drivers/lvgl/src/misc/lv_async.c ****     void * user_data;
+  25:Drivers/lvgl/src/misc/lv_async.c **** } lv_async_info_t;
+  26:Drivers/lvgl/src/misc/lv_async.c **** 
+  27:Drivers/lvgl/src/misc/lv_async.c **** /**********************
+  28:Drivers/lvgl/src/misc/lv_async.c ****  *  STATIC PROTOTYPES
+  29:Drivers/lvgl/src/misc/lv_async.c ****  **********************/
+ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//cc0CoQjj.s 			page 2
+
+
+  30:Drivers/lvgl/src/misc/lv_async.c **** 
+  31:Drivers/lvgl/src/misc/lv_async.c **** static void lv_async_timer_cb(lv_timer_t * timer);
+  32:Drivers/lvgl/src/misc/lv_async.c **** 
+  33:Drivers/lvgl/src/misc/lv_async.c **** /**********************
+  34:Drivers/lvgl/src/misc/lv_async.c ****  *  STATIC VARIABLES
+  35:Drivers/lvgl/src/misc/lv_async.c ****  **********************/
+  36:Drivers/lvgl/src/misc/lv_async.c **** 
+  37:Drivers/lvgl/src/misc/lv_async.c **** /**********************
+  38:Drivers/lvgl/src/misc/lv_async.c ****  *      MACROS
+  39:Drivers/lvgl/src/misc/lv_async.c ****  **********************/
+  40:Drivers/lvgl/src/misc/lv_async.c **** 
+  41:Drivers/lvgl/src/misc/lv_async.c **** /**********************
+  42:Drivers/lvgl/src/misc/lv_async.c ****  *   GLOBAL FUNCTIONS
+  43:Drivers/lvgl/src/misc/lv_async.c ****  **********************/
+  44:Drivers/lvgl/src/misc/lv_async.c **** 
+  45:Drivers/lvgl/src/misc/lv_async.c **** lv_res_t lv_async_call(lv_async_cb_t async_xcb, void * user_data)
+  46:Drivers/lvgl/src/misc/lv_async.c **** {
+  47:Drivers/lvgl/src/misc/lv_async.c ****     /*Allocate an info structure*/
+  48:Drivers/lvgl/src/misc/lv_async.c ****     lv_async_info_t * info = lv_mem_alloc(sizeof(lv_async_info_t));
+  49:Drivers/lvgl/src/misc/lv_async.c **** 
+  50:Drivers/lvgl/src/misc/lv_async.c ****     if(info == NULL)
+  51:Drivers/lvgl/src/misc/lv_async.c ****         return LV_RES_INV;
+  52:Drivers/lvgl/src/misc/lv_async.c **** 
+  53:Drivers/lvgl/src/misc/lv_async.c ****     /*Create a new timer*/
+  54:Drivers/lvgl/src/misc/lv_async.c ****     lv_timer_t * timer = lv_timer_create(lv_async_timer_cb, 0, info);
+  55:Drivers/lvgl/src/misc/lv_async.c **** 
+  56:Drivers/lvgl/src/misc/lv_async.c ****     if(timer == NULL) {
+  57:Drivers/lvgl/src/misc/lv_async.c ****         lv_mem_free(info);
+  58:Drivers/lvgl/src/misc/lv_async.c ****         return LV_RES_INV;
+  59:Drivers/lvgl/src/misc/lv_async.c ****     }
+  60:Drivers/lvgl/src/misc/lv_async.c **** 
+  61:Drivers/lvgl/src/misc/lv_async.c ****     info->cb = async_xcb;
+  62:Drivers/lvgl/src/misc/lv_async.c ****     info->user_data = user_data;
+  63:Drivers/lvgl/src/misc/lv_async.c **** 
+  64:Drivers/lvgl/src/misc/lv_async.c ****     lv_timer_set_repeat_count(timer, 1);
+  65:Drivers/lvgl/src/misc/lv_async.c ****     return LV_RES_OK;
+  66:Drivers/lvgl/src/misc/lv_async.c **** }
+  67:Drivers/lvgl/src/misc/lv_async.c **** 
+  68:Drivers/lvgl/src/misc/lv_async.c **** lv_res_t lv_async_call_cancel(lv_async_cb_t async_xcb, void * user_data)
+  69:Drivers/lvgl/src/misc/lv_async.c **** {
+  70:Drivers/lvgl/src/misc/lv_async.c ****     lv_timer_t * timer = lv_timer_get_next(NULL);
+  71:Drivers/lvgl/src/misc/lv_async.c ****     lv_res_t res = LV_RES_INV;
+  72:Drivers/lvgl/src/misc/lv_async.c **** 
+  73:Drivers/lvgl/src/misc/lv_async.c ****     while(timer != NULL) {
+  74:Drivers/lvgl/src/misc/lv_async.c ****         /*Find the next timer node*/
+  75:Drivers/lvgl/src/misc/lv_async.c ****         lv_timer_t * timer_next = lv_timer_get_next(timer);
+  76:Drivers/lvgl/src/misc/lv_async.c **** 
+  77:Drivers/lvgl/src/misc/lv_async.c ****         /*Find async timer callback*/
+  78:Drivers/lvgl/src/misc/lv_async.c ****         if(timer->timer_cb == lv_async_timer_cb) {
+  79:Drivers/lvgl/src/misc/lv_async.c ****             lv_async_info_t * info = (lv_async_info_t *)timer->user_data;
+  80:Drivers/lvgl/src/misc/lv_async.c **** 
+  81:Drivers/lvgl/src/misc/lv_async.c ****             /*Match user function callback and user data*/
+  82:Drivers/lvgl/src/misc/lv_async.c ****             if(info->cb == async_xcb && info->user_data == user_data) {
+  83:Drivers/lvgl/src/misc/lv_async.c ****                 lv_timer_del(timer);
+  84:Drivers/lvgl/src/misc/lv_async.c ****                 lv_mem_free(info);
+  85:Drivers/lvgl/src/misc/lv_async.c ****                 res = LV_RES_OK;
+  86:Drivers/lvgl/src/misc/lv_async.c ****             }
+ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//cc0CoQjj.s 			page 3
+
+
+  87:Drivers/lvgl/src/misc/lv_async.c ****         }
+  88:Drivers/lvgl/src/misc/lv_async.c **** 
+  89:Drivers/lvgl/src/misc/lv_async.c ****         timer = timer_next;
+  90:Drivers/lvgl/src/misc/lv_async.c ****     }
+  91:Drivers/lvgl/src/misc/lv_async.c **** 
+  92:Drivers/lvgl/src/misc/lv_async.c ****     return res;
+  93:Drivers/lvgl/src/misc/lv_async.c **** }
+  94:Drivers/lvgl/src/misc/lv_async.c **** 
+  95:Drivers/lvgl/src/misc/lv_async.c **** /**********************
+  96:Drivers/lvgl/src/misc/lv_async.c ****  *   STATIC FUNCTIONS
+  97:Drivers/lvgl/src/misc/lv_async.c ****  **********************/
+  98:Drivers/lvgl/src/misc/lv_async.c **** 
+  99:Drivers/lvgl/src/misc/lv_async.c **** static void lv_async_timer_cb(lv_timer_t * timer)
+ 100:Drivers/lvgl/src/misc/lv_async.c **** {
+  30              		.loc 1 100 1 view -0
+  31              		.cfi_startproc
+  32              		@ args = 0, pretend = 0, frame = 0
+  33              		@ frame_needed = 0, uses_anonymous_args = 0
+ 101:Drivers/lvgl/src/misc/lv_async.c ****     lv_async_info_t * info = (lv_async_info_t *)timer->user_data;
+  34              		.loc 1 101 5 view .LVU1
+ 100:Drivers/lvgl/src/misc/lv_async.c ****     lv_async_info_t * info = (lv_async_info_t *)timer->user_data;
+  35              		.loc 1 100 1 is_stmt 0 view .LVU2
+  36 0000 10B5     		push	{r4, lr}
+  37              		.cfi_def_cfa_offset 8
+  38              		.cfi_offset 4, -8
+  39              		.cfi_offset 14, -4
+  40              		.loc 1 101 23 view .LVU3
+  41 0002 C468     		ldr	r4, [r0, #12]
+  42              	.LVL1:
+ 102:Drivers/lvgl/src/misc/lv_async.c **** 
+ 103:Drivers/lvgl/src/misc/lv_async.c ****     info->cb(info->user_data);
+  43              		.loc 1 103 5 is_stmt 1 view .LVU4
+  44 0004 D4E90030 		ldrd	r3, r0, [r4]
+  45              	.LVL2:
+  46              		.loc 1 103 5 is_stmt 0 view .LVU5
+  47 0008 9847     		blx	r3
+  48              	.LVL3:
+ 104:Drivers/lvgl/src/misc/lv_async.c ****     lv_mem_free(info);
+  49              		.loc 1 104 5 is_stmt 1 view .LVU6
+  50 000a 2046     		mov	r0, r4
+ 105:Drivers/lvgl/src/misc/lv_async.c **** }
+  51              		.loc 1 105 1 is_stmt 0 view .LVU7
+  52 000c BDE81040 		pop	{r4, lr}
+  53              		.cfi_restore 14
+  54              		.cfi_restore 4
+  55              		.cfi_def_cfa_offset 0
+  56              	.LVL4:
+ 104:Drivers/lvgl/src/misc/lv_async.c ****     lv_mem_free(info);
+  57              		.loc 1 104 5 view .LVU8
+  58 0010 FFF7FEBF 		b	lv_mem_free
+  59              	.LVL5:
+ 104:Drivers/lvgl/src/misc/lv_async.c ****     lv_mem_free(info);
+  60              		.loc 1 104 5 view .LVU9
+  61              		.cfi_endproc
+  62              	.LFE4:
+  64              		.section	.text.lv_async_call,"ax",%progbits
+  65              		.align	1
+ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//cc0CoQjj.s 			page 4
+
+
+  66              		.p2align 2,,3
+  67              		.global	lv_async_call
+  68              		.syntax unified
+  69              		.thumb
+  70              		.thumb_func
+  72              	lv_async_call:
+  73              	.LVL6:
+  74              	.LFB2:
+  46:Drivers/lvgl/src/misc/lv_async.c ****     /*Allocate an info structure*/
+  75              		.loc 1 46 1 is_stmt 1 view -0
+  76              		.cfi_startproc
+  77              		@ args = 0, pretend = 0, frame = 0
+  78              		@ frame_needed = 0, uses_anonymous_args = 0
+  48:Drivers/lvgl/src/misc/lv_async.c **** 
+  79              		.loc 1 48 5 view .LVU11
+  46:Drivers/lvgl/src/misc/lv_async.c ****     /*Allocate an info structure*/
+  80              		.loc 1 46 1 is_stmt 0 view .LVU12
+  81 0000 F8B5     		push	{r3, r4, r5, r6, r7, lr}
+  82              		.cfi_def_cfa_offset 24
+  83              		.cfi_offset 3, -24
+  84              		.cfi_offset 4, -20
+  85              		.cfi_offset 5, -16
+  86              		.cfi_offset 6, -12
+  87              		.cfi_offset 7, -8
+  88              		.cfi_offset 14, -4
+  46:Drivers/lvgl/src/misc/lv_async.c ****     /*Allocate an info structure*/
+  89              		.loc 1 46 1 view .LVU13
+  90 0002 0646     		mov	r6, r0
+  48:Drivers/lvgl/src/misc/lv_async.c **** 
+  91              		.loc 1 48 30 view .LVU14
+  92 0004 0820     		movs	r0, #8
+  93              	.LVL7:
+  46:Drivers/lvgl/src/misc/lv_async.c ****     /*Allocate an info structure*/
+  94              		.loc 1 46 1 view .LVU15
+  95 0006 0D46     		mov	r5, r1
+  48:Drivers/lvgl/src/misc/lv_async.c **** 
+  96              		.loc 1 48 30 view .LVU16
+  97 0008 FFF7FEFF 		bl	lv_mem_alloc
+  98              	.LVL8:
+  50:Drivers/lvgl/src/misc/lv_async.c ****         return LV_RES_INV;
+  99              		.loc 1 50 5 is_stmt 1 view .LVU17
+  50:Drivers/lvgl/src/misc/lv_async.c ****         return LV_RES_INV;
+ 100              		.loc 1 50 7 is_stmt 0 view .LVU18
+ 101 000c 0446     		mov	r4, r0
+ 102 000e 60B1     		cbz	r0, .L5
+  54:Drivers/lvgl/src/misc/lv_async.c **** 
+ 103              		.loc 1 54 5 is_stmt 1 view .LVU19
+  54:Drivers/lvgl/src/misc/lv_async.c **** 
+ 104              		.loc 1 54 26 is_stmt 0 view .LVU20
+ 105 0010 0246     		mov	r2, r0
+ 106 0012 0021     		movs	r1, #0
+ 107 0014 0848     		ldr	r0, .L10
+ 108              	.LVL9:
+  54:Drivers/lvgl/src/misc/lv_async.c **** 
+ 109              		.loc 1 54 26 view .LVU21
+ 110 0016 FFF7FEFF 		bl	lv_timer_create
+ 111              	.LVL10:
+ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//cc0CoQjj.s 			page 5
+
+
+  56:Drivers/lvgl/src/misc/lv_async.c ****         lv_mem_free(info);
+ 112              		.loc 1 56 5 is_stmt 1 view .LVU22
+  56:Drivers/lvgl/src/misc/lv_async.c ****         lv_mem_free(info);
+ 113              		.loc 1 56 7 is_stmt 0 view .LVU23
+ 114 001a 0746     		mov	r7, r0
+ 115 001c 30B1     		cbz	r0, .L9
+  61:Drivers/lvgl/src/misc/lv_async.c ****     info->user_data = user_data;
+ 116              		.loc 1 61 5 is_stmt 1 view .LVU24
+  62:Drivers/lvgl/src/misc/lv_async.c **** 
+ 117              		.loc 1 62 21 is_stmt 0 view .LVU25
+ 118 001e C4E90065 		strd	r6, r5, [r4]
+  64:Drivers/lvgl/src/misc/lv_async.c ****     return LV_RES_OK;
+ 119              		.loc 1 64 5 is_stmt 1 view .LVU26
+ 120 0022 0121     		movs	r1, #1
+ 121 0024 FFF7FEFF 		bl	lv_timer_set_repeat_count
+ 122              	.LVL11:
+  65:Drivers/lvgl/src/misc/lv_async.c **** }
+ 123              		.loc 1 65 5 view .LVU27
+  65:Drivers/lvgl/src/misc/lv_async.c **** }
+ 124              		.loc 1 65 12 is_stmt 0 view .LVU28
+ 125 0028 0120     		movs	r0, #1
+ 126              	.LVL12:
+ 127              	.L5:
+  66:Drivers/lvgl/src/misc/lv_async.c **** 
+ 128              		.loc 1 66 1 view .LVU29
+ 129 002a F8BD     		pop	{r3, r4, r5, r6, r7, pc}
+ 130              	.LVL13:
+ 131              	.L9:
+  57:Drivers/lvgl/src/misc/lv_async.c ****         return LV_RES_INV;
+ 132              		.loc 1 57 9 is_stmt 1 view .LVU30
+ 133 002c 2046     		mov	r0, r4
+ 134              	.LVL14:
+  57:Drivers/lvgl/src/misc/lv_async.c ****         return LV_RES_INV;
+ 135              		.loc 1 57 9 is_stmt 0 view .LVU31
+ 136 002e FFF7FEFF 		bl	lv_mem_free
+ 137              	.LVL15:
+  58:Drivers/lvgl/src/misc/lv_async.c ****     }
+ 138              		.loc 1 58 9 is_stmt 1 view .LVU32
+  58:Drivers/lvgl/src/misc/lv_async.c ****     }
+ 139              		.loc 1 58 16 is_stmt 0 view .LVU33
+ 140 0032 3846     		mov	r0, r7
+  66:Drivers/lvgl/src/misc/lv_async.c **** 
+ 141              		.loc 1 66 1 view .LVU34
+ 142 0034 F8BD     		pop	{r3, r4, r5, r6, r7, pc}
+ 143              	.LVL16:
+ 144              	.L11:
+  66:Drivers/lvgl/src/misc/lv_async.c **** 
+ 145              		.loc 1 66 1 view .LVU35
+ 146 0036 00BF     		.align	2
+ 147              	.L10:
+ 148 0038 00000000 		.word	lv_async_timer_cb
+ 149              		.cfi_endproc
+ 150              	.LFE2:
+ 152              		.section	.text.lv_async_call_cancel,"ax",%progbits
+ 153              		.align	1
+ 154              		.p2align 2,,3
+ 155              		.global	lv_async_call_cancel
+ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//cc0CoQjj.s 			page 6
+
+
+ 156              		.syntax unified
+ 157              		.thumb
+ 158              		.thumb_func
+ 160              	lv_async_call_cancel:
+ 161              	.LVL17:
+ 162              	.LFB3:
+  69:Drivers/lvgl/src/misc/lv_async.c ****     lv_timer_t * timer = lv_timer_get_next(NULL);
+ 163              		.loc 1 69 1 is_stmt 1 view -0
+ 164              		.cfi_startproc
+ 165              		@ args = 0, pretend = 0, frame = 8
+ 166              		@ frame_needed = 0, uses_anonymous_args = 0
+  70:Drivers/lvgl/src/misc/lv_async.c ****     lv_res_t res = LV_RES_INV;
+ 167              		.loc 1 70 5 view .LVU37
+  69:Drivers/lvgl/src/misc/lv_async.c ****     lv_timer_t * timer = lv_timer_get_next(NULL);
+ 168              		.loc 1 69 1 is_stmt 0 view .LVU38
+ 169 0000 2DE9F043 		push	{r4, r5, r6, r7, r8, r9, lr}
+ 170              		.cfi_def_cfa_offset 28
+ 171              		.cfi_offset 4, -28
+ 172              		.cfi_offset 5, -24
+ 173              		.cfi_offset 6, -20
+ 174              		.cfi_offset 7, -16
+ 175              		.cfi_offset 8, -12
+ 176              		.cfi_offset 9, -8
+ 177              		.cfi_offset 14, -4
+ 178 0004 0746     		mov	r7, r0
+ 179 0006 83B0     		sub	sp, sp, #12
+ 180              		.cfi_def_cfa_offset 40
+  70:Drivers/lvgl/src/misc/lv_async.c ****     lv_res_t res = LV_RES_INV;
+ 181              		.loc 1 70 26 view .LVU39
+ 182 0008 0020     		movs	r0, #0
+ 183              	.LVL18:
+  69:Drivers/lvgl/src/misc/lv_async.c ****     lv_timer_t * timer = lv_timer_get_next(NULL);
+ 184              		.loc 1 69 1 view .LVU40
+ 185 000a 8846     		mov	r8, r1
+  70:Drivers/lvgl/src/misc/lv_async.c ****     lv_res_t res = LV_RES_INV;
+ 186              		.loc 1 70 26 view .LVU41
+ 187 000c FFF7FEFF 		bl	lv_timer_get_next
+ 188              	.LVL19:
+  71:Drivers/lvgl/src/misc/lv_async.c **** 
+ 189              		.loc 1 71 5 is_stmt 1 view .LVU42
+  73:Drivers/lvgl/src/misc/lv_async.c ****         /*Find the next timer node*/
+ 190              		.loc 1 73 5 view .LVU43
+  73:Drivers/lvgl/src/misc/lv_async.c ****         /*Find the next timer node*/
+ 191              		.loc 1 73 17 view .LVU44
+ 192 0010 0446     		mov	r4, r0
+ 193 0012 20B3     		cbz	r0, .L16
+ 194 0014 144E     		ldr	r6, .L20
+  71:Drivers/lvgl/src/misc/lv_async.c **** 
+ 195              		.loc 1 71 14 is_stmt 0 view .LVU45
+ 196 0016 4FF00009 		mov	r9, #0
+ 197              	.LVL20:
+ 198              	.L15:
+ 199              	.LBB2:
+  75:Drivers/lvgl/src/misc/lv_async.c **** 
+ 200              		.loc 1 75 9 is_stmt 1 view .LVU46
+  75:Drivers/lvgl/src/misc/lv_async.c **** 
+ 201              		.loc 1 75 35 is_stmt 0 view .LVU47
+ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//cc0CoQjj.s 			page 7
+
+
+ 202 001a 2046     		mov	r0, r4
+ 203 001c FFF7FEFF 		bl	lv_timer_get_next
+ 204              	.LVL21:
+  78:Drivers/lvgl/src/misc/lv_async.c ****             lv_async_info_t * info = (lv_async_info_t *)timer->user_data;
+ 205              		.loc 1 78 11 view .LVU48
+ 206 0020 A368     		ldr	r3, [r4, #8]
+ 207 0022 B342     		cmp	r3, r6
+ 208 0024 2546     		mov	r5, r4
+  75:Drivers/lvgl/src/misc/lv_async.c **** 
+ 209              		.loc 1 75 35 view .LVU49
+ 210 0026 0446     		mov	r4, r0
+ 211              	.LVL22:
+  78:Drivers/lvgl/src/misc/lv_async.c ****             lv_async_info_t * info = (lv_async_info_t *)timer->user_data;
+ 212              		.loc 1 78 9 is_stmt 1 view .LVU50
+  78:Drivers/lvgl/src/misc/lv_async.c ****             lv_async_info_t * info = (lv_async_info_t *)timer->user_data;
+ 213              		.loc 1 78 11 is_stmt 0 view .LVU51
+ 214 0028 05D0     		beq	.L19
+ 215              	.L14:
+ 216              	.LVL23:
+  78:Drivers/lvgl/src/misc/lv_async.c ****             lv_async_info_t * info = (lv_async_info_t *)timer->user_data;
+ 217              		.loc 1 78 11 view .LVU52
+ 218              	.LBE2:
+  73:Drivers/lvgl/src/misc/lv_async.c ****         /*Find the next timer node*/
+ 219              		.loc 1 73 17 is_stmt 1 view .LVU53
+ 220 002a 002C     		cmp	r4, #0
+ 221 002c F5D1     		bne	.L15
+ 222              	.LVL24:
+ 223              	.L13:
+  92:Drivers/lvgl/src/misc/lv_async.c **** }
+ 224              		.loc 1 92 5 view .LVU54
+  93:Drivers/lvgl/src/misc/lv_async.c **** 
+ 225              		.loc 1 93 1 is_stmt 0 view .LVU55
+ 226 002e 4846     		mov	r0, r9
+ 227 0030 03B0     		add	sp, sp, #12
+ 228              		.cfi_remember_state
+ 229              		.cfi_def_cfa_offset 28
+ 230              		@ sp needed
+ 231 0032 BDE8F083 		pop	{r4, r5, r6, r7, r8, r9, pc}
+ 232              	.LVL25:
+ 233              	.L19:
+ 234              		.cfi_restore_state
+ 235              	.LBB4:
+ 236              	.LBB3:
+  79:Drivers/lvgl/src/misc/lv_async.c **** 
+ 237              		.loc 1 79 13 is_stmt 1 view .LVU56
+  79:Drivers/lvgl/src/misc/lv_async.c **** 
+ 238              		.loc 1 79 31 is_stmt 0 view .LVU57
+ 239 0036 EB68     		ldr	r3, [r5, #12]
+ 240              	.LVL26:
+  82:Drivers/lvgl/src/misc/lv_async.c ****                 lv_timer_del(timer);
+ 241              		.loc 1 82 13 is_stmt 1 view .LVU58
+  82:Drivers/lvgl/src/misc/lv_async.c ****                 lv_timer_del(timer);
+ 242              		.loc 1 82 15 is_stmt 0 view .LVU59
+ 243 0038 1A68     		ldr	r2, [r3]
+ 244 003a BA42     		cmp	r2, r7
+ 245 003c F5D1     		bne	.L14
+  82:Drivers/lvgl/src/misc/lv_async.c ****                 lv_timer_del(timer);
+ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//cc0CoQjj.s 			page 8
+
+
+ 246              		.loc 1 82 38 discriminator 1 view .LVU60
+ 247 003e 5A68     		ldr	r2, [r3, #4]
+ 248 0040 4245     		cmp	r2, r8
+ 249 0042 F2D1     		bne	.L14
+  83:Drivers/lvgl/src/misc/lv_async.c ****                 lv_mem_free(info);
+ 250              		.loc 1 83 17 view .LVU61
+ 251 0044 2846     		mov	r0, r5
+ 252              	.LVL27:
+  83:Drivers/lvgl/src/misc/lv_async.c ****                 lv_mem_free(info);
+ 253              		.loc 1 83 17 view .LVU62
+ 254 0046 0193     		str	r3, [sp, #4]
+  83:Drivers/lvgl/src/misc/lv_async.c ****                 lv_mem_free(info);
+ 255              		.loc 1 83 17 is_stmt 1 view .LVU63
+ 256 0048 FFF7FEFF 		bl	lv_timer_del
+ 257              	.LVL28:
+  84:Drivers/lvgl/src/misc/lv_async.c ****                 res = LV_RES_OK;
+ 258              		.loc 1 84 17 view .LVU64
+ 259 004c 019B     		ldr	r3, [sp, #4]
+ 260 004e 1846     		mov	r0, r3
+ 261 0050 FFF7FEFF 		bl	lv_mem_free
+ 262              	.LVL29:
+  85:Drivers/lvgl/src/misc/lv_async.c ****             }
+ 263              		.loc 1 85 17 view .LVU65
+  85:Drivers/lvgl/src/misc/lv_async.c ****             }
+ 264              		.loc 1 85 21 is_stmt 0 view .LVU66
+ 265 0054 4FF00109 		mov	r9, #1
+ 266              	.LVL30:
+  85:Drivers/lvgl/src/misc/lv_async.c ****             }
+ 267              		.loc 1 85 21 view .LVU67
+ 268              	.LBE3:
+ 269              	.LBE4:
+  73:Drivers/lvgl/src/misc/lv_async.c ****         /*Find the next timer node*/
+ 270              		.loc 1 73 17 is_stmt 1 view .LVU68
+ 271 0058 002C     		cmp	r4, #0
+ 272 005a DED1     		bne	.L15
+ 273 005c E7E7     		b	.L13
+ 274              	.LVL31:
+ 275              	.L16:
+  71:Drivers/lvgl/src/misc/lv_async.c **** 
+ 276              		.loc 1 71 14 is_stmt 0 view .LVU69
+ 277 005e 8146     		mov	r9, r0
+  92:Drivers/lvgl/src/misc/lv_async.c **** }
+ 278              		.loc 1 92 5 is_stmt 1 view .LVU70
+  93:Drivers/lvgl/src/misc/lv_async.c **** 
+ 279              		.loc 1 93 1 is_stmt 0 view .LVU71
+ 280 0060 4846     		mov	r0, r9
+ 281              	.LVL32:
+  93:Drivers/lvgl/src/misc/lv_async.c **** 
+ 282              		.loc 1 93 1 view .LVU72
+ 283 0062 03B0     		add	sp, sp, #12
+ 284              		.cfi_def_cfa_offset 28
+ 285              		@ sp needed
+ 286 0064 BDE8F083 		pop	{r4, r5, r6, r7, r8, r9, pc}
+ 287              	.LVL33:
+ 288              	.L21:
+  93:Drivers/lvgl/src/misc/lv_async.c **** 
+ 289              		.loc 1 93 1 view .LVU73
+ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//cc0CoQjj.s 			page 9
+
+
+ 290              		.align	2
+ 291              	.L20:
+ 292 0068 00000000 		.word	lv_async_timer_cb
+ 293              		.cfi_endproc
+ 294              	.LFE3:
+ 296              		.text
+ 297              	.Letext0:
+ 298              		.file 2 "/Users/johannes/Library/Application Support/Code/User/globalStorage/bmd.stm32-for-vscode/
+ 299              		.file 3 "/Users/johannes/Library/Application Support/Code/User/globalStorage/bmd.stm32-for-vscode/
+ 300              		.file 4 "Drivers/lvgl/src/misc/lv_types.h"
+ 301              		.file 5 "Drivers/lvgl/src/misc/lv_async.h"
+ 302              		.file 6 "/Users/johannes/Library/Application Support/Code/User/globalStorage/bmd.stm32-for-vscode/
+ 303              		.file 7 "Drivers/lvgl/src/misc/lv_timer.h"
+ 304              		.file 8 "Drivers/lvgl/src/misc/lv_mem.h"
+ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//cc0CoQjj.s 			page 10
+
+
+DEFINED SYMBOLS
+                            *ABS*:0000000000000000 lv_async.c
+/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//cc0CoQjj.s:20     .text.lv_async_timer_cb:0000000000000000 $t
+/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//cc0CoQjj.s:26     .text.lv_async_timer_cb:0000000000000000 lv_async_timer_cb
+/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//cc0CoQjj.s:65     .text.lv_async_call:0000000000000000 $t
+/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//cc0CoQjj.s:72     .text.lv_async_call:0000000000000000 lv_async_call
+/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//cc0CoQjj.s:148    .text.lv_async_call:0000000000000038 $d
+/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//cc0CoQjj.s:153    .text.lv_async_call_cancel:0000000000000000 $t
+/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//cc0CoQjj.s:160    .text.lv_async_call_cancel:0000000000000000 lv_async_call_cancel
+/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//cc0CoQjj.s:292    .text.lv_async_call_cancel:0000000000000068 $d
+
+UNDEFINED SYMBOLS
+lv_mem_free
+lv_mem_alloc
+lv_timer_create
+lv_timer_set_repeat_count
+lv_timer_get_next
+lv_timer_del

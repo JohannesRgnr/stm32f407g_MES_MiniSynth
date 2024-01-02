@@ -11,22 +11,20 @@
 #include "stereo_delay.h"
 
 
-/*-------------------------------------------------------------------------------------------*/
-/* Delay effect variables  */
-static float		delaylineL[DELAY_BUFF_SIZE];
-static float		delaylineR[DELAY_BUFF_SIZE];
-static float		*readptrL _CCM_, *readptrR _CCM_; 	// output pointer of delay line
-static float 		*writeptrL _CCM_, *writeptrR _CCM_; // input pointer of delay line
-static uint16_t		delay_time_L _CCM_, delay_time_R _CCM_;
+
+static float		delaylineL[DELAY_BUFF_SIZE + 2]; 	 
+static float		delaylineR[DELAY_BUFF_SIZE + 2];
+static float		*readptrL , *readptrR ; 	
+static float 		*writeptrL , *writeptrR ; 
+static uint16_t		delay_time_L , delay_time_R;
 
 
-static float		feedback = INIT_FEEDB;
-static float		delay_wet = INIT_DELAY_WET;
+static float		feedback  = INIT_FEEDB;
+static float		delay_wet  = INIT_DELAY_WET;
 
 extern ZDFLP_t lp_L;
 extern ZDFLP_t lp_R;
 
-/*-------------------------------------------------------------------------------------------*/
 
 
 
@@ -37,9 +35,9 @@ void Delay_init(void)
 	delay_time_R = INIT_DELAY_R;
 
 	readptrL = delaylineL;
-	readptrR = delaylineR;
+	readptrR = delaylineL ;
 	writeptrL = delaylineL + delay_time_L;
-	writeptrR = delaylineR + delay_time_R;
+	writeptrR = delaylineL + delay_time_R;
 
 	SVF_LP_init(&lp_L);
 	SVF_LP_init(&lp_R);
@@ -115,6 +113,46 @@ void pingpongDelay_compute (float input_sample, float * delayLOut, float * delay
 	*delayLOut = (delay_wet * sampleL + (1 - delay_wet) * input_sample); // linear crossfade
 	*delayROut = (delay_wet * sampleR + (1 - delay_wet) * input_sample);	
 }
+
+
+
+
+
+// void pingpongDelay_compute (float input_sample, float * delayLOut, float * delayROut)
+// {
+// 	float delayed_sampleL, delayed_sampleR, sampleL, sampleR;
+
+// 	// read first so that we can have feedback, apply lowpass filtering
+// 	delayed_sampleL = SVF_LP_compute(&lp_L, *readptrL);
+// 	delayed_sampleR = SVF_LP_compute(&lp_R, *readptrR);
+
+// 	// apply soft clipping 
+// 	sampleL = SoftClip(feedback * delayed_sampleL);
+// 	sampleR = SoftClip(input_sample + feedback * delayed_sampleR);
+
+// 	// write then update pointers
+// 	*writeptrL = sampleR; 
+// 	*writeptrR = sampleL + HALF_BUFF; 
+// 	writeptrL++;
+// 	readptrL++;
+// 	writeptrR++;
+// 	readptrR++;
+
+// 	if ((writeptrL - delaylineL) >= HALF_BUFF)
+// 		writeptrL = delaylineL;
+
+// 	if ((readptrL - delaylineL) >= HALF_BUFF)
+// 		readptrL = delaylineL;
+
+// 	if ((writeptrR - delaylineL + HALF_BUFF) >= DELAY_BUFF_SIZE)
+// 		writeptrR = delaylineL + HALF_BUFF;
+
+// 	if ((readptrR - delaylineL + HALF_BUFF) >= DELAY_BUFF_SIZE)
+// 		readptrR = delaylineL + HALF_BUFF;
+
+// 	*delayLOut = (delay_wet * sampleL + (1 - delay_wet) * input_sample); // linear crossfade
+// 	*delayROut = (delay_wet * sampleR + (1 - delay_wet) * input_sample);	
+// }
 
 
 

@@ -26,6 +26,7 @@ build/gpio.o: Core/Src/gpio.c Core/Inc/gpio.h Core/Inc/main.h \
  Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_i2s_ex.h \
  Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_pwr.h \
  Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_pwr_ex.h \
+ Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_rng.h \
  Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_spi.h \
  Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_hcd.h \
  Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_ll_usb.h Core/Inc/usbh_MIDI.h \
@@ -45,7 +46,8 @@ build/gpio.o: Core/Src/gpio.c Core/Inc/gpio.h Core/Inc/main.h \
  Core/Inc/../../Drivers/BSP/STM32F4-Discovery/../../../Middlewares/ST/STM32_Audio/Addons/PDM/Inc/pdm2pcm_glo.h \
  Core/Inc/CONSTS.h Core/Inc/oscillators.h Core/Inc/ADSR_envelope.h \
  Core/Inc/ladder_filter.h Core/Inc/stereo_delay.h \
- Core/Inc/helper_functions.h Core/Inc/filters.h
+ Core/Inc/helper_functions.h Core/Inc/filters.h Drivers/ST7789V/st7789v.h \
+ Drivers/ST7789V/fonts.h Core/Inc/main.h
 Core/Inc/gpio.h:
 Core/Inc/main.h:
 Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal.h:
@@ -77,6 +79,7 @@ Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_i2s.h:
 Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_i2s_ex.h:
 Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_pwr.h:
 Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_pwr_ex.h:
+Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_rng.h:
 Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_spi.h:
 Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_hcd.h:
 Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_ll_usb.h:
@@ -105,3 +108,6 @@ Core/Inc/ladder_filter.h:
 Core/Inc/stereo_delay.h:
 Core/Inc/helper_functions.h:
 Core/Inc/filters.h:
+Drivers/ST7789V/st7789v.h:
+Drivers/ST7789V/fonts.h:
+Core/Inc/main.h:

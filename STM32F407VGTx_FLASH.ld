@@ -165,6 +165,7 @@ SECTIONS
     _eccmram = .;       /* create a global symbol at ccmram end */
   } >CCMRAM AT> FLASH
 
+
   
   /* Uninitialized data section */
   . = ALIGN(4);
