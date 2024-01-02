@@ -116,7 +116,8 @@ void audioBlock(int16_t *buffer, uint16_t samples)
 		f_sub = mtof[max(currentPitch - 12, 0)];
 		OpSetFreq(&sub_osc, f_sub);
 		sample = 0.5*(osc_polyblepSaw(&osc1) + osc_polyblepSaw(&osc2) + osc_polyblepRect(&sub_osc));
-	
+		//sample = osc_Sine(&osc1);
+
 		/****************** Apply filter ***********************/
 		filt_env = ADSR_compute(&adsr_filt);
 		Moog_filter.cutoff = 2000 * filt_env;
@@ -135,7 +136,8 @@ void audioBlock(int16_t *buffer, uint16_t samples)
 		pingpongDelay_compute(sample, &delayLOut, &delayROut);
 		sampleL = delayLOut;
 		sampleR = delayROut;
-		
+		//sampleL = sample;
+		//sampleR = sample;
 
 		/****************** softclip outputs ********************/
 		sampleL = SoftClip(sampleL);

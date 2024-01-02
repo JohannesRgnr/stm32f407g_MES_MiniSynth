@@ -1,4 +1,4 @@
-ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccE8zZrE.s 			page 1
+ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccATB2kv.s 			page 1
 
 
    1              		.cpu cortex-m4
@@ -58,7 +58,7 @@ ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccE8zZrE.s 			page 1
   27:Core/Src/audio.c **** 
   28:Core/Src/audio.c **** 
   29:Core/Src/audio.c **** 
-ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccE8zZrE.s 			page 2
+ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccATB2kv.s 			page 2
 
 
   30:Core/Src/audio.c **** 
@@ -118,7 +118,7 @@ ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccE8zZrE.s 			page 1
   84:Core/Src/audio.c **** }
   85:Core/Src/audio.c **** 
   86:Core/Src/audio.c **** void OpSetFreq(oscillator_t * op, float f)
-ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccE8zZrE.s 			page 3
+ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccATB2kv.s 			page 3
 
 
   87:Core/Src/audio.c **** {
@@ -178,7 +178,7 @@ ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccE8zZrE.s 			page 1
   61              		.loc 1 99 6 view .LVU3
   62 0016 0646     		mov	r6, r0
   63              	.LBB36:
-ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccE8zZrE.s 			page 4
+ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccATB2kv.s 			page 4
 
 
   64              	.LBB37:
@@ -199,36 +199,38 @@ ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccE8zZrE.s 			page 1
  116:Core/Src/audio.c **** 		f_sub = mtof[max(currentPitch - 12, 0)];
  117:Core/Src/audio.c **** 		OpSetFreq(&sub_osc, f_sub);
  118:Core/Src/audio.c **** 		sample = 0.5*(osc_polyblepSaw(&osc1) + osc_polyblepSaw(&osc2) + osc_polyblepRect(&sub_osc));
- 119:Core/Src/audio.c **** 	
- 120:Core/Src/audio.c **** 		/****************** Apply filter ***********************/
- 121:Core/Src/audio.c **** 		filt_env = ADSR_compute(&adsr_filt);
- 122:Core/Src/audio.c **** 		Moog_filter.cutoff = 2000 * filt_env;
-  70              		.loc 1 122 29 view .LVU5
+ 119:Core/Src/audio.c **** 		//sample = osc_Sine(&osc1);
+ 120:Core/Src/audio.c **** 
+ 121:Core/Src/audio.c **** 		/****************** Apply filter ***********************/
+ 122:Core/Src/audio.c **** 		filt_env = ADSR_compute(&adsr_filt);
+ 123:Core/Src/audio.c **** 		Moog_filter.cutoff = 2000 * filt_env;
+  70              		.loc 1 123 29 view .LVU5
   71 0020 DFED688A 		vldr.32	s17, .L17+20
- 123:Core/Src/audio.c **** 		sample = MoogLP_compute(&Moog_filter, sample);
- 124:Core/Src/audio.c **** 	
- 125:Core/Src/audio.c **** 
- 126:Core/Src/audio.c **** 		/************** Apply amplitude envelope ****************/
- 127:Core/Src/audio.c **** 		amp_env = ADSR_compute(&adsr_amp);
- 128:Core/Src/audio.c **** 		sample *= amp_env;
- 129:Core/Src/audio.c **** 
- 130:Core/Src/audio.c **** 		
- 131:Core/Src/audio.c **** 		/************** Apply bitcrushing effect ***************/
- 132:Core/Src/audio.c **** 		// sample = decimator(sample, 0.2, 16);
- 133:Core/Src/audio.c **** 
- 134:Core/Src/audio.c **** 		/************** Apply delay effect ****************/
- 135:Core/Src/audio.c **** 		pingpongDelay_compute(sample, &delayLOut, &delayROut);
- 136:Core/Src/audio.c **** 		sampleL = delayLOut;
- 137:Core/Src/audio.c **** 		sampleR = delayROut;
- 138:Core/Src/audio.c **** 		
- 139:Core/Src/audio.c **** 
- 140:Core/Src/audio.c **** 		/****************** softclip outputs ********************/
- 141:Core/Src/audio.c **** 		sampleL = SoftClip(sampleL);
- 142:Core/Src/audio.c **** 		sampleR = SoftClip(sampleR);
- 143:Core/Src/audio.c **** 
- 144:Core/Src/audio.c **** 		/*************** Convert to 16 bits int *****************/
- 145:Core/Src/audio.c **** 		valueL = ((int16_t) ((32767.0f) * sampleL)); 
-  72              		.loc 1 145 35 view .LVU6
+ 124:Core/Src/audio.c **** 		sample = MoogLP_compute(&Moog_filter, sample);
+ 125:Core/Src/audio.c **** 	
+ 126:Core/Src/audio.c **** 
+ 127:Core/Src/audio.c **** 		/************** Apply amplitude envelope ****************/
+ 128:Core/Src/audio.c **** 		amp_env = ADSR_compute(&adsr_amp);
+ 129:Core/Src/audio.c **** 		sample *= amp_env;
+ 130:Core/Src/audio.c **** 
+ 131:Core/Src/audio.c **** 		
+ 132:Core/Src/audio.c **** 		/************** Apply bitcrushing effect ***************/
+ 133:Core/Src/audio.c **** 		// sample = decimator(sample, 0.2, 16);
+ 134:Core/Src/audio.c **** 
+ 135:Core/Src/audio.c **** 		/************** Apply delay effect ****************/
+ 136:Core/Src/audio.c **** 		pingpongDelay_compute(sample, &delayLOut, &delayROut);
+ 137:Core/Src/audio.c **** 		sampleL = delayLOut;
+ 138:Core/Src/audio.c **** 		sampleR = delayROut;
+ 139:Core/Src/audio.c **** 		//sampleL = sample;
+ 140:Core/Src/audio.c **** 		//sampleR = sample;
+ 141:Core/Src/audio.c **** 
+ 142:Core/Src/audio.c **** 		/****************** softclip outputs ********************/
+ 143:Core/Src/audio.c **** 		sampleL = SoftClip(sampleL);
+ 144:Core/Src/audio.c **** 		sampleR = SoftClip(sampleR);
+ 145:Core/Src/audio.c **** 
+ 146:Core/Src/audio.c **** 		/*************** Convert to 16 bits int *****************/
+ 147:Core/Src/audio.c **** 		valueL = ((int16_t) ((32767.0f) * sampleL)); 
+  72              		.loc 1 147 35 view .LVU6
   73 0024 9FED689A 		vldr.32	s18, .L17+24
  107:Core/Src/audio.c **** 	{
   74              		.loc 1 107 9 view .LVU7
@@ -236,11 +238,11 @@ ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccE8zZrE.s 			page 1
   76 002c 00F10208 		add	r8, r0, #2
   77 0030 52E0     		b	.L5
   78              	.LVL1:
+ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccATB2kv.s 			page 5
+
+
   79              	.L15:
   80              	.LBB41:
-ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccE8zZrE.s 			page 5
-
-
   81              	.LBB42:
   82              		.file 2 "Core/Inc/helper_functions.h"
    1:Core/Inc/helper_functions.h **** /**
@@ -296,11 +298,11 @@ ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccE8zZrE.s 			page 1
   51:Core/Inc/helper_functions.h **** }
   52:Core/Inc/helper_functions.h **** 
   53:Core/Inc/helper_functions.h **** 
+ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccATB2kv.s 			page 6
+
+
   54:Core/Inc/helper_functions.h **** /**
   55:Core/Inc/helper_functions.h ****  * @brief Pade-approximation of tanh for soft clipping
-ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccE8zZrE.s 			page 6
-
-
   56:Core/Inc/helper_functions.h ****  * @ from https://www.musicdsp.org/en/latest/Other/238-rational-tanh-approximation.html 
   57:Core/Inc/helper_functions.h ****  * @param x 
   58:Core/Inc/helper_functions.h ****  * @return float 
@@ -353,19 +355,19 @@ ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccE8zZrE.s 			page 1
  114              	.LBE43:
  115              	.LBE42:
  116              	.LBE41:
- 117              		.loc 1 145 35 view .LVU19
+ 117              		.loc 1 147 35 view .LVU19
  118 0066 26EE897A 		vmul.f32	s14, s13, s18
- 119              		.loc 1 145 13 view .LVU20
+ 119              		.loc 1 147 13 view .LVU20
+ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccATB2kv.s 			page 7
+
+
  120 006a BDEEC77A 		vcvt.s32.f32	s14, s14
  121 006e 17EE103A 		vmov	r3, s14	@ int
-ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccE8zZrE.s 			page 7
-
-
  122 0072 1AB2     		sxth	r2, r3
  123              	.L3:
  124              	.LVL5:
- 142:Core/Src/audio.c **** 
- 125              		.loc 1 142 3 is_stmt 1 view .LVU21
+ 144:Core/Src/audio.c **** 
+ 125              		.loc 1 144 3 is_stmt 1 view .LVU21
  126              	.LBB49:
  127              	.LBI49:
   60:Core/Inc/helper_functions.h **** {
@@ -416,31 +418,31 @@ ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccE8zZrE.s 			page 1
  167              	.LBE52:
  168              	.LBE51:
  169              	.LBE50:
+ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccATB2kv.s 			page 8
+
+
  170              	.LBE49:
- 146:Core/Src/audio.c **** 		valueR = ((int16_t) ((32767.0f) * sampleR));
-ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccE8zZrE.s 			page 8
-
-
- 171              		.loc 1 146 35 view .LVU36
+ 148:Core/Src/audio.c **** 		valueR = ((int16_t) ((32767.0f) * sampleR));
+ 171              		.loc 1 148 35 view .LVU36
  172 00b8 67EE097A 		vmul.f32	s15, s14, s18
- 173              		.loc 1 146 13 view .LVU37
+ 173              		.loc 1 148 13 view .LVU37
  174 00bc FDEEE77A 		vcvt.s32.f32	s15, s15
  175 00c0 17EE903A 		vmov	r3, s15	@ int
  176 00c4 1BB2     		sxth	r3, r3
  177              	.L4:
  178              	.LVL9:
- 145:Core/Src/audio.c **** 		valueR = ((int16_t) ((32767.0f) * sampleR));
- 179              		.loc 1 145 3 is_stmt 1 view .LVU38
- 180              		.loc 1 146 3 view .LVU39
- 147:Core/Src/audio.c **** 
- 148:Core/Src/audio.c **** 		/*************** Output to audio buffer *****************/
- 149:Core/Src/audio.c **** 		output[i<<1] = valueL ;			// LEFT channel
- 181              		.loc 1 149 3 view .LVU40
- 182              		.loc 1 149 16 is_stmt 0 view .LVU41
+ 147:Core/Src/audio.c **** 		valueR = ((int16_t) ((32767.0f) * sampleR));
+ 179              		.loc 1 147 3 is_stmt 1 view .LVU38
+ 180              		.loc 1 148 3 view .LVU39
+ 149:Core/Src/audio.c **** 
+ 150:Core/Src/audio.c **** 		/*************** Output to audio buffer *****************/
+ 151:Core/Src/audio.c **** 		output[i<<1] = valueL ;			// LEFT channel
+ 181              		.loc 1 151 3 view .LVU40
+ 182              		.loc 1 151 16 is_stmt 0 view .LVU41
  183 00c6 26F82920 		strh	r2, [r6, r9, lsl #2]	@ movhi
- 150:Core/Src/audio.c **** 	    output[(i<<1) + 1] = valueR;	// RIGHT channel
- 184              		.loc 1 150 6 is_stmt 1 view .LVU42
- 185              		.loc 1 150 25 is_stmt 0 view .LVU43
+ 152:Core/Src/audio.c **** 	    output[(i<<1) + 1] = valueR;	// RIGHT channel
+ 184              		.loc 1 152 6 is_stmt 1 view .LVU42
+ 185              		.loc 1 152 25 is_stmt 0 view .LVU43
  186 00ca 28F82930 		strh	r3, [r8, r9, lsl #2]	@ movhi
  107:Core/Src/audio.c **** 	{
  187              		.loc 1 107 28 is_stmt 1 view .LVU44
@@ -476,11 +478,11 @@ ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccE8zZrE.s 			page 1
  210 00e4 F1EE047A 		vmov.f32	s15, #5.0e+0
  211 00e8 77EE277A 		vadd.f32	s15, s14, s15
  116:Core/Src/audio.c **** 		OpSetFreq(&sub_osc, f_sub);
+ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccATB2kv.s 			page 9
+
+
  212              		.loc 1 116 16 view .LVU52
  213 00ec 0C2B     		cmp	r3, #12
-ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccE8zZrE.s 			page 9
-
-
  214              	.LBB57:
  215              	.LBB58:
   88:Core/Src/audio.c **** }
@@ -522,7 +524,7 @@ ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccE8zZrE.s 			page 1
  247              	.LBE64:
  248              	.LBE67:
  249 010a F0EE697A 		vmovls.f32	s15, s19
- 118:Core/Src/audio.c **** 	
+ 118:Core/Src/audio.c **** 		//sample = osc_Sine(&osc1);
  250              		.loc 1 118 17 view .LVU58
  251 010e 3846     		mov	r0, r7
  252              	.LBB68:
@@ -536,11 +538,11 @@ ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccE8zZrE.s 			page 1
  258              	.LBE40:
  259              	.LBE68:
  114:Core/Src/audio.c **** 		
+ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccATB2kv.s 			page 10
+
+
  260              		.loc 1 114 3 is_stmt 1 view .LVU61
  261              	.LBB69:
-ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccE8zZrE.s 			page 10
-
-
  262              	.LBI57:
   86:Core/Src/audio.c **** {
  263              		.loc 1 86 6 view .LVU62
@@ -570,111 +572,111 @@ ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccE8zZrE.s 			page 1
  279              		.loc 1 88 11 view .LVU70
  280              	.LBE65:
  281              	.LBE70:
- 118:Core/Src/audio.c **** 	
+ 118:Core/Src/audio.c **** 		//sample = osc_Sine(&osc1);
  282              		.loc 1 118 3 is_stmt 1 view .LVU71
- 118:Core/Src/audio.c **** 	
+ 118:Core/Src/audio.c **** 		//sample = osc_Sine(&osc1);
  283              		.loc 1 118 17 is_stmt 0 view .LVU72
  284 0118 FFF7FEFF 		bl	osc_polyblepSaw
  285              	.LVL16:
- 118:Core/Src/audio.c **** 	
+ 118:Core/Src/audio.c **** 		//sample = osc_Sine(&osc1);
  286              		.loc 1 118 42 view .LVU73
  287 011c 2046     		mov	r0, r4
- 118:Core/Src/audio.c **** 	
+ 118:Core/Src/audio.c **** 		//sample = osc_Sine(&osc1);
  288              		.loc 1 118 17 view .LVU74
  289 011e B0EE408A 		vmov.f32	s16, s0
- 118:Core/Src/audio.c **** 	
+ 118:Core/Src/audio.c **** 		//sample = osc_Sine(&osc1);
  290              		.loc 1 118 42 view .LVU75
  291 0122 FFF7FEFF 		bl	osc_polyblepSaw
  292              	.LVL17:
- 118:Core/Src/audio.c **** 	
+ 118:Core/Src/audio.c **** 		//sample = osc_Sine(&osc1);
  293              		.loc 1 118 67 view .LVU76
  294 0126 2948     		ldr	r0, .L17+28
- 118:Core/Src/audio.c **** 	
+ 118:Core/Src/audio.c **** 		//sample = osc_Sine(&osc1);
  295              		.loc 1 118 40 view .LVU77
  296 0128 38EE008A 		vadd.f32	s16, s16, s0
- 118:Core/Src/audio.c **** 	
+ 118:Core/Src/audio.c **** 		//sample = osc_Sine(&osc1);
  297              		.loc 1 118 67 view .LVU78
  298 012c FFF7FEFF 		bl	osc_polyblepRect
  299              	.LVL18:
- 121:Core/Src/audio.c **** 		Moog_filter.cutoff = 2000 * filt_env;
- 300              		.loc 1 121 14 view .LVU79
-ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccE8zZrE.s 			page 11
+ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccATB2kv.s 			page 11
 
 
+ 122:Core/Src/audio.c **** 		Moog_filter.cutoff = 2000 * filt_env;
+ 300              		.loc 1 122 14 view .LVU79
  301 0130 2748     		ldr	r0, .L17+32
- 118:Core/Src/audio.c **** 	
+ 118:Core/Src/audio.c **** 		//sample = osc_Sine(&osc1);
  302              		.loc 1 118 67 view .LVU80
  303 0132 B0EE40AA 		vmov.f32	s20, s0
  304              	.LVL19:
- 121:Core/Src/audio.c **** 		Moog_filter.cutoff = 2000 * filt_env;
- 305              		.loc 1 121 3 is_stmt 1 view .LVU81
- 121:Core/Src/audio.c **** 		Moog_filter.cutoff = 2000 * filt_env;
- 306              		.loc 1 121 14 is_stmt 0 view .LVU82
+ 122:Core/Src/audio.c **** 		Moog_filter.cutoff = 2000 * filt_env;
+ 305              		.loc 1 122 3 is_stmt 1 view .LVU81
+ 122:Core/Src/audio.c **** 		Moog_filter.cutoff = 2000 * filt_env;
+ 306              		.loc 1 122 14 is_stmt 0 view .LVU82
  307 0136 FFF7FEFF 		bl	ADSR_compute
  308              	.LVL20:
- 122:Core/Src/audio.c **** 		sample = MoogLP_compute(&Moog_filter, sample);
- 309              		.loc 1 122 3 is_stmt 1 view .LVU83
- 118:Core/Src/audio.c **** 	
+ 123:Core/Src/audio.c **** 		sample = MoogLP_compute(&Moog_filter, sample);
+ 309              		.loc 1 123 3 is_stmt 1 view .LVU83
+ 118:Core/Src/audio.c **** 		//sample = osc_Sine(&osc1);
  310              		.loc 1 118 65 is_stmt 0 view .LVU84
  311 013a 38EE0A8A 		vadd.f32	s16, s16, s20
  312              	.LVL21:
- 122:Core/Src/audio.c **** 		sample = MoogLP_compute(&Moog_filter, sample);
- 313              		.loc 1 122 29 view .LVU85
+ 123:Core/Src/audio.c **** 		sample = MoogLP_compute(&Moog_filter, sample);
+ 313              		.loc 1 123 29 view .LVU85
  314 013e 60EE287A 		vmul.f32	s15, s0, s17
- 123:Core/Src/audio.c **** 	
- 315              		.loc 1 123 12 view .LVU86
+ 124:Core/Src/audio.c **** 	
+ 315              		.loc 1 124 12 view .LVU86
  316 0142 2448     		ldr	r0, .L17+36
  317 0144 B6EE000A 		vmov.f32	s0, #5.0e-1
  318 0148 28EE000A 		vmul.f32	s0, s16, s0
  319              	.LVL22:
- 122:Core/Src/audio.c **** 		sample = MoogLP_compute(&Moog_filter, sample);
- 320              		.loc 1 122 22 view .LVU87
+ 123:Core/Src/audio.c **** 		sample = MoogLP_compute(&Moog_filter, sample);
+ 320              		.loc 1 123 22 view .LVU87
  321 014c C0ED007A 		vstr.32	s15, [r0]
- 123:Core/Src/audio.c **** 	
- 322              		.loc 1 123 3 is_stmt 1 view .LVU88
- 123:Core/Src/audio.c **** 	
- 323              		.loc 1 123 12 is_stmt 0 view .LVU89
+ 124:Core/Src/audio.c **** 	
+ 322              		.loc 1 124 3 is_stmt 1 view .LVU88
+ 124:Core/Src/audio.c **** 	
+ 323              		.loc 1 124 12 is_stmt 0 view .LVU89
  324 0150 FFF7FEFF 		bl	MoogLP_compute
  325              	.LVL23:
- 127:Core/Src/audio.c **** 		sample *= amp_env;
- 326              		.loc 1 127 13 view .LVU90
+ 128:Core/Src/audio.c **** 		sample *= amp_env;
+ 326              		.loc 1 128 13 view .LVU90
  327 0154 2048     		ldr	r0, .L17+40
- 123:Core/Src/audio.c **** 	
- 328              		.loc 1 123 12 view .LVU91
+ 124:Core/Src/audio.c **** 	
+ 328              		.loc 1 124 12 view .LVU91
  329 0156 B0EE408A 		vmov.f32	s16, s0
  330              	.LVL24:
- 127:Core/Src/audio.c **** 		sample *= amp_env;
- 331              		.loc 1 127 3 is_stmt 1 view .LVU92
- 127:Core/Src/audio.c **** 		sample *= amp_env;
- 332              		.loc 1 127 13 is_stmt 0 view .LVU93
+ 128:Core/Src/audio.c **** 		sample *= amp_env;
+ 331              		.loc 1 128 3 is_stmt 1 view .LVU92
+ 128:Core/Src/audio.c **** 		sample *= amp_env;
+ 332              		.loc 1 128 13 is_stmt 0 view .LVU93
  333 015a FFF7FEFF 		bl	ADSR_compute
  334              	.LVL25:
- 128:Core/Src/audio.c **** 
- 335              		.loc 1 128 3 is_stmt 1 view .LVU94
- 135:Core/Src/audio.c **** 		sampleL = delayLOut;
- 336              		.loc 1 135 3 view .LVU95
+ 129:Core/Src/audio.c **** 
+ 335              		.loc 1 129 3 is_stmt 1 view .LVU94
+ 136:Core/Src/audio.c **** 		sampleL = delayLOut;
+ 336              		.loc 1 136 3 view .LVU95
  337 015e 1F49     		ldr	r1, .L17+44
  338 0160 1F48     		ldr	r0, .L17+48
  339 0162 28EE000A 		vmul.f32	s0, s16, s0
+ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccATB2kv.s 			page 12
+
+
  340              	.LVL26:
- 135:Core/Src/audio.c **** 		sampleL = delayLOut;
-ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccE8zZrE.s 			page 12
-
-
- 341              		.loc 1 135 3 is_stmt 0 view .LVU96
+ 136:Core/Src/audio.c **** 		sampleL = delayLOut;
+ 341              		.loc 1 136 3 is_stmt 0 view .LVU96
  342 0166 FFF7FEFF 		bl	pingpongDelay_compute
  343              	.LVL27:
- 136:Core/Src/audio.c **** 		sampleR = delayROut;
- 344              		.loc 1 136 3 is_stmt 1 view .LVU97
- 136:Core/Src/audio.c **** 		sampleR = delayROut;
- 345              		.loc 1 136 11 is_stmt 0 view .LVU98
+ 137:Core/Src/audio.c **** 		sampleR = delayROut;
+ 344              		.loc 1 137 3 is_stmt 1 view .LVU97
+ 137:Core/Src/audio.c **** 		sampleR = delayROut;
+ 345              		.loc 1 137 11 is_stmt 0 view .LVU98
  346 016a 1D4B     		ldr	r3, .L17+48
  347 016c 93ED007A 		vldr.32	s14, [r3]
  348              	.LVL28:
- 137:Core/Src/audio.c **** 		
- 349              		.loc 1 137 3 is_stmt 1 view .LVU99
- 137:Core/Src/audio.c **** 		
- 350              		.loc 1 137 11 is_stmt 0 view .LVU100
+ 138:Core/Src/audio.c **** 		//sampleL = sample;
+ 349              		.loc 1 138 3 is_stmt 1 view .LVU99
+ 138:Core/Src/audio.c **** 		//sampleL = sample;
+ 350              		.loc 1 138 11 is_stmt 0 view .LVU100
  351 0170 1A4B     		ldr	r3, .L17+44
  352              	.LBB71:
  353              	.LBB45:
@@ -685,12 +687,12 @@ ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccE8zZrE.s 			page 1
  357 017a F1EE10FA 		vmrs	APSR_nzcv, FPSCR
  358              	.LBE45:
  359              	.LBE71:
- 137:Core/Src/audio.c **** 		
- 360              		.loc 1 137 11 view .LVU102
+ 138:Core/Src/audio.c **** 		//sampleL = sample;
+ 360              		.loc 1 138 11 view .LVU102
  361 017e D3ED007A 		vldr.32	s15, [r3]
  362              	.LVL29:
- 141:Core/Src/audio.c **** 		sampleR = SoftClip(sampleR);
- 363              		.loc 1 141 3 is_stmt 1 view .LVU103
+ 143:Core/Src/audio.c **** 		sampleR = SoftClip(sampleR);
+ 363              		.loc 1 143 3 is_stmt 1 view .LVU103
  364              	.LBB72:
  365              	.LBI41:
   60:Core/Inc/helper_functions.h **** {
@@ -716,16 +718,16 @@ ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccE8zZrE.s 			page 1
  382              	.LBB74:
  383              	.LBB47:
  384 0192 144A     		ldr	r2, .L17+52
+ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccATB2kv.s 			page 13
+
+
  385              	.LVL31:
   62:Core/Inc/helper_functions.h ****     {
-ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccE8zZrE.s 			page 13
-
-
  386              		.loc 2 62 8 view .LVU108
  387              	.LBE47:
  388              	.LBE74:
- 142:Core/Src/audio.c **** 
- 389              		.loc 1 142 3 is_stmt 1 view .LVU109
+ 144:Core/Src/audio.c **** 
+ 389              		.loc 1 144 3 is_stmt 1 view .LVU109
  390              	.LBB75:
   60:Core/Inc/helper_functions.h **** {
  391              		.loc 2 60 14 view .LVU110
@@ -764,9 +766,9 @@ ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccE8zZrE.s 			page 1
  419              		.loc 2 62 8 view .LVU115
  420              	.LBE55:
  421              	.LBE77:
- 151:Core/Src/audio.c **** 	}
- 152:Core/Src/audio.c **** }
- 422              		.loc 1 152 1 view .LVU116
+ 153:Core/Src/audio.c **** 	}
+ 154:Core/Src/audio.c **** }
+ 422              		.loc 1 154 1 view .LVU116
  423 01a8 BDEC068B 		vldm	sp!, {d8-d10}
  424              		.cfi_restore 84
  425              		.cfi_restore 85
@@ -775,21 +777,21 @@ ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccE8zZrE.s 			page 1
  428              		.cfi_restore 80
  429              		.cfi_restore 81
  430              		.cfi_def_cfa_offset 40
- 431              		.loc 1 152 1 view .LVU117
+ 431              		.loc 1 154 1 view .LVU117
+ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccATB2kv.s 			page 14
+
+
  432 01ac BDE8F88F 		pop	{r3, r4, r5, r6, r7, r8, r9, r10, fp, pc}
  433              	.LVL35:
-ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccE8zZrE.s 			page 14
-
-
  434              	.L18:
- 435              		.loc 1 152 1 view .LVU118
+ 435              		.loc 1 154 1 view .LVU118
  436              		.align	2
  437              	.L17:
  438 01b0 00000000 		.word	.LANCHOR0
  439 01b4 00000000 		.word	osc1
  440 01b8 00000000 		.word	osc2
- 441 01bc F622803F 		.word	1065362166
- 442 01c0 CEF30241 		.word	1090712526
+ 441 01bc 8D3B803F 		.word	1065368461
+ 442 01c0 EF0C0341 		.word	1090718959
  443 01c4 0000FA44 		.word	1157234688
  444 01c8 00FEFF46 		.word	1191181824
  445 01cc 00000000 		.word	sub_osc
@@ -836,11 +838,11 @@ ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccE8zZrE.s 			page 1
  483              		.cfi_def_cfa_offset 24
   63:Core/Src/audio.c **** 
  484              		.loc 1 63 5 view .LVU124
+ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccATB2kv.s 			page 15
+
+
  485 000c 5521     		movs	r1, #85
  486 000e 0220     		movs	r0, #2
-ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccE8zZrE.s 			page 15
-
-
  487 0010 FFF7FEFF 		bl	BSP_AUDIO_OUT_Init
  488              	.LVL36:
   70:Core/Src/audio.c **** 
@@ -896,11 +898,11 @@ ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccE8zZrE.s 			page 1
  529              	.LVL40:
   79:Core/Src/audio.c **** 	ADSR_init(&adsr_filt);
  530              		.loc 1 79 2 view .LVU135
+ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccATB2kv.s 			page 16
+
+
  531 0078 0E48     		ldr	r0, .L21+28
  532 007a FFF7FEFF 		bl	ADSR_init
-ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccE8zZrE.s 			page 16
-
-
  533              	.LVL41:
   80:Core/Src/audio.c **** 	MoogLP_init(&Moog_filter);
  534              		.loc 1 80 2 view .LVU136
@@ -956,11 +958,11 @@ ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccE8zZrE.s 			page 1
  582              	.LVL45:
  583              	.LFB135:
   87:Core/Src/audio.c **** 	op->freq = A0 * f;
+ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccATB2kv.s 			page 17
+
+
  584              		.loc 1 87 1 is_stmt 1 view -0
  585              		.cfi_startproc
-ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccE8zZrE.s 			page 17
-
-
  586              		@ args = 0, pretend = 0, frame = 0
  587              		@ frame_needed = 0, uses_anonymous_args = 0
  588              		@ link register save eliminated.
@@ -980,7 +982,7 @@ ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccE8zZrE.s 			page 1
  598              	.L25:
  599 000e 00BF     		.align	2
  600              	.L24:
- 601 0010 F622803F 		.word	1065362166
+ 601 0010 8D3B803F 		.word	1065368461
  602              		.cfi_endproc
  603              	.LFE135:
  605              		.section	.text.audioBlock,"ax",%progbits
@@ -1016,11 +1018,11 @@ ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccE8zZrE.s 			page 1
  628 0002 00F0E080 		beq	.L40
  100:Core/Src/audio.c **** 	int i;
  629              		.loc 1 100 1 is_stmt 0 view .LVU154
+ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccATB2kv.s 			page 18
+
+
  630 0006 2DE9F84F 		push	{r3, r4, r5, r6, r7, r8, r9, r10, fp, lr}
  631              		.cfi_def_cfa_offset 40
-ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccE8zZrE.s 			page 18
-
-
  632              		.cfi_offset 3, -40
  633              		.cfi_offset 4, -36
  634              		.cfi_offset 5, -32
@@ -1052,11 +1054,11 @@ ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccE8zZrE.s 			page 1
  659              	.LBE93:
  660              	.LBE92:
  661 0020 DFED6C9A 		vldr.32	s19, .L46+12
- 122:Core/Src/audio.c **** 		sample = MoogLP_compute(&Moog_filter, sample);
- 662              		.loc 1 122 29 view .LVU156
+ 123:Core/Src/audio.c **** 		sample = MoogLP_compute(&Moog_filter, sample);
+ 662              		.loc 1 123 29 view .LVU156
  663 0024 DFED6C8A 		vldr.32	s17, .L46+16
- 145:Core/Src/audio.c **** 		valueR = ((int16_t) ((32767.0f) * sampleR));
- 664              		.loc 1 145 35 view .LVU157
+ 147:Core/Src/audio.c **** 		valueR = ((int16_t) ((32767.0f) * sampleR));
+ 664              		.loc 1 147 35 view .LVU157
  665 0028 9FED6C9A 		vldr.32	s18, .L46+20
  666 002c 0E46     		mov	r6, r1
  107:Core/Src/audio.c **** 	{
@@ -1076,11 +1078,11 @@ ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccE8zZrE.s 			page 1
  678 003c B4EEE67A 		vcmpe.f32	s14, s13
  679 0040 F1EE10FA 		vmrs	APSR_nzcv, FPSCR
  680 0044 00F3B980 		bgt	.L35
+ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccATB2kv.s 			page 19
+
+
  681              	.LVL49:
  682              	.LBB99:
-ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccE8zZrE.s 			page 19
-
-
  683              	.LBI99:
   60:Core/Inc/helper_functions.h **** {
  684              		.loc 2 60 14 is_stmt 1 view .LVU161
@@ -1108,18 +1110,18 @@ ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccE8zZrE.s 			page 1
  706              	.LBE99:
  707              	.LBE98:
  708              	.LBE97:
- 145:Core/Src/audio.c **** 		valueR = ((int16_t) ((32767.0f) * sampleR));
- 709              		.loc 1 145 35 view .LVU170
+ 147:Core/Src/audio.c **** 		valueR = ((int16_t) ((32767.0f) * sampleR));
+ 709              		.loc 1 147 35 view .LVU170
  710 006c 26EE897A 		vmul.f32	s14, s13, s18
- 145:Core/Src/audio.c **** 		valueR = ((int16_t) ((32767.0f) * sampleR));
- 711              		.loc 1 145 13 view .LVU171
+ 147:Core/Src/audio.c **** 		valueR = ((int16_t) ((32767.0f) * sampleR));
+ 711              		.loc 1 147 13 view .LVU171
  712 0070 BDEEC77A 		vcvt.s32.f32	s14, s14
  713 0074 17EE103A 		vmov	r3, s14	@ int
  714 0078 1AB2     		sxth	r2, r3
  715              	.L29:
  716              	.LVL52:
- 142:Core/Src/audio.c **** 
- 717              		.loc 1 142 3 is_stmt 1 view .LVU172
+ 144:Core/Src/audio.c **** 
+ 717              		.loc 1 144 3 is_stmt 1 view .LVU172
  718              	.LBB105:
  719              	.LBI105:
   60:Core/Inc/helper_functions.h **** {
@@ -1136,11 +1138,11 @@ ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccE8zZrE.s 			page 1
  728              	.L45:
   66:Core/Inc/helper_functions.h ****     {
  729              		.loc 2 66 10 is_stmt 1 view .LVU176
+ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccATB2kv.s 			page 20
+
+
   66:Core/Inc/helper_functions.h ****     {
  730              		.loc 2 66 13 is_stmt 0 view .LVU177
-ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccE8zZrE.s 			page 20
-
-
  731 008a B0EE087A 		vmov.f32	s14, #3.0e+0
  732 008e F4EEC77A 		vcmpe.f32	s15, s14
  733 0092 F1EE10FA 		vmrs	APSR_nzcv, FPSCR
@@ -1174,33 +1176,33 @@ ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccE8zZrE.s 			page 1
  760              	.LBE107:
  761              	.LBE106:
  762              	.LBE105:
- 146:Core/Src/audio.c **** 
- 763              		.loc 1 146 35 view .LVU187
+ 148:Core/Src/audio.c **** 
+ 763              		.loc 1 148 35 view .LVU187
  764 00be 67EE097A 		vmul.f32	s15, s14, s18
- 146:Core/Src/audio.c **** 
- 765              		.loc 1 146 13 view .LVU188
+ 148:Core/Src/audio.c **** 
+ 765              		.loc 1 148 13 view .LVU188
  766 00c2 FDEEE77A 		vcvt.s32.f32	s15, s15
  767 00c6 17EE903A 		vmov	r3, s15	@ int
  768 00ca 1BB2     		sxth	r3, r3
  769              	.L30:
  770              	.LVL56:
- 145:Core/Src/audio.c **** 		valueR = ((int16_t) ((32767.0f) * sampleR));
- 771              		.loc 1 145 3 is_stmt 1 view .LVU189
- 146:Core/Src/audio.c **** 
- 772              		.loc 1 146 3 view .LVU190
- 149:Core/Src/audio.c **** 	    output[(i<<1) + 1] = valueR;	// RIGHT channel
- 773              		.loc 1 149 3 view .LVU191
- 149:Core/Src/audio.c **** 	    output[(i<<1) + 1] = valueR;	// RIGHT channel
- 774              		.loc 1 149 16 is_stmt 0 view .LVU192
+ 147:Core/Src/audio.c **** 		valueR = ((int16_t) ((32767.0f) * sampleR));
+ 771              		.loc 1 147 3 is_stmt 1 view .LVU189
+ 148:Core/Src/audio.c **** 
+ 772              		.loc 1 148 3 view .LVU190
+ 151:Core/Src/audio.c **** 	    output[(i<<1) + 1] = valueR;	// RIGHT channel
+ 773              		.loc 1 151 3 view .LVU191
+ 151:Core/Src/audio.c **** 	    output[(i<<1) + 1] = valueR;	// RIGHT channel
+ 774              		.loc 1 151 16 is_stmt 0 view .LVU192
  775 00cc 27F82920 		strh	r2, [r7, r9, lsl #2]	@ movhi
- 150:Core/Src/audio.c **** 	}
- 776              		.loc 1 150 6 is_stmt 1 view .LVU193
- 150:Core/Src/audio.c **** 	}
- 777              		.loc 1 150 25 is_stmt 0 view .LVU194
+ 152:Core/Src/audio.c **** 	}
+ 776              		.loc 1 152 6 is_stmt 1 view .LVU193
+ 152:Core/Src/audio.c **** 	}
+ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccATB2kv.s 			page 21
+
+
+ 777              		.loc 1 152 25 is_stmt 0 view .LVU194
  778 00d0 28F82930 		strh	r3, [r8, r9, lsl #2]	@ movhi
-ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccE8zZrE.s 			page 21
-
-
  107:Core/Src/audio.c **** 	{
  779              		.loc 1 107 28 is_stmt 1 view .LVU195
  780 00d4 09F10109 		add	r9, r9, #1
@@ -1256,11 +1258,11 @@ ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccE8zZrE.s 			page 1
  819              	.LBE115:
  820              	.LBE117:
  821              	.LBB118:
+ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccATB2kv.s 			page 22
+
+
  822              	.LBB119:
   88:Core/Src/audio.c **** }
-ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccE8zZrE.s 			page 22
-
-
  823              		.loc 1 88 16 view .LVU207
  824 00fe 88BF     		it	hi
  825 0100 53ED0C7A 		vldrhi.32	s15, [r3, #-48]
@@ -1283,7 +1285,7 @@ ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccE8zZrE.s 			page 1
  839              	.LBE122:
  840 0110 98BF     		it	ls
  841 0112 F0EE697A 		vmovls.f32	s15, s19
- 118:Core/Src/audio.c **** 	
+ 118:Core/Src/audio.c **** 		//sample = osc_Sine(&osc1);
  842              		.loc 1 118 17 view .LVU211
  843 0116 5046     		mov	r0, r10
  844              	.LBB123:
@@ -1316,11 +1318,11 @@ ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccE8zZrE.s 			page 1
  865              	.LBE125:
  116:Core/Src/audio.c **** 		OpSetFreq(&sub_osc, f_sub);
  866              		.loc 1 116 3 is_stmt 1 view .LVU218
+ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccATB2kv.s 			page 23
+
+
  117:Core/Src/audio.c **** 		sample = 0.5*(osc_polyblepSaw(&osc1) + osc_polyblepSaw(&osc2) + osc_polyblepRect(&sub_osc));
  867              		.loc 1 117 3 view .LVU219
-ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccE8zZrE.s 			page 23
-
-
  868              	.LBB126:
  869              	.LBI118:
   86:Core/Src/audio.c **** {
@@ -1332,127 +1334,127 @@ ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccE8zZrE.s 			page 1
  873              		.loc 1 88 2 is_stmt 0 view .LVU222
  874              	.LBE121:
  875              	.LBE126:
- 118:Core/Src/audio.c **** 	
+ 118:Core/Src/audio.c **** 		//sample = osc_Sine(&osc1);
  876              		.loc 1 118 3 is_stmt 1 view .LVU223
- 118:Core/Src/audio.c **** 	
+ 118:Core/Src/audio.c **** 		//sample = osc_Sine(&osc1);
  877              		.loc 1 118 17 is_stmt 0 view .LVU224
  878 0120 FFF7FEFF 		bl	osc_polyblepSaw
  879              	.LVL62:
- 118:Core/Src/audio.c **** 	
+ 118:Core/Src/audio.c **** 		//sample = osc_Sine(&osc1);
  880              		.loc 1 118 42 view .LVU225
  881 0124 2046     		mov	r0, r4
- 118:Core/Src/audio.c **** 	
+ 118:Core/Src/audio.c **** 		//sample = osc_Sine(&osc1);
  882              		.loc 1 118 17 view .LVU226
  883 0126 B0EE408A 		vmov.f32	s16, s0
- 118:Core/Src/audio.c **** 	
+ 118:Core/Src/audio.c **** 		//sample = osc_Sine(&osc1);
  884              		.loc 1 118 42 view .LVU227
  885 012a FFF7FEFF 		bl	osc_polyblepSaw
  886              	.LVL63:
- 118:Core/Src/audio.c **** 	
+ 118:Core/Src/audio.c **** 		//sample = osc_Sine(&osc1);
  887              		.loc 1 118 67 view .LVU228
  888 012e 2C48     		ldr	r0, .L46+24
- 118:Core/Src/audio.c **** 	
+ 118:Core/Src/audio.c **** 		//sample = osc_Sine(&osc1);
  889              		.loc 1 118 40 view .LVU229
  890 0130 38EE008A 		vadd.f32	s16, s16, s0
- 118:Core/Src/audio.c **** 	
+ 118:Core/Src/audio.c **** 		//sample = osc_Sine(&osc1);
  891              		.loc 1 118 67 view .LVU230
  892 0134 FFF7FEFF 		bl	osc_polyblepRect
  893              	.LVL64:
- 121:Core/Src/audio.c **** 		Moog_filter.cutoff = 2000 * filt_env;
- 894              		.loc 1 121 14 view .LVU231
+ 122:Core/Src/audio.c **** 		Moog_filter.cutoff = 2000 * filt_env;
+ 894              		.loc 1 122 14 view .LVU231
  895 0138 2A48     		ldr	r0, .L46+28
- 118:Core/Src/audio.c **** 	
+ 118:Core/Src/audio.c **** 		//sample = osc_Sine(&osc1);
  896              		.loc 1 118 67 view .LVU232
  897 013a B0EE40AA 		vmov.f32	s20, s0
  898              	.LVL65:
- 121:Core/Src/audio.c **** 		Moog_filter.cutoff = 2000 * filt_env;
- 899              		.loc 1 121 3 is_stmt 1 view .LVU233
- 121:Core/Src/audio.c **** 		Moog_filter.cutoff = 2000 * filt_env;
- 900              		.loc 1 121 14 is_stmt 0 view .LVU234
+ 122:Core/Src/audio.c **** 		Moog_filter.cutoff = 2000 * filt_env;
+ 899              		.loc 1 122 3 is_stmt 1 view .LVU233
+ 122:Core/Src/audio.c **** 		Moog_filter.cutoff = 2000 * filt_env;
+ 900              		.loc 1 122 14 is_stmt 0 view .LVU234
  901 013e FFF7FEFF 		bl	ADSR_compute
  902              	.LVL66:
- 122:Core/Src/audio.c **** 		sample = MoogLP_compute(&Moog_filter, sample);
- 903              		.loc 1 122 3 is_stmt 1 view .LVU235
- 118:Core/Src/audio.c **** 	
+ 123:Core/Src/audio.c **** 		sample = MoogLP_compute(&Moog_filter, sample);
+ 903              		.loc 1 123 3 is_stmt 1 view .LVU235
+ 118:Core/Src/audio.c **** 		//sample = osc_Sine(&osc1);
  904              		.loc 1 118 65 is_stmt 0 view .LVU236
  905 0142 38EE0A8A 		vadd.f32	s16, s16, s20
+ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccATB2kv.s 			page 24
+
+
  906              	.LVL67:
- 122:Core/Src/audio.c **** 		sample = MoogLP_compute(&Moog_filter, sample);
-ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccE8zZrE.s 			page 24
-
-
- 907              		.loc 1 122 29 view .LVU237
+ 123:Core/Src/audio.c **** 		sample = MoogLP_compute(&Moog_filter, sample);
+ 907              		.loc 1 123 29 view .LVU237
  908 0146 60EE287A 		vmul.f32	s15, s0, s17
- 123:Core/Src/audio.c **** 	
- 909              		.loc 1 123 12 view .LVU238
+ 124:Core/Src/audio.c **** 	
+ 909              		.loc 1 124 12 view .LVU238
  910 014a 2748     		ldr	r0, .L46+32
  911 014c B6EE000A 		vmov.f32	s0, #5.0e-1
  912 0150 28EE000A 		vmul.f32	s0, s16, s0
  913              	.LVL68:
- 122:Core/Src/audio.c **** 		sample = MoogLP_compute(&Moog_filter, sample);
- 914              		.loc 1 122 22 view .LVU239
+ 123:Core/Src/audio.c **** 		sample = MoogLP_compute(&Moog_filter, sample);
+ 914              		.loc 1 123 22 view .LVU239
  915 0154 C0ED007A 		vstr.32	s15, [r0]
- 123:Core/Src/audio.c **** 	
- 916              		.loc 1 123 3 is_stmt 1 view .LVU240
- 123:Core/Src/audio.c **** 	
- 917              		.loc 1 123 12 is_stmt 0 view .LVU241
+ 124:Core/Src/audio.c **** 	
+ 916              		.loc 1 124 3 is_stmt 1 view .LVU240
+ 124:Core/Src/audio.c **** 	
+ 917              		.loc 1 124 12 is_stmt 0 view .LVU241
  918 0158 FFF7FEFF 		bl	MoogLP_compute
  919              	.LVL69:
- 127:Core/Src/audio.c **** 		sample *= amp_env;
- 920              		.loc 1 127 13 view .LVU242
+ 128:Core/Src/audio.c **** 		sample *= amp_env;
+ 920              		.loc 1 128 13 view .LVU242
  921 015c 2348     		ldr	r0, .L46+36
- 123:Core/Src/audio.c **** 	
- 922              		.loc 1 123 12 view .LVU243
+ 124:Core/Src/audio.c **** 	
+ 922              		.loc 1 124 12 view .LVU243
  923 015e B0EE408A 		vmov.f32	s16, s0
  924              	.LVL70:
- 127:Core/Src/audio.c **** 		sample *= amp_env;
- 925              		.loc 1 127 3 is_stmt 1 view .LVU244
- 127:Core/Src/audio.c **** 		sample *= amp_env;
- 926              		.loc 1 127 13 is_stmt 0 view .LVU245
+ 128:Core/Src/audio.c **** 		sample *= amp_env;
+ 925              		.loc 1 128 3 is_stmt 1 view .LVU244
+ 128:Core/Src/audio.c **** 		sample *= amp_env;
+ 926              		.loc 1 128 13 is_stmt 0 view .LVU245
  927 0162 FFF7FEFF 		bl	ADSR_compute
  928              	.LVL71:
- 128:Core/Src/audio.c **** 
- 929              		.loc 1 128 3 is_stmt 1 view .LVU246
- 135:Core/Src/audio.c **** 		sampleL = delayLOut;
- 930              		.loc 1 135 3 view .LVU247
+ 129:Core/Src/audio.c **** 
+ 929              		.loc 1 129 3 is_stmt 1 view .LVU246
+ 136:Core/Src/audio.c **** 		sampleL = delayLOut;
+ 930              		.loc 1 136 3 view .LVU247
  931 0166 2249     		ldr	r1, .L46+40
  932 0168 2248     		ldr	r0, .L46+44
  933 016a 20EE080A 		vmul.f32	s0, s0, s16
  934              	.LVL72:
- 135:Core/Src/audio.c **** 		sampleL = delayLOut;
- 935              		.loc 1 135 3 is_stmt 0 view .LVU248
+ 136:Core/Src/audio.c **** 		sampleL = delayLOut;
+ 935              		.loc 1 136 3 is_stmt 0 view .LVU248
  936 016e FFF7FEFF 		bl	pingpongDelay_compute
  937              	.LVL73:
- 136:Core/Src/audio.c **** 		sampleR = delayROut;
- 938              		.loc 1 136 3 is_stmt 1 view .LVU249
- 136:Core/Src/audio.c **** 		sampleR = delayROut;
- 939              		.loc 1 136 11 is_stmt 0 view .LVU250
+ 137:Core/Src/audio.c **** 		sampleR = delayROut;
+ 938              		.loc 1 137 3 is_stmt 1 view .LVU249
+ 137:Core/Src/audio.c **** 		sampleR = delayROut;
+ 939              		.loc 1 137 11 is_stmt 0 view .LVU250
  940 0172 204B     		ldr	r3, .L46+44
  941 0174 93ED007A 		vldr.32	s14, [r3]
  942              	.LVL74:
- 137:Core/Src/audio.c **** 		
- 943              		.loc 1 137 3 is_stmt 1 view .LVU251
- 137:Core/Src/audio.c **** 		
- 944              		.loc 1 137 11 is_stmt 0 view .LVU252
+ 138:Core/Src/audio.c **** 		//sampleL = sample;
+ 943              		.loc 1 138 3 is_stmt 1 view .LVU251
+ 138:Core/Src/audio.c **** 		//sampleL = sample;
+ 944              		.loc 1 138 11 is_stmt 0 view .LVU252
  945 0178 1D4B     		ldr	r3, .L46+40
  946              	.LBB127:
+ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccATB2kv.s 			page 25
+
+
  947              	.LBB101:
   62:Core/Inc/helper_functions.h ****     {
-ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccE8zZrE.s 			page 25
-
-
  948              		.loc 2 62 8 view .LVU253
  949 017a F8EE086A 		vmov.f32	s13, #-3.0e+0
  950 017e B4EEE67A 		vcmpe.f32	s14, s13
  951 0182 F1EE10FA 		vmrs	APSR_nzcv, FPSCR
  952              	.LBE101:
  953              	.LBE127:
- 137:Core/Src/audio.c **** 		
- 954              		.loc 1 137 11 view .LVU254
+ 138:Core/Src/audio.c **** 		//sampleL = sample;
+ 954              		.loc 1 138 11 view .LVU254
  955 0186 D3ED007A 		vldr.32	s15, [r3]
  956              	.LVL75:
- 141:Core/Src/audio.c **** 		sampleR = SoftClip(sampleR);
- 957              		.loc 1 141 3 is_stmt 1 view .LVU255
+ 143:Core/Src/audio.c **** 		sampleR = SoftClip(sampleR);
+ 957              		.loc 1 143 3 is_stmt 1 view .LVU255
  958              	.LBB128:
  959              	.LBI97:
   60:Core/Inc/helper_functions.h **** {
@@ -1483,8 +1485,8 @@ ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccE8zZrE.s 			page 1
  980              		.loc 2 62 8 view .LVU260
  981              	.LBE103:
  982              	.LBE130:
- 142:Core/Src/audio.c **** 
- 983              		.loc 1 142 3 is_stmt 1 view .LVU261
+ 144:Core/Src/audio.c **** 
+ 983              		.loc 1 144 3 is_stmt 1 view .LVU261
  984              	.LBB131:
   60:Core/Inc/helper_functions.h **** {
  985              		.loc 2 60 14 view .LVU262
@@ -1496,27 +1498,27 @@ ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccE8zZrE.s 			page 1
  989 019c 7FF575AF 		bpl	.L45
  990              	.L36:
  991 01a0 154B     		ldr	r3, .L46+48
+ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccATB2kv.s 			page 26
+
+
  992              	.LVL78:
   62:Core/Inc/helper_functions.h ****     {
-ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccE8zZrE.s 			page 26
-
-
  993              		.loc 2 62 8 view .LVU265
  994              	.LBE110:
  995              	.LBE131:
- 145:Core/Src/audio.c **** 		valueR = ((int16_t) ((32767.0f) * sampleR));
- 996              		.loc 1 145 3 is_stmt 1 view .LVU266
- 146:Core/Src/audio.c **** 
- 997              		.loc 1 146 3 view .LVU267
- 149:Core/Src/audio.c **** 	    output[(i<<1) + 1] = valueR;	// RIGHT channel
- 998              		.loc 1 149 3 view .LVU268
- 149:Core/Src/audio.c **** 	    output[(i<<1) + 1] = valueR;	// RIGHT channel
- 999              		.loc 1 149 16 is_stmt 0 view .LVU269
+ 147:Core/Src/audio.c **** 		valueR = ((int16_t) ((32767.0f) * sampleR));
+ 996              		.loc 1 147 3 is_stmt 1 view .LVU266
+ 148:Core/Src/audio.c **** 
+ 997              		.loc 1 148 3 view .LVU267
+ 151:Core/Src/audio.c **** 	    output[(i<<1) + 1] = valueR;	// RIGHT channel
+ 998              		.loc 1 151 3 view .LVU268
+ 151:Core/Src/audio.c **** 	    output[(i<<1) + 1] = valueR;	// RIGHT channel
+ 999              		.loc 1 151 16 is_stmt 0 view .LVU269
  1000 01a2 27F82920 		strh	r2, [r7, r9, lsl #2]	@ movhi
- 150:Core/Src/audio.c **** 	}
- 1001              		.loc 1 150 6 is_stmt 1 view .LVU270
- 150:Core/Src/audio.c **** 	}
- 1002              		.loc 1 150 25 is_stmt 0 view .LVU271
+ 152:Core/Src/audio.c **** 	}
+ 1001              		.loc 1 152 6 is_stmt 1 view .LVU270
+ 152:Core/Src/audio.c **** 	}
+ 1002              		.loc 1 152 25 is_stmt 0 view .LVU271
  1003 01a6 28F82930 		strh	r3, [r8, r9, lsl #2]	@ movhi
  107:Core/Src/audio.c **** 	{
  1004              		.loc 1 107 28 is_stmt 1 view .LVU272
@@ -1527,7 +1529,7 @@ ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccE8zZrE.s 			page 1
  1008 01ae B145     		cmp	r9, r6
  1009 01b0 94D1     		bne	.L27
  1010              	.L43:
- 1011              		.loc 1 152 1 is_stmt 0 view .LVU274
+ 1011              		.loc 1 154 1 is_stmt 0 view .LVU274
  1012 01b2 BDEC068B 		vldm	sp!, {d8-d10}
  1013              		.cfi_remember_state
  1014              		.cfi_restore 84
@@ -1543,12 +1545,12 @@ ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccE8zZrE.s 			page 1
  1024              		.cfi_restore_state
  1025              	.LBB132:
  1026              	.LBB104:
- 1027              		.loc 1 152 1 view .LVU275
+ 1027              		.loc 1 154 1 view .LVU275
  1028 01ba 47F6FF72 		movw	r2, #32767
  1029 01be 5CE7     		b	.L29
  1030              	.LVL81:
  1031              	.L37:
- 1032              		.loc 1 152 1 view .LVU276
+ 1032              		.loc 1 154 1 view .LVU276
  1033              	.LBE104:
  1034              	.LBE132:
  1035              	.LBB133:
@@ -1556,11 +1558,11 @@ ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccE8zZrE.s 			page 1
  1037 01c0 47F6FF73 		movw	r3, #32767
  1038 01c4 82E7     		b	.L30
  1039              	.LVL82:
+ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccATB2kv.s 			page 27
+
+
  1040              	.L40:
  1041              		.cfi_def_cfa_offset 0
-ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccE8zZrE.s 			page 27
-
-
  1042              		.cfi_restore 3
  1043              		.cfi_restore 4
  1044              		.cfi_restore 5
@@ -1577,15 +1579,15 @@ ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccE8zZrE.s 			page 1
  1055              		.cfi_restore 83
  1056              		.cfi_restore 84
  1057              		.cfi_restore 85
- 1058              		.loc 1 152 1 view .LVU277
+ 1058              		.loc 1 154 1 view .LVU277
  1059 01c6 7047     		bx	lr
  1060              	.L47:
  1061              		.align	2
  1062              	.L46:
  1063 01c8 00000000 		.word	.LANCHOR0
  1064 01cc 00000000 		.word	osc2
- 1065 01d0 F622803F 		.word	1065362166
- 1066 01d4 CEF30241 		.word	1090712526
+ 1065 01d0 8D3B803F 		.word	1065368461
+ 1066 01d4 EF0C0341 		.word	1090718959
  1067 01d8 0000FA44 		.word	1157234688
  1068 01dc 00FEFF46 		.word	1191181824
  1069 01e0 00000000 		.word	sub_osc
@@ -1610,21 +1612,21 @@ ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccE8zZrE.s 			page 1
  1089              		.thumb_func
  1091              	BSP_AUDIO_OUT_HalfTransfer_CallBack:
  1092              	.LFB137:
- 153:Core/Src/audio.c **** 
- 154:Core/Src/audio.c **** 
  155:Core/Src/audio.c **** 
- 156:Core/Src/audio.c **** void BSP_AUDIO_OUT_HalfTransfer_CallBack(void)
- 157:Core/Src/audio.c **** {
- 1093              		.loc 1 157 1 is_stmt 1 view -0
+ 156:Core/Src/audio.c **** 
+ 157:Core/Src/audio.c **** 
+ 158:Core/Src/audio.c **** void BSP_AUDIO_OUT_HalfTransfer_CallBack(void)
+ 159:Core/Src/audio.c **** {
+ 1093              		.loc 1 159 1 is_stmt 1 view -0
+ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccATB2kv.s 			page 28
+
+
  1094              		.cfi_startproc
  1095              		@ args = 0, pretend = 0, frame = 0
-ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccE8zZrE.s 			page 28
-
-
  1096              		@ frame_needed = 0, uses_anonymous_args = 0
  1097              		@ link register save eliminated.
- 158:Core/Src/audio.c **** 	audioBlock((uint16_t *)audioBuffer, BUFFER_SIZE_DIV_4);
- 1098              		.loc 1 158 2 view .LVU279
+ 160:Core/Src/audio.c **** 	audioBlock((uint16_t *)audioBuffer, BUFFER_SIZE_DIV_4);
+ 1098              		.loc 1 160 2 view .LVU279
  1099 0000 0148     		ldr	r0, .L49
  1100 0002 FFF7FEBF 		b	audioBlock.constprop.0
  1101              	.LVL83:
@@ -1643,17 +1645,17 @@ ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccE8zZrE.s 			page 1
  1115              		.thumb_func
  1117              	BSP_AUDIO_OUT_TransferComplete_CallBack:
  1118              	.LFB138:
- 159:Core/Src/audio.c **** }
- 160:Core/Src/audio.c **** 
- 161:Core/Src/audio.c **** void BSP_AUDIO_OUT_TransferComplete_CallBack(void)
- 162:Core/Src/audio.c **** {
- 1119              		.loc 1 162 1 view -0
+ 161:Core/Src/audio.c **** }
+ 162:Core/Src/audio.c **** 
+ 163:Core/Src/audio.c **** void BSP_AUDIO_OUT_TransferComplete_CallBack(void)
+ 164:Core/Src/audio.c **** {
+ 1119              		.loc 1 164 1 view -0
  1120              		.cfi_startproc
  1121              		@ args = 0, pretend = 0, frame = 0
  1122              		@ frame_needed = 0, uses_anonymous_args = 0
  1123              		@ link register save eliminated.
- 163:Core/Src/audio.c **** 	audioBlock((uint16_t *)(audioBuffer + BUFFER_SIZE_DIV_2), BUFFER_SIZE_DIV_4);
- 1124              		.loc 1 163 2 view .LVU281
+ 165:Core/Src/audio.c **** 	audioBlock((uint16_t *)(audioBuffer + BUFFER_SIZE_DIV_2), BUFFER_SIZE_DIV_4);
+ 1124              		.loc 1 165 2 view .LVU281
  1125 0000 0148     		ldr	r0, .L52
  1126 0002 FFF7FEBF 		b	audioBlock.constprop.0
  1127              	.LVL84:
@@ -1672,28 +1674,28 @@ ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccE8zZrE.s 			page 1
  1141              		.thumb_func
  1143              	BSP_AUDIO_OUT_Error_CallBack:
  1144              	.LFB139:
- 164:Core/Src/audio.c **** }
- 165:Core/Src/audio.c **** 
- 166:Core/Src/audio.c **** void BSP_AUDIO_OUT_Error_CallBack(void)
- 167:Core/Src/audio.c **** {
- 1145              		.loc 1 167 1 view -0
+ 166:Core/Src/audio.c **** }
+ 167:Core/Src/audio.c **** 
+ 168:Core/Src/audio.c **** void BSP_AUDIO_OUT_Error_CallBack(void)
+ 169:Core/Src/audio.c **** {
+ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccATB2kv.s 			page 29
+
+
+ 1145              		.loc 1 169 1 view -0
  1146              		.cfi_startproc
-ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccE8zZrE.s 			page 29
-
-
  1147              		@ Volatile: function does not return.
  1148              		@ args = 0, pretend = 0, frame = 0
  1149              		@ frame_needed = 0, uses_anonymous_args = 0
  1150              		@ link register save eliminated.
  1151              	.L55:
- 168:Core/Src/audio.c **** 	/* Stop the program with an infinite loop */
- 169:Core/Src/audio.c **** 	while (1)
- 1152              		.loc 1 169 2 discriminator 1 view .LVU283
- 170:Core/Src/audio.c **** 	{
- 171:Core/Src/audio.c **** 	}
- 1153              		.loc 1 171 2 discriminator 1 view .LVU284
- 169:Core/Src/audio.c **** 	{
- 1154              		.loc 1 169 8 discriminator 1 view .LVU285
+ 170:Core/Src/audio.c **** 	/* Stop the program with an infinite loop */
+ 171:Core/Src/audio.c **** 	while (1)
+ 1152              		.loc 1 171 2 discriminator 1 view .LVU283
+ 172:Core/Src/audio.c **** 	{
+ 173:Core/Src/audio.c **** 	}
+ 1153              		.loc 1 173 2 discriminator 1 view .LVU284
+ 171:Core/Src/audio.c **** 	{
+ 1154              		.loc 1 171 8 discriminator 1 view .LVU285
  1155 0000 FEE7     		b	.L55
  1156              		.cfi_endproc
  1157              	.LFE139:
@@ -1706,18 +1708,18 @@ ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccE8zZrE.s 			page 1
  1165              		.thumb_func
  1167              	DMA1_Stream7_IRQHandler:
  1168              	.LFB140:
- 172:Core/Src/audio.c **** }
- 173:Core/Src/audio.c **** 
- 174:Core/Src/audio.c **** 
- 175:Core/Src/audio.c **** void I2S3_IRQHandler(void)
- 176:Core/Src/audio.c **** {
- 1169              		.loc 1 176 1 view -0
+ 174:Core/Src/audio.c **** }
+ 175:Core/Src/audio.c **** 
+ 176:Core/Src/audio.c **** 
+ 177:Core/Src/audio.c **** void I2S3_IRQHandler(void)
+ 178:Core/Src/audio.c **** {
+ 1169              		.loc 1 178 1 view -0
  1170              		.cfi_startproc
  1171              		@ args = 0, pretend = 0, frame = 0
  1172              		@ frame_needed = 0, uses_anonymous_args = 0
  1173              		@ link register save eliminated.
- 177:Core/Src/audio.c **** 	HAL_DMA_IRQHandler(hAudioOutI2s.hdmatx);
- 1174              		.loc 1 177 2 view .LVU287
+ 179:Core/Src/audio.c **** 	HAL_DMA_IRQHandler(hAudioOutI2s.hdmatx);
+ 1174              		.loc 1 179 2 view .LVU287
  1175 0000 014B     		ldr	r3, .L57
  1176 0002 986B     		ldr	r0, [r3, #56]
  1177 0004 FFF7FEBF 		b	HAL_DMA_IRQHandler
@@ -1736,20 +1738,20 @@ ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccE8zZrE.s 			page 1
  1191              		.thumb
  1192              		.thumb_func
  1194              	DMA1_Stream3_IRQHandler:
+ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccATB2kv.s 			page 30
+
+
  1195              	.LFB141:
- 178:Core/Src/audio.c **** }
-ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccE8zZrE.s 			page 30
-
-
- 179:Core/Src/audio.c **** void I2S2_IRQHandler(void)
- 180:Core/Src/audio.c **** {
- 1196              		.loc 1 180 1 view -0
+ 180:Core/Src/audio.c **** }
+ 181:Core/Src/audio.c **** void I2S2_IRQHandler(void)
+ 182:Core/Src/audio.c **** {
+ 1196              		.loc 1 182 1 view -0
  1197              		.cfi_startproc
  1198              		@ args = 0, pretend = 0, frame = 0
  1199              		@ frame_needed = 0, uses_anonymous_args = 0
  1200              		@ link register save eliminated.
- 181:Core/Src/audio.c **** 	HAL_DMA_IRQHandler(hAudioInI2s.hdmarx);
- 1201              		.loc 1 181 2 view .LVU289
+ 183:Core/Src/audio.c **** 	HAL_DMA_IRQHandler(hAudioInI2s.hdmarx);
+ 1201              		.loc 1 183 2 view .LVU289
  1202 0000 014B     		ldr	r3, .L60
  1203 0002 D86B     		ldr	r0, [r3, #60]
  1204 0004 FFF7FEBF 		b	HAL_DMA_IRQHandler
@@ -1796,11 +1798,11 @@ ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccE8zZrE.s 			page 1
  1250 0014 369D2E41 		.word	1093573942
  1251 0018 4AFF3841 		.word	1094254410
  1252 001c 6AFF4341 		.word	1094975338
+ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccATB2kv.s 			page 31
+
+
  1253 0020 01A74F41 		.word	1095739137
  1254 0024 00005C41 		.word	1096548352
-ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccE8zZrE.s 			page 31
-
-
  1255 0028 F7146941 		.word	1097405687
  1256 002c 10F17641 		.word	1098314000
  1257 0030 13D08241 		.word	1099091987
@@ -1856,11 +1858,11 @@ ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccE8zZrE.s 			page 1
  1307 00f8 17D59243 		.word	1133696279
  1308 00fc 41909B43 		.word	1134268481
  1309 0100 54D0A443 		.word	1134874708
+ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccATB2kv.s 			page 32
+
+
  1310 0104 379DAE43 		.word	1135516983
  1311 0108 49FFB843 		.word	1136197449
-ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccE8zZrE.s 			page 32
-
-
  1312 010c 6AFFC343 		.word	1136918378
  1313 0110 00A7CF43 		.word	1137682176
  1314 0114 0000DC43 		.word	1138491392
@@ -1916,11 +1918,11 @@ ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccE8zZrE.s 			page 1
  1364 01dc 10F1F645 		.word	1173811472
  1365 01e0 13D00246 		.word	1174589459
  1366 01e4 60970A46 		.word	1175099232
+ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccATB2kv.s 			page 33
+
+
  1367 01e8 17D51246 		.word	1175639319
  1368 01ec 41901B46 		.word	1176211521
-ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccE8zZrE.s 			page 33
-
-
  1369 01f0 54D02446 		.word	1176817748
  1370 01f4 379D2E46 		.word	1177460023
  1371 01f8 49FF3846 		.word	1178140489
@@ -1976,11 +1978,11 @@ ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccE8zZrE.s 			page 1
  1423 00b4 5B0A083F 		.word	1057491547
  1424 00b8 7A39083F 		.word	1057503610
  1425 00bc BA68083F 		.word	1057515706
+ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccATB2kv.s 			page 34
+
+
  1426 00c0 0B98083F 		.word	1057527819
  1427 00c4 6DC7083F 		.word	1057539949
-ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccE8zZrE.s 			page 34
-
-
  1428 00c8 E0F6083F 		.word	1057552096
  1429 00cc 6326093F 		.word	1057564259
  1430 00d0 E755093F 		.word	1057576423
@@ -2036,11 +2038,11 @@ ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccE8zZrE.s 			page 1
  1480 0198 28F4123F 		.word	1058206760
  1481 019c 2427133F 		.word	1058219812
  1482 01a0 325A133F 		.word	1058232882
+ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccATB2kv.s 			page 35
+
+
  1483 01a4 3F8D133F 		.word	1058245951
  1484 01a8 6EC0133F 		.word	1058259054
-ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccE8zZrE.s 			page 35
-
-
  1485 01ac AEF3133F 		.word	1058272174
  1486 01b0 FE26143F 		.word	1058285310
  1487 01b4 605A143F 		.word	1058298464
@@ -2096,11 +2098,11 @@ ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccE8zZrE.s 			page 1
  1537 027c 27BE1E3F 		.word	1058979367
  1538 0280 34F51E3F 		.word	1058993460
  1539 0284 522C1F3F 		.word	1059007570
+ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccATB2kv.s 			page 36
+
+
  1540 0288 80631F3F 		.word	1059021696
  1541 028c D09A1F3F 		.word	1059035856
-ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccE8zZrE.s 			page 36
-
-
  1542 0290 20D21F3F 		.word	1059050016
  1543 0294 9109203F 		.word	1059064209
  1544 0298 1441203F 		.word	1059078420
@@ -2156,11 +2158,11 @@ ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccE8zZrE.s 			page 1
  1594 0360 3E7A2B3F 		.word	1059813950
  1595 0364 AFB52B3F 		.word	1059829167
  1596 0368 41F12B3F 		.word	1059844417
+ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccATB2kv.s 			page 37
+
+
  1597 036c E42C2C3F 		.word	1059859684
  1598 0370 98682C3F 		.word	1059874968
-ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccE8zZrE.s 			page 37
-
-
  1599 0374 5DA42C3F 		.word	1059890269
  1600 0378 44E02C3F 		.word	1059905604
  1601 037c 3B1C2D3F 		.word	1059920955
@@ -2216,11 +2218,11 @@ ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccE8zZrE.s 			page 1
  1651 0444 D13B393F 		.word	1060715473
  1652 0448 1C7C393F 		.word	1060731932
  1653 044c 66BC393F 		.word	1060748390
+ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccATB2kv.s 			page 38
+
+
  1654 0450 D2FC393F 		.word	1060764882
  1655 0454 4F3D3A3F 		.word	1060781391
-ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccE8zZrE.s 			page 38
-
-
  1656 0458 ED7D3A3F 		.word	1060797933
  1657 045c 9DBE3A3F 		.word	1060814493
  1658 0460 5CFF3A3F 		.word	1060831068
@@ -2276,11 +2278,11 @@ ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccE8zZrE.s 			page 1
  1708 0528 FC17483F 		.word	1061689340
  1709 052c 645D483F 		.word	1061707108
  1710 0530 DBA2483F 		.word	1061724891
+ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccATB2kv.s 			page 39
+
+
  1711 0534 75E8483F 		.word	1061742709
  1712 0538 1F2E493F 		.word	1061760543
-ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccE8zZrE.s 			page 39
-
-
  1713 053c DA73493F 		.word	1061778394
  1714 0540 B6B9493F 		.word	1061796278
  1715 0544 B5FF493F 		.word	1061814197
@@ -2336,11 +2338,11 @@ ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccE8zZrE.s 			page 1
  1765 060c 4A25583F 		.word	1062741322
  1766 0610 3370583F 		.word	1062760499
  1767 0614 4DBB583F 		.word	1062779725
+ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccATB2kv.s 			page 40
+
+
  1768 0618 7906593F 		.word	1062798969
  1769 061c B551593F 		.word	1062818229
-ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccE8zZrE.s 			page 40
-
-
  1770 0620 139D593F 		.word	1062837523
  1771 0624 92E8593F 		.word	1062856850
  1772 0628 22345A3F 		.word	1062876194
@@ -2396,11 +2398,11 @@ ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccE8zZrE.s 			page 1
  1822 06f0 3D7C693F 		.word	1063877693
  1823 06f4 2DCD693F 		.word	1063898413
  1824 06f8 4F1E6A3F 		.word	1063919183
+ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccATB2kv.s 			page 41
+
+
  1825 06fc 726F6A3F 		.word	1063939954
  1826 0700 C6C06A3F 		.word	1063960774
-ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccE8zZrE.s 			page 41
-
-
  1827 0704 2B126B3F 		.word	1063981611
  1828 0708 B2636B3F 		.word	1064002482
  1829 070c 5BB56B3F 		.word	1064023387
@@ -2456,11 +2458,11 @@ ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccE8zZrE.s 			page 1
  1879 07d4 50377C3F 		.word	1065105232
  1880 07d8 BD8E7C3F 		.word	1065127613
  1881 07dc 5CE67C3F 		.word	1065150044
+ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccATB2kv.s 			page 42
+
+
  1882 07e0 0C3E7D3F 		.word	1065172492
  1883 07e4 DD957D3F 		.word	1065194973
-ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccE8zZrE.s 			page 42
-
-
  1884 07e8 D0ED7D3F 		.word	1065217488
  1885 07ec E5457E3F 		.word	1065240037
  1886 07f0 0A9E7E3F 		.word	1065262602
@@ -2516,11 +2518,11 @@ ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccE8zZrE.s 			page 1
  1936 08b8 C53D883F 		.word	1065893317
  1937 08bc 166D883F 		.word	1065905430
  1938 08c0 809C883F 		.word	1065917568
+ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccATB2kv.s 			page 43
+
+
  1939 08c4 FBCB883F 		.word	1065929723
  1940 08c8 7FFB883F 		.word	1065941887
-ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccE8zZrE.s 			page 43
-
-
  1941 08cc 1B2B893F 		.word	1065954075
  1942 08d0 C95A893F 		.word	1065966281
  1943 08d4 7E8A893F 		.word	1065978494
@@ -2576,11 +2578,11 @@ ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccE8zZrE.s 			page 1
  1993 099c 6E31933F 		.word	1066611054
  1994 09a0 8C64933F 		.word	1066624140
  1995 09a4 C497933F 		.word	1066637252
+ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccATB2kv.s 			page 44
+
+
  1996 09a8 14CB933F 		.word	1066650388
  1997 09ac 6DFE933F 		.word	1066663533
-ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccE8zZrE.s 			page 44
-
-
  1998 09b0 D731943F 		.word	1066676695
  1999 09b4 5A65943F 		.word	1066689882
  2000 09b8 E598943F 		.word	1066703077
@@ -2636,11 +2638,11 @@ ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccE8zZrE.s 			page 1
  2050 0a80 70069F3F 		.word	1067386480
  2051 0a84 B83D9F3F 		.word	1067400632
  2052 0a88 08759F3F 		.word	1067414792
+ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccATB2kv.s 			page 45
+
+
  2053 0a8c 71AC9F3F 		.word	1067428977
  2054 0a90 F3E39F3F 		.word	1067443187
-ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccE8zZrE.s 			page 45
-
-
  2055 0a94 7E1BA03F 		.word	1067457406
  2056 0a98 2253A03F 		.word	1067471650
  2057 0a9c D78AA03F 		.word	1067485911
@@ -2696,11 +2698,11 @@ ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccE8zZrE.s 			page 1
  2107 0b64 FBCEAB3F 		.word	1068224251
  2108 0b68 AF0AAC3F 		.word	1068239535
  2109 0b6c 7446AC3F 		.word	1068254836
+ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccATB2kv.s 			page 46
+
+
  2110 0b70 5182AC3F 		.word	1068270161
  2111 0b74 40BEAC3F 		.word	1068285504
-ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccE8zZrE.s 			page 46
-
-
  2112 0b78 48FAAC3F 		.word	1068300872
  2113 0b7c 6936AD3F 		.word	1068316265
  2114 0b80 9372AD3F 		.word	1068331667
@@ -2756,11 +2758,11 @@ ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccE8zZrE.s 			page 1
  2164 0c48 8C9EB93F 		.word	1069129356
  2165 0c4c 11DFB93F 		.word	1069145873
  2166 0c50 A71FBA3F 		.word	1069162407
+ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccATB2kv.s 			page 47
+
+
  2167 0c54 5760BA3F 		.word	1069178967
  2168 0c58 16A1BA3F 		.word	1069195542
-ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccE8zZrE.s 			page 47
-
-
  2169 0c5c EFE1BA3F 		.word	1069212143
  2170 0c60 E222BB3F 		.word	1069228770
  2171 0c64 E563BB3F 		.word	1069245413
@@ -2816,11 +2818,11 @@ ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccE8zZrE.s 			page 1
  2221 0d2c 598AC83F 		.word	1070107225
  2222 0d30 0BD0C83F 		.word	1070125067
  2223 0d34 CF15C93F 		.word	1070142927
+ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccATB2kv.s 			page 48
+
+
  2224 0d38 B45BC93F 		.word	1070160820
  2225 0d3c A9A1C93F 		.word	1070178729
-ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccE8zZrE.s 			page 48
-
-
  2226 0d40 B8E7C93F 		.word	1070196664
  2227 0d44 E02DCA3F 		.word	1070214624
  2228 0d48 2174CA3F 		.word	1070232609
@@ -2876,11 +2878,11 @@ ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccE8zZrE.s 			page 1
  2278 0e10 37A9D83F 		.word	1071163703
  2279 0e14 7BF4D83F 		.word	1071182971
  2280 0e18 E23FD93F 		.word	1071202274
+ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccATB2kv.s 			page 49
+
+
  2281 0e1c 618BD93F 		.word	1071221601
  2282 0e20 F9D6D93F 		.word	1071240953
-ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccE8zZrE.s 			page 49
-
-
  2283 0e24 AB22DA3F 		.word	1071260331
  2284 0e28 766EDA3F 		.word	1071279734
  2285 0e2c 62BADA3F 		.word	1071299170
@@ -2936,11 +2938,11 @@ ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccE8zZrE.s 			page 1
  2335 0ef4 CB13EA3F 		.word	1072305099
  2336 0ef8 2865EA3F 		.word	1072325928
  2337 0efc 95B6EA3F 		.word	1072346773
+ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccATB2kv.s 			page 50
+
+
  2338 0f00 2508EB3F 		.word	1072367653
  2339 0f04 D559EB3F 		.word	1072388565
-ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccE8zZrE.s 			page 50
-
-
  2340 0f08 97ABEB3F 		.word	1072409495
  2341 0f0c 7AFDEB3F 		.word	1072430458
  2342 0f10 7F4FEC3F 		.word	1072451455
@@ -2996,11 +2998,11 @@ ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccE8zZrE.s 			page 1
  2392 0fd8 C9E4FC3F 		.word	1073538249
  2393 0fdc AC3CFD3F 		.word	1073560748
  2394 0fe0 AF94FD3F 		.word	1073583279
+ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccATB2kv.s 			page 51
+
+
  2395 0fe4 CCECFD3F 		.word	1073605836
  2396 0fe8 0245FE3F 		.word	1073628418
-ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccE8zZrE.s 			page 51
-
-
  2397 0fec 629DFE3F 		.word	1073651042
  2398 0ff0 DCF5FE3F 		.word	1073673692
  2399 0ff4 774EFF3F 		.word	1073696375
@@ -3021,47 +3023,47 @@ ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccE8zZrE.s 			page 1
  2414              		.file 13 "Core/Inc/MIDI_lut.h"
  2415              		.file 14 "Core/Inc/stereo_delay.h"
  2416              		.file 15 "Core/Inc/../../Drivers/BSP/STM32F4-Discovery/stm32f4_discovery_audio.h"
-ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccE8zZrE.s 			page 52
+ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccATB2kv.s 			page 52
 
 
 DEFINED SYMBOLS
                             *ABS*:0000000000000000 audio.c
-/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccE8zZrE.s:20     .text.audioBlock.constprop.0:0000000000000000 $t
-/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccE8zZrE.s:26     .text.audioBlock.constprop.0:0000000000000000 audioBlock.constprop.0
-/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccE8zZrE.s:438    .text.audioBlock.constprop.0:00000000000001b0 $d
-/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccE8zZrE.s:457    .text.AUDIO_Init:0000000000000000 $t
-/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccE8zZrE.s:464    .text.AUDIO_Init:0000000000000000 AUDIO_Init
-/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccE8zZrE.s:560    .text.AUDIO_Init:0000000000000098 $d
-/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccE8zZrE.s:574    .text.OpSetFreq:0000000000000000 $t
-/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccE8zZrE.s:581    .text.OpSetFreq:0000000000000000 OpSetFreq
-/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccE8zZrE.s:601    .text.OpSetFreq:0000000000000010 $d
-/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccE8zZrE.s:606    .text.audioBlock:0000000000000000 $t
-/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccE8zZrE.s:613    .text.audioBlock:0000000000000000 audioBlock
-/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccE8zZrE.s:1063   .text.audioBlock:00000000000001c8 $d
-/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccE8zZrE.s:1084   .text.BSP_AUDIO_OUT_HalfTransfer_CallBack:0000000000000000 $t
-/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccE8zZrE.s:1091   .text.BSP_AUDIO_OUT_HalfTransfer_CallBack:0000000000000000 BSP_AUDIO_OUT_HalfTransfer_CallBack
-/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccE8zZrE.s:1105   .text.BSP_AUDIO_OUT_HalfTransfer_CallBack:0000000000000008 $d
-/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccE8zZrE.s:1110   .text.BSP_AUDIO_OUT_TransferComplete_CallBack:0000000000000000 $t
-/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccE8zZrE.s:1117   .text.BSP_AUDIO_OUT_TransferComplete_CallBack:0000000000000000 BSP_AUDIO_OUT_TransferComplete_CallBack
-/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccE8zZrE.s:1131   .text.BSP_AUDIO_OUT_TransferComplete_CallBack:0000000000000008 $d
-/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccE8zZrE.s:1136   .text.BSP_AUDIO_OUT_Error_CallBack:0000000000000000 $t
-/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccE8zZrE.s:1143   .text.BSP_AUDIO_OUT_Error_CallBack:0000000000000000 BSP_AUDIO_OUT_Error_CallBack
-/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccE8zZrE.s:1160   .text.DMA1_Stream7_IRQHandler:0000000000000000 $t
-/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccE8zZrE.s:1167   .text.DMA1_Stream7_IRQHandler:0000000000000000 DMA1_Stream7_IRQHandler
-/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccE8zZrE.s:1182   .text.DMA1_Stream7_IRQHandler:0000000000000008 $d
-/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccE8zZrE.s:1187   .text.DMA1_Stream3_IRQHandler:0000000000000000 $t
-/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccE8zZrE.s:1194   .text.DMA1_Stream3_IRQHandler:0000000000000000 DMA1_Stream3_IRQHandler
-/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccE8zZrE.s:1209   .text.DMA1_Stream3_IRQHandler:0000000000000008 $d
-/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccE8zZrE.s:1237   .bss.delayROut:0000000000000000 delayROut
-/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccE8zZrE.s:1230   .bss.delayLOut:0000000000000000 delayLOut
-/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccE8zZrE.s:1223   .bss.audioBuffer:0000000000000000 audioBuffer
-/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccE8zZrE.s:1377   .rodata.pbend:0000000000000000 pbend
-/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccE8zZrE.s:1244   .rodata.mtof:0000000000000000 mtof
-/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccE8zZrE.s:1219   .bss.audioBuffer:0000000000000000 $d
-/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccE8zZrE.s:1226   .bss.delayLOut:0000000000000000 $d
-/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccE8zZrE.s:1233   .bss.delayROut:0000000000000000 $d
-/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccE8zZrE.s:1240   .rodata.mtof:0000000000000000 $d
-/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccE8zZrE.s:1374   .rodata.pbend:0000000000000000 $d
+/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccATB2kv.s:20     .text.audioBlock.constprop.0:0000000000000000 $t
+/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccATB2kv.s:26     .text.audioBlock.constprop.0:0000000000000000 audioBlock.constprop.0
+/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccATB2kv.s:438    .text.audioBlock.constprop.0:00000000000001b0 $d
+/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccATB2kv.s:457    .text.AUDIO_Init:0000000000000000 $t
+/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccATB2kv.s:464    .text.AUDIO_Init:0000000000000000 AUDIO_Init
+/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccATB2kv.s:560    .text.AUDIO_Init:0000000000000098 $d
+/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccATB2kv.s:574    .text.OpSetFreq:0000000000000000 $t
+/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccATB2kv.s:581    .text.OpSetFreq:0000000000000000 OpSetFreq
+/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccATB2kv.s:601    .text.OpSetFreq:0000000000000010 $d
+/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccATB2kv.s:606    .text.audioBlock:0000000000000000 $t
+/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccATB2kv.s:613    .text.audioBlock:0000000000000000 audioBlock
+/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccATB2kv.s:1063   .text.audioBlock:00000000000001c8 $d
+/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccATB2kv.s:1084   .text.BSP_AUDIO_OUT_HalfTransfer_CallBack:0000000000000000 $t
+/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccATB2kv.s:1091   .text.BSP_AUDIO_OUT_HalfTransfer_CallBack:0000000000000000 BSP_AUDIO_OUT_HalfTransfer_CallBack
+/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccATB2kv.s:1105   .text.BSP_AUDIO_OUT_HalfTransfer_CallBack:0000000000000008 $d
+/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccATB2kv.s:1110   .text.BSP_AUDIO_OUT_TransferComplete_CallBack:0000000000000000 $t
+/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccATB2kv.s:1117   .text.BSP_AUDIO_OUT_TransferComplete_CallBack:0000000000000000 BSP_AUDIO_OUT_TransferComplete_CallBack
+/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccATB2kv.s:1131   .text.BSP_AUDIO_OUT_TransferComplete_CallBack:0000000000000008 $d
+/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccATB2kv.s:1136   .text.BSP_AUDIO_OUT_Error_CallBack:0000000000000000 $t
+/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccATB2kv.s:1143   .text.BSP_AUDIO_OUT_Error_CallBack:0000000000000000 BSP_AUDIO_OUT_Error_CallBack
+/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccATB2kv.s:1160   .text.DMA1_Stream7_IRQHandler:0000000000000000 $t
+/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccATB2kv.s:1167   .text.DMA1_Stream7_IRQHandler:0000000000000000 DMA1_Stream7_IRQHandler
+/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccATB2kv.s:1182   .text.DMA1_Stream7_IRQHandler:0000000000000008 $d
+/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccATB2kv.s:1187   .text.DMA1_Stream3_IRQHandler:0000000000000000 $t
+/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccATB2kv.s:1194   .text.DMA1_Stream3_IRQHandler:0000000000000000 DMA1_Stream3_IRQHandler
+/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccATB2kv.s:1209   .text.DMA1_Stream3_IRQHandler:0000000000000008 $d
+/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccATB2kv.s:1237   .bss.delayROut:0000000000000000 delayROut
+/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccATB2kv.s:1230   .bss.delayLOut:0000000000000000 delayLOut
+/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccATB2kv.s:1223   .bss.audioBuffer:0000000000000000 audioBuffer
+/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccATB2kv.s:1377   .rodata.pbend:0000000000000000 pbend
+/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccATB2kv.s:1244   .rodata.mtof:0000000000000000 mtof
+/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccATB2kv.s:1219   .bss.audioBuffer:0000000000000000 $d
+/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccATB2kv.s:1226   .bss.delayLOut:0000000000000000 $d
+/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccATB2kv.s:1233   .bss.delayROut:0000000000000000 $d
+/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccATB2kv.s:1240   .rodata.mtof:0000000000000000 $d
+/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccATB2kv.s:1374   .rodata.pbend:0000000000000000 $d
 
 UNDEFINED SYMBOLS
 osc_polyblepSaw
@@ -3081,7 +3083,7 @@ BSP_AUDIO_OUT_Play
 osc_init
 ADSR_init
 MoogLP_init
-ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccE8zZrE.s 			page 53
+ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccATB2kv.s 			page 53
 
 
 Delay_init

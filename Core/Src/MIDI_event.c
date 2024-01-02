@@ -87,15 +87,15 @@ void ProcessMIDI(midi_package_t pack)
 		uint8_t noteOff = pack.evnt1;
 		notes_Active[noteOff] = 0;
 		notesCount--;
-		if (notesCount <= 0) // no more keys pressed
+		if (notesCount <= 0) // no notes active anymore
 		{
-			ADSR_keyOff(&adsr_amp);
+			ADSR_keyOff(&adsr_amp); // release both envelopes
 			ADSR_keyOff(&adsr_filt);
 			notesCount = 0;
 		}
 		else // legato 
 		{
-			if ((noteOff - MIN_MIDI_NOTE) == currentPitch) // let sound the lowest key pressed
+			if (noteOff  == currentPitch) // let sound the lowest key pressed
 			{
 				uint8_t i;
 				for (i = 0; i < 128; i++)
@@ -103,27 +103,21 @@ void ProcessMIDI(midi_package_t pack)
 					if (notes_Active[i] == 1) // find the lowest key pressed
 						break;
 				}
-				currentPitch = i - MIN_MIDI_NOTE; // conversion for mtof[]
+				currentPitch = i; // conversion for mtof[]
 			}
 		}
 		break;
-	/*********************  Note On *************************/	
+	
 	case 0x90: // Note On
 		uint8_t noteOn = pack.evnt1;
 		velocity = pack.evnt2;
-		if (velocity > 0) // True note on !
-		{
-			if (noteOn < MIN_MIDI_NOTE) // filtering notes
-			{
-				currentPitch = 0;
-			}
-			else
-			{
-				currentPitch = noteOn - MIN_MIDI_NOTE; // conversion for mtof[]
-			}
+		/*********************  Note On *************************/	
+		if (velocity > 0) 
+		{			
+			currentPitch = noteOn; // conversion for mtof[]
 			// SEGGER_RTT_printf(0, "Note ON, pitch %u\r\n", currentPitch); // debug
 			HAL_GPIO_WritePin(LD5_GPIO_Port, LD5_Pin, GPIO_PIN_SET); // red LED ON when incoming MIDI note on
-			ADSR_keyOn(&adsr_amp);
+			ADSR_keyOn(&adsr_amp); // start both envelopes
 			ADSR_keyOn(&adsr_filt);
 			notesCount++;
 			notes_Active[noteOn] = 1;
@@ -144,7 +138,7 @@ void ProcessMIDI(midi_package_t pack)
 			}
 			else // legato
 			{
-				if ((noteOn - MIN_MIDI_NOTE) == currentPitch)
+				if (noteOn == currentPitch)
 				{
 					uint8_t i;
 					for (i = 0; i < 128; i++)
@@ -152,7 +146,7 @@ void ProcessMIDI(midi_package_t pack)
 						if (notes_Active[i] == 1) // find the lowest key pressed
 							break;
 					}
-					currentPitch = i - MIN_MIDI_NOTE; // conversion for notesFreq[]
+					currentPitch = i; // conversion for notesFreq[]
 				}
 			}
 		}

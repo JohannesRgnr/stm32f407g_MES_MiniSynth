@@ -19,9 +19,9 @@
 // #define correctedFS         48095.f   // real samplerate (check STM32CubeMX configuration)
 
 #define FS                  44100     // selected samplerate
-/*  Actual samplerate is actually 44053 Hz (derived from I2S clock).. 
+/*  Actual samplerate is actually 44020 Hz (derived from I2S clock).. 
 *   we take that into account for accurate tuning */
-#define correctedFS         44053.f   // real samplerate (check STM32CubeMX configuration)
+#define correctedFS         44020.f   // real samplerate (check STM32CubeMX configuration)
 
 
 
@@ -37,19 +37,10 @@
 #define PI                  3.14159265359
 #define TWOPI               6.28318530718
 
-#define MIN_MIDI_NOTE       0      // C-2
-#define MAX_MIDI_NOTE       127    // G-8
 #define MIDI_MAX            127.f 
 #define MIDI_MAXi           127
 
 
-
-/* settings gotten from Xavier Halgand .. Using Core-Coupled-Memory to speed things up */
-#define _CCM_					__attribute__((section(".ccmram"))) // for use of CCM RAM (64kB)
-
-#if defined   (__GNUC__)        /* GNU Compiler */
-    #define __ALIGN    __attribute__ ((aligned (4)))
-#endif /* __GNUC__ */
 
 #endif // !_CONSTS_H
 
