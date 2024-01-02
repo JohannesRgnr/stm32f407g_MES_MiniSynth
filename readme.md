@@ -9,7 +9,7 @@ Midi Synthesizer on STM32F407G_Discovery board.
 - Exponential ADSR envelopes
 - Bitcrushing / rate decimator effect
 - stereo delay effect
-- UI, 2-inch LCD 7789V controller, LVGL graphics library, DMA mode
+- UI, 2-inch LCD, ST7789V controller, LVGL graphics library, DMA mode
 
 
 WIP....
