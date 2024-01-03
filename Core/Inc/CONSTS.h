@@ -40,6 +40,11 @@
 #define MIDI_MAX            127.f 
 #define MIDI_MAXi           127
 
+#define _CCM_					__attribute__((section(".ccmram"))) // for use of CCM RAM (64kB)
+
+#if defined   (__GNUC__)        /* GNU Compiler */
+    #define __ALIGN    __attribute__ ((aligned (4)))
+#endif /* __GNUC__ */
 
 
 #endif // !_CONSTS_H

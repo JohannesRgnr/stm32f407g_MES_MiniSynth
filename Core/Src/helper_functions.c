@@ -29,10 +29,10 @@ float interp_lin_lut(float index, uint16_t table_size, const float *table){
     while (trunc > table_size)
         trunc = trunc - table_size;
 
-    if (trunc == table_size-1) 
-        diff = table[0] - table[trunc]; // wrap
-    else
-        diff = table[trunc+1] - table[trunc]; // no need to wrap
+    // if (trunc == table_size-1) 
+    //     diff = table[0] - table[trunc]; // wrap
+    // else
+    diff = table[trunc+1] - table[trunc]; // no need to check and wrap, table size is 1025
 
     // get the interpolated output
     return table[trunc] + (diff * frac);

@@ -13,8 +13,7 @@ void SVF_LP_init(ZDFLP_t * filter){
     filter->s1 = 0.0f;
     filter->s2 = 0.0f;
     filter->r = 0.65f;           // slight resonance
-    filter->cutoff = 1200;
-    filter->g = 0.11;
+    filter->cutoff = 1200;    
 }
 
 float freq_to_g(float freq) // calculate g coefficient for SVF
@@ -27,7 +26,7 @@ float freq_to_g(float freq) // calculate g coefficient for SVF
 float SVF_LP_compute(ZDFLP_t *f, float sample)
 {
 	float bp, lp, hp;
-    // float f->g = freq_to_g(f->cutoff);
+    f->g = freq_to_g(f->cutoff);
     hp = (sample - 2.0f * f->r * f->s1 - f->g * f->s1 - f->s2) / (1.0f + 2.0f * f->r * f->g + f->g * f->g);
     bp = f->g * hp + f->s1;
 	f->s1 = f->g * hp + bp; // state in 1st trapezoidal integrator
