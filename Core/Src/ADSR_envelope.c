@@ -54,10 +54,9 @@
 
 
 
-ADSR_t			adsr_amp ;
-ADSR_t			adsr_filt ;
-
-
+ADSR_t			adsr_amp _CCM_;
+ADSR_t			adsr_filt _CCM_;
+ADSR_t			adsr_index _CCM_;
 
 
 void ADSR_init(ADSR_t *env)
@@ -66,7 +65,7 @@ void ADSR_init(ADSR_t *env)
     env->value = 0.0;
     env->state = OFF;
     env->atk_time = 0.001;
-    env->dcy_time = 2;
+    env->dcy_time = 1;
     env->sust_level = 0.3;
     env->rel_time = 2; 
     env->atk_mult = ADSR_calculateMultiplier(ADSR_MIN_LEVEL, env->target, env->atk_time); 

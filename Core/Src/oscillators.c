@@ -19,9 +19,11 @@
 #include "lut_sine.h"
 #include "helper_functions.h"
 
-oscillator_t osc1 ;
-oscillator_t osc2 ;
-oscillator_t sub_osc ;
+oscillator_t osc1 _CCM_;
+oscillator_t osc2 _CCM_;
+oscillator_t osc3 _CCM_;
+oscillator_t osc4 _CCM_;
+oscillator_t sub_osc _CCM_;
 
 
 void osc_init(oscillator_t *osc, float amp, float freq, float mod, float freq_mult, float pw)
@@ -52,7 +54,7 @@ float osc_FM2OP(float freq)
     osc_Sine(&osc2);
     osc1.phase += osc1.mod * osc2.output;
     osc_Sine(&osc1);
-
+    
     return osc1.output;
 }
 

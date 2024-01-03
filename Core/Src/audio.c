@@ -38,18 +38,19 @@ int16_t audioBuffer[BUFFER_SIZE];
 extern uint8_t currentPitch;
 extern uint8_t velocity;
 extern ADSR_t adsr_amp, adsr_filt;
+extern ADSR_t adsr_index;
 extern ZDFLadder_t Moog_filter;
-extern oscillator_t osc1, osc2, sub_osc;
+extern oscillator_t osc1, osc2, osc3, osc4, sub_osc;
 
 
-static float f0 ;			// frequency of oscillators 1 & 2
+static float f0;			// frequency of oscillators 1 & 2
 static float f_sub ;		// frequency of sub oscillator
 static float amp_env ;		// amplitude envelope
-static float filt_env ;	// filter envelope
+static float filt_env ;		// filter envelope
+static float index_env ;	// FM index envelope
 
-
-float delayLOut = 0 ;	// left output of ping pong delay
-float delayROut = 0;	// right output of ping pong delay
+float delayLOut = 0 ;		// left output of ping pong delay
+float delayROut = 0;		// right output of ping pong delay
 
 
 
@@ -72,12 +73,15 @@ void AUDIO_Init()
 	
 	
 	osc_init(&osc1, 0.5, 1000, 0, 0, 0.5);
-	osc_init(&osc2, 0.5, 440, 0, 0, 0.5);
+	osc_init(&osc2, 0.5, 440, 0, 2, 0.5);
+	osc_init(&osc3, 0.5, 1000, 0, 0, 0.5);
+	osc_init(&osc4, 0.5, 440, 0, 0, 0.5);
 	osc_init(&sub_osc, 0.5, 440, 0, 0, 0.5);
 
 
 	ADSR_init(&adsr_amp);
 	ADSR_init(&adsr_filt);
+	ADSR_init(&adsr_index);
 	MoogLP_init(&Moog_filter);
 	Delay_init();
 	
@@ -111,19 +115,27 @@ void audioBlock(int16_t *buffer, uint16_t samples)
 		
 		/* test with 3 oscillators*/
 		OpSetFreq(&osc1, f0);
-		OpSetFreq(&osc2, f0 + 5);
+		OpSetFreq(&osc2, 2*f0);
+		OpSetFreq(&osc3, f0-0.2);
+		OpSetFreq(&osc4, f0 + 0.5);
 		
 		f_sub = mtof[max(currentPitch - 12, 0)];
 		OpSetFreq(&sub_osc, f_sub);
-		sample = 0.5*(osc_polyblepSaw(&osc1) + osc_polyblepSaw(&osc2) + osc_polyblepRect(&sub_osc));
+		//sample = 0.5*(osc_polyblepSaw(&osc1) + osc_polyblepSaw(&osc2) + osc_polyblepSaw(&osc3) + osc_polyblepSaw(&osc4)+ osc_polyblepRect(&sub_osc));
 		//sample = osc_Sine(&osc1);
+
+		// FM
+		index_env = ADSR_compute(&adsr_index);
+		osc1.mod = 0.033*index_env;	
+		sample = osc_FM2OP(f0) + 0.5* osc_polyblepRect(&sub_osc);
 
 		/****************** Apply filter ***********************/
 		filt_env = ADSR_compute(&adsr_filt);
-		Moog_filter.cutoff = 2000 * filt_env;
+		Moog_filter.cutoff = 1300 * filt_env;
 		sample = MoogLP_compute(&Moog_filter, sample);
 	
-
+		
+		
 		/************** Apply amplitude envelope ****************/
 		amp_env = ADSR_compute(&adsr_amp);
 		sample *= amp_env;
