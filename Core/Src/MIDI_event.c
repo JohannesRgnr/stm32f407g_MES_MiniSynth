@@ -26,7 +26,7 @@ MIDI_ApplicationTypeDef Appli_state = MIDI_APPLICATION_IDLE;
 
 uint16_t pitchbend ;
 uint8_t currentPitch ;
-uint8_t velocity ;
+uint8_t velocity, noteOn_velocity;
 uint8_t notes_Active[128] = {0}; // at most, 128 MIDI notes are active
 int8_t notesCount = 0 ;			 // number of notes active
 extern ADSR_t adsr_amp;
@@ -116,7 +116,8 @@ void ProcessMIDI(midi_package_t pack)
 		/*********************  Note On *************************/	
 		if (velocity > 0) 
 		{			
-			currentPitch = noteOn; 
+			currentPitch = noteOn;
+			noteOn_velocity = velocity;
 			ADSR_keyOn(&adsr_amp); // start envelopes
 			ADSR_keyOn(&adsr_filt);
 			ADSR_keyOn(&adsr_index);

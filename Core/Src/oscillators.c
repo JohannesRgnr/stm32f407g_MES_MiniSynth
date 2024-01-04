@@ -26,13 +26,13 @@ oscillator_t osc4 _CCM_;
 oscillator_t sub_osc _CCM_;
 
 
-void osc_init(oscillator_t *osc, float amp, float freq, float mod, float freq_mult, float pw)
+void osc_init(oscillator_t *osc, float amp, float freq, float FM_index, float FM_ratio, float pw)
 {
     osc->amp = amp;
     osc->freq = A0 * freq;
     osc->phase = 0;
-    osc->mod = mod;
-    osc->freq_mult = freq_mult;
+    osc->FM_index = FM_index;
+    osc->FM_ratio = FM_ratio;
     osc->pw = pw;
     osc->output = 0;
 }
@@ -50,9 +50,9 @@ float osc_Sine(oscillator_t *osc)
 float osc_FM2OP(float freq)
 {
     osc1.freq = A0 * freq;
-    osc2.freq = osc2.freq_mult * A0 * freq;
+    osc2.freq = osc2.FM_ratio * A0 * freq;
     osc_Sine(&osc2);
-    osc1.phase += osc1.mod * osc2.output;
+    osc1.phase += osc1.FM_index * osc2.output;
     osc_Sine(&osc1);
     
     return osc1.output;

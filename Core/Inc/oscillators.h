@@ -33,8 +33,8 @@ typedef struct
     float amp;
     float freq;
     float phase;
-    float mod;
-    float freq_mult;
+    float FM_index;
+    float FM_ratio;
     float pw;
     float output;
 } oscillator_t;

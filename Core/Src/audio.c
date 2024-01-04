@@ -36,7 +36,7 @@ int16_t audioBuffer[BUFFER_SIZE];
 
 
 extern uint8_t currentPitch;
-extern uint8_t velocity;
+extern uint8_t velocity, noteOn_velocity;
 extern ADSR_t adsr_amp, adsr_filt;
 extern ADSR_t adsr_index;
 extern ZDFLadder_t Moog_filter;
@@ -115,7 +115,7 @@ void audioBlock(int16_t *buffer, uint16_t samples)
 		
 		/* test with 3 oscillators*/
 		OpSetFreq(&osc1, f0);
-		OpSetFreq(&osc2, 2*f0);
+		OpSetFreq(&osc2, f0);
 		OpSetFreq(&osc3, f0-0.2);
 		OpSetFreq(&osc4, f0 + 0.5);
 		
@@ -126,8 +126,8 @@ void audioBlock(int16_t *buffer, uint16_t samples)
 
 		// FM
 		index_env = ADSR_compute(&adsr_index);
-		osc1.mod = 0.033*index_env;	
-		sample = osc_FM2OP(f0) + 0.5* osc_polyblepRect(&sub_osc);
+		osc1.FM_index = (noteOn_velocity/127.f) * 0.033 * index_env;	
+		sample = osc_FM2OP(f0);
 
 		/****************** Apply filter ***********************/
 		filt_env = ADSR_compute(&adsr_filt);
