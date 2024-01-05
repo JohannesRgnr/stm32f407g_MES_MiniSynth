@@ -44,15 +44,6 @@ void UI_LCD_init(){
     lv_obj_align_to(label1, pot1, LV_ALIGN_BOTTOM_MID, 0, +15);
     lv_obj_align_to(label2, pot2, LV_ALIGN_BOTTOM_MID, 0, +15);
 
-        //lv_obj_add_event_cb(arc, value_changed_event_cb, LV_EVENT_VALUE_CHANGED, label);
-
-    /*Manually update the label for the first time*/
-    // lv_event_send(pot1, LV_EVENT_VALUE_CHANGED, NULL);
-
-    /*Create a spinner*/
-	// lv_obj_t * spinner = lv_spinner_create(lv_scr_act(), 1000, 60);
-	// lv_obj_set_size(spinner, 64, 64);
-	// lv_obj_align(spinner, LV_ALIGN_BOTTOM_MID, 0, 0);
 }
 
 void UI_LCD_process(){
@@ -60,13 +51,4 @@ void UI_LCD_process(){
     lv_arc_set_angles(pot2, 0, 270 * pot2_norm);
 }
 
-// static void value_changed_event_cb(lv_event_t * e)
-// {
-//     lv_obj_t * arc = lv_event_get_target(e);
-//     lv_obj_t * label = lv_event_get_user_data(e);
 
-//     lv_label_set_text_fmt(label, "%d%%", pot1_norm * 1023);
-
-//     /*Rotate the label to the current position of the arc*/
-//     lv_arc_rotate_obj_to_angle(arc, label, arc);
-// }

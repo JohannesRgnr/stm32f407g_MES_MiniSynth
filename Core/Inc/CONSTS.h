@@ -31,7 +31,7 @@
 #define BUFFER_SIZE         256             // size of the audio buffer (samples)
 #define BUFFER_SIZE_DIV_2   (BUFFER_SIZE/2)
 #define BUFFER_SIZE_DIV_4   (BUFFER_SIZE/4)
-#define INITIAL_VOLUME      85              // initial volume level
+#define INITIAL_VOLUME      90              // initial volume level
 
 
 
