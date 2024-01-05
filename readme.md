@@ -2,17 +2,17 @@
 
 Final project for the Making Embedded Systems course
 
-Midi Synthesizer on STM32F407G_Discovery board.
-- MIDI USB Host mode for external USB midi keyboard or controller
-- Digital oscillators: sine, bandlimited sawtooth, bandlimited pulse wave, FM
+Small MIDI Synthesizer on STM32F407G_Discovery board.
+- MIDI USB Host mode (for external USB midi keyboard or controller)
+- Digital oscillators: bandlimited sawtooth, bandlimited pulse wave, FM, sine
 - 4-pole resonant lowpass filter (Zero delay feedback)
 - Exponential ADSR envelopes
 - Bitcrushing / rate decimator effect
 - stereo delay effect
-- UI, 2-inch LCD, ST7789V controller, LVGL graphics library, DMA mode
+- 2-inch LCD, LVGL graphics library
 
 
-WIP....
+WIP.
 
 
 
