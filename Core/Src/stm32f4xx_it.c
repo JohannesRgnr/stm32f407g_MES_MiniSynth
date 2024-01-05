@@ -25,6 +25,7 @@
 #include "lvgl.h"
 #include "SEGGER_RTT.h"
 #include "UI_hardware.h"
+
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -61,6 +62,8 @@
 extern HCD_HandleTypeDef hHCD;
 extern DMA_HandleTypeDef hdma_spi1_tx;
 extern SPI_HandleTypeDef hspi1;
+
+extern 
 /* USER CODE BEGIN EV */
 
 /* USER CODE END EV */
@@ -194,6 +197,9 @@ void SysTick_Handler(void)
   
   /* USER CODE BEGIN SysTick_IRQn 1 */
   poll_ADCs();
+
+ 
+
   //uint32_t tick = HAL_GetTick();
   // SEGGER_RTT_printf(0, "Tick: %u\r\n", tick); // debug
   /* USER CODE END SysTick_IRQn 1 */

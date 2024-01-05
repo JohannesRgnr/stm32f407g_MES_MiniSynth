@@ -95,14 +95,7 @@ build/lv_refr.o: Drivers/lvgl/src/core/lv_refr.c \
  Drivers/lvgl/src/core/../font/lv_font.h \
  Drivers/lvgl/src/core/../extra/others/snapshot/lv_snapshot.h \
  Drivers/lvgl/src/core/../extra/others/snapshot/../../../lv_conf_internal.h \
- Drivers/lvgl/src/core/../extra/others/snapshot/../../../core/lv_obj.h \
- Drivers/lvgl/src/core/../widgets/lv_label.h \
- Drivers/lvgl/src/core/../widgets/../lv_conf_internal.h \
- Drivers/lvgl/src/core/../widgets/../core/lv_obj.h \
- Drivers/lvgl/src/core/../widgets/../font/lv_font.h \
- Drivers/lvgl/src/core/../widgets/../font/lv_symbol_def.h \
- Drivers/lvgl/src/core/../widgets/../misc/lv_txt.h \
- Drivers/lvgl/src/core/../widgets/../draw/lv_draw.h
+ Drivers/lvgl/src/core/../extra/others/snapshot/../../../core/lv_obj.h
 Drivers/lvgl/src/core/lv_refr.h:
 Drivers/lvgl/src/core/lv_obj.h:
 Drivers/lvgl/src/core/../lv_conf_internal.h:
@@ -205,10 +198,3 @@ Drivers/lvgl/src/core/../font/lv_font.h:
 Drivers/lvgl/src/core/../extra/others/snapshot/lv_snapshot.h:
 Drivers/lvgl/src/core/../extra/others/snapshot/../../../lv_conf_internal.h:
 Drivers/lvgl/src/core/../extra/others/snapshot/../../../core/lv_obj.h:
-Drivers/lvgl/src/core/../widgets/lv_label.h:
-Drivers/lvgl/src/core/../widgets/../lv_conf_internal.h:
-Drivers/lvgl/src/core/../widgets/../core/lv_obj.h:
-Drivers/lvgl/src/core/../widgets/../font/lv_font.h:
-Drivers/lvgl/src/core/../widgets/../font/lv_symbol_def.h:
-Drivers/lvgl/src/core/../widgets/../misc/lv_txt.h:
-Drivers/lvgl/src/core/../widgets/../draw/lv_draw.h:

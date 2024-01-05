@@ -42,6 +42,7 @@ Core/Src/MIDI_application.c \
 Core/Src/MIDI_event.c \
 Core/Src/SEGGER_RTT.c \
 Core/Src/SEGGER_RTT_printf.c \
+Core/Src/UI_LCD.c \
 Core/Src/UI_hardware.c \
 Core/Src/adc.c \
 Core/Src/audio.c \

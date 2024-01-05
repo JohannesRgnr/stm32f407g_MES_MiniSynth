@@ -25,6 +25,7 @@
 #include "MIDI_event.h"
 #include "LCDController.h"
 #include "st7789v.h"
+#include "UI_LCD.h"
 
 
 /* USER CODE END Includes */
@@ -105,15 +106,16 @@ int main(void)
 	 /* USER CODE BEGIN 2 */
 	lv_init();
 	lv_port_disp_init();
+	UI_LCD_init();
 
-	// // Change the active screen's background color
-	lv_obj_set_style_bg_color(lv_scr_act(), lv_color_hex(0x003a57), LV_PART_MAIN);
-	lv_obj_set_style_text_color(lv_scr_act(), lv_color_hex(0xffffff), LV_PART_MAIN);
+	// // // Change the active screen's background color
+	// lv_obj_set_style_bg_color(lv_scr_act(), lv_color_hex(0x003a57), LV_PART_MAIN);
+	// lv_obj_set_style_text_color(lv_scr_act(), lv_color_hex(0xffffff), LV_PART_MAIN);
 
-	/*Create a spinner*/
-	lv_obj_t * spinner = lv_spinner_create(lv_scr_act(), 1000, 60);
-	lv_obj_set_size(spinner, 64, 64);
-	lv_obj_align(spinner, LV_ALIGN_BOTTOM_MID, 0, 0);
+	// /*Create a spinner*/
+	// lv_obj_t * spinner = lv_spinner_create(lv_scr_act(), 1000, 60);
+	// lv_obj_set_size(spinner, 64, 64);
+	// lv_obj_align(spinner, LV_ALIGN_BOTTOM_MID, 0, 0);
 
 	/*## Init Host Library ################################################*/
 	USBH_Init(&hUSBHost, USBH_UserProcess_callback, 0);
@@ -141,6 +143,7 @@ int main(void)
 
 		/* USER CODE BEGIN 3 */
 		lv_timer_handler(); // to be added
+		UI_LCD_process();
 		MIDI_Application();
 		// ConsoleProcess();
 		/* USBH_Background Process */

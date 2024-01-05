@@ -40,6 +40,6 @@ void poll_ADCs(void){
 	data_pot2 = (uint16_t)smoothing_LP(&smooth_ADC2, HAL_ADC_GetValue(&hadc2), 0.98) >> 2;
 	pot2_norm = data_pot2 * ONE_OVER_1023;
 
-	// SEGGER_RTT_printf(0, "Pots values [0, 1023] : %u %u\r\n", data_pot1, data_pot2);
+	// SEGGER_RTT_printf(0, "Pots values [0, 1023] : %u %u\r\n", data_pot1, data_pot2); // debug
 
 }
