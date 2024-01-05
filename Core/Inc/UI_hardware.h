@@ -1,6 +1,6 @@
 #ifndef _UI_HARDWARE_H
 #define _UI_HARDWARE_H
 
-
+#define ONE_OVER_1023   0.0009775171065
 
 #endif // !_UI_HARDWARE_H

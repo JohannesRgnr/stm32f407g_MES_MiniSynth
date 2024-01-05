@@ -21,6 +21,10 @@
 ZDFLP_t lp_L ;
 ZDFLP_t lp_R ;
 
+onepoleLP_t smooth_ADC1;
+onepoleLP_t smooth_ADC2;
+
+
 void SVF_LP_init(ZDFLP_t * filter){
     filter->s1 = 0.0f;
     filter->s2 = 0.0f;
@@ -28,7 +32,13 @@ void SVF_LP_init(ZDFLP_t * filter){
     filter->cutoff = 1200;    
 }
 
-float freq_to_g(float freq) // calculate g coefficient for SVF
+/**
+ * @brief calculate g coefficient for SVF
+ * 
+ * @param freq 
+ * @return float 
+ */
+float freq_to_g(float freq) 
 {
 	return interp_lin_lut(LUT_TAN_SIZE * (PI* freq * TS), LUT_TAN_SIZE, tan_lut);
     //return 0;
@@ -53,16 +63,17 @@ float SVF_LP_compute(ZDFLP_t *f, float sample)
 	return lp;
 }
 
+
 /**
  * @brief A simple lowpass filter, useful to smooth data. 
  * @note    alpha = 0: no filtering. alpha close to 1: strong smoothing/filtering
- * @param input 
- * @param alpha 
+ * @param f 
+ * @param sample 
  * @return float 
  */
-float smoothing_LP(float input, float alpha){
-  static float old_value, output;
-  output = alpha * old_value + (1 - alpha) * input;
-  old_value = output;
+float smoothing_LP(onepoleLP_t *f, float sample, float alpha){
+  float output;
+  output = alpha * f->old_value + (1 - alpha) * sample;
+  f->old_value = output;
   return output;
 }

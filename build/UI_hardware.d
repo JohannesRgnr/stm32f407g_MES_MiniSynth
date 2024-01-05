@@ -50,7 +50,8 @@ build/UI_hardware.o: Core/Src/UI_hardware.c Core/Inc/UI_hardware.h \
  Core/Inc/../../Drivers/BSP/STM32F4-Discovery/../../../Middlewares/ST/STM32_Audio/Addons/PDM/Inc/pdm2pcm_glo.h \
  Core/Inc/CONSTS.h Core/Inc/oscillators.h Core/Inc/ADSR_envelope.h \
  Core/Inc/ladder_filter.h Core/Inc/stereo_delay.h \
- Core/Inc/helper_functions.h Core/Inc/filters.h Core/Inc/SEGGER_RTT.h
+ Core/Inc/helper_functions.h Core/Inc/filters.h Core/Inc/filters.h \
+ Core/Inc/SEGGER_RTT.h Core/Inc/helper_functions.h
 Core/Inc/UI_hardware.h:
 Core/Inc/adc.h:
 Core/Inc/main.h:
@@ -115,4 +116,6 @@ Core/Inc/ladder_filter.h:
 Core/Inc/stereo_delay.h:
 Core/Inc/helper_functions.h:
 Core/Inc/filters.h:
+Core/Inc/filters.h:
 Core/Inc/SEGGER_RTT.h:
+Core/Inc/helper_functions.h:

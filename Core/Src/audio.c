@@ -42,7 +42,7 @@ extern ADSR_t adsr_amp, adsr_filt;
 extern ADSR_t adsr_index;
 extern ZDFLadder_t Moog_filter;
 extern oscillator_t osc1, osc2, osc3, osc4, sub_osc;
-
+extern float pot1_norm, pot2_norm;
 
 static float f0;			// frequency of oscillators 1 & 2
 static float f_sub ;		// frequency of sub oscillator
@@ -109,6 +109,7 @@ void audioBlock(int16_t *buffer, uint16_t samples)
 	float sample, sampleL, sampleR;
 	uint16_t valueL, valueR;
 	
+
 	for (i = 0; i < samples; i++)
 	{
 
@@ -122,8 +123,8 @@ void audioBlock(int16_t *buffer, uint16_t samples)
 		
 		f_sub = mtof[max(currentPitch - 12, 0)];
 		OpSetFreq(&sub_osc, f_sub);
-		// sample = 0.5*(osc_polyblepSaw(&osc1) + osc_polyblepSaw(&osc2) + osc_polyblepSaw(&osc3) + osc_polyblepSaw(&osc4)+ osc_polyblepRect(&sub_osc));
-		sample = 0*osc_polyblepSaw(&osc1) + osc_polyblepRect(&sub_osc);
+		sample = 0.5*(osc_polyblepSaw(&osc1) + osc_polyblepSaw(&osc2) + osc_polyblepSaw(&osc3) + osc_polyblepSaw(&osc4)+ osc_polyblepRect(&sub_osc));
+		// sample = 0*osc_polyblepSaw(&osc1) + osc_polyblepRect(&sub_osc);
 		// sample = osc_Sine(&osc1);
 
 		// FM
@@ -133,11 +134,11 @@ void audioBlock(int16_t *buffer, uint16_t samples)
 
 		/****************** Apply filter ***********************/
 		filt_env = ADSR_compute(&adsr_filt);
-		Moog_filter.cutoff = 2000 * filt_env;
+		Moog_filter.cutoff =clip(10.f * filt_env + 12000.f * pot1_norm, 20, 12000); // probably error in the tan table
+		Moog_filter.k = 4.5f * pot2_norm;
+
 		sample = MoogLP_compute(&Moog_filter, sample);
-	
-		
-		
+
 		/************** Apply amplitude envelope ****************/
 		amp_env = ADSR_compute(&adsr_amp);
 		sample *= amp_env;

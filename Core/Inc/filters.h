@@ -24,9 +24,16 @@ typedef struct
 	float g;
 } ZDFLP_t;
 
+
+typedef struct
+{
+	float old_value;
+	
+} onepoleLP_t;
+
 void  SVF_LP_init(ZDFLP_t *filter);
 float freq_to_g(float freq); // calculate g coefficient for SVF
 float SVF_LP_compute(ZDFLP_t *f, float sample);
-float smoothing_LP(float input, float alpha);
+float smoothing_LP(onepoleLP_t *f, float sample,  float alpha);
 
 #endif // !_FILTERS_H_
