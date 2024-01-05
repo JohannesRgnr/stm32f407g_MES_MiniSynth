@@ -33,7 +33,7 @@ void MoogLP_init(ZDFLadder_t * filter){
 float MoogLP_compute(ZDFLadder_t * filter, float input)
 {
 	float f, one_over_oneplusf, g, G, y1, y2, y3, y4, feedback;
-    f = interp_lin_lut(LUT_TAN_SIZE * (PI * filter->cutoff * TS), LUT_TAN_SIZE, tan_lut);
+    f = interp_lin_lut(LUT_TAN_SIZE * (0.5*PI * filter->cutoff * TS), LUT_TAN_SIZE, tan_lut);
     // f = tanf(PI * filter->cutoff * TS);
 	one_over_oneplusf = 1 / (1 + f);
 	g = f * one_over_oneplusf;

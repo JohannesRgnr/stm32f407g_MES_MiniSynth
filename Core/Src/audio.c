@@ -134,7 +134,7 @@ void audioBlock(int16_t *buffer, uint16_t samples)
 
 		/****************** Apply filter ***********************/
 		filt_env = ADSR_compute(&adsr_filt);
-		Moog_filter.cutoff =clip(10.f * filt_env + 12000.f * pot1_norm, 20, 12000); // probably error in the tan table
+		Moog_filter.cutoff =clip(1000.f * filt_env + NYQUIST * pot1_norm * pot1_norm * pot1_norm * pot1_norm, 20, NYQUIST); 
 		Moog_filter.k = 4.5f * pot2_norm;
 
 		sample = MoogLP_compute(&Moog_filter, sample);

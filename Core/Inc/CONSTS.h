@@ -26,11 +26,12 @@
 
 
 #define A0                  FS/correctedFS  // correcting factor for tuning
-#define TS		            (1.f/FS)    // sampling period
-#define BUFFER_SIZE         256         // size of the audio buffer (samples)
+#define TS		            (1.f/FS)        // sampling period
+#define NYQUIST		        FS/2.f          // Nyquist frequency
+#define BUFFER_SIZE         256             // size of the audio buffer (samples)
 #define BUFFER_SIZE_DIV_2   (BUFFER_SIZE/2)
 #define BUFFER_SIZE_DIV_4   (BUFFER_SIZE/4)
-#define INITIAL_VOLUME      85      // initial volume level
+#define INITIAL_VOLUME      85              // initial volume level
 
 
 
