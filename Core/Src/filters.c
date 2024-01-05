@@ -1,4 +1,16 @@
 
+/**
+ * @file filters.c
+ * @author johannes regnier
+ * @brief various filters
+ * @version 0.1
+ * @date 2024-01-05
+ * 
+ * @copyright Copyright (c) 2024
+ * 
+ */
+
+
 #include "helper_functions.h"
 #include "filters.h"
 #include "CONSTS.h"
@@ -22,7 +34,13 @@ float freq_to_g(float freq) // calculate g coefficient for SVF
     //return 0;
 }
 
-/* Zero-delay feedback SVF in LP mode*/
+/**
+ * @brief 2-pole resonant state variable filter, in lowpass mode
+ * 
+ * @param f 
+ * @param sample 
+ * @return float 
+ */
 float SVF_LP_compute(ZDFLP_t *f, float sample)
 {
 	float bp, lp, hp;
@@ -33,4 +51,18 @@ float SVF_LP_compute(ZDFLP_t *f, float sample)
 	lp = f->g * bp + f->s2;
 	f->s2 = f->g * bp + lp; // state in 2nd trapezoidal integrator
 	return lp;
+}
+
+/**
+ * @brief A simple lowpass filter, useful to smooth data. 
+ * @note    alpha = 0: no filtering. alpha close to 1: strong smoothing/filtering
+ * @param input 
+ * @param alpha 
+ * @return float 
+ */
+float smoothing_LP(float input, float alpha){
+  static float old_value, output;
+  output = alpha * old_value + (1 - alpha) * input;
+  old_value = output;
+  return output;
 }

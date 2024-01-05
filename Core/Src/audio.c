@@ -18,6 +18,7 @@
 #include "ADSR_envelope.h"
 #include "ladder_filter.h"
 #include "bitcrusher.h"
+#include "flanger.h"
 #include "stereo_delay.h"
 #include "MIDI_lut.h"
 #include <stdint.h>
@@ -83,8 +84,8 @@ void AUDIO_Init()
 	ADSR_init(&adsr_filt);
 	ADSR_init(&adsr_index);
 	MoogLP_init(&Moog_filter);
+	// flanger_init();
 	Delay_init();
-	
 }
 
 void OpSetFreq(oscillator_t * op, float f)
@@ -121,17 +122,18 @@ void audioBlock(int16_t *buffer, uint16_t samples)
 		
 		f_sub = mtof[max(currentPitch - 12, 0)];
 		OpSetFreq(&sub_osc, f_sub);
-		//sample = 0.5*(osc_polyblepSaw(&osc1) + osc_polyblepSaw(&osc2) + osc_polyblepSaw(&osc3) + osc_polyblepSaw(&osc4)+ osc_polyblepRect(&sub_osc));
-		//sample = osc_Sine(&osc1);
+		// sample = 0.5*(osc_polyblepSaw(&osc1) + osc_polyblepSaw(&osc2) + osc_polyblepSaw(&osc3) + osc_polyblepSaw(&osc4)+ osc_polyblepRect(&sub_osc));
+		sample = 0*osc_polyblepSaw(&osc1) + osc_polyblepRect(&sub_osc);
+		// sample = osc_Sine(&osc1);
 
 		// FM
-		index_env = ADSR_compute(&adsr_index);
-		osc1.FM_index = (noteOn_velocity/127.f) * 0.033 * index_env;	
-		sample = osc_FM2OP(f0);
+		//index_env = ADSR_compute(&adsr_index);
+		//osc1.FM_index = (noteOn_velocity/127.f) * 0.033 * index_env;	
+		//sample = osc_FM2OP(f0);
 
 		/****************** Apply filter ***********************/
 		filt_env = ADSR_compute(&adsr_filt);
-		Moog_filter.cutoff = 1300 * filt_env;
+		Moog_filter.cutoff = 2000 * filt_env;
 		sample = MoogLP_compute(&Moog_filter, sample);
 	
 		
@@ -143,6 +145,9 @@ void audioBlock(int16_t *buffer, uint16_t samples)
 		
 		/************** Apply bitcrushing effect ***************/
 		// sample = decimator(sample, 0.2, 16);
+
+		/************** Apply flanging effect ***************/
+		// sample = flanger_compute(sample); // TODO
 
 		/************** Apply delay effect ****************/
 		pingpongDelay_compute(sample, &delayLOut, &delayROut);

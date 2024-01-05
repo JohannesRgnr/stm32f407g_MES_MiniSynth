@@ -1,0 +1,154 @@
+ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccsgw9Yo.s 			page 1
+
+
+   1              		.cpu cortex-m4
+   2              		.arch armv7e-m
+   3              		.fpu fpv4-sp-d16
+   4              		.eabi_attribute 27, 1
+   5              		.eabi_attribute 28, 1
+   6              		.eabi_attribute 20, 1
+   7              		.eabi_attribute 21, 1
+   8              		.eabi_attribute 23, 3
+   9              		.eabi_attribute 24, 1
+  10              		.eabi_attribute 25, 1
+  11              		.eabi_attribute 26, 1
+  12              		.eabi_attribute 30, 2
+  13              		.eabi_attribute 34, 1
+  14              		.eabi_attribute 18, 4
+  15              		.file	"UI_hardware.c"
+  16              		.text
+  17              	.Ltext0:
+  18              		.cfi_sections	.debug_frame
+  19              		.section	.rodata.poll_ADCs.str1.4,"aMS",%progbits,1
+  20              		.align	2
+  21              	.LC0:
+  22 0000 506F7420 		.ascii	"Pot raw value [0, 4095] : %u.\015\012\000"
+  22      72617720 
+  22      76616C75 
+  22      65205B30 
+  22      2C203430 
+  23              		.section	.text.poll_ADCs,"ax",%progbits
+  24              		.align	1
+  25              		.p2align 2,,3
+  26              		.global	poll_ADCs
+  27              		.syntax unified
+  28              		.thumb
+  29              		.thumb_func
+  31              	poll_ADCs:
+  32              	.LFB242:
+  33              		.file 1 "Core/Src/UI_hardware.c"
+   1:Core/Src/UI_hardware.c **** 
+   2:Core/Src/UI_hardware.c **** 
+   3:Core/Src/UI_hardware.c **** #include "UI_hardware.h"
+   4:Core/Src/UI_hardware.c **** #include "adc.h"
+   5:Core/Src/UI_hardware.c **** #include "SEGGER_RTT.h"
+   6:Core/Src/UI_hardware.c **** 
+   7:Core/Src/UI_hardware.c **** uint16_t raw;
+   8:Core/Src/UI_hardware.c **** 
+   9:Core/Src/UI_hardware.c **** void poll_ADCs(void){
+  34              		.loc 1 9 21 view -0
+  35              		.cfi_startproc
+  36              		@ args = 0, pretend = 0, frame = 0
+  37              		@ frame_needed = 0, uses_anonymous_args = 0
+  10:Core/Src/UI_hardware.c ****     HAL_ADC_Start(&hadc1);
+  38              		.loc 1 10 5 view .LVU1
+   9:Core/Src/UI_hardware.c ****     HAL_ADC_Start(&hadc1);
+  39              		.loc 1 9 21 is_stmt 0 view .LVU2
+  40 0000 10B5     		push	{r4, lr}
+  41              		.cfi_def_cfa_offset 8
+  42              		.cfi_offset 4, -8
+  43              		.cfi_offset 14, -4
+ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccsgw9Yo.s 			page 2
+
+
+  44              		.loc 1 10 5 view .LVU3
+  45 0002 0B4C     		ldr	r4, .L4
+  46 0004 2046     		mov	r0, r4
+  47 0006 FFF7FEFF 		bl	HAL_ADC_Start
+  48              	.LVL0:
+  11:Core/Src/UI_hardware.c **** 	HAL_ADC_PollForConversion(&hadc1, HAL_MAX_DELAY);
+  49              		.loc 1 11 2 is_stmt 1 view .LVU4
+  50 000a 4FF0FF31 		mov	r1, #-1
+  51 000e 2046     		mov	r0, r4
+  52 0010 FFF7FEFF 		bl	HAL_ADC_PollForConversion
+  53              	.LVL1:
+  12:Core/Src/UI_hardware.c **** 	raw = HAL_ADC_GetValue(&hadc1);
+  54              		.loc 1 12 2 view .LVU5
+  55              		.loc 1 12 8 is_stmt 0 view .LVU6
+  56 0014 2046     		mov	r0, r4
+  57 0016 FFF7FEFF 		bl	HAL_ADC_GetValue
+  58              	.LVL2:
+  59              		.loc 1 12 6 view .LVU7
+  60 001a 064C     		ldr	r4, .L4+4
+  13:Core/Src/UI_hardware.c **** 	// raw = smoothing_filter(raw);
+  14:Core/Src/UI_hardware.c **** 		
+  15:Core/Src/UI_hardware.c ****     SEGGER_RTT_printf(0, "Pot raw value [0, 4095] : %u.\r\n", raw);
+  61              		.loc 1 15 5 view .LVU8
+  62 001c 0649     		ldr	r1, .L4+8
+  12:Core/Src/UI_hardware.c **** 	raw = HAL_ADC_GetValue(&hadc1);
+  63              		.loc 1 12 8 view .LVU9
+  64 001e 0346     		mov	r3, r0
+  65              		.loc 1 15 5 view .LVU10
+  66 0020 82B2     		uxth	r2, r0
+  12:Core/Src/UI_hardware.c **** 	raw = HAL_ADC_GetValue(&hadc1);
+  67              		.loc 1 12 6 view .LVU11
+  68 0022 2380     		strh	r3, [r4]	@ movhi
+  69              		.loc 1 15 5 is_stmt 1 view .LVU12
+  70 0024 0020     		movs	r0, #0
+  16:Core/Src/UI_hardware.c **** 
+  17:Core/Src/UI_hardware.c **** }...
+  71              		.loc 1 17 1 is_stmt 0 view .LVU13
+  72 0026 BDE81040 		pop	{r4, lr}
+  73              		.cfi_restore 14
+  74              		.cfi_restore 4
+  75              		.cfi_def_cfa_offset 0
+  15:Core/Src/UI_hardware.c ****     SEGGER_RTT_printf(0, "Pot raw value [0, 4095] : %u.\r\n", raw);
+  76              		.loc 1 15 5 view .LVU14
+  77 002a FFF7FEBF 		b	SEGGER_RTT_printf
+  78              	.LVL3:
+  79              	.L5:
+  80 002e 00BF     		.align	2
+  81              	.L4:
+  82 0030 00000000 		.word	hadc1
+  83 0034 00000000 		.word	.LANCHOR0
+  84 0038 00000000 		.word	.LC0
+  85              		.cfi_endproc
+  86              	.LFE242:
+  88              		.global	raw
+  89              		.section	.bss.raw,"aw",%nobits
+  90              		.align	1
+  91              		.set	.LANCHOR0,. + 0
+ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccsgw9Yo.s 			page 3
+
+
+  94              	raw:
+  95 0000 0000     		.space	2
+  96              		.text
+  97              	.Letext0:
+  98              		.file 2 "/Users/johannes/Library/Application Support/Code/User/globalStorage/bmd.stm32-for-vscode/
+  99              		.file 3 "/Users/johannes/Library/Application Support/Code/User/globalStorage/bmd.stm32-for-vscode/
+ 100              		.file 4 "Drivers/CMSIS/Device/ST/STM32F4xx/Include/stm32f407xx.h"
+ 101              		.file 5 "Drivers/CMSIS/Device/ST/STM32F4xx/Include/stm32f4xx.h"
+ 102              		.file 6 "Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_def.h"
+ 103              		.file 7 "Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_dma.h"
+ 104              		.file 8 "Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_adc.h"
+ 105              		.file 9 "Core/Inc/SEGGER_RTT.h"
+ 106              		.file 10 "Core/Inc/adc.h"
+ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccsgw9Yo.s 			page 4
+
+
+DEFINED SYMBOLS
+                            *ABS*:0000000000000000 UI_hardware.c
+/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccsgw9Yo.s:20     .rodata.poll_ADCs.str1.4:0000000000000000 $d
+/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccsgw9Yo.s:24     .text.poll_ADCs:0000000000000000 $t
+/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccsgw9Yo.s:31     .text.poll_ADCs:0000000000000000 poll_ADCs
+/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccsgw9Yo.s:82     .text.poll_ADCs:0000000000000030 $d
+/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccsgw9Yo.s:94     .bss.raw:0000000000000000 raw
+/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccsgw9Yo.s:90     .bss.raw:0000000000000000 $d
+
+UNDEFINED SYMBOLS
+HAL_ADC_Start
+HAL_ADC_PollForConversion
+HAL_ADC_GetValue
+SEGGER_RTT_printf
+hadc1

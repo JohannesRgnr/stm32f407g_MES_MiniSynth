@@ -24,7 +24,7 @@ oscillator_t osc2 _CCM_;
 oscillator_t osc3 _CCM_;
 oscillator_t osc4 _CCM_;
 oscillator_t sub_osc _CCM_;
-
+oscillator_t flanger_lfo _CCM_;
 
 void osc_init(oscillator_t *osc, float amp, float freq, float FM_index, float FM_ratio, float pw)
 {

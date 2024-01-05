@@ -17,6 +17,9 @@ build/main.o: Core/Src/main.c Core/Inc/main.h \
  Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_dma.h \
  Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_dma_ex.h \
  Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_cortex.h \
+ Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_adc.h \
+ Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_ll_adc.h \
+ Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_adc_ex.h \
  Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_flash.h \
  Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_flash_ex.h \
  Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_flash_ramfunc.h \
@@ -48,8 +51,9 @@ build/main.o: Core/Src/main.c Core/Inc/main.h \
  Core/Inc/ladder_filter.h Core/Inc/stereo_delay.h \
  Core/Inc/helper_functions.h Core/Inc/filters.h Core/Inc/dma.h \
  Core/Inc/main.h Core/Inc/i2c.h Core/Inc/i2s.h Core/Inc/spi.h \
- Core/Inc/gpio.h Core/Inc/MIDI_event.h Core/Inc/LCDController.h \
- Drivers/lvgl/lvgl.h Drivers/lvgl/src/misc/lv_log.h \
+ Core/Inc/gpio.h Core/Inc/adc.h Core/Inc/MIDI_event.h \
+ Core/Inc/LCDController.h Drivers/lvgl/lvgl.h \
+ Drivers/lvgl/src/misc/lv_log.h \
  Drivers/lvgl/src/misc/../lv_conf_internal.h \
  Drivers/lvgl/src/misc/../lv_conf_kconfig.h \
  Drivers/lvgl/src/misc/../../../lv_conf.h \
@@ -276,6 +280,9 @@ Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_exti.h:
 Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_dma.h:
 Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_dma_ex.h:
 Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_cortex.h:
+Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_adc.h:
+Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_ll_adc.h:
+Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_adc_ex.h:
 Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_flash.h:
 Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_flash_ex.h:
 Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_flash_ramfunc.h:
@@ -320,6 +327,7 @@ Core/Inc/i2c.h:
 Core/Inc/i2s.h:
 Core/Inc/spi.h:
 Core/Inc/gpio.h:
+Core/Inc/adc.h:
 Core/Inc/MIDI_event.h:
 Core/Inc/LCDController.h:
 Drivers/lvgl/lvgl.h:

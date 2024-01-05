@@ -23,6 +23,8 @@
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 #include "lvgl.h"
+#include "SEGGER_RTT.h"
+#include "UI_hardware.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -189,8 +191,11 @@ void SysTick_Handler(void)
   lv_tick_inc(1); 
   /* USER CODE END SysTick_IRQn 0 */
   HAL_IncTick();
+  
   /* USER CODE BEGIN SysTick_IRQn 1 */
-
+  poll_ADCs();
+  //uint32_t tick = HAL_GetTick();
+  // SEGGER_RTT_printf(0, "Tick: %u\r\n", tick); // debug
   /* USER CODE END SysTick_IRQn 1 */
 }
 

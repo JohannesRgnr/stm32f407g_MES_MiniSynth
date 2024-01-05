@@ -44,28 +44,34 @@ void Delay_init(void)
 }
 
 
-void Delay_time_set(uint8_t val)
+void Delay_time_set(uint32_t time_L, uint32_t time_R)
 {
-	float 	*pos;
-	delay_time_L = (uint32_t) lrintf((DELAY_BUFF_SIZE - 1 - MIN_DELAY)/MIDI_MAX * val + MIN_DELAY);
-	pos = writeptrL - delay_time_L;
-	if (pos >= delaylineL)
-		readptrL = pos;
+	float 	*posL, *posR;
+	delay_time_L = time_L;
+	delay_time_R = time_R;
+	posL = writeptrL - delay_time_L;
+	if (posL >= delaylineL)
+		readptrL = posL;
 	else
-		readptrL = pos + DELAY_BUFF_SIZE - 1;
+		readptrL = posL + DELAY_BUFF_SIZE - 1;
+	posR = writeptrR - delay_time_R;
+	if (posR >= delaylineR)
+		readptrR = posR;
+	else
+		readptrR = posR + DELAY_BUFF_SIZE - 1;
 
 }
 
 
 void DelayFeedback_set(uint8_t val)
 {
-	feedback = val / MIDI_MAX;
+	feedback = val;
 }
 
 
 void DelayWet_set(uint8_t val)
 {
-	delay_wet = val / MIDI_MAX;
+	delay_wet = val;
 }
 
 

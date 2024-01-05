@@ -42,6 +42,8 @@ Core/Src/MIDI_application.c \
 Core/Src/MIDI_event.c \
 Core/Src/SEGGER_RTT.c \
 Core/Src/SEGGER_RTT_printf.c \
+Core/Src/UI_hardware.c \
+Core/Src/adc.c \
 Core/Src/audio.c \
 Core/Src/bitcrusher.c \
 Core/Src/console.c \
@@ -49,6 +51,7 @@ Core/Src/consoleCommands.c \
 Core/Src/consoleIo.c \
 Core/Src/dma.c \
 Core/Src/filters.c \
+Core/Src/flanger.c \
 Core/Src/gpio.c \
 Core/Src/helper_functions.c \
 Core/Src/i2c.c \
@@ -73,6 +76,7 @@ Drivers/BSP/STM32F4-Discovery/stm32f4_discovery_audio.c \
 Drivers/ST7789V/fonts.c \
 Drivers/ST7789V/st7789v.c \
 Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal.c \
+Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_adc.c \
 Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_cortex.c \
 Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_dma.c \
 Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_dma_ex.c \

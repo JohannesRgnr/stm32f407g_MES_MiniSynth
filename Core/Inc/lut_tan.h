@@ -4,7 +4,7 @@
 #define LUT_TAN_SIZE   2048
 
 
-extern const float tan_lut[];
+extern float tan_lut[];
 
 #endif // ! _LUT_TAN_H
 

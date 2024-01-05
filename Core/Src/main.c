@@ -18,6 +18,7 @@
 #include "i2s.h"
 #include "spi.h"
 #include "gpio.h"
+#include "adc.h"
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
@@ -70,8 +71,7 @@ void SystemClock_Config(void);
 int main(void)
 {
 	/* USER CODE BEGIN 1 */
-
-	/* USER CODE END 1 */
+		/* USER CODE END 1 */
 
 	/* MCU Configuration--------------------------------------------------------*/
 
@@ -91,6 +91,7 @@ int main(void)
 
 	/* Initialize all configured peripherals */
 	MX_GPIO_Init();
+	MX_ADC1_Init();
 	MX_DMA_Init();
 	MX_I2C1_Init();
 	MX_I2S3_Init();
@@ -124,7 +125,7 @@ int main(void)
 
 	
 	
-	MIDI_eventInit();
+	// MIDI_eventInit();
 	AUDIO_Init();
 
 	// ConsoleInit();
