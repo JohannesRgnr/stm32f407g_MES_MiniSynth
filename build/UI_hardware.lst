@@ -1,4 +1,4 @@
-ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccoQHOu7.s 			page 1
+ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccOMLnqr.s 			page 1
 
 
    1              		.cpu cortex-m4
@@ -30,136 +30,142 @@ ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccoQHOu7.s 			page 1
   27              		.thumb
   28              		.thumb_func
   30              	poll_ADCs:
-  31              	.LFB242:
+  31              	.LFB446:
   32              		.file 1 "Core/Src/UI_hardware.c"
    1:Core/Src/UI_hardware.c **** /**
    2:Core/Src/UI_hardware.c ****  * @file UI_hardware.c
    3:Core/Src/UI_hardware.c ****  * @author johannes regnier
    4:Core/Src/UI_hardware.c ****  * @brief hardware user interface
-   5:Core/Src/UI_hardware.c ****  * @note  UI is for the moment 2 potentiometers (on PC1 and PC2).. Data resolution is 10bits [0, 10
-   6:Core/Src/UI_hardware.c ****  * @version 0.1
-   7:Core/Src/UI_hardware.c ****  * @date 2024-01-05
-   8:Core/Src/UI_hardware.c ****  * 
-   9:Core/Src/UI_hardware.c ****  * @copyright Copyright (c) 2024
+   5:Core/Src/UI_hardware.c ****  * *****  UI is for the moment:
+   6:Core/Src/UI_hardware.c ****  * *****  2 potentiometers (on PC1 and PC2).. Data resolution is 10bits [0, 1023], smoothed using a
+   7:Core/Src/UI_hardware.c ****  * *****  1 encoder (on PB4 / PB5)
+   8:Core/Src/UI_hardware.c ****  * @version 0.1
+   9:Core/Src/UI_hardware.c ****  * @date 2024-01-05
   10:Core/Src/UI_hardware.c ****  * 
-  11:Core/Src/UI_hardware.c ****  */
-  12:Core/Src/UI_hardware.c **** 
-  13:Core/Src/UI_hardware.c **** 
-  14:Core/Src/UI_hardware.c **** #include "UI_hardware.h"
-  15:Core/Src/UI_hardware.c **** #include "adc.h"
-  16:Core/Src/UI_hardware.c **** #include "filters.h"
-  17:Core/Src/UI_hardware.c **** #include "SEGGER_RTT.h"
-  18:Core/Src/UI_hardware.c **** #include "helper_functions.h"
-  19:Core/Src/UI_hardware.c **** #include "tim.h"
-  20:Core/Src/UI_hardware.c **** 
-  21:Core/Src/UI_hardware.c **** uint16_t raw1, raw2;
-  22:Core/Src/UI_hardware.c **** extern onepoleLP_t smooth_ADC1;
-  23:Core/Src/UI_hardware.c **** extern onepoleLP_t smooth_ADC2;
-  24:Core/Src/UI_hardware.c **** static uint16_t data_pot1, data_pot2;
-  25:Core/Src/UI_hardware.c **** float pot1_norm, pot2_norm;
-  26:Core/Src/UI_hardware.c **** uint16_t old_count, count;
-ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccoQHOu7.s 			page 2
+  11:Core/Src/UI_hardware.c ****  * @copyright Copyright (c) 2024
+  12:Core/Src/UI_hardware.c ****  * 
+  13:Core/Src/UI_hardware.c ****  */
+  14:Core/Src/UI_hardware.c **** 
+  15:Core/Src/UI_hardware.c **** 
+  16:Core/Src/UI_hardware.c **** #include "UI_hardware.h"
+  17:Core/Src/UI_hardware.c **** #include "adc.h"
+  18:Core/Src/UI_hardware.c **** #include "filters.h"
+  19:Core/Src/UI_hardware.c **** #include "SEGGER_RTT.h"
+  20:Core/Src/UI_hardware.c **** #include "helper_functions.h"
+  21:Core/Src/UI_hardware.c **** #include "tim.h"
+  22:Core/Src/UI_hardware.c **** #include "UI_LCD.h"
+  23:Core/Src/UI_hardware.c **** #include "LCDController.h"
+  24:Core/Src/UI_hardware.c **** #include "st7789v.h"
+  25:Core/Src/UI_hardware.c **** 
+  26:Core/Src/UI_hardware.c **** uint16_t raw1, raw2;
+ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccOMLnqr.s 			page 2
 
 
-  27:Core/Src/UI_hardware.c **** 
-  28:Core/Src/UI_hardware.c **** /**
-  29:Core/Src/UI_hardware.c ****  * @brief Polling ADC values. This function is called by SysTick_Handler (in stm32f4xx_it.c) every 
-  30:Core/Src/UI_hardware.c ****  * 
-  31:Core/Src/UI_hardware.c ****  */
-  32:Core/Src/UI_hardware.c **** void poll_ADCs(void){
-  33              		.loc 1 32 21 view -0
+  27:Core/Src/UI_hardware.c **** extern onepoleLP_t smooth_ADC1;
+  28:Core/Src/UI_hardware.c **** extern onepoleLP_t smooth_ADC2;
+  29:Core/Src/UI_hardware.c **** static uint16_t data_pot1, data_pot2;
+  30:Core/Src/UI_hardware.c **** float pot1_norm, pot2_norm;
+  31:Core/Src/UI_hardware.c **** uint16_t old_count, count, current_count;
+  32:Core/Src/UI_hardware.c **** extern lv_obj_t *tabview;
+  33:Core/Src/UI_hardware.c **** 
+  34:Core/Src/UI_hardware.c **** /**
+  35:Core/Src/UI_hardware.c ****  * @brief Polling ADC values. This function is called by SysTick_Handler (in stm32f4xx_it.c) every 
+  36:Core/Src/UI_hardware.c ****  * 
+  37:Core/Src/UI_hardware.c ****  */
+  38:Core/Src/UI_hardware.c **** void poll_ADCs(void){
+  33              		.loc 1 38 21 view -0
   34              		.cfi_startproc
   35              		@ args = 0, pretend = 0, frame = 8
   36              		@ frame_needed = 0, uses_anonymous_args = 0
-  33:Core/Src/UI_hardware.c ****     HAL_ADC_Start(&hadc1);
-  37              		.loc 1 33 5 view .LVU1
-  32:Core/Src/UI_hardware.c ****     HAL_ADC_Start(&hadc1);
-  38              		.loc 1 32 21 is_stmt 0 view .LVU2
+  39:Core/Src/UI_hardware.c ****     HAL_ADC_Start(&hadc1);
+  37              		.loc 1 39 5 view .LVU1
+  38:Core/Src/UI_hardware.c ****     HAL_ADC_Start(&hadc1);
+  38              		.loc 1 38 21 is_stmt 0 view .LVU2
   39 0000 30B5     		push	{r4, r5, lr}
   40              		.cfi_def_cfa_offset 12
   41              		.cfi_offset 4, -12
   42              		.cfi_offset 5, -8
   43              		.cfi_offset 14, -4
-  44              		.loc 1 33 5 view .LVU3
+  44              		.loc 1 39 5 view .LVU3
   45 0002 314C     		ldr	r4, .L4+8
-  34:Core/Src/UI_hardware.c **** 	HAL_ADC_PollForConversion(&hadc1, HAL_MAX_DELAY);
-  35:Core/Src/UI_hardware.c **** 	raw1 = HAL_ADC_GetValue(&hadc1);
-  36:Core/Src/UI_hardware.c **** 	data_pot1 = (uint16_t)smoothing_LP(&smooth_ADC1, HAL_ADC_GetValue(&hadc1), 0.98) >> 2;
-  46              		.loc 1 36 24 view .LVU4
+  40:Core/Src/UI_hardware.c **** 	HAL_ADC_PollForConversion(&hadc1, HAL_MAX_DELAY);
+  41:Core/Src/UI_hardware.c **** 	raw1 = HAL_ADC_GetValue(&hadc1);
+  42:Core/Src/UI_hardware.c **** 	data_pot1 = (uint16_t)smoothing_LP(&smooth_ADC1, HAL_ADC_GetValue(&hadc1), 0.98) >> 2;
+  46              		.loc 1 42 24 view .LVU4
   47 0004 DFED310A 		vldr.32	s1, .L4+12
-  37:Core/Src/UI_hardware.c **** 	pot1_norm = data_pot1 * ONE_OVER_1023;
-  48              		.loc 1 37 12 view .LVU5
+  43:Core/Src/UI_hardware.c **** 	pot1_norm = data_pot1 * ONE_OVER_1023;
+  48              		.loc 1 43 12 view .LVU5
   49 0008 314D     		ldr	r5, .L4+16
-  32:Core/Src/UI_hardware.c ****     HAL_ADC_Start(&hadc1);
-  50              		.loc 1 32 21 view .LVU6
+  38:Core/Src/UI_hardware.c ****     HAL_ADC_Start(&hadc1);
+  50              		.loc 1 38 21 view .LVU6
   51 000a 83B0     		sub	sp, sp, #12
   52              		.cfi_def_cfa_offset 24
-  33:Core/Src/UI_hardware.c **** 	HAL_ADC_PollForConversion(&hadc1, HAL_MAX_DELAY);
-  53              		.loc 1 33 5 view .LVU7
+  39:Core/Src/UI_hardware.c **** 	HAL_ADC_PollForConversion(&hadc1, HAL_MAX_DELAY);
+  53              		.loc 1 39 5 view .LVU7
   54 000c 2046     		mov	r0, r4
-  36:Core/Src/UI_hardware.c **** 	pot1_norm = data_pot1 * ONE_OVER_1023;
-  55              		.loc 1 36 24 view .LVU8
+  42:Core/Src/UI_hardware.c **** 	pot1_norm = data_pot1 * ONE_OVER_1023;
+  55              		.loc 1 42 24 view .LVU8
   56 000e CDED010A 		vstr.32	s1, [sp, #4]	@ int
-  33:Core/Src/UI_hardware.c **** 	HAL_ADC_PollForConversion(&hadc1, HAL_MAX_DELAY);
-  57              		.loc 1 33 5 view .LVU9
+  39:Core/Src/UI_hardware.c **** 	HAL_ADC_PollForConversion(&hadc1, HAL_MAX_DELAY);
+  57              		.loc 1 39 5 view .LVU9
   58 0012 FFF7FEFF 		bl	HAL_ADC_Start
   59              	.LVL0:
-  34:Core/Src/UI_hardware.c **** 	raw1 = HAL_ADC_GetValue(&hadc1);
-  60              		.loc 1 34 2 is_stmt 1 view .LVU10
+  40:Core/Src/UI_hardware.c **** 	raw1 = HAL_ADC_GetValue(&hadc1);
+  60              		.loc 1 40 2 is_stmt 1 view .LVU10
   61 0016 4FF0FF31 		mov	r1, #-1
   62 001a 2046     		mov	r0, r4
   63 001c FFF7FEFF 		bl	HAL_ADC_PollForConversion
   64              	.LVL1:
-  35:Core/Src/UI_hardware.c **** 	data_pot1 = (uint16_t)smoothing_LP(&smooth_ADC1, HAL_ADC_GetValue(&hadc1), 0.98) >> 2;
-  65              		.loc 1 35 2 view .LVU11
-  35:Core/Src/UI_hardware.c **** 	data_pot1 = (uint16_t)smoothing_LP(&smooth_ADC1, HAL_ADC_GetValue(&hadc1), 0.98) >> 2;
-  66              		.loc 1 35 9 is_stmt 0 view .LVU12
+  41:Core/Src/UI_hardware.c **** 	data_pot1 = (uint16_t)smoothing_LP(&smooth_ADC1, HAL_ADC_GetValue(&hadc1), 0.98) >> 2;
+  65              		.loc 1 41 2 view .LVU11
+ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccOMLnqr.s 			page 3
+
+
+  41:Core/Src/UI_hardware.c **** 	data_pot1 = (uint16_t)smoothing_LP(&smooth_ADC1, HAL_ADC_GetValue(&hadc1), 0.98) >> 2;
+  66              		.loc 1 41 9 is_stmt 0 view .LVU12
   67 0020 2046     		mov	r0, r4
   68 0022 FFF7FEFF 		bl	HAL_ADC_GetValue
   69              	.LVL2:
-  35:Core/Src/UI_hardware.c **** 	data_pot1 = (uint16_t)smoothing_LP(&smooth_ADC1, HAL_ADC_GetValue(&hadc1), 0.98) >> 2;
-ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccoQHOu7.s 			page 3
-
-
-  70              		.loc 1 35 7 view .LVU13
+  41:Core/Src/UI_hardware.c **** 	data_pot1 = (uint16_t)smoothing_LP(&smooth_ADC1, HAL_ADC_GetValue(&hadc1), 0.98) >> 2;
+  70              		.loc 1 41 7 view .LVU13
   71 0026 2B4B     		ldr	r3, .L4+20
-  35:Core/Src/UI_hardware.c **** 	data_pot1 = (uint16_t)smoothing_LP(&smooth_ADC1, HAL_ADC_GetValue(&hadc1), 0.98) >> 2;
-  72              		.loc 1 35 9 view .LVU14
+  41:Core/Src/UI_hardware.c **** 	data_pot1 = (uint16_t)smoothing_LP(&smooth_ADC1, HAL_ADC_GetValue(&hadc1), 0.98) >> 2;
+  72              		.loc 1 41 9 view .LVU14
   73 0028 0246     		mov	r2, r0
-  36:Core/Src/UI_hardware.c **** 	pot1_norm = data_pot1 * ONE_OVER_1023;
-  74              		.loc 1 36 51 view .LVU15
+  42:Core/Src/UI_hardware.c **** 	pot1_norm = data_pot1 * ONE_OVER_1023;
+  74              		.loc 1 42 51 view .LVU15
   75 002a 2046     		mov	r0, r4
-  35:Core/Src/UI_hardware.c **** 	data_pot1 = (uint16_t)smoothing_LP(&smooth_ADC1, HAL_ADC_GetValue(&hadc1), 0.98) >> 2;
-  76              		.loc 1 35 7 view .LVU16
+  41:Core/Src/UI_hardware.c **** 	data_pot1 = (uint16_t)smoothing_LP(&smooth_ADC1, HAL_ADC_GetValue(&hadc1), 0.98) >> 2;
+  76              		.loc 1 41 7 view .LVU16
   77 002c 1A80     		strh	r2, [r3]	@ movhi
-  36:Core/Src/UI_hardware.c **** 	pot1_norm = data_pot1 * ONE_OVER_1023;
-  78              		.loc 1 36 2 is_stmt 1 view .LVU17
-  36:Core/Src/UI_hardware.c **** 	pot1_norm = data_pot1 * ONE_OVER_1023;
-  79              		.loc 1 36 51 is_stmt 0 view .LVU18
+  42:Core/Src/UI_hardware.c **** 	pot1_norm = data_pot1 * ONE_OVER_1023;
+  78              		.loc 1 42 2 is_stmt 1 view .LVU17
+  42:Core/Src/UI_hardware.c **** 	pot1_norm = data_pot1 * ONE_OVER_1023;
+  79              		.loc 1 42 51 is_stmt 0 view .LVU18
   80 002e FFF7FEFF 		bl	HAL_ADC_GetValue
   81              	.LVL3:
   82 0032 00EE100A 		vmov	s0, r0	@ int
-  36:Core/Src/UI_hardware.c **** 	pot1_norm = data_pot1 * ONE_OVER_1023;
-  83              		.loc 1 36 24 view .LVU19
+  42:Core/Src/UI_hardware.c **** 	pot1_norm = data_pot1 * ONE_OVER_1023;
+  83              		.loc 1 42 24 view .LVU19
   84 0036 DDED010A 		vldr.32	s1, [sp, #4]	@ int
   85 003a 2748     		ldr	r0, .L4+24
-  38:Core/Src/UI_hardware.c **** 
-  39:Core/Src/UI_hardware.c **** 	HAL_ADC_Start(&hadc2);
-  86              		.loc 1 39 2 view .LVU20
+  44:Core/Src/UI_hardware.c **** 
+  45:Core/Src/UI_hardware.c **** 	HAL_ADC_Start(&hadc2);
+  86              		.loc 1 45 2 view .LVU20
   87 003c 274C     		ldr	r4, .L4+28
-  36:Core/Src/UI_hardware.c **** 	pot1_norm = data_pot1 * ONE_OVER_1023;
-  88              		.loc 1 36 24 view .LVU21
+  42:Core/Src/UI_hardware.c **** 	pot1_norm = data_pot1 * ONE_OVER_1023;
+  88              		.loc 1 42 24 view .LVU21
   89 003e B8EE400A 		vcvt.f32.u32	s0, s0
   90 0042 FFF7FEFF 		bl	smoothing_LP
   91              	.LVL4:
-  37:Core/Src/UI_hardware.c **** 
-  92              		.loc 1 37 2 is_stmt 1 view .LVU22
-  36:Core/Src/UI_hardware.c **** 	pot1_norm = data_pot1 * ONE_OVER_1023;
-  93              		.loc 1 36 14 is_stmt 0 view .LVU23
+  43:Core/Src/UI_hardware.c **** 
+  92              		.loc 1 43 2 is_stmt 1 view .LVU22
+  42:Core/Src/UI_hardware.c **** 	pot1_norm = data_pot1 * ONE_OVER_1023;
+  93              		.loc 1 42 14 is_stmt 0 view .LVU23
   94 0046 FCEEC07A 		vcvt.u32.f32	s15, s0
   95 004a 17EE900A 		vmov	r0, s15	@ int
-  37:Core/Src/UI_hardware.c **** 
-  96              		.loc 1 37 24 view .LVU24
+  43:Core/Src/UI_hardware.c **** 
+  96              		.loc 1 43 24 view .LVU24
   97 004e C0F38D00 		ubfx	r0, r0, #2, #14
   98 0052 FFF7FEFF 		bl	__aeabi_i2d
   99              	.LVL5:
@@ -170,57 +176,57 @@ ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccoQHOu7.s 			page 1
  104 0060 FFF7FEFF 		bl	__aeabi_d2f
  105              	.LVL7:
  106 0064 2860     		str	r0, [r5]	@ float
- 107              		.loc 1 39 2 is_stmt 1 view .LVU25
+ 107              		.loc 1 45 2 is_stmt 1 view .LVU25
  108 0066 2046     		mov	r0, r4
+ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccOMLnqr.s 			page 4
+
+
  109 0068 FFF7FEFF 		bl	HAL_ADC_Start
  110              	.LVL8:
-  40:Core/Src/UI_hardware.c **** 	HAL_ADC_PollForConversion(&hadc2, HAL_MAX_DELAY);
- 111              		.loc 1 40 2 view .LVU26
+  46:Core/Src/UI_hardware.c **** 	HAL_ADC_PollForConversion(&hadc2, HAL_MAX_DELAY);
+ 111              		.loc 1 46 2 view .LVU26
  112 006c 4FF0FF31 		mov	r1, #-1
  113 0070 2046     		mov	r0, r4
-ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccoQHOu7.s 			page 4
-
-
  114 0072 FFF7FEFF 		bl	HAL_ADC_PollForConversion
  115              	.LVL9:
-  41:Core/Src/UI_hardware.c **** 	raw2 = HAL_ADC_GetValue(&hadc2);
- 116              		.loc 1 41 2 view .LVU27
- 117              		.loc 1 41 9 is_stmt 0 view .LVU28
+  47:Core/Src/UI_hardware.c **** 	raw2 = HAL_ADC_GetValue(&hadc2);
+ 116              		.loc 1 47 2 view .LVU27
+ 117              		.loc 1 47 9 is_stmt 0 view .LVU28
  118 0076 2046     		mov	r0, r4
  119 0078 FFF7FEFF 		bl	HAL_ADC_GetValue
  120              	.LVL10:
- 121              		.loc 1 41 7 view .LVU29
+ 121              		.loc 1 47 7 view .LVU29
  122 007c 184B     		ldr	r3, .L4+32
- 123              		.loc 1 41 9 view .LVU30
+ 123              		.loc 1 47 9 view .LVU30
  124 007e 0246     		mov	r2, r0
-  42:Core/Src/UI_hardware.c **** 	data_pot2 = (uint16_t)smoothing_LP(&smooth_ADC2, HAL_ADC_GetValue(&hadc2), 0.98) >> 2;
- 125              		.loc 1 42 51 view .LVU31
+  48:Core/Src/UI_hardware.c **** 	data_pot2 = (uint16_t)smoothing_LP(&smooth_ADC2, HAL_ADC_GetValue(&hadc2), 0.98) >> 2;
+ 125              		.loc 1 48 51 view .LVU31
  126 0080 2046     		mov	r0, r4
-  41:Core/Src/UI_hardware.c **** 	raw2 = HAL_ADC_GetValue(&hadc2);
- 127              		.loc 1 41 7 view .LVU32
+  47:Core/Src/UI_hardware.c **** 	raw2 = HAL_ADC_GetValue(&hadc2);
+ 127              		.loc 1 47 7 view .LVU32
  128 0082 1A80     		strh	r2, [r3]	@ movhi
- 129              		.loc 1 42 2 is_stmt 1 view .LVU33
- 130              		.loc 1 42 51 is_stmt 0 view .LVU34
+ 129              		.loc 1 48 2 is_stmt 1 view .LVU33
+ 130              		.loc 1 48 51 is_stmt 0 view .LVU34
  131 0084 FFF7FEFF 		bl	HAL_ADC_GetValue
  132              	.LVL11:
  133 0088 00EE100A 		vmov	s0, r0	@ int
- 134              		.loc 1 42 24 view .LVU35
+ 134              		.loc 1 48 24 view .LVU35
  135 008c DDED010A 		vldr.32	s1, [sp, #4]	@ int
  136 0090 1448     		ldr	r0, .L4+36
-  43:Core/Src/UI_hardware.c **** 	pot2_norm = data_pot2 * ONE_OVER_1023;
- 137              		.loc 1 43 12 view .LVU36
+  49:Core/Src/UI_hardware.c **** 	pot2_norm = data_pot2 * ONE_OVER_1023;
+ 137              		.loc 1 49 12 view .LVU36
  138 0092 154C     		ldr	r4, .L4+40
-  42:Core/Src/UI_hardware.c **** 	data_pot2 = (uint16_t)smoothing_LP(&smooth_ADC2, HAL_ADC_GetValue(&hadc2), 0.98) >> 2;
- 139              		.loc 1 42 24 view .LVU37
+  48:Core/Src/UI_hardware.c **** 	data_pot2 = (uint16_t)smoothing_LP(&smooth_ADC2, HAL_ADC_GetValue(&hadc2), 0.98) >> 2;
+ 139              		.loc 1 48 24 view .LVU37
  140 0094 B8EE400A 		vcvt.f32.u32	s0, s0
  141 0098 FFF7FEFF 		bl	smoothing_LP
  142              	.LVL12:
- 143              		.loc 1 43 2 is_stmt 1 view .LVU38
-  42:Core/Src/UI_hardware.c **** 	data_pot2 = (uint16_t)smoothing_LP(&smooth_ADC2, HAL_ADC_GetValue(&hadc2), 0.98) >> 2;
- 144              		.loc 1 42 14 is_stmt 0 view .LVU39
+ 143              		.loc 1 49 2 is_stmt 1 view .LVU38
+  48:Core/Src/UI_hardware.c **** 	data_pot2 = (uint16_t)smoothing_LP(&smooth_ADC2, HAL_ADC_GetValue(&hadc2), 0.98) >> 2;
+ 144              		.loc 1 48 14 is_stmt 0 view .LVU39
  145 009c FCEEC07A 		vcvt.u32.f32	s15, s0
  146 00a0 17EE900A 		vmov	r0, s15	@ int
- 147              		.loc 1 43 24 view .LVU40
+ 147              		.loc 1 49 24 view .LVU40
  148 00a4 C0F38D00 		ubfx	r0, r0, #2, #14
  149 00a8 FFF7FEFF 		bl	__aeabi_i2d
  150              	.LVL13:
@@ -231,16 +237,16 @@ ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccoQHOu7.s 			page 1
  155 00b6 FFF7FEFF 		bl	__aeabi_d2f
  156              	.LVL15:
  157 00ba 2060     		str	r0, [r4]	@ float
-  44:Core/Src/UI_hardware.c **** 
-  45:Core/Src/UI_hardware.c **** 	// SEGGER_RTT_printf(0, "Pots values [0, 1023] : %u %u\r\n", data_pot1, data_pot2); // debug
-  46:Core/Src/UI_hardware.c **** }
- 158              		.loc 1 46 1 view .LVU41
+  50:Core/Src/UI_hardware.c **** 
+ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccOMLnqr.s 			page 5
+
+
+  51:Core/Src/UI_hardware.c **** 	// SEGGER_RTT_printf(0, "Pots values [0, 1023] : %u %u\r\n", data_pot1, data_pot2); // debug
+  52:Core/Src/UI_hardware.c **** }
+ 158              		.loc 1 52 1 view .LVU41
  159 00bc 03B0     		add	sp, sp, #12
  160              		.cfi_def_cfa_offset 12
  161              		@ sp needed
-ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccoQHOu7.s 			page 5
-
-
  162 00be 30BD     		pop	{r4, r5, pc}
  163              	.L5:
  164              		.align	3
@@ -257,168 +263,199 @@ ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccoQHOu7.s 			page 1
  175 00e4 00000000 		.word	smooth_ADC2
  176 00e8 00000000 		.word	.LANCHOR3
  177              		.cfi_endproc
- 178              	.LFE242:
- 180              		.section	.rodata.poll_Encoder.str1.4,"aMS",%progbits,1
- 181              		.align	2
- 182              	.LC0:
- 183 0000 456E636F 		.ascii	"Encoder counter = %u.\015\012\000"
- 183      64657220 
- 183      636F756E 
- 183      74657220 
- 183      3D202575 
- 184              		.section	.text.poll_Encoder,"ax",%progbits
- 185              		.align	1
- 186              		.p2align 2,,3
- 187              		.global	poll_Encoder
- 188              		.syntax unified
- 189              		.thumb
- 190              		.thumb_func
- 192              	poll_Encoder:
- 193              	.LFB243:
-  47:Core/Src/UI_hardware.c **** 
-  48:Core/Src/UI_hardware.c **** void poll_Encoder(void){
- 194              		.loc 1 48 24 is_stmt 1 view -0
- 195              		.cfi_startproc
- 196              		@ args = 0, pretend = 0, frame = 0
- 197              		@ frame_needed = 0, uses_anonymous_args = 0
-  49:Core/Src/UI_hardware.c **** 	count = ((TIM3->CNT) >> 2);
- 198              		.loc 1 49 2 view .LVU43
-  48:Core/Src/UI_hardware.c **** 	count = ((TIM3->CNT) >> 2);
- 199              		.loc 1 48 24 is_stmt 0 view .LVU44
- 200 0000 38B5     		push	{r3, r4, r5, lr}
- 201              		.cfi_def_cfa_offset 16
- 202              		.cfi_offset 3, -16
- 203              		.cfi_offset 4, -12
- 204              		.cfi_offset 5, -8
- 205              		.cfi_offset 14, -4
- 206              		.loc 1 49 16 view .LVU45
- 207 0002 094B     		ldr	r3, .L9
-  50:Core/Src/UI_hardware.c **** 	if (count != old_count){
- 208              		.loc 1 50 12 view .LVU46
- 209 0004 094C     		ldr	r4, .L9+4
-  49:Core/Src/UI_hardware.c **** 	count = ((TIM3->CNT) >> 2);
- 210              		.loc 1 49 16 view .LVU47
-ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccoQHOu7.s 			page 6
+ 178              	.LFE446:
+ 180              		.section	.text.poll_Encoder,"ax",%progbits
+ 181              		.align	1
+ 182              		.p2align 2,,3
+ 183              		.global	poll_Encoder
+ 184              		.syntax unified
+ 185              		.thumb
+ 186              		.thumb_func
+ 188              	poll_Encoder:
+ 189              	.LFB447:
+  53:Core/Src/UI_hardware.c **** 
+  54:Core/Src/UI_hardware.c **** /**
+  55:Core/Src/UI_hardware.c ****  * @brief poll encoder.  This function is called by SysTick_Handler (in stm32f4xx_it.c) every ms.
+  56:Core/Src/UI_hardware.c ****  * 
+  57:Core/Src/UI_hardware.c ****  */
+  58:Core/Src/UI_hardware.c **** void poll_Encoder(void){
+ 190              		.loc 1 58 24 is_stmt 1 view -0
+ 191              		.cfi_startproc
+ 192              		@ args = 0, pretend = 0, frame = 0
+ 193              		@ frame_needed = 0, uses_anonymous_args = 0
+  59:Core/Src/UI_hardware.c **** 	count = ((TIM3->CNT) >> 2);
+ 194              		.loc 1 59 2 view .LVU43
+  58:Core/Src/UI_hardware.c **** 	count = ((TIM3->CNT) >> 2);
+ 195              		.loc 1 58 24 is_stmt 0 view .LVU44
+ 196 0000 38B5     		push	{r3, r4, r5, lr}
+ 197              		.cfi_def_cfa_offset 16
+ 198              		.cfi_offset 3, -16
+ 199              		.cfi_offset 4, -12
+ 200              		.cfi_offset 5, -8
+ 201              		.cfi_offset 14, -4
+ 202              		.loc 1 59 16 view .LVU45
+ 203 0002 0A4B     		ldr	r3, .L9
+  60:Core/Src/UI_hardware.c **** 	if (count != old_count){
+ 204              		.loc 1 60 12 view .LVU46
+ 205 0004 0A4C     		ldr	r4, .L9+4
+ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccOMLnqr.s 			page 6
 
 
- 211 0006 5A6A     		ldr	r2, [r3, #36]
- 212              		.loc 1 50 12 view .LVU48
- 213 0008 2388     		ldrh	r3, [r4]
-  49:Core/Src/UI_hardware.c **** 	count = ((TIM3->CNT) >> 2);
- 214              		.loc 1 49 8 view .LVU49
- 215 000a 094D     		ldr	r5, .L9+8
- 216 000c C2F38F01 		ubfx	r1, r2, #2, #16
- 217              		.loc 1 50 5 view .LVU50
- 218 0010 9942     		cmp	r1, r3
-  49:Core/Src/UI_hardware.c **** 	count = ((TIM3->CNT) >> 2);
- 219              		.loc 1 49 8 view .LVU51
- 220 0012 2980     		strh	r1, [r5]	@ movhi
- 221              		.loc 1 50 2 is_stmt 1 view .LVU52
- 222              		.loc 1 50 5 is_stmt 0 view .LVU53
- 223 0014 06D0     		beq	.L7
-  51:Core/Src/UI_hardware.c **** 		SEGGER_RTT_printf(0, "Encoder counter = %u.\r\n", count);
- 224              		.loc 1 51 3 is_stmt 1 view .LVU54
- 225 0016 9208     		lsrs	r2, r2, #2
- 226 0018 0649     		ldr	r1, .L9+12
- 227 001a 92B2     		uxth	r2, r2
- 228 001c 0020     		movs	r0, #0
- 229 001e FFF7FEFF 		bl	SEGGER_RTT_printf
- 230              	.LVL16:
-  52:Core/Src/UI_hardware.c **** 	}
-  53:Core/Src/UI_hardware.c **** 	old_count = count;
- 231              		.loc 1 53 12 is_stmt 0 view .LVU55
- 232 0022 2B88     		ldrh	r3, [r5]
- 233              	.L7:
- 234              		.loc 1 53 2 is_stmt 1 view .LVU56
- 235              		.loc 1 53 12 is_stmt 0 view .LVU57
- 236 0024 2380     		strh	r3, [r4]	@ movhi
-  54:Core/Src/UI_hardware.c **** }
- 237              		.loc 1 54 1 view .LVU58
- 238 0026 38BD     		pop	{r3, r4, r5, pc}
- 239              	.L10:
- 240              		.align	2
- 241              	.L9:
- 242 0028 00040040 		.word	1073742848
- 243 002c 00000000 		.word	.LANCHOR5
- 244 0030 00000000 		.word	.LANCHOR4
- 245 0034 00000000 		.word	.LC0
- 246              		.cfi_endproc
- 247              	.LFE243:
- 249              		.global	count
- 250              		.global	old_count
- 251              		.global	pot2_norm
- 252              		.global	pot1_norm
- 253              		.global	raw2
- 254              		.global	raw1
- 255              		.section	.bss.count,"aw",%nobits
- 256              		.align	1
- 257              		.set	.LANCHOR4,. + 0
- 260              	count:
- 261 0000 0000     		.space	2
- 262              		.section	.bss.old_count,"aw",%nobits
- 263              		.align	1
- 264              		.set	.LANCHOR5,. + 0
-ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccoQHOu7.s 			page 7
+  59:Core/Src/UI_hardware.c **** 	count = ((TIM3->CNT) >> 2);
+ 206              		.loc 1 59 16 view .LVU47
+ 207 0006 5B6A     		ldr	r3, [r3, #36]
+ 208              		.loc 1 60 12 view .LVU48
+ 209 0008 2288     		ldrh	r2, [r4]
+  59:Core/Src/UI_hardware.c **** 	count = ((TIM3->CNT) >> 2);
+ 210              		.loc 1 59 8 view .LVU49
+ 211 000a 0A4D     		ldr	r5, .L9+8
+ 212 000c C3F38F03 		ubfx	r3, r3, #2, #16
+ 213              		.loc 1 60 5 view .LVU50
+ 214 0010 9342     		cmp	r3, r2
+  59:Core/Src/UI_hardware.c **** 	count = ((TIM3->CNT) >> 2);
+ 215              		.loc 1 59 8 view .LVU51
+ 216 0012 2B80     		strh	r3, [r5]	@ movhi
+ 217              		.loc 1 60 2 is_stmt 1 view .LVU52
+ 218              		.loc 1 60 5 is_stmt 0 view .LVU53
+ 219 0014 08D0     		beq	.L7
+  61:Core/Src/UI_hardware.c **** 		current_count = count;
+ 220              		.loc 1 61 3 is_stmt 1 view .LVU54
+  62:Core/Src/UI_hardware.c **** 		lv_tabview_set_act(tabview, 2, LV_ANIM_OFF);
+ 221              		.loc 1 62 3 is_stmt 0 view .LVU55
+ 222 0016 0849     		ldr	r1, .L9+12
+  61:Core/Src/UI_hardware.c **** 		current_count = count;
+ 223              		.loc 1 61 17 view .LVU56
+ 224 0018 084A     		ldr	r2, .L9+16
+ 225              		.loc 1 62 3 view .LVU57
+ 226 001a 0868     		ldr	r0, [r1]
+  61:Core/Src/UI_hardware.c **** 		current_count = count;
+ 227              		.loc 1 61 17 view .LVU58
+ 228 001c 1380     		strh	r3, [r2]	@ movhi
+ 229              		.loc 1 62 3 is_stmt 1 view .LVU59
+ 230 001e 0221     		movs	r1, #2
+ 231 0020 0022     		movs	r2, #0
+ 232 0022 FFF7FEFF 		bl	lv_tabview_set_act
+ 233              	.LVL16:
+  63:Core/Src/UI_hardware.c **** 		// SEGGER_RTT_printf(0, "Encoder counter = %u.\r\n", count); // debug
+  64:Core/Src/UI_hardware.c **** 	}
+  65:Core/Src/UI_hardware.c **** 	old_count = count;
+ 234              		.loc 1 65 12 is_stmt 0 view .LVU60
+ 235 0026 2A88     		ldrh	r2, [r5]
+ 236              	.L7:
+ 237              		.loc 1 65 2 is_stmt 1 view .LVU61
+ 238              		.loc 1 65 12 is_stmt 0 view .LVU62
+ 239 0028 2280     		strh	r2, [r4]	@ movhi
+  66:Core/Src/UI_hardware.c **** }
+ 240              		.loc 1 66 1 view .LVU63
+ 241 002a 38BD     		pop	{r3, r4, r5, pc}
+ 242              	.L10:
+ 243              		.align	2
+ 244              	.L9:
+ 245 002c 00040040 		.word	1073742848
+ 246 0030 00000000 		.word	.LANCHOR5
+ 247 0034 00000000 		.word	.LANCHOR4
+ 248 0038 00000000 		.word	tabview
+ 249 003c 00000000 		.word	.LANCHOR6
+ 250              		.cfi_endproc
+ 251              	.LFE447:
+ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccOMLnqr.s 			page 7
 
 
- 267              	old_count:
- 268 0000 0000     		.space	2
- 269              		.section	.bss.pot1_norm,"aw",%nobits
- 270              		.align	2
- 271              		.set	.LANCHOR1,. + 0
- 274              	pot1_norm:
- 275 0000 00000000 		.space	4
- 276              		.section	.bss.pot2_norm,"aw",%nobits
- 277              		.align	2
- 278              		.set	.LANCHOR3,. + 0
- 281              	pot2_norm:
- 282 0000 00000000 		.space	4
- 283              		.section	.bss.raw1,"aw",%nobits
- 284              		.align	1
- 285              		.set	.LANCHOR0,. + 0
- 288              	raw1:
- 289 0000 0000     		.space	2
- 290              		.section	.bss.raw2,"aw",%nobits
- 291              		.align	1
- 292              		.set	.LANCHOR2,. + 0
- 295              	raw2:
- 296 0000 0000     		.space	2
- 297              		.text
- 298              	.Letext0:
- 299              		.file 2 "/Users/johannes/Library/Application Support/Code/User/globalStorage/bmd.stm32-for-vscode/
- 300              		.file 3 "/Users/johannes/Library/Application Support/Code/User/globalStorage/bmd.stm32-for-vscode/
- 301              		.file 4 "Drivers/CMSIS/Device/ST/STM32F4xx/Include/stm32f407xx.h"
- 302              		.file 5 "Drivers/CMSIS/Device/ST/STM32F4xx/Include/stm32f4xx.h"
- 303              		.file 6 "Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_def.h"
- 304              		.file 7 "Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_dma.h"
- 305              		.file 8 "Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_adc.h"
- 306              		.file 9 "Core/Inc/filters.h"
- 307              		.file 10 "Core/Inc/adc.h"
- 308              		.file 11 "Core/Inc/SEGGER_RTT.h"
-ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccoQHOu7.s 			page 8
+ 253              		.global	current_count
+ 254              		.global	count
+ 255              		.global	old_count
+ 256              		.global	pot2_norm
+ 257              		.global	pot1_norm
+ 258              		.global	raw2
+ 259              		.global	raw1
+ 260              		.section	.bss.count,"aw",%nobits
+ 261              		.align	1
+ 262              		.set	.LANCHOR4,. + 0
+ 265              	count:
+ 266 0000 0000     		.space	2
+ 267              		.section	.bss.current_count,"aw",%nobits
+ 268              		.align	1
+ 269              		.set	.LANCHOR6,. + 0
+ 272              	current_count:
+ 273 0000 0000     		.space	2
+ 274              		.section	.bss.old_count,"aw",%nobits
+ 275              		.align	1
+ 276              		.set	.LANCHOR5,. + 0
+ 279              	old_count:
+ 280 0000 0000     		.space	2
+ 281              		.section	.bss.pot1_norm,"aw",%nobits
+ 282              		.align	2
+ 283              		.set	.LANCHOR1,. + 0
+ 286              	pot1_norm:
+ 287 0000 00000000 		.space	4
+ 288              		.section	.bss.pot2_norm,"aw",%nobits
+ 289              		.align	2
+ 290              		.set	.LANCHOR3,. + 0
+ 293              	pot2_norm:
+ 294 0000 00000000 		.space	4
+ 295              		.section	.bss.raw1,"aw",%nobits
+ 296              		.align	1
+ 297              		.set	.LANCHOR0,. + 0
+ 300              	raw1:
+ 301 0000 0000     		.space	2
+ 302              		.section	.bss.raw2,"aw",%nobits
+ 303              		.align	1
+ 304              		.set	.LANCHOR2,. + 0
+ 307              	raw2:
+ 308 0000 0000     		.space	2
+ 309              		.text
+ 310              	.Letext0:
+ 311              		.file 2 "/Users/johannes/Library/Application Support/Code/User/globalStorage/bmd.stm32-for-vscode/
+ 312              		.file 3 "/Users/johannes/Library/Application Support/Code/User/globalStorage/bmd.stm32-for-vscode/
+ 313              		.file 4 "Drivers/CMSIS/Device/ST/STM32F4xx/Include/stm32f407xx.h"
+ 314              		.file 5 "Drivers/CMSIS/Device/ST/STM32F4xx/Include/stm32f4xx.h"
+ 315              		.file 6 "Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_def.h"
+ 316              		.file 7 "Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_dma.h"
+ 317              		.file 8 "Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_adc.h"
+ 318              		.file 9 "Core/Inc/filters.h"
+ 319              		.file 10 "Core/Inc/adc.h"
+ 320              		.file 11 "Drivers/lvgl/src/misc/lv_anim.h"
+ 321              		.file 12 "Drivers/lvgl/src/hal/../draw/../misc/../font/../misc/lv_area.h"
+ 322              		.file 13 "Drivers/lvgl/src/hal/../draw/../misc/lv_color.h"
+ 323              		.file 14 "Drivers/lvgl/src/hal/../draw/../misc/lv_style.h"
+ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccOMLnqr.s 			page 8
+
+
+ 324              		.file 15 "Drivers/lvgl/src/core/lv_obj.h"
+ 325              		.file 16 "Drivers/lvgl/src/hal/../misc/lv_ll.h"
+ 326              		.file 17 "Drivers/lvgl/src/core/lv_group.h"
+ 327              		.file 18 "Drivers/lvgl/src/core/lv_obj_scroll.h"
+ 328              		.file 19 "Drivers/lvgl/src/core/lv_obj_style.h"
+ 329              		.file 20 "Drivers/lvgl/src/core/lv_obj_class.h"
+ 330              		.file 21 "Drivers/lvgl/src/core/lv_event.h"
+ 331              		.file 22 "Drivers/lvgl/src/widgets/lv_bar.h"
+ 332              		.file 23 "Drivers/lvgl/src/extra/widgets/imgbtn/lv_imgbtn.h"
+ 333              		.file 24 "Drivers/lvgl/src/extra/widgets/tabview/lv_tabview.h"
+ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccOMLnqr.s 			page 9
 
 
 DEFINED SYMBOLS
                             *ABS*:0000000000000000 UI_hardware.c
-/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccoQHOu7.s:23     .text.poll_ADCs:0000000000000000 $t
-/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccoQHOu7.s:30     .text.poll_ADCs:0000000000000000 poll_ADCs
-/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccoQHOu7.s:166    .text.poll_ADCs:00000000000000c0 $d
-/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccoQHOu7.s:181    .rodata.poll_Encoder.str1.4:0000000000000000 $d
-/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccoQHOu7.s:185    .text.poll_Encoder:0000000000000000 $t
-/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccoQHOu7.s:192    .text.poll_Encoder:0000000000000000 poll_Encoder
-/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccoQHOu7.s:242    .text.poll_Encoder:0000000000000028 $d
-/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccoQHOu7.s:260    .bss.count:0000000000000000 count
-/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccoQHOu7.s:267    .bss.old_count:0000000000000000 old_count
-/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccoQHOu7.s:281    .bss.pot2_norm:0000000000000000 pot2_norm
-/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccoQHOu7.s:274    .bss.pot1_norm:0000000000000000 pot1_norm
-/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccoQHOu7.s:295    .bss.raw2:0000000000000000 raw2
-/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccoQHOu7.s:288    .bss.raw1:0000000000000000 raw1
-/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccoQHOu7.s:256    .bss.count:0000000000000000 $d
-/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccoQHOu7.s:263    .bss.old_count:0000000000000000 $d
-/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccoQHOu7.s:270    .bss.pot1_norm:0000000000000000 $d
-/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccoQHOu7.s:277    .bss.pot2_norm:0000000000000000 $d
-/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccoQHOu7.s:284    .bss.raw1:0000000000000000 $d
-/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccoQHOu7.s:291    .bss.raw2:0000000000000000 $d
+/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccOMLnqr.s:23     .text.poll_ADCs:0000000000000000 $t
+/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccOMLnqr.s:30     .text.poll_ADCs:0000000000000000 poll_ADCs
+/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccOMLnqr.s:166    .text.poll_ADCs:00000000000000c0 $d
+/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccOMLnqr.s:181    .text.poll_Encoder:0000000000000000 $t
+/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccOMLnqr.s:188    .text.poll_Encoder:0000000000000000 poll_Encoder
+/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccOMLnqr.s:245    .text.poll_Encoder:000000000000002c $d
+/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccOMLnqr.s:272    .bss.current_count:0000000000000000 current_count
+/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccOMLnqr.s:265    .bss.count:0000000000000000 count
+/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccOMLnqr.s:279    .bss.old_count:0000000000000000 old_count
+/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccOMLnqr.s:293    .bss.pot2_norm:0000000000000000 pot2_norm
+/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccOMLnqr.s:286    .bss.pot1_norm:0000000000000000 pot1_norm
+/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccOMLnqr.s:307    .bss.raw2:0000000000000000 raw2
+/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccOMLnqr.s:300    .bss.raw1:0000000000000000 raw1
+/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccOMLnqr.s:261    .bss.count:0000000000000000 $d
+/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccOMLnqr.s:268    .bss.current_count:0000000000000000 $d
+/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccOMLnqr.s:275    .bss.old_count:0000000000000000 $d
+/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccOMLnqr.s:282    .bss.pot1_norm:0000000000000000 $d
+/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccOMLnqr.s:289    .bss.pot2_norm:0000000000000000 $d
+/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccOMLnqr.s:296    .bss.raw1:0000000000000000 $d
+/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccOMLnqr.s:303    .bss.raw2:0000000000000000 $d
 
 UNDEFINED SYMBOLS
 __aeabi_i2d
@@ -432,4 +469,5 @@ hadc1
 smooth_ADC1
 hadc2
 smooth_ADC2
-SEGGER_RTT_printf
+lv_tabview_set_act
+tabview

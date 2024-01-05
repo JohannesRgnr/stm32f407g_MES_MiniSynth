@@ -33,10 +33,20 @@ extern ADSR_t adsr_amp;
 extern ADSR_t adsr_filt;
 extern ADSR_t adsr_index;
 
+
+/**
+ * @brief turns off all current active notes
+ * 
+ */
 void allNotesOff(void)
 {
 	for (uint8_t i = 0; i < 128; i++)
+	{
 		notes_Active[i] = 0;
+		ADSR_keyOff(&adsr_amp); // release envelopes
+		ADSR_keyOff(&adsr_filt);
+		ADSR_keyOff(&adsr_index);
+	}
 	notesCount = 0;
 }
 
@@ -218,4 +228,16 @@ void USBH_UserProcess_callback(USBH_HandleTypeDef *pHost, uint8_t vId)
 	default:
 		break;
 	}
+}
+
+
+/**
+ * @brief User button EXTI Line0 External Interrupt ISR Handler CallBack --> MIDI panic --> all notes off
+ * 
+ * @param GPIO_Pin 
+ */
+void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
+{
+	allNotesOff();
+	HAL_GPIO_WritePin(LD5_GPIO_Port, LD5_Pin, GPIO_PIN_RESET); // red LED OFF when all MIDI notes off
 }

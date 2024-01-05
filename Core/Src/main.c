@@ -74,7 +74,7 @@ void SystemClock_Config(void);
 int main(void)
 {
 	/* USER CODE BEGIN 1 */
-		/* USER CODE END 1 */
+	/* USER CODE END 1 */
 
 	/* MCU Configuration--------------------------------------------------------*/
 
@@ -103,11 +103,12 @@ int main(void)
 	MX_SPI1_Init();
 	MX_TIM3_Init();
 	// MX_USB_HOST_Init();
+
 	/* USER CODE BEGIN 2 */
 	SEGGER_RTT_WriteString(0, "SEGGER Real-Time-Terminal Sample\r\n");
 	SEGGER_RTT_ConfigUpBuffer(0, NULL, NULL, 0, SEGGER_RTT_MODE_NO_BLOCK_SKIP);
 
-	// Polling mode
+	// Encoder timer Polling mode
   	HAL_TIM_Encoder_Start(&htim3, TIM_CHANNEL_ALL);
 
   	// Interrupt mode

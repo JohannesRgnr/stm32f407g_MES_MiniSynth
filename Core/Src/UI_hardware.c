@@ -2,9 +2,9 @@
  * @file UI_hardware.c
  * @author johannes regnier
  * @brief hardware user interface
- * @note  UI is for the moment:
- * @note  2 potentiometers (on PC1 and PC2).. Data resolution is 10bits [0, 1023], smoothed using a lowpass filter`
- * @note  1 encoder (PB4 / PB5)
+ * *****  UI is for the moment:
+ * *****  2 potentiometers (on PC1 and PC2).. Data resolution is 10bits [0, 1023], smoothed using a lowpass filter`
+ * *****  1 encoder (on PB4 / PB5)
  * @version 0.1
  * @date 2024-01-05
  * 
@@ -19,6 +19,9 @@
 #include "SEGGER_RTT.h"
 #include "helper_functions.h"
 #include "tim.h"
+#include "UI_LCD.h"
+#include "LCDController.h"
+#include "st7789v.h"
 
 uint16_t raw1, raw2;
 extern onepoleLP_t smooth_ADC1;
@@ -26,6 +29,7 @@ extern onepoleLP_t smooth_ADC2;
 static uint16_t data_pot1, data_pot2;
 float pot1_norm, pot2_norm;
 uint16_t old_count, count, current_count;
+extern lv_obj_t *tabview;
 
 /**
  * @brief Polling ADC values. This function is called by SysTick_Handler (in stm32f4xx_it.c) every ms.
@@ -55,6 +59,7 @@ void poll_Encoder(void){
 	count = ((TIM3->CNT) >> 2);
 	if (count != old_count){
 		current_count = count;
+		lv_tabview_set_act(tabview, 2, LV_ANIM_OFF);
 		// SEGGER_RTT_printf(0, "Encoder counter = %u.\r\n", count); // debug
 	}
 	old_count = count;
