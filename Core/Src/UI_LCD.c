@@ -71,16 +71,12 @@ void create_tabs(void){
     lv_label_set_text_static(label1, "time");
     lv_label_set_text_static(label2, "feedback");
 
-    //lv_obj_scroll_to_view_recursive(label, LV_ANIM_ON);
 }
 
 void UI_LCD_init(void){
-    
-
-    
     create_tabs();
-    lv_obj_set_style_bg_color(lv_scr_act(), lv_color_hex(0x003a57), LV_PART_MAIN);
-	lv_obj_set_style_text_color(lv_scr_act(), lv_color_hex(0xffffff), LV_PART_MAIN);
+    //lv_obj_set_style_bg_color(lv_scr_act(), lv_color_hex(0x003a57), LV_PART_MAIN);
+	//lv_obj_set_style_text_color(lv_scr_act(), lv_color_hex(0xffffff), LV_PART_MAIN);
     create_arcs();
 }
 

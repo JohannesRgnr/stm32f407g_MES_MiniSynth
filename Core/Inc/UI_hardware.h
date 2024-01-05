@@ -5,5 +5,6 @@
 
 void poll_ADCs(void);
 void poll_Encoder(void);
+void poll_EncoderBtn(void);
 
 #endif // !_UI_HARDWARE_H

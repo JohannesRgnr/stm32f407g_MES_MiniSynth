@@ -4,7 +4,7 @@
  * @brief hardware user interface
  * *****  UI is for the moment:
  * *****  2 potentiometers (on PC1 and PC2).. Data resolution is 10bits [0, 1023], smoothed using a lowpass filter`
- * *****  1 encoder (on PB4 / PB5)
+ * *****  1 encoder (PB4 / PB5) with pushbutton (PB7)
  * @version 0.1
  * @date 2024-01-05
  * 
@@ -28,7 +28,8 @@ extern onepoleLP_t smooth_ADC1;
 extern onepoleLP_t smooth_ADC2;
 static uint16_t data_pot1, data_pot2;
 float pot1_norm, pot2_norm;
-uint16_t old_count, count, current_count;
+uint16_t old_count = 0, count = 0, current_count;
+uint16_t old_btn = 1, current_btn = 1;
 extern lv_obj_t *tabview;
 
 /**
@@ -59,8 +60,23 @@ void poll_Encoder(void){
 	count = ((TIM3->CNT) >> 2);
 	if (count != old_count){
 		current_count = count;
-		lv_tabview_set_act(tabview, 2, LV_ANIM_OFF);
+		//lv_tabview_set_act(tabview, 2, LV_ANIM_OFF);
 		// SEGGER_RTT_printf(0, "Encoder counter = %u.\r\n", count); // debug
 	}
 	old_count = count;
+}
+
+
+/**
+ * @brief poll encoder.  This function is called by SysTick_Handler (in stm32f4xx_it.c) every ms.
+ * 
+ */
+ * 
+ */
+void poll_EncoderBtn(void){
+	current_btn = HAL_GPIO_ReadPin(GPIOB, GPIO_PIN_7);
+	if (current_btn != old_btn && old_btn == 0){
+		// SEGGER_RTT_printf(0, "Encoder button released!\r\n"); // debug
+	}
+	old_btn = current_btn;
 }

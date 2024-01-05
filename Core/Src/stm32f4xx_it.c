@@ -200,8 +200,9 @@ void SysTick_Handler(void)
   /* USER CODE BEGIN SysTick_IRQn 1 */
   poll_ADCs();
   poll_Encoder();
+  poll_EncoderBtn();
 
-   //uint32_t tick = HAL_GetTick();
+  // uint32_t tick = HAL_GetTick();
   // SEGGER_RTT_printf(0, "Tick: %u\r\n", tick); // debug
   /* USER CODE END SysTick_IRQn 1 */
 }
