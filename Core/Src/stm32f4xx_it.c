@@ -62,8 +62,10 @@
 extern HCD_HandleTypeDef hHCD;
 extern DMA_HandleTypeDef hdma_spi1_tx;
 extern SPI_HandleTypeDef hspi1;
+extern TIM_HandleTypeDef htim3;
 
-extern 
+// extern volatile uint16_t current_count;
+// extern volatile uint16_t former_count;
 /* USER CODE BEGIN EV */
 
 /* USER CODE END EV */
@@ -197,10 +199,9 @@ void SysTick_Handler(void)
   
   /* USER CODE BEGIN SysTick_IRQn 1 */
   poll_ADCs();
+  poll_Encoder();
 
- 
-
-  //uint32_t tick = HAL_GetTick();
+   //uint32_t tick = HAL_GetTick();
   // SEGGER_RTT_printf(0, "Tick: %u\r\n", tick); // debug
   /* USER CODE END SysTick_IRQn 1 */
 }
@@ -211,6 +212,27 @@ void SysTick_Handler(void)
 /* For the available peripheral interrupt handler names,                      */
 /* please refer to the startup file (startup_stm32f4xx.s).                    */
 /******************************************************************************/
+
+
+/**
+  * @brief This function handles TIM3 global interrupt.
+  */
+void TIM3_IRQHandler(void)
+{
+  /* USER CODE BEGIN TIM3_IRQn 0 */
+  
+  /* USER CODE END TIM3_IRQn 0 */
+  HAL_TIM_IRQHandler(&htim3);
+  /* USER CODE BEGIN TIM3_IRQn 1 */
+  // current_count = ((TIM3->CNT) >> 2);
+  // if ( current_count != former_count)
+  // {
+  //   SEGGER_RTT_printf(0, "Interrupt ! Encoder counter = %u.\r\n", ((TIM3->CNT)>>2));
+  //   }
+  //   former_count = current_count;
+    /* USER CODE END TIM3_IRQn 1 */
+}
+
 
 /**
   * @brief This function handles USB On The Go FS global interrupt.

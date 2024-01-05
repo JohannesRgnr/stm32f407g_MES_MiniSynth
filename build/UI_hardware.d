@@ -32,6 +32,8 @@ build/UI_hardware.o: Core/Src/UI_hardware.c Core/Inc/UI_hardware.h \
  Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_pwr_ex.h \
  Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_rng.h \
  Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_spi.h \
+ Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_tim.h \
+ Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_tim_ex.h \
  Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_hcd.h \
  Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_ll_usb.h Core/Inc/usbh_MIDI.h \
  Middlewares/ST/STM32_USB_Host_Library/Core/Inc/usbh_core.h \
@@ -51,7 +53,7 @@ build/UI_hardware.o: Core/Src/UI_hardware.c Core/Inc/UI_hardware.h \
  Core/Inc/CONSTS.h Core/Inc/oscillators.h Core/Inc/ADSR_envelope.h \
  Core/Inc/ladder_filter.h Core/Inc/stereo_delay.h \
  Core/Inc/helper_functions.h Core/Inc/filters.h Core/Inc/filters.h \
- Core/Inc/SEGGER_RTT.h Core/Inc/helper_functions.h
+ Core/Inc/SEGGER_RTT.h Core/Inc/helper_functions.h Core/Inc/tim.h
 Core/Inc/UI_hardware.h:
 Core/Inc/adc.h:
 Core/Inc/main.h:
@@ -89,6 +91,8 @@ Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_pwr.h:
 Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_pwr_ex.h:
 Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_rng.h:
 Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_spi.h:
+Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_tim.h:
+Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_tim_ex.h:
 Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_hcd.h:
 Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_ll_usb.h:
 Core/Inc/usbh_MIDI.h:
@@ -119,3 +123,4 @@ Core/Inc/filters.h:
 Core/Inc/filters.h:
 Core/Inc/SEGGER_RTT.h:
 Core/Inc/helper_functions.h:
+Core/Inc/tim.h:

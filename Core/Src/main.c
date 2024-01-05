@@ -17,6 +17,7 @@
 #include "i2c.h"
 #include "i2s.h"
 #include "spi.h"
+#include "tim.h"
 #include "gpio.h"
 #include "adc.h"
 
@@ -48,7 +49,8 @@ extern USBH_HandleTypeDef hUSBHost; /* USB Host handle */
 /* Private variables ---------------------------------------------------------*/
 
 /* USER CODE BEGIN PV */
-
+// volatile uint16_t current_count;
+// volatile uint16_t former_count;
 
 /* USER CODE END PV */
 
@@ -80,7 +82,8 @@ int main(void)
 	HAL_Init();
 
 	/* USER CODE BEGIN Init */
-	
+	// current_count = 0;
+  	// former_count = 0;
 	/* USER CODE END Init */
 
 	/* Configure the system clock */
@@ -98,37 +101,33 @@ int main(void)
 	MX_I2C1_Init();
 	MX_I2S3_Init();
 	MX_SPI1_Init();
+	MX_TIM3_Init();
 	// MX_USB_HOST_Init();
 	/* USER CODE BEGIN 2 */
 	SEGGER_RTT_WriteString(0, "SEGGER Real-Time-Terminal Sample\r\n");
 	SEGGER_RTT_ConfigUpBuffer(0, NULL, NULL, 0, SEGGER_RTT_MODE_NO_BLOCK_SKIP);
 
-	 /* USER CODE BEGIN 2 */
+	// Polling mode
+  	HAL_TIM_Encoder_Start(&htim3, TIM_CHANNEL_ALL);
+
+  	// Interrupt mode
+	// HAL_TIM_Encoder_Start_IT(&htim3,htim3.Channel);
+
+	/* Init LVGL Library and UI */
 	lv_init();
 	lv_port_disp_init();
 	UI_LCD_init();
 
-	// // // Change the active screen's background color
-	// lv_obj_set_style_bg_color(lv_scr_act(), lv_color_hex(0x003a57), LV_PART_MAIN);
-	// lv_obj_set_style_text_color(lv_scr_act(), lv_color_hex(0xffffff), LV_PART_MAIN);
-
-	// /*Create a spinner*/
-	// lv_obj_t * spinner = lv_spinner_create(lv_scr_act(), 1000, 60);
-	// lv_obj_set_size(spinner, 64, 64);
-	// lv_obj_align(spinner, LV_ALIGN_BOTTOM_MID, 0, 0);
-
-	/*## Init Host Library ################################################*/
+	/* Init Host Library */
 	USBH_Init(&hUSBHost, USBH_UserProcess_callback, 0);
 
-	/*## Add Supported Class ##############################################*/
+	/* Add Supported Class */
 	USBH_RegisterClass(&hUSBHost, USBH_MIDI_CLASS);
 
-	/*## Start Host Process ###############################################*/
+	/* Start Host Process */
 	USBH_Start(&hUSBHost);
-
 	
-	
-	// MIDI_eventInit();
+	/* Initialize audio */
 	AUDIO_Init();
 
 	// ConsoleInit();

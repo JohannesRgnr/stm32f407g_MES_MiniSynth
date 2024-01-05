@@ -66,6 +66,7 @@ Core/Src/stereo_delay.c \
 Core/Src/stm32f4xx_hal_msp.c \
 Core/Src/stm32f4xx_it.c \
 Core/Src/system_stm32f4xx.c \
+Core/Src/tim.c \
 Core/Src/usbh_MIDI.c \
 Core/Src/usbh_conf.c \
 Drivers/BSP/Components/cs43l22/cs43l22.c \
