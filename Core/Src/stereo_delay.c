@@ -19,8 +19,8 @@ static float 		*writeptrL , *writeptrR ;
 static uint16_t		delay_time_L , delay_time_R;
 
 
-static float		feedback  = INIT_FEEDB;
-static float		delay_wet  = INIT_DELAY_WET;
+float		feedback  = INIT_FEEDB;
+float		delay_wet  = INIT_DELAY_WET;
 
 extern ZDFLP_t lp_L;
 extern ZDFLP_t lp_R;

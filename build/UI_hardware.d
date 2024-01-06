@@ -260,7 +260,8 @@ build/UI_hardware.o: Core/Src/UI_hardware.c Core/Inc/UI_hardware.h \
  Drivers/lvgl/src/extra/widgets/imgbtn/../../../lvgl.h \
  Drivers/lvgl/src/extra/widgets/span/lv_span.h \
  Drivers/lvgl/src/extra/widgets/span/../../../lvgl.h \
- Drivers/ST7789V/st7789v.h Drivers/ST7789V/fonts.h Core/Inc/main.h
+ Core/Inc/LCDController.h Drivers/ST7789V/st7789v.h \
+ Drivers/ST7789V/fonts.h Core/Inc/main.h
 Core/Inc/UI_hardware.h:
 Core/Inc/adc.h:
 Core/Inc/main.h:
@@ -559,6 +560,7 @@ Drivers/lvgl/src/extra/widgets/imgbtn/lv_imgbtn.h:
 Drivers/lvgl/src/extra/widgets/imgbtn/../../../lvgl.h:
 Drivers/lvgl/src/extra/widgets/span/lv_span.h:
 Drivers/lvgl/src/extra/widgets/span/../../../lvgl.h:
+Core/Inc/LCDController.h:
 Drivers/ST7789V/st7789v.h:
 Drivers/ST7789V/fonts.h:
 Core/Inc/main.h:

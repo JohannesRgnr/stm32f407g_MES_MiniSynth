@@ -257,7 +257,8 @@ build/UI_LCD.o: Core/Src/UI_LCD.c Core/Inc/UI_LCD.h Core/Inc/CONSTS.h \
  Core/Inc/../../Drivers/BSP/STM32F4-Discovery/stm32f4_discovery.h \
  Core/Inc/../../Drivers/BSP/STM32F4-Discovery/../../../Middlewares/ST/STM32_Audio/Addons/PDM/Inc/pdm2pcm_glo.h \
  Core/Inc/oscillators.h Core/Inc/ADSR_envelope.h Core/Inc/ladder_filter.h \
- Core/Inc/stereo_delay.h Core/Inc/helper_functions.h Core/Inc/filters.h
+ Core/Inc/stereo_delay.h Core/Inc/helper_functions.h Core/Inc/filters.h \
+ Core/Inc/tim.h Core/Inc/main.h Core/Inc/SEGGER_RTT.h
 Core/Inc/UI_LCD.h:
 Core/Inc/CONSTS.h:
 Core/Inc/LCDController.h:
@@ -552,3 +553,6 @@ Core/Inc/ladder_filter.h:
 Core/Inc/stereo_delay.h:
 Core/Inc/helper_functions.h:
 Core/Inc/filters.h:
+Core/Inc/tim.h:
+Core/Inc/main.h:
+Core/Inc/SEGGER_RTT.h:

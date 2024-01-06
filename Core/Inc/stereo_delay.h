@@ -17,9 +17,9 @@
 #include "helper_functions.h"
 #include "filters.h"
 
-#define DELAY_BUFF_SIZE         10000  
-#define INIT_DELAY_L            10000  
-#define INIT_DELAY_R            10000  
+#define DELAY_BUFF_SIZE         11025  
+#define INIT_DELAY_L            11025  
+#define INIT_DELAY_R            11025  
 #define INIT_FEEDB              0.8f
 #define INIT_DELAY_WET			0.4f
 

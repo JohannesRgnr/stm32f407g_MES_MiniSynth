@@ -260,7 +260,8 @@ build/main.o: Core/Src/main.c Core/Inc/main.h \
  Drivers/lvgl/src/extra/widgets/imgbtn/../../../lvgl.h \
  Drivers/lvgl/src/extra/widgets/span/lv_span.h \
  Drivers/lvgl/src/extra/widgets/span/../../../lvgl.h \
- Drivers/ST7789V/st7789v.h Drivers/ST7789V/fonts.h Core/Inc/UI_LCD.h
+ Drivers/ST7789V/st7789v.h Drivers/ST7789V/fonts.h Core/Inc/UI_LCD.h \
+ Core/Inc/LCDController.h
 Core/Inc/main.h:
 Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal.h:
 Core/Inc/stm32f4xx_hal_conf.h:
@@ -564,3 +565,4 @@ Drivers/lvgl/src/extra/widgets/span/../../../lvgl.h:
 Drivers/ST7789V/st7789v.h:
 Drivers/ST7789V/fonts.h:
 Core/Inc/UI_LCD.h:
+Core/Inc/LCDController.h:

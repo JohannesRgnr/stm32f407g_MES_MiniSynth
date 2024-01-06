@@ -2,6 +2,10 @@
 #define UI_LCD_INIT_H_
 
 #include "CONSTS.h"
+#include "LCDController.h"
+
+
+
 
 
 void UI_LCD_init();

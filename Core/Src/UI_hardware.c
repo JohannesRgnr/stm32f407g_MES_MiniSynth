@@ -23,13 +23,16 @@
 #include "LCDController.h"
 #include "st7789v.h"
 
-uint16_t raw1, raw2;
+uint16_t raw1, raw2, raw3;
 extern onepoleLP_t smooth_ADC1;
 extern onepoleLP_t smooth_ADC2;
-static uint16_t data_pot1, data_pot2;
-float pot1_norm, pot2_norm;
+extern onepoleLP_t smooth_ADC3;
+static uint16_t data_pot1, data_pot2, data_pot3;
+float pot1_norm, pot2_norm, pot3_norm;
 uint16_t old_count = 0, count = 0, current_count;
+int8_t enc_diff = 0;
 uint16_t old_btn = 1, current_btn = 1;
+uint8_t btn_pressed;
 extern lv_obj_t *tabview;
 
 /**
@@ -49,6 +52,12 @@ void poll_ADCs(void){
 	data_pot2 = (uint16_t)smoothing_LP(&smooth_ADC2, HAL_ADC_GetValue(&hadc2), 0.98) >> 2;
 	pot2_norm = data_pot2 * ONE_OVER_1023;
 
+	HAL_ADC_Start(&hadc3);
+	HAL_ADC_PollForConversion(&hadc3, HAL_MAX_DELAY);
+	raw3 = HAL_ADC_GetValue(&hadc3);
+	data_pot3 = (uint16_t)smoothing_LP(&smooth_ADC3, HAL_ADC_GetValue(&hadc3), 0.98) >> 2;
+	pot3_norm = data_pot3 * ONE_OVER_1023;
+
 	// SEGGER_RTT_printf(0, "Pots values [0, 1023] : %u %u\r\n", data_pot1, data_pot2); // debug
 }
 
@@ -57,13 +66,17 @@ void poll_ADCs(void){
  * 
  */
 void poll_Encoder(void){
+	// static old_count;
 	count = ((TIM3->CNT) >> 2);
 	if (count != old_count){
+		// enc_diff = count - old_count;
 		current_count = count;
-		//lv_tabview_set_act(tabview, 2, LV_ANIM_OFF);
-		// SEGGER_RTT_printf(0, "Encoder counter = %u.\r\n", count); // debug
+		old_count = count;
+		// SEGGER_RTT_printf(0, "Encoder count = %d\r\n", current_count); // debug
+		// SEGGER_RTT_printf(0, "Encoder diff = %d\r\n", enc_diff); // debug
+		// return enc_diff;
 	}
-	old_count = count;
+	
 }
 
 
@@ -71,12 +84,12 @@ void poll_Encoder(void){
  * @brief poll encoder.  This function is called by SysTick_Handler (in stm32f4xx_it.c) every ms.
  * 
  */
- * 
- */
 void poll_EncoderBtn(void){
 	current_btn = HAL_GPIO_ReadPin(GPIOB, GPIO_PIN_7);
 	if (current_btn != old_btn && old_btn == 0){
-		// SEGGER_RTT_printf(0, "Encoder button released!\r\n"); // debug
-	}
+		btn_pressed = 1;
+		//SEGGER_RTT_printf(0, "Encoder button released!\r\n"); // debug
+	} else
+		btn_pressed = 0;
 	old_btn = current_btn;
 }

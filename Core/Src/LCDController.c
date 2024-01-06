@@ -130,6 +130,8 @@ void lv_port_disp_init(void)
 
     /*Finally register the driver*/
     lv_disp_drv_register(&disp_drv);
+
+    
 }
 
 /**********************

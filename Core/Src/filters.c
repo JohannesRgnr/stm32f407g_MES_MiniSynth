@@ -23,6 +23,8 @@ ZDFLP_t lp_R ;
 
 onepoleLP_t smooth_ADC1;
 onepoleLP_t smooth_ADC2;
+onepoleLP_t smooth_ADC3;
+
 
 
 void SVF_LP_init(ZDFLP_t * filter){

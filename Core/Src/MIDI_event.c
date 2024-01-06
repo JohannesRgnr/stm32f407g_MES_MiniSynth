@@ -104,6 +104,7 @@ void ProcessMIDI(midi_package_t pack)
 			ADSR_keyOff(&adsr_filt);
 			ADSR_keyOff(&adsr_index);
 			notesCount = 0;
+			HAL_GPIO_WritePin(LD5_GPIO_Port, LD5_Pin, GPIO_PIN_RESET);
 		}
 		else // legato 
 		{
@@ -131,7 +132,7 @@ void ProcessMIDI(midi_package_t pack)
 			ADSR_keyOn(&adsr_amp); // start envelopes
 			ADSR_keyOn(&adsr_filt);
 			ADSR_keyOn(&adsr_index);
-			// SEGGER_RTT_printf(0, "Note ON, pitch %u\r\n", currentPitch); // debug
+			//SEGGER_RTT_printf(0, "Note ON, pitch %u\r\n", currentPitch); // debug
 			HAL_GPIO_WritePin(LD5_GPIO_Port, LD5_Pin, GPIO_PIN_SET); // red LED ON when incoming MIDI note on
 			notesCount++;
 			notes_Active[noteOn] = 1;
@@ -141,7 +142,7 @@ void ProcessMIDI(midi_package_t pack)
 		{			
 			notes_Active[noteOn] = 0;
 			notesCount--;
-			// SEGGER_RTT_printf(0, "Note OFF, pitch %u\r\n", currentPitch);
+			//SEGGER_RTT_printf(0, "Note OFF, pitch %u\r\n", currentPitch);
 			if (notesCount <= 0)
 			{
 				ADSR_keyOff(&adsr_amp);		// release envelopes

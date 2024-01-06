@@ -42,9 +42,11 @@ extern ADSR_t adsr_amp, adsr_filt;
 extern ADSR_t adsr_index;
 extern ZDFLadder_t Moog_filter;
 extern oscillator_t osc1, osc2, osc3, osc4, sub_osc;
-extern float pot1_norm, pot2_norm;
+extern float pot1_norm, pot2_norm, pot3_norm;
+extern uint16_t current_count;
+extern float delay_wet, feedback;
 
-static float f0;			// frequency of oscillators 1 & 2
+static float f0, f1;			// frequency of oscillators 1 & 2
 static float f_sub ;		// frequency of sub oscillator
 static float amp_env ;		// amplitude envelope
 static float filt_env ;		// filter envelope
@@ -74,7 +76,7 @@ void AUDIO_Init()
 	
 	
 	osc_init(&osc1, 0.5, 1000, 0, 0, 0.5);
-	osc_init(&osc2, 0.5, 440, 0, 2, 0.5);
+	osc_init(&osc2, 0.5, 440, 0, 1.414, 0.5);
 	osc_init(&osc3, 0.5, 1000, 0, 0, 0.5);
 	osc_init(&osc4, 0.5, 440, 0, 0, 0.5);
 	osc_init(&sub_osc, 0.5, 440, 0, 0, 0.5);
@@ -108,34 +110,54 @@ void audioBlock(int16_t *buffer, uint16_t samples)
 	output = buffer;
 	float sample, sampleL, sampleR;
 	uint16_t valueL, valueR;
-	
+	uint8_t select_osc = current_count % 2;
+	// uint8_t select_osc = clip(current_count, 0, 1);
+
+
+	adsr_filt.dcy_time = 10*(0.008+pot2_norm*pot2_norm*pot2_norm*pot2_norm);
+	adsr_index.dcy_time = 10*(0.008+pot2_norm*pot2_norm*pot2_norm*pot2_norm);
+	adsr_filt.dcy_mult = ADSR_calculateMultiplier(1, adsr_filt.sust_level, adsr_filt.dcy_time); 
+	adsr_index.dcy_mult = ADSR_calculateMultiplier(1, adsr_index.sust_level, adsr_index.dcy_time); 
 
 	for (i = 0; i < samples; i++)
 	{
 
 		f0 = mtof[currentPitch];
+		f1 = mtof[currentPitch + 7];
 		
 		/* test with 3 oscillators*/
 		OpSetFreq(&osc1, f0);
-		OpSetFreq(&osc2, f0);
-		OpSetFreq(&osc3, f0-0.2);
-		OpSetFreq(&osc4, f0 + 0.5);
-		
-		f_sub = mtof[max(currentPitch - 12, 0)];
+		OpSetFreq(&osc2, f0+1);
+		OpSetFreq(&osc3, f0-1);
+		OpSetFreq(&osc4, f1);
 		OpSetFreq(&sub_osc, f_sub);
-		sample = 0.5*(osc_polyblepSaw(&osc1) + osc_polyblepSaw(&osc2) + osc_polyblepSaw(&osc3) + osc_polyblepSaw(&osc4)+ osc_polyblepRect(&sub_osc));
-		// sample = 0*osc_polyblepSaw(&osc1) + osc_polyblepRect(&sub_osc);
+		
+		switch(select_osc){
+			case 0:
+			// analog waveforms
+				f_sub = mtof[max(currentPitch - 12, 0)];
+				
+				sample = 0.25*(osc_polyblepSaw(&osc1) + osc_polyblepSaw(&osc2) + osc_polyblepSaw(&osc3) + osc_polyblepSaw(&osc4)+ osc_polyblepRect(&sub_osc));
+		       
+        		break;
+
+    		case 1:
+			// FM
+				index_env = ADSR_compute(&adsr_index);
+				osc1.FM_index = pot1_norm * pot1_norm * pot1_norm * pot1_norm * index_env;	
+				sample = 0.8 * osc_FM2OP(f0);
+				break;
+		}
+
+				
 		// sample = osc_Sine(&osc1);
 
-		// FM
-		//index_env = ADSR_compute(&adsr_index);
-		//osc1.FM_index = (noteOn_velocity/127.f) * 0.033 * index_env;	
-		//sample = osc_FM2OP(f0);
-
+	
+		
 		/****************** Apply filter ***********************/
 		filt_env = ADSR_compute(&adsr_filt);
-		Moog_filter.cutoff =clip(1000.f * filt_env + NYQUIST * pot1_norm * pot1_norm * pot1_norm * pot1_norm, 20, NYQUIST); 
-		Moog_filter.k = 4.5f * pot2_norm;
+		Moog_filter.cutoff =clip(7000.f * filt_env + NYQUIST * pot1_norm * pot1_norm * pot1_norm * pot1_norm, 20, NYQUIST); 
+		// Moog_filter.k = 4.5f * pot2_norm;
 
 		sample = MoogLP_compute(&Moog_filter, sample);
 
@@ -151,6 +173,9 @@ void audioBlock(int16_t *buffer, uint16_t samples)
 		// sample = flanger_compute(sample); // TODO
 
 		/************** Apply delay effect ****************/
+		delay_wet = pot3_norm;
+		feedback = clip(pot3_norm + 0.25, 0, 1.1);
+
 		pingpongDelay_compute(sample, &delayLOut, &delayROut);
 		sampleL = delayLOut;
 		sampleR = delayROut;
