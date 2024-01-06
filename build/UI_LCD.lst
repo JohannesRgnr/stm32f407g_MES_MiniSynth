@@ -1,4 +1,4 @@
-ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccFVV7Wm.s 			page 1
+ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccpz2auI.s 			page 1
 
 
    1              		.cpu cortex-m4
@@ -22,62 +22,74 @@ ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccFVV7Wm.s 			page 1
   19              		.section	.rodata.create_arcs.str1.4,"aMS",%progbits,1
   20              		.align	2
   21              	.LC0:
-  22 0000 6375746F 		.ascii	"cutoff\000"
-  22      666600
-  23 0007 00       		.align	2
+  22 0000 4D455320 		.ascii	"MES MiniSynth\000"
+  22      4D696E69 
+  22      53796E74 
+  22      6800
+  23 000e 0000     		.align	2
   24              	.LC1:
-  25 0008 64656361 		.ascii	"decay\000"
-  25      7900
-  26 000e 0000     		.align	2
+  25 0010 76697274 		.ascii	"virtual analog\000"
+  25      75616C20 
+  25      616E616C 
+  25      6F6700
+  26 001f 00       		.align	2
   27              	.LC2:
-  28 0010 64656C61 		.ascii	"delay\000"
-  28      7900
-  29              		.section	.text.create_arcs,"ax",%progbits
-  30              		.align	1
-  31              		.p2align 2,,3
-  32              		.global	create_arcs
-  33              		.syntax unified
-  34              		.thumb
-  35              		.thumb_func
-  37              	create_arcs:
-  38              	.LFB446:
-  39              		.file 1 "Core/Src/UI_LCD.c"
+  28 0020 6375746F 		.ascii	"cutoff\000"
+  28      666600
+  29 0027 00       		.align	2
+  30              	.LC3:
+  31 0028 64656361 		.ascii	"decay\000"
+  31      7900
+  32 002e 0000     		.align	2
+  33              	.LC4:
+  34 0030 64656C61 		.ascii	"delay\000"
+  34      7900
+  35              		.section	.text.create_arcs,"ax",%progbits
+  36              		.align	1
+  37              		.p2align 2,,3
+  38              		.global	create_arcs
+  39              		.syntax unified
+  40              		.thumb
+  41              		.thumb_func
+  43              	create_arcs:
+  44              	.LFB446:
+  45              		.file 1 "Core/Src/UI_LCD.c"
    1:Core/Src/UI_LCD.c **** 
    2:Core/Src/UI_LCD.c **** #include "UI_LCD.h"
    3:Core/Src/UI_LCD.c **** 
    4:Core/Src/UI_LCD.c **** #include "st7789v.h"
+ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccpz2auI.s 			page 2
+
+
    5:Core/Src/UI_LCD.c **** #include "tim.h"
    6:Core/Src/UI_LCD.c **** #include "SEGGER_RTT.h"
    7:Core/Src/UI_LCD.c **** 
-   8:Core/Src/UI_LCD.c **** 
+   8:Core/Src/UI_LCD.c **** //#include "../../Drivers/lvgl/src/font/lv_font.h"
    9:Core/Src/UI_LCD.c **** 
   10:Core/Src/UI_LCD.c **** 
-  11:Core/Src/UI_LCD.c **** extern float pot1_norm, pot2_norm, pot3_norm;
-  12:Core/Src/UI_LCD.c **** extern uint16_t current_count, current_btn;
-  13:Core/Src/UI_LCD.c **** extern int8_t enc_diff;
-  14:Core/Src/UI_LCD.c **** extern uint8_t btn_pressed;
-  15:Core/Src/UI_LCD.c **** 
-  16:Core/Src/UI_LCD.c **** lv_obj_t *pot1, *pot2, *pot3, *tabview;
-ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccFVV7Wm.s 			page 2
-
-
-  17:Core/Src/UI_LCD.c **** lv_group_t* g; 
-  18:Core/Src/UI_LCD.c **** lv_indev_t * my_indev;
-  19:Core/Src/UI_LCD.c **** 
-  20:Core/Src/UI_LCD.c **** 
-  21:Core/Src/UI_LCD.c **** 
+  11:Core/Src/UI_LCD.c **** 
+  12:Core/Src/UI_LCD.c **** 
+  13:Core/Src/UI_LCD.c **** extern float pot1_norm, pot2_norm, pot3_norm;
+  14:Core/Src/UI_LCD.c **** extern uint16_t current_count, current_btn;
+  15:Core/Src/UI_LCD.c **** extern int8_t enc_diff;
+  16:Core/Src/UI_LCD.c **** extern uint8_t btn_pressed;
+  17:Core/Src/UI_LCD.c **** 
+  18:Core/Src/UI_LCD.c **** lv_obj_t *pot1, *pot2, *pot3, *tabview;
+  19:Core/Src/UI_LCD.c **** lv_group_t* g; 
+  20:Core/Src/UI_LCD.c **** lv_indev_t * my_indev;
+  21:Core/Src/UI_LCD.c **** lv_obj_t * osc_txt;
   22:Core/Src/UI_LCD.c **** 
   23:Core/Src/UI_LCD.c **** void create_arcs(void){
-  40              		.loc 1 23 23 view -0
-  41              		.cfi_startproc
-  42              		@ args = 0, pretend = 0, frame = 0
-  43              		@ frame_needed = 0, uses_anonymous_args = 0
-  24:Core/Src/UI_LCD.c ****     /*Create 2 Arcs for the 2 pots*/
-  25:Core/Src/UI_LCD.c ****     pot1 = lv_arc_create(lv_scr_act());
-  44              		.loc 1 25 5 view .LVU1
-  45              	.LBB18:
-  46              	.LBI18:
-  47              		.file 2 "Drivers/lvgl/src/core/lv_disp.h"
+  46              		.loc 1 23 23 view -0
+  47              		.cfi_startproc
+  48              		@ args = 0, pretend = 0, frame = 0
+  49              		@ frame_needed = 0, uses_anonymous_args = 0
+  24:Core/Src/UI_LCD.c ****     /* Create text*/
+  25:Core/Src/UI_LCD.c ****     lv_obj_t * title = lv_label_create(lv_scr_act());
+  50              		.loc 1 25 5 view .LVU1
+  51              	.LBB22:
+  52              	.LBI22:
+  53              		.file 2 "Drivers/lvgl/src/core/lv_disp.h"
    1:Drivers/lvgl/src/core/lv_disp.h **** /**
    2:Drivers/lvgl/src/core/lv_disp.h ****  * @file lv_disp.h
    3:Drivers/lvgl/src/core/lv_disp.h ****  *
@@ -106,6 +118,9 @@ ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccFVV7Wm.s 			page 1
   26:Drivers/lvgl/src/core/lv_disp.h ****  **********************/
   27:Drivers/lvgl/src/core/lv_disp.h **** 
   28:Drivers/lvgl/src/core/lv_disp.h **** typedef enum {
+ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccpz2auI.s 			page 3
+
+
   29:Drivers/lvgl/src/core/lv_disp.h ****     LV_SCR_LOAD_ANIM_NONE,
   30:Drivers/lvgl/src/core/lv_disp.h ****     LV_SCR_LOAD_ANIM_OVER_LEFT,
   31:Drivers/lvgl/src/core/lv_disp.h ****     LV_SCR_LOAD_ANIM_OVER_RIGHT,
@@ -118,9 +133,6 @@ ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccFVV7Wm.s 			page 1
   38:Drivers/lvgl/src/core/lv_disp.h ****     LV_SCR_LOAD_ANIM_FADE_IN,
   39:Drivers/lvgl/src/core/lv_disp.h ****     LV_SCR_LOAD_ANIM_FADE_ON = LV_SCR_LOAD_ANIM_FADE_IN, /*For backward compatibility*/
   40:Drivers/lvgl/src/core/lv_disp.h ****     LV_SCR_LOAD_ANIM_FADE_OUT,
-ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccFVV7Wm.s 			page 3
-
-
   41:Drivers/lvgl/src/core/lv_disp.h ****     LV_SCR_LOAD_ANIM_OUT_LEFT,
   42:Drivers/lvgl/src/core/lv_disp.h ****     LV_SCR_LOAD_ANIM_OUT_RIGHT,
   43:Drivers/lvgl/src/core/lv_disp.h ****     LV_SCR_LOAD_ANIM_OUT_TOP,
@@ -166,6 +178,9 @@ ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccFVV7Wm.s 			page 1
   83:Drivers/lvgl/src/core/lv_disp.h ****  * @param disp pointer to display which sys. layer should be retrieved. (NULL to use the default sc
   84:Drivers/lvgl/src/core/lv_disp.h ****  * @return pointer to the sys layer object (transparent screen sized lv_obj)
   85:Drivers/lvgl/src/core/lv_disp.h ****  */
+ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccpz2auI.s 			page 4
+
+
   86:Drivers/lvgl/src/core/lv_disp.h **** lv_obj_t * lv_disp_get_layer_sys(lv_disp_t * disp);
   87:Drivers/lvgl/src/core/lv_disp.h **** 
   88:Drivers/lvgl/src/core/lv_disp.h **** /**
@@ -178,9 +193,6 @@ ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccFVV7Wm.s 			page 1
   95:Drivers/lvgl/src/core/lv_disp.h ****  * Get the theme of a display
   96:Drivers/lvgl/src/core/lv_disp.h ****  * @param disp pointer to a display
   97:Drivers/lvgl/src/core/lv_disp.h ****  * @return the display's theme (can be NULL)
-ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccFVV7Wm.s 			page 4
-
-
   98:Drivers/lvgl/src/core/lv_disp.h ****  */
   99:Drivers/lvgl/src/core/lv_disp.h **** lv_theme_t * lv_disp_get_theme(lv_disp_t * disp);
  100:Drivers/lvgl/src/core/lv_disp.h **** 
@@ -226,6 +238,9 @@ ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccFVV7Wm.s 			page 1
  140:Drivers/lvgl/src/core/lv_disp.h ****  * Manually trigger an activity on a display
  141:Drivers/lvgl/src/core/lv_disp.h ****  * @param disp pointer to a display (NULL to use the default display)
  142:Drivers/lvgl/src/core/lv_disp.h ****  */
+ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccpz2auI.s 			page 5
+
+
  143:Drivers/lvgl/src/core/lv_disp.h **** void lv_disp_trig_activity(lv_disp_t * disp);
  144:Drivers/lvgl/src/core/lv_disp.h **** 
  145:Drivers/lvgl/src/core/lv_disp.h **** /**
@@ -238,9 +253,6 @@ ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccFVV7Wm.s 			page 1
  152:Drivers/lvgl/src/core/lv_disp.h ****  * Temporarily enable and disable the invalidation of the display.
  153:Drivers/lvgl/src/core/lv_disp.h ****  * @param disp pointer to a display (NULL to use the default display)
  154:Drivers/lvgl/src/core/lv_disp.h ****  * @param en true: enable invalidation; false: invalidation
-ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccFVV7Wm.s 			page 5
-
-
  155:Drivers/lvgl/src/core/lv_disp.h ****  */
  156:Drivers/lvgl/src/core/lv_disp.h **** void lv_disp_enable_invalidation(lv_disp_t * disp, bool en);
  157:Drivers/lvgl/src/core/lv_disp.h **** 
@@ -269,768 +281,903 @@ ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccFVV7Wm.s 			page 1
  180:Drivers/lvgl/src/core/lv_disp.h ****  * @return pointer to the active screen
  181:Drivers/lvgl/src/core/lv_disp.h ****  */
  182:Drivers/lvgl/src/core/lv_disp.h **** static inline lv_obj_t * lv_scr_act(void)
-  48              		.loc 2 182 26 view .LVU2
-  49              	.LBB19:
+  54              		.loc 2 182 26 view .LVU2
+  55              	.LBB23:
  183:Drivers/lvgl/src/core/lv_disp.h **** {
  184:Drivers/lvgl/src/core/lv_disp.h ****     return lv_disp_get_scr_act(lv_disp_get_default());
-  50              		.loc 2 184 5 view .LVU3
-  51              	.LBE19:
-  52              	.LBE18:
-  23:Core/Src/UI_LCD.c ****     /*Create 2 Arcs for the 2 pots*/
-  53              		.loc 1 23 23 is_stmt 0 view .LVU4
-  54 0000 2DE9F047 		push	{r4, r5, r6, r7, r8, r9, r10, lr}
-  55              		.cfi_def_cfa_offset 32
-  56              		.cfi_offset 4, -32
-  57              		.cfi_offset 5, -28
-  58              		.cfi_offset 6, -24
-  59              		.cfi_offset 7, -20
-  60              		.cfi_offset 8, -16
-  61              		.cfi_offset 9, -12
-  62              		.cfi_offset 10, -8
-  63              		.cfi_offset 14, -4
-  64 0004 82B0     		sub	sp, sp, #8
-  65              		.cfi_def_cfa_offset 40
-  66              	.LBB21:
-  67              	.LBB20:
-  68              		.loc 2 184 12 view .LVU5
-  69 0006 FFF7FEFF 		bl	lv_disp_get_default
-  70              	.LVL0:
-  71 000a FFF7FEFF 		bl	lv_disp_get_scr_act
-  72              	.LVL1:
-  73              	.LBE20:
-ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccFVV7Wm.s 			page 6
+  56              		.loc 2 184 5 view .LVU3
+  57              	.LBE23:
+  58              	.LBE22:
+  23:Core/Src/UI_LCD.c ****     /* Create text*/
+  59              		.loc 1 23 23 is_stmt 0 view .LVU4
+  60 0000 2DE9F047 		push	{r4, r5, r6, r7, r8, r9, r10, lr}
+  61              		.cfi_def_cfa_offset 32
+  62              		.cfi_offset 4, -32
+  63              		.cfi_offset 5, -28
+  64              		.cfi_offset 6, -24
+  65              		.cfi_offset 7, -20
+  66              		.cfi_offset 8, -16
+  67              		.cfi_offset 9, -12
+ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccpz2auI.s 			page 6
 
 
-  74              	.LBE21:
-  75              		.loc 1 25 12 view .LVU6
-  76 000e FFF7FEFF 		bl	lv_arc_create
-  77              	.LVL2:
-  78              		.loc 1 25 10 view .LVU7
-  79 0012 554E     		ldr	r6, .L4
-  26:Core/Src/UI_LCD.c ****     lv_obj_set_size(pot1, 72, 72);
-  27:Core/Src/UI_LCD.c **** 	lv_obj_align(pot1, LV_ALIGN_CENTER, -90, -20);
-  28:Core/Src/UI_LCD.c ****     pot2 = lv_arc_create(lv_scr_act());
-  80              		.loc 1 28 10 view .LVU8
-  81 0014 554D     		ldr	r5, .L4+4
-  25:Core/Src/UI_LCD.c ****     lv_obj_set_size(pot1, 72, 72);
-  82              		.loc 1 25 10 view .LVU9
-  83 0016 3060     		str	r0, [r6]
-  26:Core/Src/UI_LCD.c ****     lv_obj_set_size(pot1, 72, 72);
-  84              		.loc 1 26 5 is_stmt 1 view .LVU10
-  85 0018 4822     		movs	r2, #72
-  86 001a 1146     		mov	r1, r2
-  87 001c FFF7FEFF 		bl	lv_obj_set_size
-  88              	.LVL3:
-  27:Core/Src/UI_LCD.c ****     pot2 = lv_arc_create(lv_scr_act());
-  89              		.loc 1 27 2 view .LVU11
-  90 0020 6FF01303 		mvn	r3, #19
-  91 0024 6FF05902 		mvn	r2, #89
-  92 0028 0921     		movs	r1, #9
-  93 002a 3068     		ldr	r0, [r6]
-  29:Core/Src/UI_LCD.c ****     lv_obj_set_size(pot2, 72, 72);
-  30:Core/Src/UI_LCD.c **** 	lv_obj_align(pot2, LV_ALIGN_CENTER, 90, -20);
-  31:Core/Src/UI_LCD.c ****     pot3 = lv_arc_create(lv_scr_act());
-  94              		.loc 1 31 10 is_stmt 0 view .LVU12
-  95 002c 504C     		ldr	r4, .L4+8
-  27:Core/Src/UI_LCD.c ****     pot2 = lv_arc_create(lv_scr_act());
-  96              		.loc 1 27 2 view .LVU13
-  97 002e FFF7FEFF 		bl	lv_obj_align
-  98              	.LVL4:
-  28:Core/Src/UI_LCD.c ****     lv_obj_set_size(pot2, 72, 72);
-  99              		.loc 1 28 5 is_stmt 1 view .LVU14
- 100              	.LBB22:
- 101              	.LBI22:
- 182:Drivers/lvgl/src/core/lv_disp.h **** {
- 102              		.loc 2 182 26 view .LVU15
- 103              	.LBB23:
- 104              		.loc 2 184 5 view .LVU16
- 105              		.loc 2 184 12 is_stmt 0 view .LVU17
- 106 0032 FFF7FEFF 		bl	lv_disp_get_default
- 107              	.LVL5:
- 108 0036 FFF7FEFF 		bl	lv_disp_get_scr_act
- 109              	.LVL6:
- 110              	.LBE23:
- 111              	.LBE22:
-  28:Core/Src/UI_LCD.c ****     lv_obj_set_size(pot2, 72, 72);
- 112              		.loc 1 28 12 view .LVU18
- 113 003a FFF7FEFF 		bl	lv_arc_create
+  68              		.cfi_offset 10, -8
+  69              		.cfi_offset 14, -4
+  70 0004 82B0     		sub	sp, sp, #8
+  71              		.cfi_def_cfa_offset 40
+  72              	.LBB25:
+  73              	.LBB24:
+  74              		.loc 2 184 12 view .LVU5
+  75 0006 FFF7FEFF 		bl	lv_disp_get_default
+  76              	.LVL0:
+  77 000a FFF7FEFF 		bl	lv_disp_get_scr_act
+  78              	.LVL1:
+  79              	.LBE24:
+  80              	.LBE25:
+  81              		.loc 1 25 24 view .LVU6
+  82 000e FFF7FEFF 		bl	lv_label_create
+  83              	.LVL2:
+  26:Core/Src/UI_LCD.c ****     lv_label_set_text(title, "MES MiniSynth");
+  84              		.loc 1 26 5 view .LVU7
+  85 0012 6F49     		ldr	r1, .L4
+  27:Core/Src/UI_LCD.c ****     lv_obj_set_style_text_font(title, &lv_font_montserrat_18, 0);
+  28:Core/Src/UI_LCD.c ****     lv_obj_set_style_text_align(title, LV_TEXT_ALIGN_CENTER, 0);
+  29:Core/Src/UI_LCD.c ****     lv_obj_align(title, LV_ALIGN_TOP_MID, 0, 10);
+  30:Core/Src/UI_LCD.c **** 
+  31:Core/Src/UI_LCD.c **** 
+  32:Core/Src/UI_LCD.c ****      /* Create text*/
+  33:Core/Src/UI_LCD.c ****     osc_txt = lv_label_create(lv_scr_act());
+  34:Core/Src/UI_LCD.c ****     lv_label_set_text(osc_txt, "virtual analog");
+  35:Core/Src/UI_LCD.c ****     lv_obj_set_style_text_font(osc_txt, &lv_font_montserrat_16, 0);
+  36:Core/Src/UI_LCD.c ****     lv_obj_set_style_text_align(osc_txt, LV_TEXT_ALIGN_CENTER, 0);
+  37:Core/Src/UI_LCD.c ****     lv_obj_align(osc_txt, LV_ALIGN_TOP_MID, 0, 40);
+  38:Core/Src/UI_LCD.c **** 
+  39:Core/Src/UI_LCD.c **** 
+  40:Core/Src/UI_LCD.c ****     /*Create Arcs for the 3 pots*/
+  41:Core/Src/UI_LCD.c ****     pot1 = lv_arc_create(lv_scr_act());
+  86              		.loc 1 41 10 view .LVU8
+  87 0014 6F4E     		ldr	r6, .L4+4
+  42:Core/Src/UI_LCD.c ****     lv_obj_set_size(pot1, 72, 72);
+  43:Core/Src/UI_LCD.c **** 	lv_obj_align(pot1, LV_ALIGN_CENTER, -90, -10);
+  44:Core/Src/UI_LCD.c ****     pot2 = lv_arc_create(lv_scr_act());
+  88              		.loc 1 44 10 view .LVU9
+  89 0016 704D     		ldr	r5, .L4+8
+  25:Core/Src/UI_LCD.c ****     lv_label_set_text(title, "MES MiniSynth");
+  90              		.loc 1 25 24 view .LVU10
+  91 0018 0446     		mov	r4, r0
+  92              	.LVL3:
+  26:Core/Src/UI_LCD.c ****     lv_obj_set_style_text_font(title, &lv_font_montserrat_18, 0);
+  93              		.loc 1 26 5 is_stmt 1 view .LVU11
+  94 001a FFF7FEFF 		bl	lv_label_set_text
+  95              	.LVL4:
+  27:Core/Src/UI_LCD.c ****     lv_obj_set_style_text_align(title, LV_TEXT_ALIGN_CENTER, 0);
+  96              		.loc 1 27 5 view .LVU12
+  97 001e 2046     		mov	r0, r4
+  98 0020 6E49     		ldr	r1, .L4+12
+  99 0022 0022     		movs	r2, #0
+ 100 0024 FFF7FEFF 		bl	lv_obj_set_style_text_font
+ 101              	.LVL5:
+  28:Core/Src/UI_LCD.c ****     lv_obj_align(title, LV_ALIGN_TOP_MID, 0, 10);
+ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccpz2auI.s 			page 7
+
+
+ 102              		.loc 1 28 5 view .LVU13
+ 103 0028 2046     		mov	r0, r4
+ 104 002a 0022     		movs	r2, #0
+ 105 002c 0221     		movs	r1, #2
+ 106 002e FFF7FEFF 		bl	lv_obj_set_style_text_align
+ 107              	.LVL6:
+  29:Core/Src/UI_LCD.c **** 
+ 108              		.loc 1 29 5 view .LVU14
+ 109 0032 0A23     		movs	r3, #10
+ 110 0034 0022     		movs	r2, #0
+ 111 0036 0221     		movs	r1, #2
+ 112 0038 2046     		mov	r0, r4
+ 113 003a FFF7FEFF 		bl	lv_obj_align
  114              	.LVL7:
-  29:Core/Src/UI_LCD.c ****     lv_obj_set_size(pot2, 72, 72);
- 115              		.loc 1 29 5 view .LVU19
- 116 003e 4822     		movs	r2, #72
-ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccFVV7Wm.s 			page 7
-
-
- 117 0040 1146     		mov	r1, r2
-  28:Core/Src/UI_LCD.c ****     lv_obj_set_size(pot2, 72, 72);
- 118              		.loc 1 28 10 view .LVU20
- 119 0042 2860     		str	r0, [r5]
-  29:Core/Src/UI_LCD.c ****     lv_obj_set_size(pot2, 72, 72);
- 120              		.loc 1 29 5 is_stmt 1 view .LVU21
- 121 0044 FFF7FEFF 		bl	lv_obj_set_size
- 122              	.LVL8:
-  30:Core/Src/UI_LCD.c ****     pot3 = lv_arc_create(lv_scr_act());
- 123              		.loc 1 30 2 view .LVU22
- 124 0048 6FF01303 		mvn	r3, #19
- 125 004c 5A22     		movs	r2, #90
- 126 004e 0921     		movs	r1, #9
- 127 0050 2868     		ldr	r0, [r5]
- 128 0052 FFF7FEFF 		bl	lv_obj_align
- 129              	.LVL9:
- 130              		.loc 1 31 5 view .LVU23
- 131              	.LBB24:
- 132              	.LBI24:
+  33:Core/Src/UI_LCD.c ****     lv_label_set_text(osc_txt, "virtual analog");
+ 115              		.loc 1 33 5 view .LVU15
+ 116              	.LBB26:
+ 117              	.LBI26:
  182:Drivers/lvgl/src/core/lv_disp.h **** {
- 133              		.loc 2 182 26 view .LVU24
- 134              	.LBB25:
- 135              		.loc 2 184 5 view .LVU25
- 136              		.loc 2 184 12 is_stmt 0 view .LVU26
- 137 0056 FFF7FEFF 		bl	lv_disp_get_default
- 138              	.LVL10:
- 139 005a FFF7FEFF 		bl	lv_disp_get_scr_act
- 140              	.LVL11:
- 141              	.LBE25:
- 142              	.LBE24:
- 143              		.loc 1 31 12 view .LVU27
- 144 005e FFF7FEFF 		bl	lv_arc_create
- 145              	.LVL12:
-  32:Core/Src/UI_LCD.c ****     lv_obj_set_size(pot3, 72, 72);
- 146              		.loc 1 32 5 view .LVU28
- 147 0062 4822     		movs	r2, #72
- 148 0064 1146     		mov	r1, r2
-  31:Core/Src/UI_LCD.c ****     lv_obj_set_size(pot3, 72, 72);
- 149              		.loc 1 31 10 view .LVU29
- 150 0066 2060     		str	r0, [r4]
- 151              		.loc 1 32 5 is_stmt 1 view .LVU30
- 152 0068 FFF7FEFF 		bl	lv_obj_set_size
- 153              	.LVL13:
-  33:Core/Src/UI_LCD.c **** 	lv_obj_align(pot3, LV_ALIGN_CENTER, 0, 60);
- 154              		.loc 1 33 2 view .LVU31
- 155 006c 3C23     		movs	r3, #60
- 156 006e 2068     		ldr	r0, [r4]
- 157 0070 0022     		movs	r2, #0
- 158 0072 0921     		movs	r1, #9
- 159 0074 FFF7FEFF 		bl	lv_obj_align
- 160              	.LVL14:
-  34:Core/Src/UI_LCD.c ****    
-  35:Core/Src/UI_LCD.c ****     lv_arc_set_rotation(pot1, 135);
- 161              		.loc 1 35 5 view .LVU32
- 162 0078 3068     		ldr	r0, [r6]
- 163 007a 8721     		movs	r1, #135
- 164 007c FFF7FEFF 		bl	lv_arc_set_rotation
-ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccFVV7Wm.s 			page 8
+ 118              		.loc 2 182 26 view .LVU16
+ 119              	.LBB27:
+ 120              		.loc 2 184 5 view .LVU17
+ 121              		.loc 2 184 12 is_stmt 0 view .LVU18
+ 122 003e FFF7FEFF 		bl	lv_disp_get_default
+ 123              	.LVL8:
+ 124 0042 FFF7FEFF 		bl	lv_disp_get_scr_act
+ 125              	.LVL9:
+ 126              	.LBE27:
+ 127              	.LBE26:
+  33:Core/Src/UI_LCD.c ****     lv_label_set_text(osc_txt, "virtual analog");
+ 128              		.loc 1 33 15 view .LVU19
+ 129 0046 FFF7FEFF 		bl	lv_label_create
+ 130              	.LVL10:
+  33:Core/Src/UI_LCD.c ****     lv_label_set_text(osc_txt, "virtual analog");
+ 131              		.loc 1 33 13 view .LVU20
+ 132 004a 654C     		ldr	r4, .L4+16
+ 133              	.LVL11:
+  34:Core/Src/UI_LCD.c ****     lv_obj_set_style_text_font(osc_txt, &lv_font_montserrat_16, 0);
+ 134              		.loc 1 34 5 view .LVU21
+ 135 004c 6549     		ldr	r1, .L4+20
+  33:Core/Src/UI_LCD.c ****     lv_label_set_text(osc_txt, "virtual analog");
+ 136              		.loc 1 33 13 view .LVU22
+ 137 004e 2060     		str	r0, [r4]
+  34:Core/Src/UI_LCD.c ****     lv_obj_set_style_text_font(osc_txt, &lv_font_montserrat_16, 0);
+ 138              		.loc 1 34 5 is_stmt 1 view .LVU23
+ 139 0050 FFF7FEFF 		bl	lv_label_set_text
+ 140              	.LVL12:
+  35:Core/Src/UI_LCD.c ****     lv_obj_set_style_text_align(osc_txt, LV_TEXT_ALIGN_CENTER, 0);
+ 141              		.loc 1 35 5 view .LVU24
+ 142 0054 2068     		ldr	r0, [r4]
+ 143 0056 6449     		ldr	r1, .L4+24
+ 144 0058 0022     		movs	r2, #0
+ 145 005a FFF7FEFF 		bl	lv_obj_set_style_text_font
+ 146              	.LVL13:
+  36:Core/Src/UI_LCD.c ****     lv_obj_align(osc_txt, LV_ALIGN_TOP_MID, 0, 40);
+ 147              		.loc 1 36 5 view .LVU25
+ 148 005e 2068     		ldr	r0, [r4]
+ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccpz2auI.s 			page 8
 
 
- 165              	.LVL15:
-  36:Core/Src/UI_LCD.c ****     lv_arc_set_bg_angles(pot1, 0, 270);
- 166              		.loc 1 36 5 view .LVU33
- 167 0080 3068     		ldr	r0, [r6]
- 168 0082 4FF48772 		mov	r2, #270
- 169 0086 0021     		movs	r1, #0
- 170 0088 FFF7FEFF 		bl	lv_arc_set_bg_angles
+ 149 0060 0022     		movs	r2, #0
+ 150 0062 0221     		movs	r1, #2
+ 151 0064 FFF7FEFF 		bl	lv_obj_set_style_text_align
+ 152              	.LVL14:
+  37:Core/Src/UI_LCD.c **** 
+ 153              		.loc 1 37 5 view .LVU26
+ 154 0068 2823     		movs	r3, #40
+ 155 006a 0022     		movs	r2, #0
+ 156 006c 0221     		movs	r1, #2
+ 157 006e 2068     		ldr	r0, [r4]
+  45:Core/Src/UI_LCD.c ****     lv_obj_set_size(pot2, 72, 72);
+  46:Core/Src/UI_LCD.c **** 	lv_obj_align(pot2, LV_ALIGN_CENTER, 90, -10);
+  47:Core/Src/UI_LCD.c ****     pot3 = lv_arc_create(lv_scr_act());
+ 158              		.loc 1 47 10 is_stmt 0 view .LVU27
+ 159 0070 5E4C     		ldr	r4, .L4+28
+  37:Core/Src/UI_LCD.c **** 
+ 160              		.loc 1 37 5 view .LVU28
+ 161 0072 FFF7FEFF 		bl	lv_obj_align
+ 162              	.LVL15:
+  41:Core/Src/UI_LCD.c ****     lv_obj_set_size(pot1, 72, 72);
+ 163              		.loc 1 41 5 is_stmt 1 view .LVU29
+ 164              	.LBB28:
+ 165              	.LBI28:
+ 182:Drivers/lvgl/src/core/lv_disp.h **** {
+ 166              		.loc 2 182 26 view .LVU30
+ 167              	.LBB29:
+ 168              		.loc 2 184 5 view .LVU31
+ 169              		.loc 2 184 12 is_stmt 0 view .LVU32
+ 170 0076 FFF7FEFF 		bl	lv_disp_get_default
  171              	.LVL16:
-  37:Core/Src/UI_LCD.c ****     lv_arc_set_rotation(pot2, 135);
- 172              		.loc 1 37 5 view .LVU34
- 173 008c 2868     		ldr	r0, [r5]
- 174 008e 8721     		movs	r1, #135
- 175 0090 FFF7FEFF 		bl	lv_arc_set_rotation
- 176              	.LVL17:
-  38:Core/Src/UI_LCD.c ****     lv_arc_set_bg_angles(pot2, 0, 270);
- 177              		.loc 1 38 5 view .LVU35
- 178 0094 2868     		ldr	r0, [r5]
- 179 0096 4FF48772 		mov	r2, #270
- 180 009a 0021     		movs	r1, #0
- 181 009c FFF7FEFF 		bl	lv_arc_set_bg_angles
- 182              	.LVL18:
-  39:Core/Src/UI_LCD.c ****     lv_arc_set_rotation(pot3, 135);
- 183              		.loc 1 39 5 view .LVU36
- 184 00a0 2068     		ldr	r0, [r4]
- 185 00a2 8721     		movs	r1, #135
- 186 00a4 FFF7FEFF 		bl	lv_arc_set_rotation
- 187              	.LVL19:
-  40:Core/Src/UI_LCD.c ****     lv_arc_set_bg_angles(pot3, 0, 270);
- 188              		.loc 1 40 5 view .LVU37
- 189 00a8 2068     		ldr	r0, [r4]
- 190 00aa 4FF48772 		mov	r2, #270
- 191 00ae 0021     		movs	r1, #0
- 192 00b0 FFF7FEFF 		bl	lv_arc_set_bg_angles
+ 172 007a FFF7FEFF 		bl	lv_disp_get_scr_act
+ 173              	.LVL17:
+ 174              	.LBE29:
+ 175              	.LBE28:
+  41:Core/Src/UI_LCD.c ****     lv_obj_set_size(pot1, 72, 72);
+ 176              		.loc 1 41 12 view .LVU33
+ 177 007e FFF7FEFF 		bl	lv_arc_create
+ 178              	.LVL18:
+  42:Core/Src/UI_LCD.c **** 	lv_obj_align(pot1, LV_ALIGN_CENTER, -90, -10);
+ 179              		.loc 1 42 5 view .LVU34
+ 180 0082 4822     		movs	r2, #72
+ 181 0084 1146     		mov	r1, r2
+  41:Core/Src/UI_LCD.c ****     lv_obj_set_size(pot1, 72, 72);
+ 182              		.loc 1 41 10 view .LVU35
+ 183 0086 3060     		str	r0, [r6]
+  42:Core/Src/UI_LCD.c **** 	lv_obj_align(pot1, LV_ALIGN_CENTER, -90, -10);
+ 184              		.loc 1 42 5 is_stmt 1 view .LVU36
+ 185 0088 FFF7FEFF 		bl	lv_obj_set_size
+ 186              	.LVL19:
+  43:Core/Src/UI_LCD.c ****     pot2 = lv_arc_create(lv_scr_act());
+ 187              		.loc 1 43 2 view .LVU37
+ 188 008c 6FF00903 		mvn	r3, #9
+ 189 0090 6FF05902 		mvn	r2, #89
+ 190 0094 0921     		movs	r1, #9
+ 191 0096 3068     		ldr	r0, [r6]
+ 192 0098 FFF7FEFF 		bl	lv_obj_align
  193              	.LVL20:
-  41:Core/Src/UI_LCD.c ****     
-  42:Core/Src/UI_LCD.c ****     /*Make them unclickable, and without knob*/
-  43:Core/Src/UI_LCD.c ****     lv_obj_remove_style(pot1, NULL, LV_PART_KNOB);
- 194              		.loc 1 43 5 view .LVU38
- 195 00b4 3068     		ldr	r0, [r6]
- 196 00b6 4FF44032 		mov	r2, #196608
- 197 00ba 0021     		movs	r1, #0
- 198 00bc FFF7FEFF 		bl	lv_obj_remove_style
- 199              	.LVL21:
-  44:Core/Src/UI_LCD.c ****     lv_obj_clear_flag(pot1, LV_OBJ_FLAG_CLICKABLE);
- 200              		.loc 1 44 5 view .LVU39
- 201 00c0 3068     		ldr	r0, [r6]
- 202 00c2 0221     		movs	r1, #2
- 203 00c4 FFF7FEFF 		bl	lv_obj_clear_flag
+ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccpz2auI.s 			page 9
+
+
+  44:Core/Src/UI_LCD.c ****     lv_obj_set_size(pot2, 72, 72);
+ 194              		.loc 1 44 5 view .LVU38
+ 195              	.LBB30:
+ 196              	.LBI30:
+ 182:Drivers/lvgl/src/core/lv_disp.h **** {
+ 197              		.loc 2 182 26 view .LVU39
+ 198              	.LBB31:
+ 199              		.loc 2 184 5 view .LVU40
+ 200              		.loc 2 184 12 is_stmt 0 view .LVU41
+ 201 009c FFF7FEFF 		bl	lv_disp_get_default
+ 202              	.LVL21:
+ 203 00a0 FFF7FEFF 		bl	lv_disp_get_scr_act
  204              	.LVL22:
-  45:Core/Src/UI_LCD.c ****     lv_obj_remove_style(pot2, NULL, LV_PART_KNOB);
- 205              		.loc 1 45 5 view .LVU40
- 206 00c8 2868     		ldr	r0, [r5]
- 207 00ca 4FF44032 		mov	r2, #196608
- 208 00ce 0021     		movs	r1, #0
- 209 00d0 FFF7FEFF 		bl	lv_obj_remove_style
- 210              	.LVL23:
-  46:Core/Src/UI_LCD.c ****     lv_obj_clear_flag(pot2, LV_OBJ_FLAG_CLICKABLE);
-ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccFVV7Wm.s 			page 9
-
-
- 211              		.loc 1 46 5 view .LVU41
- 212 00d4 2868     		ldr	r0, [r5]
- 213 00d6 0221     		movs	r1, #2
- 214 00d8 FFF7FEFF 		bl	lv_obj_clear_flag
- 215              	.LVL24:
-  47:Core/Src/UI_LCD.c ****     lv_obj_remove_style(pot3, NULL, LV_PART_KNOB);
- 216              		.loc 1 47 5 view .LVU42
- 217 00dc 4FF44032 		mov	r2, #196608
- 218 00e0 2068     		ldr	r0, [r4]
- 219 00e2 0021     		movs	r1, #0
- 220 00e4 FFF7FEFF 		bl	lv_obj_remove_style
- 221              	.LVL25:
-  48:Core/Src/UI_LCD.c ****     lv_obj_clear_flag(pot3, LV_OBJ_FLAG_CLICKABLE);
- 222              		.loc 1 48 5 view .LVU43
- 223 00e8 0221     		movs	r1, #2
- 224 00ea 2068     		ldr	r0, [r4]
- 225 00ec FFF7FEFF 		bl	lv_obj_clear_flag
- 226              	.LVL26:
-  49:Core/Src/UI_LCD.c ****     
-  50:Core/Src/UI_LCD.c **** 
-  51:Core/Src/UI_LCD.c ****     // /*Create labels for potentiometers*/
-  52:Core/Src/UI_LCD.c ****     lv_obj_t * label1 = lv_label_create(lv_scr_act());
- 227              		.loc 1 52 5 view .LVU44
- 228              	.LBB26:
- 229              	.LBI26:
+ 205              	.LBE31:
+ 206              	.LBE30:
+  44:Core/Src/UI_LCD.c ****     lv_obj_set_size(pot2, 72, 72);
+ 207              		.loc 1 44 12 view .LVU42
+ 208 00a4 FFF7FEFF 		bl	lv_arc_create
+ 209              	.LVL23:
+  45:Core/Src/UI_LCD.c **** 	lv_obj_align(pot2, LV_ALIGN_CENTER, 90, -10);
+ 210              		.loc 1 45 5 view .LVU43
+ 211 00a8 4822     		movs	r2, #72
+ 212 00aa 1146     		mov	r1, r2
+  44:Core/Src/UI_LCD.c ****     lv_obj_set_size(pot2, 72, 72);
+ 213              		.loc 1 44 10 view .LVU44
+ 214 00ac 2860     		str	r0, [r5]
+  45:Core/Src/UI_LCD.c **** 	lv_obj_align(pot2, LV_ALIGN_CENTER, 90, -10);
+ 215              		.loc 1 45 5 is_stmt 1 view .LVU45
+ 216 00ae FFF7FEFF 		bl	lv_obj_set_size
+ 217              	.LVL24:
+  46:Core/Src/UI_LCD.c ****     pot3 = lv_arc_create(lv_scr_act());
+ 218              		.loc 1 46 2 view .LVU46
+ 219 00b2 6FF00903 		mvn	r3, #9
+ 220 00b6 5A22     		movs	r2, #90
+ 221 00b8 0921     		movs	r1, #9
+ 222 00ba 2868     		ldr	r0, [r5]
+ 223 00bc FFF7FEFF 		bl	lv_obj_align
+ 224              	.LVL25:
+ 225              		.loc 1 47 5 view .LVU47
+ 226              	.LBB32:
+ 227              	.LBI32:
  182:Drivers/lvgl/src/core/lv_disp.h **** {
- 230              		.loc 2 182 26 view .LVU45
- 231              	.LBB27:
- 232              		.loc 2 184 5 view .LVU46
- 233              		.loc 2 184 12 is_stmt 0 view .LVU47
- 234 00f0 FFF7FEFF 		bl	lv_disp_get_default
+ 228              		.loc 2 182 26 view .LVU48
+ 229              	.LBB33:
+ 230              		.loc 2 184 5 view .LVU49
+ 231              		.loc 2 184 12 is_stmt 0 view .LVU50
+ 232 00c0 FFF7FEFF 		bl	lv_disp_get_default
+ 233              	.LVL26:
+ 234 00c4 FFF7FEFF 		bl	lv_disp_get_scr_act
  235              	.LVL27:
- 236 00f4 FFF7FEFF 		bl	lv_disp_get_scr_act
- 237              	.LVL28:
- 238              	.LBE27:
- 239              	.LBE26:
- 240              		.loc 1 52 25 view .LVU48
- 241 00f8 FFF7FEFF 		bl	lv_label_create
- 242              	.LVL29:
-  53:Core/Src/UI_LCD.c ****     lv_label_set_text_static(label1, "cutoff");
- 243              		.loc 1 53 5 view .LVU49
- 244 00fc 1D49     		ldr	r1, .L4+12
-  52:Core/Src/UI_LCD.c ****     lv_label_set_text_static(label1, "cutoff");
- 245              		.loc 1 52 25 view .LVU50
- 246 00fe 8246     		mov	r10, r0
- 247              	.LVL30:
- 248              		.loc 1 53 5 is_stmt 1 view .LVU51
- 249 0100 FFF7FEFF 		bl	lv_label_set_text_static
- 250              	.LVL31:
-  54:Core/Src/UI_LCD.c **** 
-  55:Core/Src/UI_LCD.c ****     lv_obj_t * label2 = lv_label_create(lv_scr_act());
- 251              		.loc 1 55 5 view .LVU52
- 252              	.LBB28:
- 253              	.LBI28:
- 182:Drivers/lvgl/src/core/lv_disp.h **** {
- 254              		.loc 2 182 26 view .LVU53
- 255              	.LBB29:
-ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccFVV7Wm.s 			page 10
+ 236              	.LBE33:
+ 237              	.LBE32:
+ 238              		.loc 1 47 12 view .LVU51
+ 239 00c8 FFF7FEFF 		bl	lv_arc_create
+ 240              	.LVL28:
+  48:Core/Src/UI_LCD.c ****     lv_obj_set_size(pot3, 72, 72);
+ 241              		.loc 1 48 5 view .LVU52
+ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccpz2auI.s 			page 10
 
 
- 256              		.loc 2 184 5 view .LVU54
- 257              		.loc 2 184 12 is_stmt 0 view .LVU55
- 258 0104 FFF7FEFF 		bl	lv_disp_get_default
- 259              	.LVL32:
- 260 0108 FFF7FEFF 		bl	lv_disp_get_scr_act
- 261              	.LVL33:
- 262              	.LBE29:
- 263              	.LBE28:
- 264              		.loc 1 55 25 view .LVU56
- 265 010c FFF7FEFF 		bl	lv_label_create
- 266              	.LVL34:
-  56:Core/Src/UI_LCD.c ****     lv_label_set_text_static(label2, "decay");
- 267              		.loc 1 56 5 view .LVU57
- 268 0110 1949     		ldr	r1, .L4+16
-  55:Core/Src/UI_LCD.c ****     lv_label_set_text_static(label2, "decay");
- 269              		.loc 1 55 25 view .LVU58
- 270 0112 8146     		mov	r9, r0
- 271              	.LVL35:
- 272              		.loc 1 56 5 is_stmt 1 view .LVU59
- 273 0114 FFF7FEFF 		bl	lv_label_set_text_static
- 274              	.LVL36:
-  57:Core/Src/UI_LCD.c **** 
-  58:Core/Src/UI_LCD.c ****     lv_obj_t * label3 = lv_label_create(lv_scr_act());
- 275              		.loc 1 58 5 view .LVU60
- 276              	.LBB30:
- 277              	.LBI30:
- 182:Drivers/lvgl/src/core/lv_disp.h **** {
- 278              		.loc 2 182 26 view .LVU61
- 279              	.LBB31:
- 280              		.loc 2 184 5 view .LVU62
- 281              		.loc 2 184 12 is_stmt 0 view .LVU63
- 282 0118 FFF7FEFF 		bl	lv_disp_get_default
- 283              	.LVL37:
- 284 011c FFF7FEFF 		bl	lv_disp_get_scr_act
- 285              	.LVL38:
- 286              	.LBE31:
- 287              	.LBE30:
- 288              		.loc 1 58 25 view .LVU64
- 289 0120 FFF7FEFF 		bl	lv_label_create
- 290              	.LVL39:
-  59:Core/Src/UI_LCD.c ****     lv_label_set_text_static(label3, "delay");
-  60:Core/Src/UI_LCD.c ****     
-  61:Core/Src/UI_LCD.c ****     lv_obj_align_to(label1, pot1, LV_ALIGN_BOTTOM_MID, 0, +15);
- 291              		.loc 1 61 5 view .LVU65
- 292 0124 4FF00F08 		mov	r8, #15
-  59:Core/Src/UI_LCD.c ****     lv_label_set_text_static(label3, "delay");
- 293              		.loc 1 59 5 view .LVU66
- 294 0128 1449     		ldr	r1, .L4+20
-  58:Core/Src/UI_LCD.c ****     lv_label_set_text_static(label3, "delay");
- 295              		.loc 1 58 25 view .LVU67
- 296 012a 0746     		mov	r7, r0
- 297              	.LVL40:
-  59:Core/Src/UI_LCD.c ****     lv_label_set_text_static(label3, "delay");
- 298              		.loc 1 59 5 is_stmt 1 view .LVU68
- 299 012c FFF7FEFF 		bl	lv_label_set_text_static
- 300              	.LVL41:
- 301              		.loc 1 61 5 view .LVU69
-ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccFVV7Wm.s 			page 11
+ 242 00cc 4822     		movs	r2, #72
+ 243 00ce 1146     		mov	r1, r2
+  47:Core/Src/UI_LCD.c ****     lv_obj_set_size(pot3, 72, 72);
+ 244              		.loc 1 47 10 view .LVU53
+ 245 00d0 2060     		str	r0, [r4]
+ 246              		.loc 1 48 5 is_stmt 1 view .LVU54
+ 247 00d2 FFF7FEFF 		bl	lv_obj_set_size
+ 248              	.LVL29:
+  49:Core/Src/UI_LCD.c **** 	lv_obj_align(pot3, LV_ALIGN_CENTER, 0, 65);
+ 249              		.loc 1 49 2 view .LVU55
+ 250 00d6 4123     		movs	r3, #65
+ 251 00d8 2068     		ldr	r0, [r4]
+ 252 00da 0022     		movs	r2, #0
+ 253 00dc 0921     		movs	r1, #9
+ 254 00de FFF7FEFF 		bl	lv_obj_align
+ 255              	.LVL30:
+  50:Core/Src/UI_LCD.c ****    
+  51:Core/Src/UI_LCD.c ****     lv_arc_set_rotation(pot1, 135);
+ 256              		.loc 1 51 5 view .LVU56
+ 257 00e2 3068     		ldr	r0, [r6]
+ 258 00e4 8721     		movs	r1, #135
+ 259 00e6 FFF7FEFF 		bl	lv_arc_set_rotation
+ 260              	.LVL31:
+  52:Core/Src/UI_LCD.c ****     lv_arc_set_bg_angles(pot1, 0, 270);
+ 261              		.loc 1 52 5 view .LVU57
+ 262 00ea 3068     		ldr	r0, [r6]
+ 263 00ec 4FF48772 		mov	r2, #270
+ 264 00f0 0021     		movs	r1, #0
+ 265 00f2 FFF7FEFF 		bl	lv_arc_set_bg_angles
+ 266              	.LVL32:
+  53:Core/Src/UI_LCD.c ****     lv_arc_set_rotation(pot2, 135);
+ 267              		.loc 1 53 5 view .LVU58
+ 268 00f6 2868     		ldr	r0, [r5]
+ 269 00f8 8721     		movs	r1, #135
+ 270 00fa FFF7FEFF 		bl	lv_arc_set_rotation
+ 271              	.LVL33:
+  54:Core/Src/UI_LCD.c ****     lv_arc_set_bg_angles(pot2, 0, 270);
+ 272              		.loc 1 54 5 view .LVU59
+ 273 00fe 2868     		ldr	r0, [r5]
+ 274 0100 4FF48772 		mov	r2, #270
+ 275 0104 0021     		movs	r1, #0
+ 276 0106 FFF7FEFF 		bl	lv_arc_set_bg_angles
+ 277              	.LVL34:
+  55:Core/Src/UI_LCD.c ****     lv_arc_set_rotation(pot3, 135);
+ 278              		.loc 1 55 5 view .LVU60
+ 279 010a 2068     		ldr	r0, [r4]
+ 280 010c 8721     		movs	r1, #135
+ 281 010e FFF7FEFF 		bl	lv_arc_set_rotation
+ 282              	.LVL35:
+  56:Core/Src/UI_LCD.c ****     lv_arc_set_bg_angles(pot3, 0, 270);
+ 283              		.loc 1 56 5 view .LVU61
+ 284 0112 2068     		ldr	r0, [r4]
+ 285 0114 4FF48772 		mov	r2, #270
+ 286 0118 0021     		movs	r1, #0
+ 287 011a FFF7FEFF 		bl	lv_arc_set_bg_angles
+ 288              	.LVL36:
+  57:Core/Src/UI_LCD.c ****     
+ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccpz2auI.s 			page 11
 
 
- 302 0130 3168     		ldr	r1, [r6]
- 303 0132 CDF80080 		str	r8, [sp]
- 304 0136 5046     		mov	r0, r10
- 305 0138 0023     		movs	r3, #0
- 306 013a 0522     		movs	r2, #5
- 307 013c FFF7FEFF 		bl	lv_obj_align_to
- 308              	.LVL42:
-  62:Core/Src/UI_LCD.c ****     lv_obj_align_to(label2, pot2, LV_ALIGN_BOTTOM_MID, 0, +15);
- 309              		.loc 1 62 5 view .LVU70
- 310 0140 2968     		ldr	r1, [r5]
- 311 0142 CDF80080 		str	r8, [sp]
- 312 0146 4846     		mov	r0, r9
- 313 0148 0023     		movs	r3, #0
- 314 014a 0522     		movs	r2, #5
- 315 014c FFF7FEFF 		bl	lv_obj_align_to
- 316              	.LVL43:
-  63:Core/Src/UI_LCD.c ****     lv_obj_align_to(label3, pot3, LV_ALIGN_BOTTOM_MID, 0, +15);
- 317              		.loc 1 63 5 view .LVU71
- 318 0150 2168     		ldr	r1, [r4]
- 319 0152 CDF80080 		str	r8, [sp]
- 320 0156 0023     		movs	r3, #0
- 321 0158 0522     		movs	r2, #5
- 322 015a 3846     		mov	r0, r7
- 323 015c FFF7FEFF 		bl	lv_obj_align_to
- 324              	.LVL44:
-  64:Core/Src/UI_LCD.c ****     
-  65:Core/Src/UI_LCD.c **** }
- 325              		.loc 1 65 1 is_stmt 0 view .LVU72
- 326 0160 02B0     		add	sp, sp, #8
- 327              		.cfi_def_cfa_offset 32
- 328              		@ sp needed
- 329 0162 BDE8F087 		pop	{r4, r5, r6, r7, r8, r9, r10, pc}
- 330              	.LVL45:
- 331              	.L5:
- 332              		.loc 1 65 1 view .LVU73
- 333 0166 00BF     		.align	2
- 334              	.L4:
- 335 0168 00000000 		.word	.LANCHOR0
- 336 016c 00000000 		.word	.LANCHOR1
- 337 0170 00000000 		.word	.LANCHOR2
- 338 0174 00000000 		.word	.LC0
- 339 0178 08000000 		.word	.LC1
- 340 017c 10000000 		.word	.LC2
- 341              		.cfi_endproc
- 342              	.LFE446:
- 344              		.section	.rodata.create_tabs.str1.4,"aMS",%progbits,1
- 345              		.align	2
- 346              	.LC3:
- 347 0000 6F736300 		.ascii	"osc\000"
- 348              		.align	2
- 349              	.LC4:
- 350 0004 66696C74 		.ascii	"filter\000"
- 350      657200
- 351 000b 00       		.align	2
- 352              	.LC5:
- 353 000c 7265736F 		.ascii	"resonance\000"
- 353      6E616E63 
-ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccFVV7Wm.s 			page 12
-
-
- 353      6500
- 354 0016 0000     		.align	2
- 355              	.LC6:
- 356 0018 5365636F 		.ascii	"Second tab\000"
- 356      6E642074 
- 356      616200
- 357 0023 00       		.align	2
- 358              	.LC7:
- 359 0024 74696D65 		.ascii	"time\000"
- 359      00
- 360 0029 000000   		.align	2
- 361              	.LC8:
- 362 002c 66656564 		.ascii	"feedback\000"
- 362      6261636B 
- 362      00
- 363              		.section	.text.create_tabs,"ax",%progbits
- 364              		.align	1
- 365              		.p2align 2,,3
- 366              		.global	create_tabs
- 367              		.syntax unified
- 368              		.thumb
- 369              		.thumb_func
- 371              	create_tabs:
- 372              	.LFB447:
+  58:Core/Src/UI_LCD.c ****     /*Make them unclickable, and without knob*/
+  59:Core/Src/UI_LCD.c ****     lv_obj_remove_style(pot1, NULL, LV_PART_KNOB);
+ 289              		.loc 1 59 5 view .LVU62
+ 290 011e 3068     		ldr	r0, [r6]
+ 291 0120 4FF44032 		mov	r2, #196608
+ 292 0124 0021     		movs	r1, #0
+ 293 0126 FFF7FEFF 		bl	lv_obj_remove_style
+ 294              	.LVL37:
+  60:Core/Src/UI_LCD.c ****     lv_obj_clear_flag(pot1, LV_OBJ_FLAG_CLICKABLE);
+ 295              		.loc 1 60 5 view .LVU63
+ 296 012a 3068     		ldr	r0, [r6]
+ 297 012c 0221     		movs	r1, #2
+ 298 012e FFF7FEFF 		bl	lv_obj_clear_flag
+ 299              	.LVL38:
+  61:Core/Src/UI_LCD.c ****     lv_obj_remove_style(pot2, NULL, LV_PART_KNOB);
+ 300              		.loc 1 61 5 view .LVU64
+ 301 0132 2868     		ldr	r0, [r5]
+ 302 0134 4FF44032 		mov	r2, #196608
+ 303 0138 0021     		movs	r1, #0
+ 304 013a FFF7FEFF 		bl	lv_obj_remove_style
+ 305              	.LVL39:
+  62:Core/Src/UI_LCD.c ****     lv_obj_clear_flag(pot2, LV_OBJ_FLAG_CLICKABLE);
+ 306              		.loc 1 62 5 view .LVU65
+ 307 013e 2868     		ldr	r0, [r5]
+ 308 0140 0221     		movs	r1, #2
+ 309 0142 FFF7FEFF 		bl	lv_obj_clear_flag
+ 310              	.LVL40:
+  63:Core/Src/UI_LCD.c ****     lv_obj_remove_style(pot3, NULL, LV_PART_KNOB);
+ 311              		.loc 1 63 5 view .LVU66
+ 312 0146 4FF44032 		mov	r2, #196608
+ 313 014a 2068     		ldr	r0, [r4]
+ 314 014c 0021     		movs	r1, #0
+ 315 014e FFF7FEFF 		bl	lv_obj_remove_style
+ 316              	.LVL41:
+  64:Core/Src/UI_LCD.c ****     lv_obj_clear_flag(pot3, LV_OBJ_FLAG_CLICKABLE);
+ 317              		.loc 1 64 5 view .LVU67
+ 318 0152 0221     		movs	r1, #2
+ 319 0154 2068     		ldr	r0, [r4]
+ 320 0156 FFF7FEFF 		bl	lv_obj_clear_flag
+ 321              	.LVL42:
+  65:Core/Src/UI_LCD.c ****     
   66:Core/Src/UI_LCD.c **** 
-  67:Core/Src/UI_LCD.c **** 
-  68:Core/Src/UI_LCD.c **** void create_tabs(void){
- 373              		.loc 1 68 23 is_stmt 1 view -0
- 374              		.cfi_startproc
- 375              		@ args = 0, pretend = 0, frame = 0
- 376              		@ frame_needed = 0, uses_anonymous_args = 0
-  69:Core/Src/UI_LCD.c ****       /*Create a Tab view object*/
-  70:Core/Src/UI_LCD.c ****    
-  71:Core/Src/UI_LCD.c ****     tabview = lv_tabview_create(lv_scr_act(), LV_DIR_TOP, 40);
- 377              		.loc 1 71 5 view .LVU75
- 378              	.LBB34:
- 379              	.LBI34:
+  67:Core/Src/UI_LCD.c ****     // /*Create labels for potentiometers*/
+  68:Core/Src/UI_LCD.c ****     lv_obj_t * label1 = lv_label_create(lv_scr_act());
+ 322              		.loc 1 68 5 view .LVU68
+ 323              	.LBB34:
+ 324              	.LBI34:
  182:Drivers/lvgl/src/core/lv_disp.h **** {
- 380              		.loc 2 182 26 view .LVU76
- 381              	.LBB35:
- 382              		.loc 2 184 5 view .LVU77
- 383              	.LBE35:
- 384              	.LBE34:
-  68:Core/Src/UI_LCD.c ****       /*Create a Tab view object*/
- 385              		.loc 1 68 23 is_stmt 0 view .LVU78
- 386 0000 F0B5     		push	{r4, r5, r6, r7, lr}
- 387              		.cfi_def_cfa_offset 20
- 388              		.cfi_offset 4, -20
- 389              		.cfi_offset 5, -16
- 390              		.cfi_offset 6, -12
- 391              		.cfi_offset 7, -8
- 392              		.cfi_offset 14, -4
- 393 0002 83B0     		sub	sp, sp, #12
- 394              		.cfi_def_cfa_offset 32
- 395              	.LBB37:
- 396              	.LBB36:
- 397              		.loc 2 184 12 view .LVU79
-ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccFVV7Wm.s 			page 13
+ 325              		.loc 2 182 26 view .LVU69
+ 326              	.LBB35:
+ 327              		.loc 2 184 5 view .LVU70
+ 328              		.loc 2 184 12 is_stmt 0 view .LVU71
+ 329 015a FFF7FEFF 		bl	lv_disp_get_default
+ 330              	.LVL43:
+ 331 015e FFF7FEFF 		bl	lv_disp_get_scr_act
+ 332              	.LVL44:
+ 333              	.LBE35:
+ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccpz2auI.s 			page 12
 
 
- 398 0004 FFF7FEFF 		bl	lv_disp_get_default
- 399              	.LVL46:
- 400 0008 FFF7FEFF 		bl	lv_disp_get_scr_act
- 401              	.LVL47:
- 402              	.LBE36:
- 403              	.LBE37:
- 404              		.loc 1 71 15 view .LVU80
- 405 000c 2822     		movs	r2, #40
- 406 000e 0421     		movs	r1, #4
- 407 0010 FFF7FEFF 		bl	lv_tabview_create
- 408              	.LVL48:
- 409              		.loc 1 71 13 view .LVU81
- 410 0014 234C     		ldr	r4, .L8
-  72:Core/Src/UI_LCD.c **** 
-  73:Core/Src/UI_LCD.c ****     /*Add 3 tabs (the tabs are page (lv_page) and can be scrolled*/
-  74:Core/Src/UI_LCD.c ****     lv_obj_t * tab1 = lv_tabview_add_tab(tabview, "osc");
- 411              		.loc 1 74 23 view .LVU82
- 412 0016 2449     		ldr	r1, .L8+4
-  71:Core/Src/UI_LCD.c **** 
- 413              		.loc 1 71 13 view .LVU83
- 414 0018 2060     		str	r0, [r4]
- 415              		.loc 1 74 5 is_stmt 1 view .LVU84
- 416              		.loc 1 74 23 is_stmt 0 view .LVU85
- 417 001a FFF7FEFF 		bl	lv_tabview_add_tab
- 418              	.LVL49:
-  75:Core/Src/UI_LCD.c ****     lv_obj_t * tab2 = lv_tabview_add_tab(tabview, "filter");
- 419              		.loc 1 75 23 view .LVU86
- 420 001e 2349     		ldr	r1, .L8+8
-  74:Core/Src/UI_LCD.c ****     lv_obj_t * tab2 = lv_tabview_add_tab(tabview, "filter");
- 421              		.loc 1 74 23 view .LVU87
- 422 0020 0546     		mov	r5, r0
- 423              		.loc 1 75 23 view .LVU88
- 424 0022 2068     		ldr	r0, [r4]
- 425              	.LVL50:
- 426              		.loc 1 75 5 is_stmt 1 view .LVU89
- 427              		.loc 1 75 23 is_stmt 0 view .LVU90
- 428 0024 FFF7FEFF 		bl	lv_tabview_add_tab
- 429              	.LVL51:
-  76:Core/Src/UI_LCD.c ****     lv_obj_t * tab3 = lv_tabview_add_tab(tabview, "delay");
- 430              		.loc 1 76 23 view .LVU91
- 431 0028 2149     		ldr	r1, .L8+12
-  75:Core/Src/UI_LCD.c ****     lv_obj_t * tab2 = lv_tabview_add_tab(tabview, "filter");
- 432              		.loc 1 75 23 view .LVU92
- 433 002a 0646     		mov	r6, r0
- 434              		.loc 1 76 23 view .LVU93
- 435 002c 2068     		ldr	r0, [r4]
- 436              	.LVL52:
- 437              		.loc 1 76 5 is_stmt 1 view .LVU94
- 438              		.loc 1 76 23 is_stmt 0 view .LVU95
- 439 002e FFF7FEFF 		bl	lv_tabview_add_tab
- 440              	.LVL53:
- 441 0032 0446     		mov	r4, r0
-  77:Core/Src/UI_LCD.c **** 
-  78:Core/Src/UI_LCD.c ****     /*Add content to the tabs*/
-  79:Core/Src/UI_LCD.c ****     lv_obj_t * label1 = lv_label_create(tab1);
- 442              		.loc 1 79 25 view .LVU96
- 443 0034 2846     		mov	r0, r5
-ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccFVV7Wm.s 			page 14
+ 334              	.LBE34:
+ 335              		.loc 1 68 25 view .LVU72
+ 336 0162 FFF7FEFF 		bl	lv_label_create
+ 337              	.LVL45:
+  69:Core/Src/UI_LCD.c ****     lv_label_set_text_static(label1, "cutoff");
+ 338              		.loc 1 69 5 view .LVU73
+ 339 0166 2249     		ldr	r1, .L4+32
+  68:Core/Src/UI_LCD.c ****     lv_label_set_text_static(label1, "cutoff");
+ 340              		.loc 1 68 25 view .LVU74
+ 341 0168 8246     		mov	r10, r0
+ 342              	.LVL46:
+ 343              		.loc 1 69 5 is_stmt 1 view .LVU75
+ 344 016a FFF7FEFF 		bl	lv_label_set_text_static
+ 345              	.LVL47:
+  70:Core/Src/UI_LCD.c **** 
+  71:Core/Src/UI_LCD.c ****     lv_obj_t * label2 = lv_label_create(lv_scr_act());
+ 346              		.loc 1 71 5 view .LVU76
+ 347              	.LBB36:
+ 348              	.LBI36:
+ 182:Drivers/lvgl/src/core/lv_disp.h **** {
+ 349              		.loc 2 182 26 view .LVU77
+ 350              	.LBB37:
+ 351              		.loc 2 184 5 view .LVU78
+ 352              		.loc 2 184 12 is_stmt 0 view .LVU79
+ 353 016e FFF7FEFF 		bl	lv_disp_get_default
+ 354              	.LVL48:
+ 355 0172 FFF7FEFF 		bl	lv_disp_get_scr_act
+ 356              	.LVL49:
+ 357              	.LBE37:
+ 358              	.LBE36:
+ 359              		.loc 1 71 25 view .LVU80
+ 360 0176 FFF7FEFF 		bl	lv_label_create
+ 361              	.LVL50:
+  72:Core/Src/UI_LCD.c ****     lv_label_set_text_static(label2, "decay");
+ 362              		.loc 1 72 5 view .LVU81
+ 363 017a 1E49     		ldr	r1, .L4+36
+  71:Core/Src/UI_LCD.c ****     lv_label_set_text_static(label2, "decay");
+ 364              		.loc 1 71 25 view .LVU82
+ 365 017c 8146     		mov	r9, r0
+ 366              	.LVL51:
+ 367              		.loc 1 72 5 is_stmt 1 view .LVU83
+ 368 017e FFF7FEFF 		bl	lv_label_set_text_static
+ 369              	.LVL52:
+  73:Core/Src/UI_LCD.c **** 
+  74:Core/Src/UI_LCD.c ****     lv_obj_t * label3 = lv_label_create(lv_scr_act());
+ 370              		.loc 1 74 5 view .LVU84
+ 371              	.LBB38:
+ 372              	.LBI38:
+ 182:Drivers/lvgl/src/core/lv_disp.h **** {
+ 373              		.loc 2 182 26 view .LVU85
+ 374              	.LBB39:
+ 375              		.loc 2 184 5 view .LVU86
+ 376              		.loc 2 184 12 is_stmt 0 view .LVU87
+ 377 0182 FFF7FEFF 		bl	lv_disp_get_default
+ 378              	.LVL53:
+ 379 0186 FFF7FEFF 		bl	lv_disp_get_scr_act
+ 380              	.LVL54:
+ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccpz2auI.s 			page 13
 
 
- 444              	.LVL54:
- 445              		.loc 1 79 5 is_stmt 1 view .LVU97
- 446              		.loc 1 79 25 is_stmt 0 view .LVU98
- 447 0036 FFF7FEFF 		bl	lv_label_create
- 448              	.LVL55:
-  80:Core/Src/UI_LCD.c ****     lv_label_set_text_static(label1, "cutoff");
- 449              		.loc 1 80 5 view .LVU99
- 450 003a 1E49     		ldr	r1, .L8+16
-  79:Core/Src/UI_LCD.c ****     lv_label_set_text_static(label1, "cutoff");
- 451              		.loc 1 79 25 view .LVU100
- 452 003c 0746     		mov	r7, r0
- 453              	.LVL56:
- 454              		.loc 1 80 5 is_stmt 1 view .LVU101
- 455 003e FFF7FEFF 		bl	lv_label_set_text_static
- 456              	.LVL57:
-  81:Core/Src/UI_LCD.c **** 
-  82:Core/Src/UI_LCD.c ****     lv_obj_t * label2 = lv_label_create(tab1);
- 457              		.loc 1 82 5 view .LVU102
- 458              		.loc 1 82 25 is_stmt 0 view .LVU103
- 459 0042 2846     		mov	r0, r5
- 460 0044 FFF7FEFF 		bl	lv_label_create
- 461              	.LVL58:
-  83:Core/Src/UI_LCD.c ****     lv_label_set_text_static(label2, "resonance");
- 462              		.loc 1 83 5 view .LVU104
- 463 0048 1B49     		ldr	r1, .L8+20
-  82:Core/Src/UI_LCD.c ****     lv_label_set_text_static(label2, "resonance");
- 464              		.loc 1 82 25 view .LVU105
- 465 004a 0546     		mov	r5, r0
- 466              	.LVL59:
- 467              		.loc 1 83 5 is_stmt 1 view .LVU106
- 468 004c FFF7FEFF 		bl	lv_label_set_text_static
- 469              	.LVL60:
-  84:Core/Src/UI_LCD.c ****     
-  85:Core/Src/UI_LCD.c ****     lv_obj_align_to(label1, pot1, LV_ALIGN_BOTTOM_MID, 0, +15);
- 470              		.loc 1 85 5 view .LVU107
- 471 0050 1A4B     		ldr	r3, .L8+24
- 472 0052 3846     		mov	r0, r7
- 473 0054 0F27     		movs	r7, #15
- 474              	.LVL61:
- 475              		.loc 1 85 5 is_stmt 0 view .LVU108
- 476 0056 1968     		ldr	r1, [r3]
- 477 0058 0097     		str	r7, [sp]
- 478 005a 0023     		movs	r3, #0
- 479 005c 0522     		movs	r2, #5
- 480 005e FFF7FEFF 		bl	lv_obj_align_to
- 481              	.LVL62:
-  86:Core/Src/UI_LCD.c ****     lv_obj_align_to(label2, pot2, LV_ALIGN_BOTTOM_MID, 0, +15);;
- 482              		.loc 1 86 5 is_stmt 1 view .LVU109
- 483 0062 174A     		ldr	r2, .L8+28
- 484 0064 0097     		str	r7, [sp]
- 485 0066 0023     		movs	r3, #0
- 486 0068 1168     		ldr	r1, [r2]
- 487 006a 2846     		mov	r0, r5
- 488 006c 0522     		movs	r2, #5
- 489 006e FFF7FEFF 		bl	lv_obj_align_to
- 490              	.LVL63:
- 491              		.loc 1 86 64 view .LVU110
-ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccFVV7Wm.s 			page 15
+ 381              	.LBE39:
+ 382              	.LBE38:
+ 383              		.loc 1 74 25 view .LVU88
+ 384 018a FFF7FEFF 		bl	lv_label_create
+ 385              	.LVL55:
+  75:Core/Src/UI_LCD.c ****     lv_label_set_text_static(label3, "delay");
+  76:Core/Src/UI_LCD.c ****     
+  77:Core/Src/UI_LCD.c ****     lv_obj_align_to(label1, pot1, LV_ALIGN_BOTTOM_MID, 0, +15);
+ 386              		.loc 1 77 5 view .LVU89
+ 387 018e 4FF00F08 		mov	r8, #15
+  75:Core/Src/UI_LCD.c ****     lv_label_set_text_static(label3, "delay");
+ 388              		.loc 1 75 5 view .LVU90
+ 389 0192 1949     		ldr	r1, .L4+40
+  74:Core/Src/UI_LCD.c ****     lv_label_set_text_static(label3, "delay");
+ 390              		.loc 1 74 25 view .LVU91
+ 391 0194 0746     		mov	r7, r0
+ 392              	.LVL56:
+  75:Core/Src/UI_LCD.c ****     lv_label_set_text_static(label3, "delay");
+ 393              		.loc 1 75 5 is_stmt 1 view .LVU92
+ 394 0196 FFF7FEFF 		bl	lv_label_set_text_static
+ 395              	.LVL57:
+ 396              		.loc 1 77 5 view .LVU93
+ 397 019a 3168     		ldr	r1, [r6]
+ 398 019c CDF80080 		str	r8, [sp]
+ 399 01a0 5046     		mov	r0, r10
+ 400 01a2 0023     		movs	r3, #0
+ 401 01a4 0522     		movs	r2, #5
+ 402 01a6 FFF7FEFF 		bl	lv_obj_align_to
+ 403              	.LVL58:
+  78:Core/Src/UI_LCD.c ****     lv_obj_align_to(label2, pot2, LV_ALIGN_BOTTOM_MID, 0, +15);
+ 404              		.loc 1 78 5 view .LVU94
+ 405 01aa 2968     		ldr	r1, [r5]
+ 406 01ac CDF80080 		str	r8, [sp]
+ 407 01b0 4846     		mov	r0, r9
+ 408 01b2 0023     		movs	r3, #0
+ 409 01b4 0522     		movs	r2, #5
+ 410 01b6 FFF7FEFF 		bl	lv_obj_align_to
+ 411              	.LVL59:
+  79:Core/Src/UI_LCD.c ****     lv_obj_align_to(label3, pot3, LV_ALIGN_BOTTOM_MID, 0, +15);
+ 412              		.loc 1 79 5 view .LVU95
+ 413 01ba 2168     		ldr	r1, [r4]
+ 414 01bc CDF80080 		str	r8, [sp]
+ 415 01c0 0023     		movs	r3, #0
+ 416 01c2 0522     		movs	r2, #5
+ 417 01c4 3846     		mov	r0, r7
+ 418 01c6 FFF7FEFF 		bl	lv_obj_align_to
+ 419              	.LVL60:
+  80:Core/Src/UI_LCD.c ****     
+  81:Core/Src/UI_LCD.c **** }
+ 420              		.loc 1 81 1 is_stmt 0 view .LVU96
+ 421 01ca 02B0     		add	sp, sp, #8
+ 422              		.cfi_def_cfa_offset 32
+ 423              		@ sp needed
+ 424 01cc BDE8F087 		pop	{r4, r5, r6, r7, r8, r9, r10, pc}
+ 425              	.LVL61:
+ 426              	.L5:
+ 427              		.loc 1 81 1 view .LVU97
+ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccpz2auI.s 			page 14
 
 
+ 428              		.align	2
+ 429              	.L4:
+ 430 01d0 00000000 		.word	.LC0
+ 431 01d4 00000000 		.word	.LANCHOR1
+ 432 01d8 00000000 		.word	.LANCHOR2
+ 433 01dc 00000000 		.word	lv_font_montserrat_18
+ 434 01e0 00000000 		.word	.LANCHOR0
+ 435 01e4 10000000 		.word	.LC1
+ 436 01e8 00000000 		.word	lv_font_montserrat_16
+ 437 01ec 00000000 		.word	.LANCHOR3
+ 438 01f0 20000000 		.word	.LC2
+ 439 01f4 28000000 		.word	.LC3
+ 440 01f8 30000000 		.word	.LC4
+ 441              		.cfi_endproc
+ 442              	.LFE446:
+ 444              		.section	.rodata.create_tabs.str1.4,"aMS",%progbits,1
+ 445              		.align	2
+ 446              	.LC5:
+ 447 0000 6F736300 		.ascii	"osc\000"
+ 448              		.align	2
+ 449              	.LC6:
+ 450 0004 66696C74 		.ascii	"filter\000"
+ 450      657200
+ 451 000b 00       		.align	2
+ 452              	.LC7:
+ 453 000c 7265736F 		.ascii	"resonance\000"
+ 453      6E616E63 
+ 453      6500
+ 454 0016 0000     		.align	2
+ 455              	.LC8:
+ 456 0018 5365636F 		.ascii	"Second tab\000"
+ 456      6E642074 
+ 456      616200
+ 457 0023 00       		.align	2
+ 458              	.LC9:
+ 459 0024 74696D65 		.ascii	"time\000"
+ 459      00
+ 460 0029 000000   		.align	2
+ 461              	.LC10:
+ 462 002c 66656564 		.ascii	"feedback\000"
+ 462      6261636B 
+ 462      00
+ 463              		.section	.text.create_tabs,"ax",%progbits
+ 464              		.align	1
+ 465              		.p2align 2,,3
+ 466              		.global	create_tabs
+ 467              		.syntax unified
+ 468              		.thumb
+ 469              		.thumb_func
+ 471              	create_tabs:
+ 472              	.LFB447:
+  82:Core/Src/UI_LCD.c **** 
+  83:Core/Src/UI_LCD.c **** 
+  84:Core/Src/UI_LCD.c **** void create_tabs(void){
+ 473              		.loc 1 84 23 is_stmt 1 view -0
+ 474              		.cfi_startproc
+ 475              		@ args = 0, pretend = 0, frame = 0
+ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccpz2auI.s 			page 15
+
+
+ 476              		@ frame_needed = 0, uses_anonymous_args = 0
+  85:Core/Src/UI_LCD.c ****       /*Create a Tab view object*/
+  86:Core/Src/UI_LCD.c ****    
+  87:Core/Src/UI_LCD.c ****     tabview = lv_tabview_create(lv_scr_act(), LV_DIR_TOP, 40);
+ 477              		.loc 1 87 5 view .LVU99
+ 478              	.LBB42:
+ 479              	.LBI42:
+ 182:Drivers/lvgl/src/core/lv_disp.h **** {
+ 480              		.loc 2 182 26 view .LVU100
+ 481              	.LBB43:
+ 482              		.loc 2 184 5 view .LVU101
+ 483              	.LBE43:
+ 484              	.LBE42:
+  84:Core/Src/UI_LCD.c ****       /*Create a Tab view object*/
+ 485              		.loc 1 84 23 is_stmt 0 view .LVU102
+ 486 0000 F0B5     		push	{r4, r5, r6, r7, lr}
+ 487              		.cfi_def_cfa_offset 20
+ 488              		.cfi_offset 4, -20
+ 489              		.cfi_offset 5, -16
+ 490              		.cfi_offset 6, -12
+ 491              		.cfi_offset 7, -8
+ 492              		.cfi_offset 14, -4
+ 493 0002 83B0     		sub	sp, sp, #12
+ 494              		.cfi_def_cfa_offset 32
+ 495              	.LBB45:
+ 496              	.LBB44:
+ 497              		.loc 2 184 12 view .LVU103
+ 498 0004 FFF7FEFF 		bl	lv_disp_get_default
+ 499              	.LVL62:
+ 500 0008 FFF7FEFF 		bl	lv_disp_get_scr_act
+ 501              	.LVL63:
+ 502              	.LBE44:
+ 503              	.LBE45:
+ 504              		.loc 1 87 15 view .LVU104
+ 505 000c 2822     		movs	r2, #40
+ 506 000e 0421     		movs	r1, #4
+ 507 0010 FFF7FEFF 		bl	lv_tabview_create
+ 508              	.LVL64:
+ 509              		.loc 1 87 13 view .LVU105
+ 510 0014 234C     		ldr	r4, .L8
+  88:Core/Src/UI_LCD.c **** 
+  89:Core/Src/UI_LCD.c ****     /*Add 3 tabs (the tabs are page (lv_page) and can be scrolled*/
+  90:Core/Src/UI_LCD.c ****     lv_obj_t * tab1 = lv_tabview_add_tab(tabview, "osc");
+ 511              		.loc 1 90 23 view .LVU106
+ 512 0016 2449     		ldr	r1, .L8+4
   87:Core/Src/UI_LCD.c **** 
-  88:Core/Src/UI_LCD.c ****     label1 = lv_label_create(tab2);
- 492              		.loc 1 88 5 view .LVU111
- 493              		.loc 1 88 14 is_stmt 0 view .LVU112
- 494 0072 3046     		mov	r0, r6
- 495 0074 FFF7FEFF 		bl	lv_label_create
- 496              	.LVL64:
-  89:Core/Src/UI_LCD.c ****     lv_label_set_text(label1, "Second tab");
- 497              		.loc 1 89 5 is_stmt 1 view .LVU113
- 498 0078 1249     		ldr	r1, .L8+32
- 499 007a FFF7FEFF 		bl	lv_label_set_text
- 500              	.LVL65:
-  90:Core/Src/UI_LCD.c **** 
-  91:Core/Src/UI_LCD.c ****     label1 = lv_label_create(tab3);
- 501              		.loc 1 91 5 view .LVU114
- 502              		.loc 1 91 14 is_stmt 0 view .LVU115
- 503 007e 2046     		mov	r0, r4
- 504 0080 FFF7FEFF 		bl	lv_label_create
- 505              	.LVL66:
- 506 0084 0546     		mov	r5, r0
- 507              	.LVL67:
-  92:Core/Src/UI_LCD.c ****     label2 = lv_label_create(tab3);
- 508              		.loc 1 92 14 view .LVU116
- 509 0086 2046     		mov	r0, r4
- 510              	.LVL68:
- 511              		.loc 1 92 5 is_stmt 1 view .LVU117
- 512              		.loc 1 92 14 is_stmt 0 view .LVU118
- 513 0088 FFF7FEFF 		bl	lv_label_create
- 514              	.LVL69:
-  93:Core/Src/UI_LCD.c ****     lv_label_set_text_static(label1, "time");
- 515              		.loc 1 93 5 view .LVU119
- 516 008c 0E49     		ldr	r1, .L8+36
-  92:Core/Src/UI_LCD.c ****     label2 = lv_label_create(tab3);
- 517              		.loc 1 92 14 view .LVU120
- 518 008e 0446     		mov	r4, r0
- 519              	.LVL70:
- 520              		.loc 1 93 5 is_stmt 1 view .LVU121
- 521 0090 2846     		mov	r0, r5
- 522              	.LVL71:
- 523              		.loc 1 93 5 is_stmt 0 view .LVU122
- 524 0092 FFF7FEFF 		bl	lv_label_set_text_static
- 525              	.LVL72:
-  94:Core/Src/UI_LCD.c ****     lv_label_set_text_static(label2, "feedback");
- 526              		.loc 1 94 5 is_stmt 1 view .LVU123
- 527 0096 0D49     		ldr	r1, .L8+40
- 528 0098 2046     		mov	r0, r4
-  95:Core/Src/UI_LCD.c **** 
-  96:Core/Src/UI_LCD.c ****     
+ 513              		.loc 1 87 13 view .LVU107
+ 514 0018 2060     		str	r0, [r4]
+ 515              		.loc 1 90 5 is_stmt 1 view .LVU108
+ 516              		.loc 1 90 23 is_stmt 0 view .LVU109
+ 517 001a FFF7FEFF 		bl	lv_tabview_add_tab
+ 518              	.LVL65:
+  91:Core/Src/UI_LCD.c ****     lv_obj_t * tab2 = lv_tabview_add_tab(tabview, "filter");
+ 519              		.loc 1 91 23 view .LVU110
+ 520 001e 2349     		ldr	r1, .L8+8
+  90:Core/Src/UI_LCD.c ****     lv_obj_t * tab2 = lv_tabview_add_tab(tabview, "filter");
+ 521              		.loc 1 90 23 view .LVU111
+ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccpz2auI.s 			page 16
+
+
+ 522 0020 0546     		mov	r5, r0
+ 523              		.loc 1 91 23 view .LVU112
+ 524 0022 2068     		ldr	r0, [r4]
+ 525              	.LVL66:
+ 526              		.loc 1 91 5 is_stmt 1 view .LVU113
+ 527              		.loc 1 91 23 is_stmt 0 view .LVU114
+ 528 0024 FFF7FEFF 		bl	lv_tabview_add_tab
+ 529              	.LVL67:
+  92:Core/Src/UI_LCD.c ****     lv_obj_t * tab3 = lv_tabview_add_tab(tabview, "delay");
+ 530              		.loc 1 92 23 view .LVU115
+ 531 0028 2149     		ldr	r1, .L8+12
+  91:Core/Src/UI_LCD.c ****     lv_obj_t * tab2 = lv_tabview_add_tab(tabview, "filter");
+ 532              		.loc 1 91 23 view .LVU116
+ 533 002a 0646     		mov	r6, r0
+ 534              		.loc 1 92 23 view .LVU117
+ 535 002c 2068     		ldr	r0, [r4]
+ 536              	.LVL68:
+ 537              		.loc 1 92 5 is_stmt 1 view .LVU118
+ 538              		.loc 1 92 23 is_stmt 0 view .LVU119
+ 539 002e FFF7FEFF 		bl	lv_tabview_add_tab
+ 540              	.LVL69:
+ 541 0032 0446     		mov	r4, r0
+  93:Core/Src/UI_LCD.c **** 
+  94:Core/Src/UI_LCD.c ****     /*Add content to the tabs*/
+  95:Core/Src/UI_LCD.c ****     lv_obj_t * label1 = lv_label_create(tab1);
+ 542              		.loc 1 95 25 view .LVU120
+ 543 0034 2846     		mov	r0, r5
+ 544              	.LVL70:
+ 545              		.loc 1 95 5 is_stmt 1 view .LVU121
+ 546              		.loc 1 95 25 is_stmt 0 view .LVU122
+ 547 0036 FFF7FEFF 		bl	lv_label_create
+ 548              	.LVL71:
+  96:Core/Src/UI_LCD.c ****     lv_label_set_text_static(label1, "cutoff");
+ 549              		.loc 1 96 5 view .LVU123
+ 550 003a 1E49     		ldr	r1, .L8+16
+  95:Core/Src/UI_LCD.c ****     lv_label_set_text_static(label1, "cutoff");
+ 551              		.loc 1 95 25 view .LVU124
+ 552 003c 0746     		mov	r7, r0
+ 553              	.LVL72:
+ 554              		.loc 1 96 5 is_stmt 1 view .LVU125
+ 555 003e FFF7FEFF 		bl	lv_label_set_text_static
+ 556              	.LVL73:
   97:Core/Src/UI_LCD.c **** 
-  98:Core/Src/UI_LCD.c **** }
- 529              		.loc 1 98 1 is_stmt 0 view .LVU124
- 530 009a 03B0     		add	sp, sp, #12
- 531              		.cfi_def_cfa_offset 20
- 532              		@ sp needed
- 533 009c BDE8F040 		pop	{r4, r5, r6, r7, lr}
- 534              		.cfi_restore 14
- 535              		.cfi_restore 7
-ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccFVV7Wm.s 			page 16
+  98:Core/Src/UI_LCD.c ****     lv_obj_t * label2 = lv_label_create(tab1);
+ 557              		.loc 1 98 5 view .LVU126
+ 558              		.loc 1 98 25 is_stmt 0 view .LVU127
+ 559 0042 2846     		mov	r0, r5
+ 560 0044 FFF7FEFF 		bl	lv_label_create
+ 561              	.LVL74:
+  99:Core/Src/UI_LCD.c ****     lv_label_set_text_static(label2, "resonance");
+ 562              		.loc 1 99 5 view .LVU128
+ 563 0048 1B49     		ldr	r1, .L8+20
+  98:Core/Src/UI_LCD.c ****     lv_label_set_text_static(label2, "resonance");
+ 564              		.loc 1 98 25 view .LVU129
+ 565 004a 0546     		mov	r5, r0
+ 566              	.LVL75:
+ 567              		.loc 1 99 5 is_stmt 1 view .LVU130
+ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccpz2auI.s 			page 17
 
 
- 536              		.cfi_restore 6
- 537              		.cfi_restore 5
- 538              		.cfi_restore 4
- 539              		.cfi_def_cfa_offset 0
- 540              	.LVL73:
-  94:Core/Src/UI_LCD.c ****     lv_label_set_text_static(label2, "feedback");
- 541              		.loc 1 94 5 view .LVU125
- 542 00a0 FFF7FEBF 		b	lv_label_set_text_static
- 543              	.LVL74:
- 544              	.L9:
-  94:Core/Src/UI_LCD.c ****     lv_label_set_text_static(label2, "feedback");
- 545              		.loc 1 94 5 view .LVU126
- 546              		.align	2
- 547              	.L8:
- 548 00a4 00000000 		.word	.LANCHOR3
- 549 00a8 00000000 		.word	.LC3
- 550 00ac 04000000 		.word	.LC4
- 551 00b0 10000000 		.word	.LC2
- 552 00b4 00000000 		.word	.LC0
- 553 00b8 0C000000 		.word	.LC5
- 554 00bc 00000000 		.word	.LANCHOR0
- 555 00c0 00000000 		.word	.LANCHOR1
- 556 00c4 18000000 		.word	.LC6
- 557 00c8 24000000 		.word	.LC7
- 558 00cc 2C000000 		.word	.LC8
- 559              		.cfi_endproc
- 560              	.LFE447:
- 562              		.section	.text.UI_LCD_init,"ax",%progbits
- 563              		.align	1
- 564              		.p2align 2,,3
- 565              		.global	UI_LCD_init
- 566              		.syntax unified
- 567              		.thumb
- 568              		.thumb_func
- 570              	UI_LCD_init:
- 571              	.LFB450:
-  99:Core/Src/UI_LCD.c **** 
- 100:Core/Src/UI_LCD.c **** static int32_t encoder_last_value;
- 101:Core/Src/UI_LCD.c **** static lv_indev_state_t encoder_state;
- 102:Core/Src/UI_LCD.c **** 
- 103:Core/Src/UI_LCD.c **** static bool encoder_read(lv_indev_drv_t * drv, lv_indev_data_t*data){
- 104:Core/Src/UI_LCD.c ****     static int32_t last_diff = 0;
- 105:Core/Src/UI_LCD.c ****     
+ 568 004c FFF7FEFF 		bl	lv_label_set_text_static
+ 569              	.LVL76:
+ 100:Core/Src/UI_LCD.c ****     
+ 101:Core/Src/UI_LCD.c ****     lv_obj_align_to(label1, pot1, LV_ALIGN_BOTTOM_MID, 0, +15);
+ 570              		.loc 1 101 5 view .LVU131
+ 571 0050 1A4B     		ldr	r3, .L8+24
+ 572 0052 3846     		mov	r0, r7
+ 573 0054 0F27     		movs	r7, #15
+ 574              	.LVL77:
+ 575              		.loc 1 101 5 is_stmt 0 view .LVU132
+ 576 0056 1968     		ldr	r1, [r3]
+ 577 0058 0097     		str	r7, [sp]
+ 578 005a 0023     		movs	r3, #0
+ 579 005c 0522     		movs	r2, #5
+ 580 005e FFF7FEFF 		bl	lv_obj_align_to
+ 581              	.LVL78:
+ 102:Core/Src/UI_LCD.c ****     lv_obj_align_to(label2, pot2, LV_ALIGN_BOTTOM_MID, 0, +15);;
+ 582              		.loc 1 102 5 is_stmt 1 view .LVU133
+ 583 0062 174A     		ldr	r2, .L8+28
+ 584 0064 0097     		str	r7, [sp]
+ 585 0066 0023     		movs	r3, #0
+ 586 0068 1168     		ldr	r1, [r2]
+ 587 006a 2846     		mov	r0, r5
+ 588 006c 0522     		movs	r2, #5
+ 589 006e FFF7FEFF 		bl	lv_obj_align_to
+ 590              	.LVL79:
+ 591              		.loc 1 102 64 view .LVU134
+ 103:Core/Src/UI_LCD.c **** 
+ 104:Core/Src/UI_LCD.c ****     label1 = lv_label_create(tab2);
+ 592              		.loc 1 104 5 view .LVU135
+ 593              		.loc 1 104 14 is_stmt 0 view .LVU136
+ 594 0072 3046     		mov	r0, r6
+ 595 0074 FFF7FEFF 		bl	lv_label_create
+ 596              	.LVL80:
+ 105:Core/Src/UI_LCD.c ****     lv_label_set_text(label1, "Second tab");
+ 597              		.loc 1 105 5 is_stmt 1 view .LVU137
+ 598 0078 1249     		ldr	r1, .L8+32
+ 599 007a FFF7FEFF 		bl	lv_label_set_text
+ 600              	.LVL81:
  106:Core/Src/UI_LCD.c **** 
- 107:Core/Src/UI_LCD.c ****     static int lastBtn;
- 108:Core/Src/UI_LCD.c ****     int btn_state;
- 109:Core/Src/UI_LCD.c **** 
- 110:Core/Src/UI_LCD.c ****     if (HAL_GPIO_ReadPin(GPIOB, GPIO_PIN_7) == 0) {
- 111:Core/Src/UI_LCD.c ****         btn_state = LV_INDEV_STATE_PR;
- 112:Core/Src/UI_LCD.c ****     } else {
- 113:Core/Src/UI_LCD.c ****         btn_state = LV_INDEV_STATE_REL;
- 114:Core/Src/UI_LCD.c ****     }
- 115:Core/Src/UI_LCD.c ****     int encoder_value = ((TIM3->CNT)  >> 2);
- 116:Core/Src/UI_LCD.c ****     encoder_state = btn_state;
- 117:Core/Src/UI_LCD.c ****     data->enc_diff = poll_Encoder();
- 118:Core/Src/UI_LCD.c ****     data->state = encoder_state;
- 119:Core/Src/UI_LCD.c ****     encoder_last_value = encoder_value;
-ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccFVV7Wm.s 			page 17
+ 107:Core/Src/UI_LCD.c ****     label1 = lv_label_create(tab3);
+ 601              		.loc 1 107 5 view .LVU138
+ 602              		.loc 1 107 14 is_stmt 0 view .LVU139
+ 603 007e 2046     		mov	r0, r4
+ 604 0080 FFF7FEFF 		bl	lv_label_create
+ 605              	.LVL82:
+ 606 0084 0546     		mov	r5, r0
+ 607              	.LVL83:
+ 108:Core/Src/UI_LCD.c ****     label2 = lv_label_create(tab3);
+ 608              		.loc 1 108 14 view .LVU140
+ 609 0086 2046     		mov	r0, r4
+ 610              	.LVL84:
+ 611              		.loc 1 108 5 is_stmt 1 view .LVU141
+ 612              		.loc 1 108 14 is_stmt 0 view .LVU142
+ 613 0088 FFF7FEFF 		bl	lv_label_create
+ 614              	.LVL85:
+ 109:Core/Src/UI_LCD.c ****     lv_label_set_text_static(label1, "time");
+ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccpz2auI.s 			page 18
 
 
- 120:Core/Src/UI_LCD.c **** 
- 121:Core/Src/UI_LCD.c **** 
+ 615              		.loc 1 109 5 view .LVU143
+ 616 008c 0E49     		ldr	r1, .L8+36
+ 108:Core/Src/UI_LCD.c ****     label2 = lv_label_create(tab3);
+ 617              		.loc 1 108 14 view .LVU144
+ 618 008e 0446     		mov	r4, r0
+ 619              	.LVL86:
+ 620              		.loc 1 109 5 is_stmt 1 view .LVU145
+ 621 0090 2846     		mov	r0, r5
+ 622              	.LVL87:
+ 623              		.loc 1 109 5 is_stmt 0 view .LVU146
+ 624 0092 FFF7FEFF 		bl	lv_label_set_text_static
+ 625              	.LVL88:
+ 110:Core/Src/UI_LCD.c ****     lv_label_set_text_static(label2, "feedback");
+ 626              		.loc 1 110 5 is_stmt 1 view .LVU147
+ 627 0096 0D49     		ldr	r1, .L8+40
+ 628 0098 2046     		mov	r0, r4
+ 111:Core/Src/UI_LCD.c **** 
+ 112:Core/Src/UI_LCD.c ****     
+ 113:Core/Src/UI_LCD.c **** 
+ 114:Core/Src/UI_LCD.c **** }
+ 629              		.loc 1 114 1 is_stmt 0 view .LVU148
+ 630 009a 03B0     		add	sp, sp, #12
+ 631              		.cfi_def_cfa_offset 20
+ 632              		@ sp needed
+ 633 009c BDE8F040 		pop	{r4, r5, r6, r7, lr}
+ 634              		.cfi_restore 14
+ 635              		.cfi_restore 7
+ 636              		.cfi_restore 6
+ 637              		.cfi_restore 5
+ 638              		.cfi_restore 4
+ 639              		.cfi_def_cfa_offset 0
+ 640              	.LVL89:
+ 110:Core/Src/UI_LCD.c ****     lv_label_set_text_static(label2, "feedback");
+ 641              		.loc 1 110 5 view .LVU149
+ 642 00a0 FFF7FEBF 		b	lv_label_set_text_static
+ 643              	.LVL90:
+ 644              	.L9:
+ 110:Core/Src/UI_LCD.c ****     lv_label_set_text_static(label2, "feedback");
+ 645              		.loc 1 110 5 view .LVU150
+ 646              		.align	2
+ 647              	.L8:
+ 648 00a4 00000000 		.word	.LANCHOR4
+ 649 00a8 00000000 		.word	.LC5
+ 650 00ac 04000000 		.word	.LC6
+ 651 00b0 30000000 		.word	.LC4
+ 652 00b4 20000000 		.word	.LC2
+ 653 00b8 0C000000 		.word	.LC7
+ 654 00bc 00000000 		.word	.LANCHOR1
+ 655 00c0 00000000 		.word	.LANCHOR2
+ 656 00c4 18000000 		.word	.LC8
+ 657 00c8 24000000 		.word	.LC9
+ 658 00cc 2C000000 		.word	.LC10
+ 659              		.cfi_endproc
+ 660              	.LFE447:
+ 662              		.section	.text.UI_LCD_init,"ax",%progbits
+ 663              		.align	1
+ 664              		.p2align 2,,3
+ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccpz2auI.s 			page 19
+
+
+ 665              		.global	UI_LCD_init
+ 666              		.syntax unified
+ 667              		.thumb
+ 668              		.thumb_func
+ 670              	UI_LCD_init:
+ 671              	.LFB450:
+ 115:Core/Src/UI_LCD.c **** 
+ 116:Core/Src/UI_LCD.c **** static int32_t encoder_last_value;
+ 117:Core/Src/UI_LCD.c **** static lv_indev_state_t encoder_state;
+ 118:Core/Src/UI_LCD.c **** 
+ 119:Core/Src/UI_LCD.c **** static bool encoder_read(lv_indev_drv_t * drv, lv_indev_data_t*data){
+ 120:Core/Src/UI_LCD.c ****     static int32_t last_diff = 0;
+ 121:Core/Src/UI_LCD.c ****     
  122:Core/Src/UI_LCD.c **** 
- 123:Core/Src/UI_LCD.c ****     // int32_t diff = ((TIM3->CNT) >> 2); // read the rotary encoder position
- 124:Core/Src/UI_LCD.c ****     // int btn_state = 0 ==  HAL_GPIO_ReadPin(GPIOB, GPIO_PIN_7) ? LV_INDEV_STATE_PR : LV_INDEV_STA
+ 123:Core/Src/UI_LCD.c ****     static int lastBtn;
+ 124:Core/Src/UI_LCD.c ****     int btn_state;
  125:Core/Src/UI_LCD.c **** 
- 126:Core/Src/UI_LCD.c ****     // data->enc_diff = diff - last_diff;;
- 127:Core/Src/UI_LCD.c ****     // data->state = btn_state;
- 128:Core/Src/UI_LCD.c ****    
- 129:Core/Src/UI_LCD.c ****     SEGGER_RTT_printf(0, "Encoder diff = %d\r\n", data->enc_diff); // debug
- 130:Core/Src/UI_LCD.c ****     SEGGER_RTT_printf(0, "btn_state = %d\r\n", btn_state); // debug
- 131:Core/Src/UI_LCD.c **** 
- 132:Core/Src/UI_LCD.c ****     if (lastBtn != btn_state)
- 133:Core/Src/UI_LCD.c ****     {
- 134:Core/Src/UI_LCD.c ****         lastBtn = btn_state;
- 135:Core/Src/UI_LCD.c ****     }
+ 126:Core/Src/UI_LCD.c ****     if (HAL_GPIO_ReadPin(GPIOB, GPIO_PIN_7) == 0) {
+ 127:Core/Src/UI_LCD.c ****         btn_state = LV_INDEV_STATE_PR;
+ 128:Core/Src/UI_LCD.c ****     } else {
+ 129:Core/Src/UI_LCD.c ****         btn_state = LV_INDEV_STATE_REL;
+ 130:Core/Src/UI_LCD.c ****     }
+ 131:Core/Src/UI_LCD.c ****     int encoder_value = ((TIM3->CNT)  >> 2);
+ 132:Core/Src/UI_LCD.c ****     encoder_state = btn_state;
+ 133:Core/Src/UI_LCD.c ****     data->enc_diff = poll_Encoder();
+ 134:Core/Src/UI_LCD.c ****     data->state = encoder_state;
+ 135:Core/Src/UI_LCD.c ****     encoder_last_value = encoder_value;
  136:Core/Src/UI_LCD.c **** 
- 137:Core/Src/UI_LCD.c ****     return false;
- 138:Core/Src/UI_LCD.c **** }
- 139:Core/Src/UI_LCD.c **** 
- 140:Core/Src/UI_LCD.c **** 
- 141:Core/Src/UI_LCD.c **** static void event_handler(lv_event_t * e)
- 142:Core/Src/UI_LCD.c **** {
- 143:Core/Src/UI_LCD.c ****     lv_event_code_t code = lv_event_get_code(e);
- 144:Core/Src/UI_LCD.c ****     lv_obj_t * obj = lv_event_get_target(e);
- 145:Core/Src/UI_LCD.c ****     if(code == LV_EVENT_VALUE_CHANGED) {
- 146:Core/Src/UI_LCD.c ****         char buf[32];
- 147:Core/Src/UI_LCD.c ****         lv_roller_get_selected_str(obj, buf, sizeof(buf));
- 148:Core/Src/UI_LCD.c ****         LV_LOG_USER("Selected month: %s\n", buf);
- 149:Core/Src/UI_LCD.c ****     }
- 150:Core/Src/UI_LCD.c **** }
- 151:Core/Src/UI_LCD.c **** 
- 152:Core/Src/UI_LCD.c **** void UI_LCD_init(void){
- 572              		.loc 1 152 23 is_stmt 1 view -0
- 573              		.cfi_startproc
- 574              		@ args = 0, pretend = 0, frame = 0
- 575              		@ frame_needed = 0, uses_anonymous_args = 0
- 153:Core/Src/UI_LCD.c **** 
- 154:Core/Src/UI_LCD.c ****     lv_obj_set_style_bg_color(lv_scr_act(), lv_color_hex(0x003a57), LV_PART_MAIN);
- 576              		.loc 1 154 5 view .LVU128
- 577              	.LBB44:
- 578              	.LBI44:
- 182:Drivers/lvgl/src/core/lv_disp.h **** {
- 579              		.loc 2 182 26 view .LVU129
- 580              	.LBB45:
- 581              		.loc 2 184 5 view .LVU130
- 582              	.LBE45:
- 583              	.LBE44:
+ 137:Core/Src/UI_LCD.c **** 
+ 138:Core/Src/UI_LCD.c **** 
+ 139:Core/Src/UI_LCD.c ****     // int32_t diff = ((TIM3->CNT) >> 2); // read the rotary encoder position
+ 140:Core/Src/UI_LCD.c ****     // int btn_state = 0 ==  HAL_GPIO_ReadPin(GPIOB, GPIO_PIN_7) ? LV_INDEV_STATE_PR : LV_INDEV_STA
+ 141:Core/Src/UI_LCD.c **** 
+ 142:Core/Src/UI_LCD.c ****     // data->enc_diff = diff - last_diff;;
+ 143:Core/Src/UI_LCD.c ****     // data->state = btn_state;
+ 144:Core/Src/UI_LCD.c ****    
+ 145:Core/Src/UI_LCD.c ****     SEGGER_RTT_printf(0, "Encoder diff = %d\r\n", data->enc_diff); // debug
+ 146:Core/Src/UI_LCD.c ****     SEGGER_RTT_printf(0, "btn_state = %d\r\n", btn_state); // debug
+ 147:Core/Src/UI_LCD.c **** 
+ 148:Core/Src/UI_LCD.c ****     if (lastBtn != btn_state)
+ 149:Core/Src/UI_LCD.c ****     {
+ 150:Core/Src/UI_LCD.c ****         lastBtn = btn_state;
+ 151:Core/Src/UI_LCD.c ****     }
  152:Core/Src/UI_LCD.c **** 
- 584              		.loc 1 152 23 is_stmt 0 view .LVU131
- 585 0000 08B5     		push	{r3, lr}
- 586              		.cfi_def_cfa_offset 8
- 587              		.cfi_offset 3, -8
- 588              		.cfi_offset 14, -4
- 589              	.LBB47:
- 590              	.LBB46:
- 591              		.loc 2 184 12 view .LVU132
-ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccFVV7Wm.s 			page 18
+ 153:Core/Src/UI_LCD.c ****     return false;
+ 154:Core/Src/UI_LCD.c **** }
+ 155:Core/Src/UI_LCD.c **** 
+ 156:Core/Src/UI_LCD.c **** 
+ 157:Core/Src/UI_LCD.c **** static void event_handler(lv_event_t * e)
+ 158:Core/Src/UI_LCD.c **** {
+ 159:Core/Src/UI_LCD.c ****     lv_event_code_t code = lv_event_get_code(e);
+ 160:Core/Src/UI_LCD.c ****     lv_obj_t * obj = lv_event_get_target(e);
+ 161:Core/Src/UI_LCD.c ****     if(code == LV_EVENT_VALUE_CHANGED) {
+ 162:Core/Src/UI_LCD.c ****         char buf[32];
+ 163:Core/Src/UI_LCD.c ****         lv_roller_get_selected_str(obj, buf, sizeof(buf));
+ 164:Core/Src/UI_LCD.c ****         LV_LOG_USER("Selected month: %s\n", buf);
+ 165:Core/Src/UI_LCD.c ****     }
+ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccpz2auI.s 			page 20
 
 
- 592 0002 FFF7FEFF 		bl	lv_disp_get_default
- 593              	.LVL75:
- 594 0006 FFF7FEFF 		bl	lv_disp_get_scr_act
- 595              	.LVL76:
- 596              		.loc 2 184 12 view .LVU133
- 597              	.LBE46:
- 598              	.LBE47:
- 599              	.LBB48:
- 600              	.LBI48:
- 601              		.file 3 "Drivers/lvgl/src/hal/../draw/../misc/lv_color.h"
+ 166:Core/Src/UI_LCD.c **** }
+ 167:Core/Src/UI_LCD.c **** 
+ 168:Core/Src/UI_LCD.c **** void UI_LCD_init(void){
+ 672              		.loc 1 168 23 is_stmt 1 view -0
+ 673              		.cfi_startproc
+ 674              		@ args = 0, pretend = 0, frame = 0
+ 675              		@ frame_needed = 0, uses_anonymous_args = 0
+ 169:Core/Src/UI_LCD.c **** 
+ 170:Core/Src/UI_LCD.c ****     lv_obj_set_style_bg_color(lv_scr_act(), lv_color_hex(0x003a57), LV_PART_MAIN);
+ 676              		.loc 1 170 5 view .LVU152
+ 677              	.LBB52:
+ 678              	.LBI52:
+ 182:Drivers/lvgl/src/core/lv_disp.h **** {
+ 679              		.loc 2 182 26 view .LVU153
+ 680              	.LBB53:
+ 681              		.loc 2 184 5 view .LVU154
+ 682              	.LBE53:
+ 683              	.LBE52:
+ 168:Core/Src/UI_LCD.c **** 
+ 684              		.loc 1 168 23 is_stmt 0 view .LVU155
+ 685 0000 08B5     		push	{r3, lr}
+ 686              		.cfi_def_cfa_offset 8
+ 687              		.cfi_offset 3, -8
+ 688              		.cfi_offset 14, -4
+ 689              	.LBB55:
+ 690              	.LBB54:
+ 691              		.loc 2 184 12 view .LVU156
+ 692 0002 FFF7FEFF 		bl	lv_disp_get_default
+ 693              	.LVL91:
+ 694 0006 FFF7FEFF 		bl	lv_disp_get_scr_act
+ 695              	.LVL92:
+ 696              		.loc 2 184 12 view .LVU157
+ 697              	.LBE54:
+ 698              	.LBE55:
+ 699              	.LBB56:
+ 700              	.LBI56:
+ 701              		.file 3 "Drivers/lvgl/src/hal/../draw/../misc/lv_color.h"
    1:Drivers/lvgl/src/hal/../draw/../misc/lv_color.h **** /**
    2:Drivers/lvgl/src/hal/../draw/../misc/lv_color.h ****  * @file lv_color.h
    3:Drivers/lvgl/src/hal/../draw/../misc/lv_color.h ****  *
@@ -1051,6 +1198,9 @@ ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccFVV7Wm.s 			page 1
   18:Drivers/lvgl/src/hal/../draw/../misc/lv_color.h **** #include "lv_math.h"
   19:Drivers/lvgl/src/hal/../draw/../misc/lv_color.h **** #include "lv_types.h"
   20:Drivers/lvgl/src/hal/../draw/../misc/lv_color.h **** 
+ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccpz2auI.s 			page 21
+
+
   21:Drivers/lvgl/src/hal/../draw/../misc/lv_color.h **** /*Error checking*/
   22:Drivers/lvgl/src/hal/../draw/../misc/lv_color.h **** #if LV_COLOR_DEPTH == 24
   23:Drivers/lvgl/src/hal/../draw/../misc/lv_color.h **** #error "LV_COLOR_DEPTH 24 is deprecated. Use LV_COLOR_DEPTH 32 instead (lv_conf.h)"
@@ -1078,9 +1228,6 @@ ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccFVV7Wm.s 			page 1
   45:Drivers/lvgl/src/hal/../draw/../misc/lv_color.h ****     LV_OPA_20     = 51,
   46:Drivers/lvgl/src/hal/../draw/../misc/lv_color.h ****     LV_OPA_30     = 76,
   47:Drivers/lvgl/src/hal/../draw/../misc/lv_color.h ****     LV_OPA_40     = 102,
-ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccFVV7Wm.s 			page 19
-
-
   48:Drivers/lvgl/src/hal/../draw/../misc/lv_color.h ****     LV_OPA_50     = 127,
   49:Drivers/lvgl/src/hal/../draw/../misc/lv_color.h ****     LV_OPA_60     = 153,
   50:Drivers/lvgl/src/hal/../draw/../misc/lv_color.h ****     LV_OPA_70     = 178,
@@ -1111,6 +1258,9 @@ ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccFVV7Wm.s 			page 1
   75:Drivers/lvgl/src/hal/../draw/../misc/lv_color.h **** * see https://devblogs.microsoft.com/cppblog/msvc-now-correctly-reports-cplusplus
   76:Drivers/lvgl/src/hal/../draw/../misc/lv_color.h **** * so we use _MSC_VER macro instead of __cplusplus
   77:Drivers/lvgl/src/hal/../draw/../misc/lv_color.h **** */
+ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccpz2auI.s 			page 22
+
+
   78:Drivers/lvgl/src/hal/../draw/../misc/lv_color.h **** #ifdef _MSC_VER
   79:Drivers/lvgl/src/hal/../draw/../misc/lv_color.h **** #if _MSC_VER >= 1900 /*Visual Studio 2015*/
   80:Drivers/lvgl/src/hal/../draw/../misc/lv_color.h **** #define _LV_COLOR_HAS_MODERN_CPP 1
@@ -1138,9 +1288,6 @@ ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccFVV7Wm.s 			page 1
  102:Drivers/lvgl/src/hal/../draw/../misc/lv_color.h ****  * to set/get values of the color channels
  103:Drivers/lvgl/src/hal/../draw/../misc/lv_color.h ****  *------------------------------------------*/
  104:Drivers/lvgl/src/hal/../draw/../misc/lv_color.h **** # define LV_COLOR_SET_R1(c, v) (c).ch.red = (uint8_t)((v) & 0x1)
-ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccFVV7Wm.s 			page 20
-
-
  105:Drivers/lvgl/src/hal/../draw/../misc/lv_color.h **** # define LV_COLOR_SET_G1(c, v) (c).ch.green = (uint8_t)((v) & 0x1)
  106:Drivers/lvgl/src/hal/../draw/../misc/lv_color.h **** # define LV_COLOR_SET_B1(c, v) (c).ch.blue = (uint8_t)((v) & 0x1)
  107:Drivers/lvgl/src/hal/../draw/../misc/lv_color.h **** # define LV_COLOR_SET_A1(c, v) do {} while(0)
@@ -1171,6 +1318,9 @@ ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccFVV7Wm.s 			page 1
  132:Drivers/lvgl/src/hal/../draw/../misc/lv_color.h **** # define LV_COLOR_SET_G16(c, v) (c).ch.green = (uint8_t)((v) & 0x3FU)
  133:Drivers/lvgl/src/hal/../draw/../misc/lv_color.h **** #else
  134:Drivers/lvgl/src/hal/../draw/../misc/lv_color.h **** # define LV_COLOR_SET_G16(c, v) {(c).ch.green_h = (uint8_t)(((v) >> 3) & 0x7); (c).ch.green_l = (ui
+ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccpz2auI.s 			page 23
+
+
  135:Drivers/lvgl/src/hal/../draw/../misc/lv_color.h **** #endif
  136:Drivers/lvgl/src/hal/../draw/../misc/lv_color.h **** # define LV_COLOR_SET_B16(c, v) (c).ch.blue = (uint8_t)((v) & 0x1FU)
  137:Drivers/lvgl/src/hal/../draw/../misc/lv_color.h **** # define LV_COLOR_SET_A16(c, v) do {} while(0)
@@ -1198,9 +1348,6 @@ ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccFVV7Wm.s 			page 1
  159:Drivers/lvgl/src/hal/../draw/../misc/lv_color.h **** # define LV_COLOR_SET_A32(c, v) (c).ch.alpha = (uint8_t)((v) & 0xFF)
  160:Drivers/lvgl/src/hal/../draw/../misc/lv_color.h **** 
  161:Drivers/lvgl/src/hal/../draw/../misc/lv_color.h **** # define LV_COLOR_GET_R32(c) (c).ch.red
-ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccFVV7Wm.s 			page 21
-
-
  162:Drivers/lvgl/src/hal/../draw/../misc/lv_color.h **** # define LV_COLOR_GET_G32(c) (c).ch.green
  163:Drivers/lvgl/src/hal/../draw/../misc/lv_color.h **** # define LV_COLOR_GET_B32(c) (c).ch.blue
  164:Drivers/lvgl/src/hal/../draw/../misc/lv_color.h **** # define LV_COLOR_GET_A32(c) (c).ch.alpha
@@ -1231,6 +1378,9 @@ ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccFVV7Wm.s 			page 1
  189:Drivers/lvgl/src/hal/../draw/../misc/lv_color.h **** 
  190:Drivers/lvgl/src/hal/../draw/../misc/lv_color.h **** typedef union {
  191:Drivers/lvgl/src/hal/../draw/../misc/lv_color.h ****     uint8_t full; /*must be declared first to set all bits of byte via initializer list*/
+ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccpz2auI.s 			page 24
+
+
  192:Drivers/lvgl/src/hal/../draw/../misc/lv_color.h ****     union {
  193:Drivers/lvgl/src/hal/../draw/../misc/lv_color.h ****         uint8_t blue : 1;
  194:Drivers/lvgl/src/hal/../draw/../misc/lv_color.h ****         uint8_t green : 1;
@@ -1258,9 +1408,6 @@ ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccFVV7Wm.s 			page 1
  216:Drivers/lvgl/src/hal/../draw/../misc/lv_color.h ****         uint16_t red : 5;
  217:Drivers/lvgl/src/hal/../draw/../misc/lv_color.h ****         uint16_t blue : 5;
  218:Drivers/lvgl/src/hal/../draw/../misc/lv_color.h ****         uint16_t green_l : 3;
-ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccFVV7Wm.s 			page 22
-
-
  219:Drivers/lvgl/src/hal/../draw/../misc/lv_color.h **** #endif
  220:Drivers/lvgl/src/hal/../draw/../misc/lv_color.h ****     } ch;
  221:Drivers/lvgl/src/hal/../draw/../misc/lv_color.h ****     uint16_t full;
@@ -1291,6 +1438,9 @@ ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccFVV7Wm.s 			page 1
  246:Drivers/lvgl/src/hal/../draw/../misc/lv_color.h **** //! @endcond
  247:Drivers/lvgl/src/hal/../draw/../misc/lv_color.h **** 
  248:Drivers/lvgl/src/hal/../draw/../misc/lv_color.h **** struct _lv_color_filter_dsc_t;
+ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccpz2auI.s 			page 25
+
+
  249:Drivers/lvgl/src/hal/../draw/../misc/lv_color.h **** 
  250:Drivers/lvgl/src/hal/../draw/../misc/lv_color.h **** typedef lv_color_t (*lv_color_filter_cb_t)(const struct _lv_color_filter_dsc_t *, lv_color_t, lv_op
  251:Drivers/lvgl/src/hal/../draw/../misc/lv_color.h **** 
@@ -1318,9 +1468,6 @@ ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccFVV7Wm.s 			page 1
  273:Drivers/lvgl/src/hal/../draw/../misc/lv_color.h ****     LV_PALETTE_ORANGE,
  274:Drivers/lvgl/src/hal/../draw/../misc/lv_color.h ****     LV_PALETTE_DEEP_ORANGE,
  275:Drivers/lvgl/src/hal/../draw/../misc/lv_color.h ****     LV_PALETTE_BROWN,
-ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccFVV7Wm.s 			page 23
-
-
  276:Drivers/lvgl/src/hal/../draw/../misc/lv_color.h ****     LV_PALETTE_BLUE_GREY,
  277:Drivers/lvgl/src/hal/../draw/../misc/lv_color.h ****     LV_PALETTE_GREY,
  278:Drivers/lvgl/src/hal/../draw/../misc/lv_color.h ****     _LV_PALETTE_LAST,
@@ -1351,6 +1498,9 @@ ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccFVV7Wm.s 			page 1
  303:Drivers/lvgl/src/hal/../draw/../misc/lv_color.h **** #elif LV_COLOR_DEPTH == 8
  304:Drivers/lvgl/src/hal/../draw/../misc/lv_color.h ****     if((LV_COLOR_GET_R(color) & 0x4) || (LV_COLOR_GET_G(color) & 0x4) || (LV_COLOR_GET_B(color) & 0
  305:Drivers/lvgl/src/hal/../draw/../misc/lv_color.h ****         return 1;
+ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccpz2auI.s 			page 26
+
+
  306:Drivers/lvgl/src/hal/../draw/../misc/lv_color.h ****     }
  307:Drivers/lvgl/src/hal/../draw/../misc/lv_color.h ****     else {
  308:Drivers/lvgl/src/hal/../draw/../misc/lv_color.h ****         return 0;
@@ -1378,9 +1528,6 @@ ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccFVV7Wm.s 			page 1
  330:Drivers/lvgl/src/hal/../draw/../misc/lv_color.h ****     if(color.full == 0)
  331:Drivers/lvgl/src/hal/../draw/../misc/lv_color.h ****         return 0;
  332:Drivers/lvgl/src/hal/../draw/../misc/lv_color.h ****     else
-ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccFVV7Wm.s 			page 24
-
-
  333:Drivers/lvgl/src/hal/../draw/../misc/lv_color.h ****         return 0xFF;
  334:Drivers/lvgl/src/hal/../draw/../misc/lv_color.h **** #elif LV_COLOR_DEPTH == 8
  335:Drivers/lvgl/src/hal/../draw/../misc/lv_color.h ****     return color.full;
@@ -1411,6 +1558,9 @@ ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccFVV7Wm.s 			page 1
  360:Drivers/lvgl/src/hal/../draw/../misc/lv_color.h ****     LV_COLOR_SET_R16(ret, LV_COLOR_GET_R(color) * 4);  /*(2^5 - 1)/(2^3 - 1) = 31/7 = 4*/
  361:Drivers/lvgl/src/hal/../draw/../misc/lv_color.h ****     LV_COLOR_SET_G16(ret, LV_COLOR_GET_G(color) * 9);  /*(2^6 - 1)/(2^3 - 1) = 63/7 = 9*/
  362:Drivers/lvgl/src/hal/../draw/../misc/lv_color.h ****     LV_COLOR_SET_B16(ret, LV_COLOR_GET_B(color) * 10); /*(2^5 - 1)/(2^2 - 1) = 31/3 = 10*/
+ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccpz2auI.s 			page 27
+
+
  363:Drivers/lvgl/src/hal/../draw/../misc/lv_color.h ****     return ret.full;
  364:Drivers/lvgl/src/hal/../draw/../misc/lv_color.h **** #elif LV_COLOR_DEPTH == 16
  365:Drivers/lvgl/src/hal/../draw/../misc/lv_color.h ****     return color.full;
@@ -1438,9 +1588,6 @@ ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccFVV7Wm.s 			page 1
  387:Drivers/lvgl/src/hal/../draw/../misc/lv_color.h ****     LV_COLOR_SET_A32(ret, 0xFF);
  388:Drivers/lvgl/src/hal/../draw/../misc/lv_color.h ****     return ret.full;
  389:Drivers/lvgl/src/hal/../draw/../misc/lv_color.h **** #elif LV_COLOR_DEPTH == 16
-ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccFVV7Wm.s 			page 25
-
-
  390:Drivers/lvgl/src/hal/../draw/../misc/lv_color.h ****     /**
  391:Drivers/lvgl/src/hal/../draw/../misc/lv_color.h ****      * The floating point math for conversion is:
  392:Drivers/lvgl/src/hal/../draw/../misc/lv_color.h ****      *  valueto = valuefrom * ( (2^bitsto - 1) / (float)(2^bitsfrom - 1) )
@@ -1471,6 +1618,9 @@ ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccFVV7Wm.s 			page 1
  417:Drivers/lvgl/src/hal/../draw/../misc/lv_color.h ****      */
  418:Drivers/lvgl/src/hal/../draw/../misc/lv_color.h **** 
  419:Drivers/lvgl/src/hal/../draw/../misc/lv_color.h ****     lv_color32_t ret;
+ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccpz2auI.s 			page 28
+
+
  420:Drivers/lvgl/src/hal/../draw/../misc/lv_color.h ****     LV_COLOR_SET_R32(ret, (LV_COLOR_GET_R(color) * 263 + 7) >> 5);
  421:Drivers/lvgl/src/hal/../draw/../misc/lv_color.h ****     LV_COLOR_SET_G32(ret, (LV_COLOR_GET_G(color) * 259 + 3) >> 6);
  422:Drivers/lvgl/src/hal/../draw/../misc/lv_color.h ****     LV_COLOR_SET_B32(ret, (LV_COLOR_GET_B(color) * 263 + 7) >> 5);
@@ -1498,9 +1648,6 @@ ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccFVV7Wm.s 			page 1
  444:Drivers/lvgl/src/hal/../draw/../misc/lv_color.h **** #if LV_COLOR_16_SWAP == 1
  445:Drivers/lvgl/src/hal/../draw/../misc/lv_color.h ****     c1.full = c1.full << 8 | c1.full >> 8;
  446:Drivers/lvgl/src/hal/../draw/../misc/lv_color.h ****     c2.full = c2.full << 8 | c2.full >> 8;
-ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccFVV7Wm.s 			page 26
-
-
  447:Drivers/lvgl/src/hal/../draw/../misc/lv_color.h **** #endif
  448:Drivers/lvgl/src/hal/../draw/../misc/lv_color.h ****     /*Source: https://stackoverflow.com/a/50012418/1999969*/
  449:Drivers/lvgl/src/hal/../draw/../misc/lv_color.h ****     mix = (uint32_t)((uint32_t)mix + 4) >> 3;
@@ -1531,6 +1678,9 @@ ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccFVV7Wm.s 			page 1
  474:Drivers/lvgl/src/hal/../draw/../misc/lv_color.h **** 
  475:Drivers/lvgl/src/hal/../draw/../misc/lv_color.h **** static inline void LV_ATTRIBUTE_FAST_MEM lv_color_premult(lv_color_t c, uint8_t mix, uint16_t * out
  476:Drivers/lvgl/src/hal/../draw/../misc/lv_color.h **** {
+ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccpz2auI.s 			page 29
+
+
  477:Drivers/lvgl/src/hal/../draw/../misc/lv_color.h **** #if LV_COLOR_DEPTH != 1
  478:Drivers/lvgl/src/hal/../draw/../misc/lv_color.h ****     out[0] = (uint16_t)LV_COLOR_GET_R(c) * mix;
  479:Drivers/lvgl/src/hal/../draw/../misc/lv_color.h ****     out[1] = (uint16_t)LV_COLOR_GET_G(c) * mix;
@@ -1558,9 +1708,6 @@ ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccFVV7Wm.s 			page 1
  501:Drivers/lvgl/src/hal/../draw/../misc/lv_color.h **** {
  502:Drivers/lvgl/src/hal/../draw/../misc/lv_color.h ****     lv_color_t ret;
  503:Drivers/lvgl/src/hal/../draw/../misc/lv_color.h **** #if LV_COLOR_DEPTH != 1
-ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccFVV7Wm.s 			page 27
-
-
  504:Drivers/lvgl/src/hal/../draw/../misc/lv_color.h ****     /*LV_COLOR_DEPTH == 8 or 32*/
  505:Drivers/lvgl/src/hal/../draw/../misc/lv_color.h ****     LV_COLOR_SET_R(ret, LV_UDIV255(premult_c1[0] + LV_COLOR_GET_R(c2) * mix + LV_COLOR_MIX_ROUND_OF
  506:Drivers/lvgl/src/hal/../draw/../misc/lv_color.h ****     LV_COLOR_SET_G(ret, LV_UDIV255(premult_c1[1] + LV_COLOR_GET_G(c2) * mix + LV_COLOR_MIX_ROUND_OF
@@ -1591,6 +1738,9 @@ ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccFVV7Wm.s 			page 1
  531:Drivers/lvgl/src/hal/../draw/../misc/lv_color.h **** static inline void LV_ATTRIBUTE_FAST_MEM lv_color_mix_with_alpha(lv_color_t bg_color, lv_opa_t bg_o
  532:Drivers/lvgl/src/hal/../draw/../misc/lv_color.h ****                                                                  lv_color_t fg_color, lv_opa_t fg_o
  533:Drivers/lvgl/src/hal/../draw/../misc/lv_color.h ****                                                                  lv_color_t * res_color, lv_opa_t *
+ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccpz2auI.s 			page 30
+
+
  534:Drivers/lvgl/src/hal/../draw/../misc/lv_color.h **** {
  535:Drivers/lvgl/src/hal/../draw/../misc/lv_color.h ****     /*Pick the foreground if it's fully opaque or the Background is fully transparent*/
  536:Drivers/lvgl/src/hal/../draw/../misc/lv_color.h ****     if(fg_opa >= LV_OPA_MAX || bg_opa <= LV_OPA_MIN) {
@@ -1618,9 +1768,6 @@ ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccFVV7Wm.s 			page 1
  558:Drivers/lvgl/src/hal/../draw/../misc/lv_color.h ****         static lv_opa_t res_opa_saved = 0;
  559:Drivers/lvgl/src/hal/../draw/../misc/lv_color.h **** 
  560:Drivers/lvgl/src/hal/../draw/../misc/lv_color.h ****         if(fg_opa != fg_opa_save || bg_opa != bg_opa_save || fg_color.full != fg_color_save.full ||
-ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccFVV7Wm.s 			page 28
-
-
  561:Drivers/lvgl/src/hal/../draw/../misc/lv_color.h ****            bg_color.full != bg_color_save.full) {
  562:Drivers/lvgl/src/hal/../draw/../misc/lv_color.h ****             fg_opa_save        = fg_opa;
  563:Drivers/lvgl/src/hal/../draw/../misc/lv_color.h ****             bg_opa_save        = bg_opa;
@@ -1651,6 +1798,9 @@ ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccFVV7Wm.s 			page 1
  588:Drivers/lvgl/src/hal/../draw/../misc/lv_color.h **** {
  589:Drivers/lvgl/src/hal/../draw/../misc/lv_color.h ****     lv_color32_t c32;
  590:Drivers/lvgl/src/hal/../draw/../misc/lv_color.h ****     c32.full        = lv_color_to32(color);
+ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccpz2auI.s 			page 31
+
+
  591:Drivers/lvgl/src/hal/../draw/../misc/lv_color.h ****     uint16_t bright = (uint16_t)(3u * LV_COLOR_GET_R32(c32) + LV_COLOR_GET_B32(c32) + 4u * LV_COLOR
  592:Drivers/lvgl/src/hal/../draw/../misc/lv_color.h ****     return (uint8_t)(bright >> 3);
  593:Drivers/lvgl/src/hal/../draw/../misc/lv_color.h **** }
@@ -1661,11 +1811,11 @@ ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccFVV7Wm.s 			page 1
  598:Drivers/lvgl/src/hal/../draw/../misc/lv_color.h **** }
  599:Drivers/lvgl/src/hal/../draw/../misc/lv_color.h **** 
  600:Drivers/lvgl/src/hal/../draw/../misc/lv_color.h **** static inline lv_color_t lv_color_hex(uint32_t c)
- 602              		.loc 3 600 26 is_stmt 1 view .LVU134
+ 702              		.loc 3 600 26 is_stmt 1 view .LVU158
  601:Drivers/lvgl/src/hal/../draw/../misc/lv_color.h **** {
  602:Drivers/lvgl/src/hal/../draw/../misc/lv_color.h **** #if LV_COLOR_DEPTH == 16
  603:Drivers/lvgl/src/hal/../draw/../misc/lv_color.h ****     lv_color_t r;
- 603              		.loc 3 603 5 view .LVU135
+ 703              		.loc 3 603 5 view .LVU159
  604:Drivers/lvgl/src/hal/../draw/../misc/lv_color.h **** #if LV_COLOR_16_SWAP == 0
  605:Drivers/lvgl/src/hal/../draw/../misc/lv_color.h ****     /* Convert a 4 bytes per pixel in format ARGB32 to R5G6B5 format
  606:Drivers/lvgl/src/hal/../draw/../misc/lv_color.h ****         naive way (by calling lv_color_make with components):
@@ -1678,9 +1828,6 @@ ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccFVV7Wm.s 			page 1
  613:Drivers/lvgl/src/hal/../draw/../misc/lv_color.h ****         A bit better:
  614:Drivers/lvgl/src/hal/../draw/../misc/lv_color.h ****                     r = ((c & 0xF80000) >> 8)
  615:Drivers/lvgl/src/hal/../draw/../misc/lv_color.h ****                     g = ((c & 0xFC00) >> 5)
-ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccFVV7Wm.s 			page 29
-
-
  616:Drivers/lvgl/src/hal/../draw/../misc/lv_color.h ****                     b = ((c & 0xFF) >> 3)
  617:Drivers/lvgl/src/hal/../draw/../misc/lv_color.h ****                     rgb565 = r | g | b
  618:Drivers/lvgl/src/hal/../draw/../misc/lv_color.h ****         That's 3 mask, 3 bitshifts and 2 or operations */
@@ -1688,308 +1835,404 @@ ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccFVV7Wm.s 			page 1
  620:Drivers/lvgl/src/hal/../draw/../misc/lv_color.h **** #else
  621:Drivers/lvgl/src/hal/../draw/../misc/lv_color.h ****     /* We want: rrrr rrrr GGGg gggg bbbb bbbb => gggb bbbb rrrr rGGG */
  622:Drivers/lvgl/src/hal/../draw/../misc/lv_color.h ****     r.full = (uint16_t)(((c & 0xF80000) >> 16) | ((c & 0xFC00) >> 13) | ((c & 0x1C00) << 3) | ((c &
- 604              		.loc 3 622 5 view .LVU136
+ 704              		.loc 3 622 5 view .LVU160
  623:Drivers/lvgl/src/hal/../draw/../misc/lv_color.h **** #endif
  624:Drivers/lvgl/src/hal/../draw/../misc/lv_color.h ****     return r;
- 605              		.loc 3 624 5 view .LVU137
- 606              		.loc 3 624 5 is_stmt 0 view .LVU138
- 607              	.LBE48:
- 608              		.loc 1 154 5 view .LVU139
- 609 000a 0022     		movs	r2, #0
- 610 000c 4CF60121 		movw	r1, 51713	@ movhi
- 611 0010 FFF7FEFF 		bl	lv_obj_set_style_bg_color
- 612              	.LVL77:
- 155:Core/Src/UI_LCD.c ****     lv_obj_set_style_text_color(lv_scr_act(), lv_color_hex(0xffffff), LV_PART_MAIN);
- 613              		.loc 1 155 5 is_stmt 1 view .LVU140
- 614              	.LBB49:
- 615              	.LBI49:
+ 705              		.loc 3 624 5 view .LVU161
+ 706              		.loc 3 624 5 is_stmt 0 view .LVU162
+ 707              	.LBE56:
+ 708              		.loc 1 170 5 view .LVU163
+ 709 000a 0022     		movs	r2, #0
+ 710 000c 4CF60121 		movw	r1, 51713	@ movhi
+ 711 0010 FFF7FEFF 		bl	lv_obj_set_style_bg_color
+ 712              	.LVL93:
+ 171:Core/Src/UI_LCD.c ****     lv_obj_set_style_text_color(lv_scr_act(), lv_color_hex(0xffffff), LV_PART_MAIN);
+ 713              		.loc 1 171 5 is_stmt 1 view .LVU164
+ 714              	.LBB57:
+ 715              	.LBI57:
  182:Drivers/lvgl/src/core/lv_disp.h **** {
- 616              		.loc 2 182 26 view .LVU141
- 617              	.LBB50:
- 618              		.loc 2 184 5 view .LVU142
- 619              		.loc 2 184 12 is_stmt 0 view .LVU143
- 620 0014 FFF7FEFF 		bl	lv_disp_get_default
- 621              	.LVL78:
- 622 0018 FFF7FEFF 		bl	lv_disp_get_scr_act
- 623              	.LVL79:
- 624              		.loc 2 184 12 view .LVU144
- 625              	.LBE50:
- 626              	.LBE49:
- 627              	.LBB51:
- 628              	.LBI51:
+ 716              		.loc 2 182 26 view .LVU165
+ 717              	.LBB58:
+ 718              		.loc 2 184 5 view .LVU166
+ 719              		.loc 2 184 12 is_stmt 0 view .LVU167
+ 720 0014 FFF7FEFF 		bl	lv_disp_get_default
+ 721              	.LVL94:
+ 722 0018 FFF7FEFF 		bl	lv_disp_get_scr_act
+ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccpz2auI.s 			page 32
+
+
+ 723              	.LVL95:
+ 724              		.loc 2 184 12 view .LVU168
+ 725              	.LBE58:
+ 726              	.LBE57:
+ 727              	.LBB59:
+ 728              	.LBI59:
  600:Drivers/lvgl/src/hal/../draw/../misc/lv_color.h **** {
- 629              		.loc 3 600 26 is_stmt 1 view .LVU145
+ 729              		.loc 3 600 26 is_stmt 1 view .LVU169
  603:Drivers/lvgl/src/hal/../draw/../misc/lv_color.h **** #if LV_COLOR_16_SWAP == 0
- 630              		.loc 3 603 5 view .LVU146
+ 730              		.loc 3 603 5 view .LVU170
  622:Drivers/lvgl/src/hal/../draw/../misc/lv_color.h **** #endif
- 631              		.loc 3 622 5 view .LVU147
- 632              		.loc 3 624 5 view .LVU148
- 633              		.loc 3 624 5 is_stmt 0 view .LVU149
- 634              	.LBE51:
- 635              		.loc 1 155 5 view .LVU150
- 636 001c 0022     		movs	r2, #0
- 637 001e 4FF0FF31 		mov	r1, #-1	@ movhi
- 638 0022 FFF7FEFF 		bl	lv_obj_set_style_text_color
- 639              	.LVL80:
- 156:Core/Src/UI_LCD.c ****     create_arcs();
- 640              		.loc 1 156 5 is_stmt 1 view .LVU151
- 157:Core/Src/UI_LCD.c **** 
- 158:Core/Src/UI_LCD.c ****     
- 159:Core/Src/UI_LCD.c **** }
- 641              		.loc 1 159 1 is_stmt 0 view .LVU152
- 642 0026 BDE80840 		pop	{r3, lr}
-ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccFVV7Wm.s 			page 30
+ 731              		.loc 3 622 5 view .LVU171
+ 732              		.loc 3 624 5 view .LVU172
+ 733              		.loc 3 624 5 is_stmt 0 view .LVU173
+ 734              	.LBE59:
+ 735              		.loc 1 171 5 view .LVU174
+ 736 001c 0022     		movs	r2, #0
+ 737 001e 4FF0FF31 		mov	r1, #-1	@ movhi
+ 738 0022 FFF7FEFF 		bl	lv_obj_set_style_text_color
+ 739              	.LVL96:
+ 172:Core/Src/UI_LCD.c ****     create_arcs();
+ 740              		.loc 1 172 5 is_stmt 1 view .LVU175
+ 173:Core/Src/UI_LCD.c **** 
+ 174:Core/Src/UI_LCD.c ****     
+ 175:Core/Src/UI_LCD.c **** }
+ 741              		.loc 1 175 1 is_stmt 0 view .LVU176
+ 742 0026 BDE80840 		pop	{r3, lr}
+ 743              		.cfi_restore 14
+ 744              		.cfi_restore 3
+ 745              		.cfi_def_cfa_offset 0
+ 172:Core/Src/UI_LCD.c ****     create_arcs();
+ 746              		.loc 1 172 5 view .LVU177
+ 747 002a FFF7FEBF 		b	create_arcs
+ 748              	.LVL97:
+ 749              		.cfi_endproc
+ 750              	.LFE450:
+ 752 002e 00BF     		.section	.rodata.UI_LCD_process.str1.4,"aMS",%progbits,1
+ 753              		.align	2
+ 754              	.LC11:
+ 755 0000 464D2032 		.ascii	"FM 2 operators\000"
+ 755      206F7065 
+ 755      7261746F 
+ 755      727300
+ 756              		.section	.text.UI_LCD_process,"ax",%progbits
+ 757              		.align	1
+ 758              		.p2align 2,,3
+ 759              		.global	UI_LCD_process
+ 760              		.syntax unified
+ 761              		.thumb
+ 762              		.thumb_func
+ 764              	UI_LCD_process:
+ 765              	.LFB451:
+ 176:Core/Src/UI_LCD.c **** 
+ 177:Core/Src/UI_LCD.c **** void UI_LCD_process(void){
+ 766              		.loc 1 177 26 is_stmt 1 view -0
+ 767              		.cfi_startproc
+ 768              		@ args = 0, pretend = 0, frame = 0
+ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccpz2auI.s 			page 33
 
 
- 643              		.cfi_restore 14
- 644              		.cfi_restore 3
- 645              		.cfi_def_cfa_offset 0
- 156:Core/Src/UI_LCD.c ****     create_arcs();
- 646              		.loc 1 156 5 view .LVU153
- 647 002a FFF7FEBF 		b	create_arcs
- 648              	.LVL81:
- 649              		.cfi_endproc
- 650              	.LFE450:
- 652 002e 00BF     		.section	.text.UI_LCD_process,"ax",%progbits
- 653              		.align	1
- 654              		.p2align 2,,3
- 655              		.global	UI_LCD_process
- 656              		.syntax unified
- 657              		.thumb
- 658              		.thumb_func
- 660              	UI_LCD_process:
- 661              	.LFB451:
- 160:Core/Src/UI_LCD.c **** 
- 161:Core/Src/UI_LCD.c **** void UI_LCD_process(void){
- 662              		.loc 1 161 26 is_stmt 1 view -0
- 663              		.cfi_startproc
- 664              		@ args = 0, pretend = 0, frame = 0
- 665              		@ frame_needed = 0, uses_anonymous_args = 0
- 162:Core/Src/UI_LCD.c ****     lv_arc_set_angles(pot1, 0, 270 * pot1_norm);
- 666              		.loc 1 162 5 view .LVU155
- 161:Core/Src/UI_LCD.c ****     lv_arc_set_angles(pot1, 0, 270 * pot1_norm);
- 667              		.loc 1 161 26 is_stmt 0 view .LVU156
- 668 0000 08B5     		push	{r3, lr}
- 669              		.cfi_def_cfa_offset 8
- 670              		.cfi_offset 3, -8
- 671              		.cfi_offset 14, -4
- 672              		.loc 1 162 36 view .LVU157
- 673 0002 1A4B     		ldr	r3, .L14
- 161:Core/Src/UI_LCD.c ****     lv_arc_set_angles(pot1, 0, 270 * pot1_norm);
- 674              		.loc 1 161 26 view .LVU158
- 675 0004 2DED028B 		vpush.64	{d8}
- 676              		.cfi_def_cfa_offset 16
- 677              		.cfi_offset 80, -16
- 678              		.cfi_offset 81, -12
- 679              		.loc 1 162 36 view .LVU159
- 680 0008 D3ED007A 		vldr.32	s15, [r3]
- 681 000c 9FED188A 		vldr.32	s16, .L14+4
- 682              		.loc 1 162 5 view .LVU160
- 683 0010 184B     		ldr	r3, .L14+8
- 684              		.loc 1 162 36 view .LVU161
- 685 0012 67EE887A 		vmul.f32	s15, s15, s16
- 686              		.loc 1 162 5 view .LVU162
- 687 0016 1868     		ldr	r0, [r3]
- 688 0018 FCEEE77A 		vcvt.u32.f32	s15, s15
- 689 001c 0021     		movs	r1, #0
- 690 001e 17EE903A 		vmov	r3, s15	@ int
- 691 0022 9AB2     		uxth	r2, r3
- 692 0024 FFF7FEFF 		bl	lv_arc_set_angles
- 693              	.LVL82:
- 163:Core/Src/UI_LCD.c ****     lv_arc_set_angles(pot2, 0, 270 * pot2_norm); 
- 694              		.loc 1 163 5 is_stmt 1 view .LVU163
-ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccFVV7Wm.s 			page 31
+ 769              		@ frame_needed = 0, uses_anonymous_args = 0
+ 178:Core/Src/UI_LCD.c ****     lv_arc_set_angles(pot1, 0, 270 * pot1_norm);
+ 770              		.loc 1 178 5 view .LVU179
+ 177:Core/Src/UI_LCD.c ****     lv_arc_set_angles(pot1, 0, 270 * pot1_norm);
+ 771              		.loc 1 177 26 is_stmt 0 view .LVU180
+ 772 0000 08B5     		push	{r3, lr}
+ 773              		.cfi_def_cfa_offset 8
+ 774              		.cfi_offset 3, -8
+ 775              		.cfi_offset 14, -4
+ 776              		.loc 1 178 36 view .LVU181
+ 777 0002 234B     		ldr	r3, .L15
+ 177:Core/Src/UI_LCD.c ****     lv_arc_set_angles(pot1, 0, 270 * pot1_norm);
+ 778              		.loc 1 177 26 view .LVU182
+ 779 0004 2DED028B 		vpush.64	{d8}
+ 780              		.cfi_def_cfa_offset 16
+ 781              		.cfi_offset 80, -16
+ 782              		.cfi_offset 81, -12
+ 783              		.loc 1 178 36 view .LVU183
+ 784 0008 D3ED007A 		vldr.32	s15, [r3]
+ 785 000c 9FED218A 		vldr.32	s16, .L15+4
+ 786              		.loc 1 178 5 view .LVU184
+ 787 0010 214B     		ldr	r3, .L15+8
+ 788              		.loc 1 178 36 view .LVU185
+ 789 0012 67EE887A 		vmul.f32	s15, s15, s16
+ 790              		.loc 1 178 5 view .LVU186
+ 791 0016 1868     		ldr	r0, [r3]
+ 792 0018 FCEEE77A 		vcvt.u32.f32	s15, s15
+ 793 001c 0021     		movs	r1, #0
+ 794 001e 17EE903A 		vmov	r3, s15	@ int
+ 795 0022 9AB2     		uxth	r2, r3
+ 796 0024 FFF7FEFF 		bl	lv_arc_set_angles
+ 797              	.LVL98:
+ 179:Core/Src/UI_LCD.c ****     lv_arc_set_angles(pot2, 0, 270 * pot2_norm); 
+ 798              		.loc 1 179 5 is_stmt 1 view .LVU187
+ 799              		.loc 1 179 36 is_stmt 0 view .LVU188
+ 800 0028 1C4A     		ldr	r2, .L15+12
+ 801              		.loc 1 179 5 view .LVU189
+ 802 002a 1D4B     		ldr	r3, .L15+16
+ 803              		.loc 1 179 36 view .LVU190
+ 804 002c D2ED007A 		vldr.32	s15, [r2]
+ 805              		.loc 1 179 5 view .LVU191
+ 806 0030 1868     		ldr	r0, [r3]
+ 807              		.loc 1 179 36 view .LVU192
+ 808 0032 67EE887A 		vmul.f32	s15, s15, s16
+ 809              		.loc 1 179 5 view .LVU193
+ 810 0036 0021     		movs	r1, #0
+ 811 0038 FCEEE77A 		vcvt.u32.f32	s15, s15
+ 812 003c 17EE903A 		vmov	r3, s15	@ int
+ 813 0040 9AB2     		uxth	r2, r3
+ 814 0042 FFF7FEFF 		bl	lv_arc_set_angles
+ 815              	.LVL99:
+ 180:Core/Src/UI_LCD.c ****     lv_arc_set_angles(pot3, 0, 270 * pot3_norm);
+ 816              		.loc 1 180 5 is_stmt 1 view .LVU194
+ 817              		.loc 1 180 36 is_stmt 0 view .LVU195
+ 818 0046 174A     		ldr	r2, .L15+20
+ 819              		.loc 1 180 5 view .LVU196
+ 820 0048 174B     		ldr	r3, .L15+24
+ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccpz2auI.s 			page 34
 
 
- 695              		.loc 1 163 36 is_stmt 0 view .LVU164
- 696 0028 134A     		ldr	r2, .L14+12
- 697              		.loc 1 163 5 view .LVU165
- 698 002a 144B     		ldr	r3, .L14+16
- 699              		.loc 1 163 36 view .LVU166
- 700 002c D2ED007A 		vldr.32	s15, [r2]
- 701              		.loc 1 163 5 view .LVU167
- 702 0030 1868     		ldr	r0, [r3]
- 703              		.loc 1 163 36 view .LVU168
- 704 0032 67EE887A 		vmul.f32	s15, s15, s16
- 705              		.loc 1 163 5 view .LVU169
- 706 0036 0021     		movs	r1, #0
- 707 0038 FCEEE77A 		vcvt.u32.f32	s15, s15
- 708 003c 17EE903A 		vmov	r3, s15	@ int
- 709 0040 9AB2     		uxth	r2, r3
- 710 0042 FFF7FEFF 		bl	lv_arc_set_angles
- 711              	.LVL83:
- 164:Core/Src/UI_LCD.c ****     lv_arc_set_angles(pot3, 0, 270 * pot3_norm); 
- 712              		.loc 1 164 5 is_stmt 1 view .LVU170
- 713              		.loc 1 164 36 is_stmt 0 view .LVU171
- 714 0046 0E4A     		ldr	r2, .L14+20
- 715              		.loc 1 164 5 view .LVU172
- 716 0048 0E4B     		ldr	r3, .L14+24
- 717              		.loc 1 164 36 view .LVU173
- 718 004a D2ED007A 		vldr.32	s15, [r2]
- 719              		.loc 1 164 5 view .LVU174
- 720 004e 1868     		ldr	r0, [r3]
- 721              		.loc 1 164 36 view .LVU175
- 722 0050 67EE887A 		vmul.f32	s15, s15, s16
- 165:Core/Src/UI_LCD.c **** }
- 723              		.loc 1 165 1 view .LVU176
- 724 0054 BDEC028B 		vldm	sp!, {d8}
- 725              		.cfi_restore 80
- 726              		.cfi_restore 81
- 727              		.cfi_def_cfa_offset 8
- 164:Core/Src/UI_LCD.c ****     lv_arc_set_angles(pot3, 0, 270 * pot3_norm); 
- 728              		.loc 1 164 5 view .LVU177
- 729 0058 FCEEE77A 		vcvt.u32.f32	s15, s15
- 730 005c 0021     		movs	r1, #0
- 731 005e 17EE903A 		vmov	r3, s15	@ int
- 732 0062 9AB2     		uxth	r2, r3
- 733              		.loc 1 165 1 view .LVU178
- 734 0064 BDE80840 		pop	{r3, lr}
- 735              		.cfi_restore 14
- 736              		.cfi_restore 3
- 737              		.cfi_def_cfa_offset 0
- 164:Core/Src/UI_LCD.c ****     lv_arc_set_angles(pot3, 0, 270 * pot3_norm); 
- 738              		.loc 1 164 5 view .LVU179
- 739 0068 FFF7FEBF 		b	lv_arc_set_angles
- 740              	.LVL84:
- 741              	.L15:
- 742              		.align	2
- 743              	.L14:
- 744 006c 00000000 		.word	pot1_norm
- 745 0070 00008743 		.word	1132920832
- 746 0074 00000000 		.word	.LANCHOR0
- 747 0078 00000000 		.word	pot2_norm
-ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccFVV7Wm.s 			page 32
+ 821              		.loc 1 180 36 view .LVU197
+ 822 004a D2ED007A 		vldr.32	s15, [r2]
+ 823              		.loc 1 180 5 view .LVU198
+ 824 004e 1868     		ldr	r0, [r3]
+ 825              		.loc 1 180 36 view .LVU199
+ 826 0050 67EE887A 		vmul.f32	s15, s15, s16
+ 827              		.loc 1 180 5 view .LVU200
+ 828 0054 0021     		movs	r1, #0
+ 829 0056 FCEEE77A 		vcvt.u32.f32	s15, s15
+ 830 005a 17EE903A 		vmov	r3, s15	@ int
+ 831 005e 9AB2     		uxth	r2, r3
+ 832 0060 FFF7FEFF 		bl	lv_arc_set_angles
+ 833              	.LVL100:
+ 181:Core/Src/UI_LCD.c ****     uint8_t osc_select = current_count % 2;
+ 834              		.loc 1 181 5 is_stmt 1 view .LVU201
+ 182:Core/Src/UI_LCD.c ****     switch(osc_select){
+ 835              		.loc 1 182 5 view .LVU202
+ 181:Core/Src/UI_LCD.c ****     uint8_t osc_select = current_count % 2;
+ 836              		.loc 1 181 40 is_stmt 0 view .LVU203
+ 837 0064 114B     		ldr	r3, .L15+28
+ 838              	.LVL101:
+ 181:Core/Src/UI_LCD.c ****     uint8_t osc_select = current_count % 2;
+ 839              		.loc 1 181 40 view .LVU204
+ 840 0066 1B88     		ldrh	r3, [r3]
+ 841              	.LVL102:
+ 842              		.loc 1 182 5 view .LVU205
+ 843 0068 13F0010F 		tst	r3, #1
+ 183:Core/Src/UI_LCD.c **** 			case 0:
+ 184:Core/Src/UI_LCD.c **** 			// analog waveforms
+ 185:Core/Src/UI_LCD.c ****                 lv_label_set_text(osc_txt, "virtual analog");
+ 186:Core/Src/UI_LCD.c ****             break;
+ 187:Core/Src/UI_LCD.c **** 
+ 188:Core/Src/UI_LCD.c ****             case 1:
+ 189:Core/Src/UI_LCD.c **** 			// FM
+ 190:Core/Src/UI_LCD.c **** 				lv_label_set_text(osc_txt, "FM 2 operators");
+ 844              		.loc 1 190 5 view .LVU206
+ 845 006c 104B     		ldr	r3, .L15+32
+ 182:Core/Src/UI_LCD.c ****     switch(osc_select){
+ 846              		.loc 1 182 5 view .LVU207
+ 847 006e 07D1     		bne	.L13
+ 185:Core/Src/UI_LCD.c ****             break;
+ 848              		.loc 1 185 17 is_stmt 1 view .LVU208
+ 191:Core/Src/UI_LCD.c **** 				break;
+ 192:Core/Src/UI_LCD.c **** 		}
+ 193:Core/Src/UI_LCD.c **** 
+ 194:Core/Src/UI_LCD.c **** }
+ 849              		.loc 1 194 1 is_stmt 0 view .LVU209
+ 850 0070 BDEC028B 		vldm	sp!, {d8}
+ 851              		.cfi_remember_state
+ 852              		.cfi_restore 80
+ 853              		.cfi_restore 81
+ 854              		.cfi_def_cfa_offset 8
+ 185:Core/Src/UI_LCD.c ****             break;
+ 855              		.loc 1 185 17 view .LVU210
+ 856 0074 1868     		ldr	r0, [r3]
+ 857 0076 0F49     		ldr	r1, .L15+36
+ 858              		.loc 1 194 1 view .LVU211
+ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccpz2auI.s 			page 35
 
 
- 748 007c 00000000 		.word	.LANCHOR1
- 749 0080 00000000 		.word	pot3_norm
- 750 0084 00000000 		.word	.LANCHOR2
- 751              		.cfi_endproc
- 752              	.LFE451:
- 754              		.global	my_indev
- 755              		.global	g
- 756              		.global	tabview
- 757              		.global	pot3
- 758              		.global	pot2
- 759              		.global	pot1
- 760              		.section	.bss.g,"aw",%nobits
- 761              		.align	2
- 764              	g:
- 765 0000 00000000 		.space	4
- 766              		.section	.bss.my_indev,"aw",%nobits
- 767              		.align	2
- 770              	my_indev:
- 771 0000 00000000 		.space	4
- 772              		.section	.bss.pot1,"aw",%nobits
- 773              		.align	2
- 774              		.set	.LANCHOR0,. + 0
- 777              	pot1:
- 778 0000 00000000 		.space	4
- 779              		.section	.bss.pot2,"aw",%nobits
- 780              		.align	2
- 781              		.set	.LANCHOR1,. + 0
- 784              	pot2:
- 785 0000 00000000 		.space	4
- 786              		.section	.bss.pot3,"aw",%nobits
- 787              		.align	2
- 788              		.set	.LANCHOR2,. + 0
- 791              	pot3:
- 792 0000 00000000 		.space	4
- 793              		.section	.bss.tabview,"aw",%nobits
- 794              		.align	2
- 795              		.set	.LANCHOR3,. + 0
- 798              	tabview:
- 799 0000 00000000 		.space	4
- 800              		.text
- 801              	.Letext0:
- 802              		.file 4 "/Users/johannes/Library/Application Support/Code/User/globalStorage/bmd.stm32-for-vscode/
- 803              		.file 5 "/Users/johannes/Library/Application Support/Code/User/globalStorage/bmd.stm32-for-vscode/
- 804              		.file 6 "Drivers/lvgl/src/misc/lv_types.h"
- 805              		.file 7 "Drivers/lvgl/src/misc/lv_timer.h"
- 806              		.file 8 "/Users/johannes/Library/Application Support/Code/User/globalStorage/bmd.stm32-for-vscode/
- 807              		.file 9 "Drivers/lvgl/src/hal/../draw/../misc/../font/../misc/lv_area.h"
- 808              		.file 10 "Drivers/lvgl/src/hal/../draw/../misc/../font/lv_font.h"
- 809              		.file 11 "Drivers/lvgl/src/hal/../draw/../misc/lv_txt.h"
- 810              		.file 12 "Drivers/lvgl/src/hal/../draw/../misc/lv_bidi.h"
- 811              		.file 13 "Drivers/lvgl/src/hal/../draw/../misc/lv_style.h"
- 812              		.file 14 "Drivers/lvgl/src/hal/../draw/lv_img_buf.h"
- 813              		.file 15 "Drivers/lvgl/src/core/lv_obj.h"
- 814              		.file 16 "Drivers/lvgl/src/hal/../draw/lv_draw_rect.h"
- 815              		.file 17 "Drivers/lvgl/src/hal/../draw/lv_draw_label.h"
- 816              		.file 18 "Drivers/lvgl/src/hal/../draw/lv_draw_img.h"
- 817              		.file 19 "Drivers/lvgl/src/hal/../draw/lv_draw_line.h"
-ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccFVV7Wm.s 			page 33
+ 859 0078 BDE80840 		pop	{r3, lr}
+ 860              		.cfi_restore 14
+ 861              		.cfi_restore 3
+ 862              		.cfi_def_cfa_offset 0
+ 185:Core/Src/UI_LCD.c ****             break;
+ 863              		.loc 1 185 17 view .LVU212
+ 864 007c FFF7FEBF 		b	lv_label_set_text
+ 865              	.LVL103:
+ 866              	.L13:
+ 867              		.cfi_restore_state
+ 190:Core/Src/UI_LCD.c **** 				break;
+ 868              		.loc 1 190 5 is_stmt 1 view .LVU213
+ 869              		.loc 1 194 1 is_stmt 0 view .LVU214
+ 870 0080 BDEC028B 		vldm	sp!, {d8}
+ 871              		.cfi_restore 80
+ 872              		.cfi_restore 81
+ 873              		.cfi_def_cfa_offset 8
+ 190:Core/Src/UI_LCD.c **** 				break;
+ 874              		.loc 1 190 5 view .LVU215
+ 875 0084 1868     		ldr	r0, [r3]
+ 876 0086 0C49     		ldr	r1, .L15+40
+ 877              		.loc 1 194 1 view .LVU216
+ 878 0088 BDE80840 		pop	{r3, lr}
+ 879              		.cfi_restore 14
+ 880              		.cfi_restore 3
+ 881              		.cfi_def_cfa_offset 0
+ 190:Core/Src/UI_LCD.c **** 				break;
+ 882              		.loc 1 190 5 view .LVU217
+ 883 008c FFF7FEBF 		b	lv_label_set_text
+ 884              	.LVL104:
+ 885              	.L16:
+ 190:Core/Src/UI_LCD.c **** 				break;
+ 886              		.loc 1 190 5 view .LVU218
+ 887              		.align	2
+ 888              	.L15:
+ 889 0090 00000000 		.word	pot1_norm
+ 890 0094 00008743 		.word	1132920832
+ 891 0098 00000000 		.word	.LANCHOR1
+ 892 009c 00000000 		.word	pot2_norm
+ 893 00a0 00000000 		.word	.LANCHOR2
+ 894 00a4 00000000 		.word	pot3_norm
+ 895 00a8 00000000 		.word	.LANCHOR3
+ 896 00ac 00000000 		.word	current_count
+ 897 00b0 00000000 		.word	.LANCHOR0
+ 898 00b4 10000000 		.word	.LC1
+ 899 00b8 00000000 		.word	.LC11
+ 900              		.cfi_endproc
+ 901              	.LFE451:
+ 903              		.global	osc_txt
+ 904              		.global	my_indev
+ 905              		.global	g
+ 906              		.global	tabview
+ 907              		.global	pot3
+ 908              		.global	pot2
+ 909              		.global	pot1
+ 910              		.section	.bss.g,"aw",%nobits
+ 911              		.align	2
+ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccpz2auI.s 			page 36
 
 
- 818              		.file 20 "Drivers/lvgl/src/hal/../draw/lv_draw_arc.h"
- 819              		.file 21 "Drivers/lvgl/src/hal/../draw/lv_draw_layer.h"
- 820              		.file 22 "Drivers/lvgl/src/hal/../draw/lv_draw.h"
- 821              		.file 23 "Drivers/lvgl/src/hal/../misc/lv_ll.h"
- 822              		.file 24 "Drivers/lvgl/src/hal/lv_hal_disp.h"
- 823              		.file 25 "Drivers/lvgl/src/core/lv_theme.h"
- 824              		.file 26 "Drivers/lvgl/src/hal/lv_hal_indev.h"
- 825              		.file 27 "Drivers/lvgl/src/core/lv_group.h"
- 826              		.file 28 "Drivers/lvgl/src/core/lv_obj_scroll.h"
- 827              		.file 29 "Drivers/lvgl/src/core/lv_obj_style.h"
- 828              		.file 30 "Drivers/lvgl/src/core/lv_obj_class.h"
- 829              		.file 31 "Drivers/lvgl/src/core/lv_event.h"
- 830              		.file 32 "Drivers/lvgl/src/widgets/lv_bar.h"
- 831              		.file 33 "Drivers/lvgl/src/extra/widgets/imgbtn/lv_imgbtn.h"
- 832              		.file 34 "Drivers/lvgl/src/widgets/lv_arc.h"
- 833              		.file 35 "Drivers/lvgl/src/core/lv_obj_style_gen.h"
- 834              		.file 36 "Drivers/lvgl/src/widgets/lv_label.h"
- 835              		.file 37 "Drivers/lvgl/src/extra/widgets/tabview/lv_tabview.h"
- 836              		.file 38 "Drivers/lvgl/src/hal/../draw/sw/../../core/lv_obj_pos.h"
-ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccFVV7Wm.s 			page 34
+ 914              	g:
+ 915 0000 00000000 		.space	4
+ 916              		.section	.bss.my_indev,"aw",%nobits
+ 917              		.align	2
+ 920              	my_indev:
+ 921 0000 00000000 		.space	4
+ 922              		.section	.bss.osc_txt,"aw",%nobits
+ 923              		.align	2
+ 924              		.set	.LANCHOR0,. + 0
+ 927              	osc_txt:
+ 928 0000 00000000 		.space	4
+ 929              		.section	.bss.pot1,"aw",%nobits
+ 930              		.align	2
+ 931              		.set	.LANCHOR1,. + 0
+ 934              	pot1:
+ 935 0000 00000000 		.space	4
+ 936              		.section	.bss.pot2,"aw",%nobits
+ 937              		.align	2
+ 938              		.set	.LANCHOR2,. + 0
+ 941              	pot2:
+ 942 0000 00000000 		.space	4
+ 943              		.section	.bss.pot3,"aw",%nobits
+ 944              		.align	2
+ 945              		.set	.LANCHOR3,. + 0
+ 948              	pot3:
+ 949 0000 00000000 		.space	4
+ 950              		.section	.bss.tabview,"aw",%nobits
+ 951              		.align	2
+ 952              		.set	.LANCHOR4,. + 0
+ 955              	tabview:
+ 956 0000 00000000 		.space	4
+ 957              		.text
+ 958              	.Letext0:
+ 959              		.file 4 "/Users/johannes/Library/Application Support/Code/User/globalStorage/bmd.stm32-for-vscode/
+ 960              		.file 5 "/Users/johannes/Library/Application Support/Code/User/globalStorage/bmd.stm32-for-vscode/
+ 961              		.file 6 "Drivers/lvgl/src/misc/lv_types.h"
+ 962              		.file 7 "Drivers/lvgl/src/misc/lv_timer.h"
+ 963              		.file 8 "/Users/johannes/Library/Application Support/Code/User/globalStorage/bmd.stm32-for-vscode/
+ 964              		.file 9 "Drivers/lvgl/src/hal/../draw/../misc/../font/../misc/lv_area.h"
+ 965              		.file 10 "Drivers/lvgl/src/hal/../draw/../misc/../font/lv_font.h"
+ 966              		.file 11 "Drivers/lvgl/src/hal/../draw/../misc/lv_txt.h"
+ 967              		.file 12 "Drivers/lvgl/src/hal/../draw/../misc/lv_bidi.h"
+ 968              		.file 13 "Drivers/lvgl/src/hal/../draw/../misc/lv_style.h"
+ 969              		.file 14 "Drivers/lvgl/src/hal/../draw/lv_img_buf.h"
+ 970              		.file 15 "Drivers/lvgl/src/core/lv_obj.h"
+ 971              		.file 16 "Drivers/lvgl/src/hal/../draw/lv_draw_rect.h"
+ 972              		.file 17 "Drivers/lvgl/src/hal/../draw/lv_draw_label.h"
+ 973              		.file 18 "Drivers/lvgl/src/hal/../draw/lv_draw_img.h"
+ 974              		.file 19 "Drivers/lvgl/src/hal/../draw/lv_draw_line.h"
+ 975              		.file 20 "Drivers/lvgl/src/hal/../draw/lv_draw_arc.h"
+ 976              		.file 21 "Drivers/lvgl/src/hal/../draw/lv_draw_layer.h"
+ 977              		.file 22 "Drivers/lvgl/src/hal/../draw/lv_draw.h"
+ 978              		.file 23 "Drivers/lvgl/src/hal/../misc/lv_ll.h"
+ 979              		.file 24 "Drivers/lvgl/src/hal/lv_hal_disp.h"
+ 980              		.file 25 "Drivers/lvgl/src/core/lv_theme.h"
+ 981              		.file 26 "Drivers/lvgl/src/hal/lv_hal_indev.h"
+ 982              		.file 27 "Drivers/lvgl/src/core/lv_group.h"
+ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccpz2auI.s 			page 37
+
+
+ 983              		.file 28 "Drivers/lvgl/src/core/lv_obj_scroll.h"
+ 984              		.file 29 "Drivers/lvgl/src/core/lv_obj_style.h"
+ 985              		.file 30 "Drivers/lvgl/src/core/lv_obj_class.h"
+ 986              		.file 31 "Drivers/lvgl/src/core/lv_event.h"
+ 987              		.file 32 "Drivers/lvgl/src/widgets/lv_bar.h"
+ 988              		.file 33 "Drivers/lvgl/src/extra/widgets/imgbtn/lv_imgbtn.h"
+ 989              		.file 34 "Drivers/lvgl/src/widgets/lv_arc.h"
+ 990              		.file 35 "Drivers/lvgl/src/core/lv_obj_style_gen.h"
+ 991              		.file 36 "Drivers/lvgl/src/extra/widgets/tabview/lv_tabview.h"
+ 992              		.file 37 "Drivers/lvgl/src/hal/../draw/sw/../../core/lv_obj_pos.h"
+ 993              		.file 38 "Drivers/lvgl/src/widgets/lv_label.h"
+ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccpz2auI.s 			page 38
 
 
 DEFINED SYMBOLS
                             *ABS*:0000000000000000 UI_LCD.c
-/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccFVV7Wm.s:20     .rodata.create_arcs.str1.4:0000000000000000 $d
-/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccFVV7Wm.s:30     .text.create_arcs:0000000000000000 $t
-/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccFVV7Wm.s:37     .text.create_arcs:0000000000000000 create_arcs
-/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccFVV7Wm.s:335    .text.create_arcs:0000000000000168 $d
-/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccFVV7Wm.s:345    .rodata.create_tabs.str1.4:0000000000000000 $d
-/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccFVV7Wm.s:364    .text.create_tabs:0000000000000000 $t
-/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccFVV7Wm.s:371    .text.create_tabs:0000000000000000 create_tabs
-/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccFVV7Wm.s:548    .text.create_tabs:00000000000000a4 $d
-/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccFVV7Wm.s:563    .text.UI_LCD_init:0000000000000000 $t
-/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccFVV7Wm.s:570    .text.UI_LCD_init:0000000000000000 UI_LCD_init
-/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccFVV7Wm.s:653    .text.UI_LCD_process:0000000000000000 $t
-/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccFVV7Wm.s:660    .text.UI_LCD_process:0000000000000000 UI_LCD_process
-/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccFVV7Wm.s:744    .text.UI_LCD_process:000000000000006c $d
-/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccFVV7Wm.s:770    .bss.my_indev:0000000000000000 my_indev
-/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccFVV7Wm.s:764    .bss.g:0000000000000000 g
-/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccFVV7Wm.s:798    .bss.tabview:0000000000000000 tabview
-/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccFVV7Wm.s:791    .bss.pot3:0000000000000000 pot3
-/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccFVV7Wm.s:784    .bss.pot2:0000000000000000 pot2
-/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccFVV7Wm.s:777    .bss.pot1:0000000000000000 pot1
-/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccFVV7Wm.s:761    .bss.g:0000000000000000 $d
-/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccFVV7Wm.s:767    .bss.my_indev:0000000000000000 $d
-/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccFVV7Wm.s:773    .bss.pot1:0000000000000000 $d
-/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccFVV7Wm.s:780    .bss.pot2:0000000000000000 $d
-/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccFVV7Wm.s:787    .bss.pot3:0000000000000000 $d
-/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccFVV7Wm.s:794    .bss.tabview:0000000000000000 $d
+/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccpz2auI.s:20     .rodata.create_arcs.str1.4:0000000000000000 $d
+/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccpz2auI.s:36     .text.create_arcs:0000000000000000 $t
+/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccpz2auI.s:43     .text.create_arcs:0000000000000000 create_arcs
+/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccpz2auI.s:430    .text.create_arcs:00000000000001d0 $d
+/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccpz2auI.s:445    .rodata.create_tabs.str1.4:0000000000000000 $d
+/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccpz2auI.s:464    .text.create_tabs:0000000000000000 $t
+/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccpz2auI.s:471    .text.create_tabs:0000000000000000 create_tabs
+/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccpz2auI.s:648    .text.create_tabs:00000000000000a4 $d
+/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccpz2auI.s:663    .text.UI_LCD_init:0000000000000000 $t
+/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccpz2auI.s:670    .text.UI_LCD_init:0000000000000000 UI_LCD_init
+/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccpz2auI.s:753    .rodata.UI_LCD_process.str1.4:0000000000000000 $d
+/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccpz2auI.s:757    .text.UI_LCD_process:0000000000000000 $t
+/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccpz2auI.s:764    .text.UI_LCD_process:0000000000000000 UI_LCD_process
+/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccpz2auI.s:889    .text.UI_LCD_process:0000000000000090 $d
+/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccpz2auI.s:927    .bss.osc_txt:0000000000000000 osc_txt
+/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccpz2auI.s:920    .bss.my_indev:0000000000000000 my_indev
+/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccpz2auI.s:914    .bss.g:0000000000000000 g
+/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccpz2auI.s:955    .bss.tabview:0000000000000000 tabview
+/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccpz2auI.s:948    .bss.pot3:0000000000000000 pot3
+/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccpz2auI.s:941    .bss.pot2:0000000000000000 pot2
+/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccpz2auI.s:934    .bss.pot1:0000000000000000 pot1
+/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccpz2auI.s:911    .bss.g:0000000000000000 $d
+/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccpz2auI.s:917    .bss.my_indev:0000000000000000 $d
+/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccpz2auI.s:923    .bss.osc_txt:0000000000000000 $d
+/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccpz2auI.s:930    .bss.pot1:0000000000000000 $d
+/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccpz2auI.s:937    .bss.pot2:0000000000000000 $d
+/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccpz2auI.s:944    .bss.pot3:0000000000000000 $d
+/var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccpz2auI.s:951    .bss.tabview:0000000000000000 $d
 
 UNDEFINED SYMBOLS
 lv_disp_get_default
 lv_disp_get_scr_act
+lv_label_create
+lv_label_set_text
+lv_obj_set_style_text_font
+lv_obj_set_style_text_align
+lv_obj_align
 lv_arc_create
 lv_obj_set_size
-lv_obj_align
 lv_arc_set_rotation
 lv_arc_set_bg_angles
 lv_obj_remove_style
 lv_obj_clear_flag
-lv_label_create
 lv_label_set_text_static
 lv_obj_align_to
+lv_font_montserrat_18
+lv_font_montserrat_16
 lv_tabview_create
 lv_tabview_add_tab
-lv_label_set_text
 lv_obj_set_style_bg_color
 lv_obj_set_style_text_color
 lv_arc_set_angles
 pot1_norm
 pot2_norm
 pot3_norm
+ARM GAS  /var/folders/0z/tsy30v1j4xl4_7kw94k978ww0000gn/T//ccpz2auI.s 			page 39
+
+
+current_count

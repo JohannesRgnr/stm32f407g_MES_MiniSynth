@@ -5,6 +5,8 @@
 #include "tim.h"
 #include "SEGGER_RTT.h"
 
+//#include "../../Drivers/lvgl/src/font/lv_font.h"
+
 
 
 
@@ -16,21 +18,35 @@ extern uint8_t btn_pressed;
 lv_obj_t *pot1, *pot2, *pot3, *tabview;
 lv_group_t* g; 
 lv_indev_t * my_indev;
-
-
-
+lv_obj_t * osc_txt;
 
 void create_arcs(void){
-    /*Create 2 Arcs for the 2 pots*/
+    /* Create text*/
+    lv_obj_t * title = lv_label_create(lv_scr_act());
+    lv_label_set_text(title, "MES MiniSynth");
+    lv_obj_set_style_text_font(title, &lv_font_montserrat_18, 0);
+    lv_obj_set_style_text_align(title, LV_TEXT_ALIGN_CENTER, 0);
+    lv_obj_align(title, LV_ALIGN_TOP_MID, 0, 10);
+
+
+     /* Create text*/
+    osc_txt = lv_label_create(lv_scr_act());
+    lv_label_set_text(osc_txt, "virtual analog");
+    lv_obj_set_style_text_font(osc_txt, &lv_font_montserrat_16, 0);
+    lv_obj_set_style_text_align(osc_txt, LV_TEXT_ALIGN_CENTER, 0);
+    lv_obj_align(osc_txt, LV_ALIGN_TOP_MID, 0, 40);
+
+
+    /*Create Arcs for the 3 pots*/
     pot1 = lv_arc_create(lv_scr_act());
     lv_obj_set_size(pot1, 72, 72);
-	lv_obj_align(pot1, LV_ALIGN_CENTER, -90, -20);
+	lv_obj_align(pot1, LV_ALIGN_CENTER, -90, -10);
     pot2 = lv_arc_create(lv_scr_act());
     lv_obj_set_size(pot2, 72, 72);
-	lv_obj_align(pot2, LV_ALIGN_CENTER, 90, -20);
+	lv_obj_align(pot2, LV_ALIGN_CENTER, 90, -10);
     pot3 = lv_arc_create(lv_scr_act());
     lv_obj_set_size(pot3, 72, 72);
-	lv_obj_align(pot3, LV_ALIGN_CENTER, 0, 60);
+	lv_obj_align(pot3, LV_ALIGN_CENTER, 0, 65);
    
     lv_arc_set_rotation(pot1, 135);
     lv_arc_set_bg_angles(pot1, 0, 270);
@@ -161,5 +177,18 @@ void UI_LCD_init(void){
 void UI_LCD_process(void){
     lv_arc_set_angles(pot1, 0, 270 * pot1_norm);
     lv_arc_set_angles(pot2, 0, 270 * pot2_norm); 
-    lv_arc_set_angles(pot3, 0, 270 * pot3_norm); 
+    lv_arc_set_angles(pot3, 0, 270 * pot3_norm);
+    uint8_t osc_select = current_count % 2;
+    switch(osc_select){
+			case 0:
+			// analog waveforms
+                lv_label_set_text(osc_txt, "virtual analog");
+            break;
+
+            case 1:
+			// FM
+				lv_label_set_text(osc_txt, "FM 2 operators");
+				break;
+		}
+
 }
