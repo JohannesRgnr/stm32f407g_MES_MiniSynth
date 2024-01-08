@@ -37,6 +37,13 @@ void osc_init(oscillator_t *osc, float amp, float freq, float FM_index, float FM
     osc->output = 0;
 }
 
+
+/**
+ * @brief a simple sine oscillator, based on a lookup table with linear interpolation
+ * 
+ * @param osc 
+ * @return float 
+ */
 float osc_Sine(oscillator_t *osc)
 {
 
@@ -47,6 +54,12 @@ float osc_Sine(oscillator_t *osc)
     return osc->output;
 }
 
+/**
+ * @brief simple 2 op FM. Osc 2 modulates the phase of osc 1. 
+ * 
+ * @param freq 
+ * @return float 
+ */
 float osc_FM2OP(float freq)
 {
     osc1.freq = A0 * freq;
@@ -59,6 +72,12 @@ float osc_FM2OP(float freq)
 }
 
 
+/**
+ * @brief bandlimited sawtooth oscillator
+ * 
+ * @param osc 
+ * @return float 
+ */
 float osc_polyblepSaw(oscillator_t *osc)
 {
     float dt = A0 * TS * osc->freq; // phase increment
@@ -73,6 +92,12 @@ float osc_polyblepSaw(oscillator_t *osc)
     return osc->output;
 }
 
+/**
+ * @brief band limited square oscillator with variable pulse width
+ * 
+ * @param osc 
+ * @return float 
+ */
 float osc_polyblepRect(oscillator_t * osc){
     float dt = A0 * TS * osc->freq; // phase increment
     float t = osc->phase;   // phase

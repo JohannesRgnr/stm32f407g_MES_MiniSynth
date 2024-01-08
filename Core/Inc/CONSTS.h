@@ -20,7 +20,9 @@
 
 #define FS                  44100     // selected samplerate
 /*  Actual samplerate is actually 44020 Hz (derived from I2S clock).. 
-*   we take that into account for accurate tuning */
+*   we take that into account for accurate tuning 
+*                 0.2% off...   not so crucial, but well ....... */
+
 #define correctedFS         44020.f   // real samplerate (check STM32CubeMX configuration)
 
 
@@ -31,15 +33,15 @@
 #define BUFFER_SIZE         256             // size of the audio buffer (samples)
 #define BUFFER_SIZE_DIV_2   (BUFFER_SIZE/2)
 #define BUFFER_SIZE_DIV_4   (BUFFER_SIZE/4)
-#define INITIAL_VOLUME      90              // initial volume level
+#define INITIAL_VOLUME      90              // initial volume level.. TODO: give user control of the volume
 
 
 
 #define PI                  3.14159265359
 #define TWOPI               6.28318530718
 
-#define MIDI_MAX            127.f 
-#define MIDI_MAXi           127
+//#define MIDI_MAX            127.f 
+//define MIDI_MAXi           127
 
 #define _CCM_					__attribute__((section(".ccmram"))) // for use of CCM RAM (64kB)
 

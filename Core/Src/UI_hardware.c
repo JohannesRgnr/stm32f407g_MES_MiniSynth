@@ -3,8 +3,8 @@
  * @author johannes regnier
  * @brief hardware user interface
  * *****  UI is for the moment:
- * *****  2 potentiometers (on PC1 and PC2).. Data resolution is 10bits [0, 1023], smoothed using a lowpass filter`
- * *****  1 encoder (PB4 / PB5) with pushbutton (PB7)
+ * *****  3 potentiometers (on PC4. PC5 and PC2).. Data resolution is 10bits [0, 1023], smoothed using a lowpass filter
+ * *****  1 encoder (PB4 / PB5) 
  * @version 0.1
  * @date 2024-01-05
  * 
@@ -81,8 +81,8 @@ void poll_Encoder(void){
 
 
 /**
- * @brief poll encoder.  This function is called by SysTick_Handler (in stm32f4xx_it.c) every ms.
- * 
+ * @brief poll encoder button.  This function is called by SysTick_Handler (in stm32f4xx_it.c) every ms.
+ * not used at the moment.. TODO!
  */
 void poll_EncoderBtn(void){
 	current_btn = HAL_GPIO_ReadPin(GPIOB, GPIO_PIN_7);

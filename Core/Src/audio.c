@@ -46,8 +46,8 @@ extern float pot1_norm, pot2_norm, pot3_norm;
 extern uint16_t current_count;
 extern float delay_wet, feedback;
 
-static float f0, f1;			// frequency of oscillators 1 & 2
-static float f_sub ;		// frequency of sub oscillator
+static float f0, f1;		// frequency of oscillators 1, 2, 3 and 4
+static float f_sub ;		// frequency of sub oscillator (osc 5)
 static float amp_env ;		// amplitude envelope
 static float filt_env ;		// filter envelope
 static float index_env ;	// FM index envelope
@@ -121,17 +121,20 @@ void audioBlock(int16_t *buffer, uint16_t samples)
 
 	for (i = 0; i < samples; i++)
 	{
-
+		/* convert MIDI pitch into frequency using mtof lookup table */
 		f0 = mtof[currentPitch];
 		f1 = mtof[currentPitch + 7];
 		
-		/* test with 3 oscillators*/
+		/* set oscillator frequencies, with light detuning*/
+		/* oscillator 4 is a fifth over the others ... just for demonstration */
 		OpSetFreq(&osc1, f0);
 		OpSetFreq(&osc2, f0+1);
 		OpSetFreq(&osc3, f0-1);
 		OpSetFreq(&osc4, f1);
 		OpSetFreq(&sub_osc, f_sub);
 		
+
+		/*********** choose oscillator type with encoder *************/
 		switch(select_osc){
 			case 0:
 			// analog waveforms
@@ -167,21 +170,21 @@ void audioBlock(int16_t *buffer, uint16_t samples)
 
 		
 		/************** Apply bitcrushing effect ***************/
+		// uncomment to activate
 		// sample = decimator(sample, 0.2, 16);
 
 		/************** Apply flanging effect ***************/
-		// sample = flanger_compute(sample); // TODO
+		// TODO ...
+		// sample = flanger_compute(sample); 
 
 		/************** Apply delay effect ****************/
-		delay_wet = pot3_norm;
-		feedback = clip(pot3_norm + 0.25, 0, 1.1);
+		delay_wet = pot3_norm;	// delay send value from pot #3
+		feedback = clip(pot3_norm + 0.25, 0, 1.1); // also increase feedback 
 
 		pingpongDelay_compute(sample, &delayLOut, &delayROut);
 		sampleL = delayLOut;
 		sampleR = delayROut;
-		//sampleL = sample;
-		//sampleR = sample;
-
+		
 		/****************** softclip outputs ********************/
 		sampleL = SoftClip(sampleL);
 		sampleR = SoftClip(sampleR);
@@ -200,12 +203,12 @@ void audioBlock(int16_t *buffer, uint16_t samples)
 
 void BSP_AUDIO_OUT_HalfTransfer_CallBack(void)
 {
-	audioBlock((uint16_t *)audioBuffer, BUFFER_SIZE_DIV_4);
+	audioBlock((int16_t *)audioBuffer, BUFFER_SIZE_DIV_4);
 }
 
 void BSP_AUDIO_OUT_TransferComplete_CallBack(void)
 {
-	audioBlock((uint16_t *)(audioBuffer + BUFFER_SIZE_DIV_2), BUFFER_SIZE_DIV_4);
+	audioBlock((int16_t *)(audioBuffer + BUFFER_SIZE_DIV_2), BUFFER_SIZE_DIV_4);
 }
 
 void BSP_AUDIO_OUT_Error_CallBack(void)

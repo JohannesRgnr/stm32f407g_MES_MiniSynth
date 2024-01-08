@@ -1,6 +1,6 @@
 /**
  * @file stereo_delay.c
- * @author modified from Xavier Halgand
+ * @author johannes regnier, modified from Xavier Halgand
  * @brief stereo ping pong delay effect
  * @version 0.1
  * @date 2024-01-01

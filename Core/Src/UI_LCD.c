@@ -1,3 +1,13 @@
+/**
+ * @file UI_LCD.c
+ * @author johannes regnier
+ * @brief A simple graphical user interface. Basic for now.
+ * @version 0.1
+ * @date 2024-01-08
+ * 
+ * @copyright Copyright (c) 2024
+ * 
+ */
 
 #include "UI_LCD.h"
 
@@ -5,7 +15,6 @@
 #include "tim.h"
 #include "SEGGER_RTT.h"
 
-//#include "../../Drivers/lvgl/src/font/lv_font.h"
 
 
 
@@ -20,6 +29,10 @@ lv_group_t* g;
 lv_indev_t * my_indev;
 lv_obj_t * osc_txt;
 
+/**
+ * @brief Create the 3 arcs displaying the states of the 3 potentiometers, with labels
+ * 
+ */
 void create_arcs(void){
     /* Create text*/
     lv_obj_t * title = lv_label_create(lv_scr_act());
@@ -80,7 +93,7 @@ void create_arcs(void){
     
 }
 
-
+// TODO: use tabs for oscillators/ filter / amp / fx
 void create_tabs(void){
       /*Create a Tab view object*/
    
@@ -113,57 +126,59 @@ void create_tabs(void){
 
 }
 
-static int32_t encoder_last_value;
-static lv_indev_state_t encoder_state;
+// TODO : GUI includes encoder
 
-static bool encoder_read(lv_indev_drv_t * drv, lv_indev_data_t*data){
-    static int32_t last_diff = 0;
+// static int32_t encoder_last_value;
+// static lv_indev_state_t encoder_state;
+
+// static bool encoder_read(lv_indev_drv_t * drv, lv_indev_data_t*data){
+//     static int32_t last_diff = 0;
     
 
-    static int lastBtn;
-    int btn_state;
+//     static int lastBtn;
+//     int btn_state;
 
-    if (HAL_GPIO_ReadPin(GPIOB, GPIO_PIN_7) == 0) {
-        btn_state = LV_INDEV_STATE_PR;
-    } else {
-        btn_state = LV_INDEV_STATE_REL;
-    }
-    int encoder_value = ((TIM3->CNT)  >> 2);
-    encoder_state = btn_state;
-    data->enc_diff = poll_Encoder();
-    data->state = encoder_state;
-    encoder_last_value = encoder_value;
+//     if (HAL_GPIO_ReadPin(GPIOB, GPIO_PIN_7) == 0) {
+//         btn_state = LV_INDEV_STATE_PR;
+//     } else {
+//         btn_state = LV_INDEV_STATE_REL;
+//     }
+//     int encoder_value = ((TIM3->CNT)  >> 2);
+//     encoder_state = btn_state;
+//     data->enc_diff = poll_Encoder();
+//     data->state = encoder_state;
+//     encoder_last_value = encoder_value;
 
 
 
-    // int32_t diff = ((TIM3->CNT) >> 2); // read the rotary encoder position
-    // int btn_state = 0 ==  HAL_GPIO_ReadPin(GPIOB, GPIO_PIN_7) ? LV_INDEV_STATE_PR : LV_INDEV_STATE_REL; // read encoder push button status
+//     // int32_t diff = ((TIM3->CNT) >> 2); // read the rotary encoder position
+//     // int btn_state = 0 ==  HAL_GPIO_ReadPin(GPIOB, GPIO_PIN_7) ? LV_INDEV_STATE_PR : LV_INDEV_STATE_REL; // read encoder push button status
 
-    // data->enc_diff = diff - last_diff;;
-    // data->state = btn_state;
+//     // data->enc_diff = diff - last_diff;;
+//     // data->state = btn_state;
    
-    SEGGER_RTT_printf(0, "Encoder diff = %d\r\n", data->enc_diff); // debug
-    SEGGER_RTT_printf(0, "btn_state = %d\r\n", btn_state); // debug
+//     SEGGER_RTT_printf(0, "Encoder diff = %d\r\n", data->enc_diff); // debug
+//     SEGGER_RTT_printf(0, "btn_state = %d\r\n", btn_state); // debug
 
-    if (lastBtn != btn_state)
-    {
-        lastBtn = btn_state;
-    }
+//     if (lastBtn != btn_state)
+//     {
+//         lastBtn = btn_state;
+//     }
 
-    return false;
-}
+//     return false;
+// }
 
 
-static void event_handler(lv_event_t * e)
-{
-    lv_event_code_t code = lv_event_get_code(e);
-    lv_obj_t * obj = lv_event_get_target(e);
-    if(code == LV_EVENT_VALUE_CHANGED) {
-        char buf[32];
-        lv_roller_get_selected_str(obj, buf, sizeof(buf));
-        LV_LOG_USER("Selected month: %s\n", buf);
-    }
-}
+// static void event_handler(lv_event_t * e)
+// {
+//     lv_event_code_t code = lv_event_get_code(e);
+//     lv_obj_t * obj = lv_event_get_target(e);
+//     if(code == LV_EVENT_VALUE_CHANGED) {
+//         char buf[32];
+//         lv_roller_get_selected_str(obj, buf, sizeof(buf));
+//         LV_LOG_USER("Selected month: %s\n", buf);
+//     }
+// }
 
 void UI_LCD_init(void){
 
@@ -174,6 +189,11 @@ void UI_LCD_init(void){
     
 }
 
+
+/**
+ * @brief display the state of the 3 potentiometers, and the current oscillator mode
+ * 
+ */
 void UI_LCD_process(void){
     lv_arc_set_angles(pot1, 0, 270 * pot1_norm);
     lv_arc_set_angles(pot2, 0, 270 * pot2_norm); 

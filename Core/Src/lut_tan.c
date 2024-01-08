@@ -1,3 +1,14 @@
+/**
+ * @file lut_tan.c
+ * @author johannes regnier
+ * @brief tan function lookup table .. for filter coefficients
+ * @version 0.1
+ * @date 2024-01-08
+ * 
+ * @copyright Copyright (c) 2024
+ * 
+ */
+
 
 #include "CONSTS.h"
 
