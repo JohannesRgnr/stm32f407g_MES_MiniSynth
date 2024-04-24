@@ -1,6 +1,6 @@
 ## MES MiniSynth
 
-Final project for the Making Embedded Systems course
+
 
 Small MIDI Synthesizer on STM32F407G_Discovery board.
 - MIDI USB Host mode (for external USB midi keyboard or controller)
