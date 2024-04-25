@@ -14,7 +14,7 @@ Small MIDI Synthesizer on STM32F407G_Discovery board.
 
 WIP.
 
-
+<img src="MES_Minisynth.jpeg" alt="MES Minisynth" />
 
 
 ### Thanks to:
