@@ -4,15 +4,15 @@
 
 Small MIDI Synthesizer on STM32F407G_Discovery board.
 - MIDI USB Host mode (for external USB midi keyboard or controller)
-- Digital oscillators: bandlimited sawtooth, bandlimited pulse wave, FM, sine
-- 4-pole resonant lowpass filter (Zero delay feedback)
-- Exponential ADSR envelopes
+- Digital oscillators: bandlimited sawtooth, bandlimited pulse wave, 2 operators FM, sine
+- 4-pole resonant lowpass filter (TPT _ zero delay feedback)
+- 3 * Exponential ADSR envelopes
 - Bitcrushing / rate decimator effect
-- stereo delay effect
+- Stereo delay effect
 - 2-inch LCD, LVGL graphics library
 
 
-WIP.
+WIP...
 
 <img src="MES_Minisynth.jpeg" alt="MES Minisynth" />
 
