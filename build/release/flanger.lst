@@ -1,0 +1,199 @@
+ARM GAS  /var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccP216dH.s 			page 1
+
+
+   1              		.cpu cortex-m4
+   2              		.arch armv7e-m
+   3              		.fpu fpv4-sp-d16
+   4              		.eabi_attribute 27, 1
+   5              		.eabi_attribute 28, 1
+   6              		.eabi_attribute 20, 1
+   7              		.eabi_attribute 21, 1
+   8              		.eabi_attribute 23, 3
+   9              		.eabi_attribute 24, 1
+  10              		.eabi_attribute 25, 1
+  11              		.eabi_attribute 26, 1
+  12              		.eabi_attribute 30, 2
+  13              		.eabi_attribute 34, 1
+  14              		.eabi_attribute 18, 4
+  15              		.file	"flanger.c"
+  16              		.text
+  17              		.section	.text.flanger_init,"ax",%progbits
+  18              		.align	1
+  19              		.p2align 2,,3
+  20              		.global	flanger_init
+  21              		.syntax unified
+  22              		.thumb
+  23              		.thumb_func
+  25              	flanger_init:
+  26              		@ args = 0, pretend = 0, frame = 0
+  27              		@ frame_needed = 0, uses_anonymous_args = 0
+  28              		@ link register save eliminated.
+  29 0000 10B4     		push	{r4}
+  30 0002 0B4B     		ldr	r3, .L4
+  31 0004 0B4C     		ldr	r4, .L4+4
+  32 0006 DFED0C1A 		vldr.32	s3, .L4+8
+  33 000a 0C4A     		ldr	r2, .L4+12
+  34 000c 2360     		str	r3, [r4]
+  35 000e B6EE002A 		vmov.f32	s4, #5.0e-1
+  36 0012 03F55C71 		add	r1, r3, #880
+  37 0016 0A48     		ldr	r0, .L4+16
+  38 0018 5DF8044B 		ldr	r4, [sp], #4
+  39 001c 1160     		str	r1, [r2]
+  40 001e B0EE611A 		vmov.f32	s2, s3
+  41 0022 F7EE000A 		vmov.f32	s1, #1.0e+0
+  42 0026 B0EE420A 		vmov.f32	s0, s4
+  43 002a FFF7FEBF 		b	osc_init
+  44              	.L5:
+  45 002e 00BF     		.align	2
+  46              	.L4:
+  47 0030 00000000 		.word	flanger_buff
+  48 0034 00000000 		.word	FLreadptr
+  49 0038 00000000 		.word	0
+  50 003c 00000000 		.word	FLwriteptr
+  51 0040 00000000 		.word	flanger_lfo
+  53              		.section	.text.flanger_compute,"ax",%progbits
+  54              		.align	1
+  55              		.p2align 2,,3
+  56              		.global	flanger_compute
+  57              		.syntax unified
+  58              		.thumb
+  59              		.thumb_func
+ARM GAS  /var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccP216dH.s 			page 2
+
+
+  61              	flanger_compute:
+  62              		@ args = 0, pretend = 0, frame = 0
+  63              		@ frame_needed = 0, uses_anonymous_args = 0
+  64 0000 38B5     		push	{r3, r4, r5, lr}
+  65 0002 3D48     		ldr	r0, .L14
+  66 0004 3D4B     		ldr	r3, .L14+4
+  67 0006 3E4C     		ldr	r4, .L14+8
+  68 0008 2DED028B 		vpush.64	{d8}
+  69 000c 4360     		str	r3, [r0, #4]	@ float
+  70 000e B0EE408A 		vmov.f32	s16, s0
+  71 0012 FFF7FEFF 		bl	osc_Sine
+  72 0016 9FED3B7A 		vldr.32	s14, .L14+12
+  73 001a DFED3B7A 		vldr.32	s15, .L14+16
+  74 001e 9FED3B1A 		vldr.32	s2, .L14+20
+  75 0022 E0EE077A 		vfma.f32	s15, s0, s14
+  76 0026 F7EE000A 		vmov.f32	s1, #1.0e+0
+  77 002a FCEEE77A 		vcvt.u32.f32	s15, s15
+  78 002e 17EE903A 		vmov	r3, s15	@ int
+  79 0032 9BB2     		uxth	r3, r3
+  80 0034 00EE103A 		vmov	s0, r3	@ int
+  81 0038 B8EE400A 		vcvt.f32.u32	s0, s0
+  82 003c FFF7FEFF 		bl	clip
+  83 0040 FCEEC07A 		vcvt.u32.f32	s15, s0
+  84 0044 2268     		ldr	r2, [r4]
+  85 0046 3249     		ldr	r1, .L14+24
+  86 0048 DFED326A 		vldr.32	s13, .L14+28
+  87 004c 17EE903A 		vmov	r3, s15	@ int
+  88 0050 9BB2     		uxth	r3, r3
+  89 0052 A2EB8303 		sub	r3, r2, r3, lsl #2
+  90 0056 8B42     		cmp	r3, r1
+  91 0058 38BF     		it	cc
+  92 005a 03F69C73 		addwcc	r3, r3, #3996
+  93 005e 93ED006A 		vldr.32	s12, [r3]
+  94 0062 F0EE487A 		vmov.f32	s15, s16
+  95 0066 E6EE267A 		vfma.f32	s15, s12, s13
+  96 006a B8EE087A 		vmov.f32	s14, #-3.0e+0
+  97 006e F4EEC77A 		vcmpe.f32	s15, s14
+  98 0072 F1EE10FA 		vmrs	APSR_nzcv, FPSCR
+  99 0076 39D4     		bmi	.L11
+ 100 0078 B0EE087A 		vmov.f32	s14, #3.0e+0
+ 101 007c F4EEC77A 		vcmpe.f32	s15, s14
+ 102 0080 F1EE10FA 		vmrs	APSR_nzcv, FPSCR
+ 103 0084 2DDC     		bgt	.L12
+ 104 0086 B3EE0B7A 		vmov.f32	s14, #2.7e+1
+ 105 008a B2EE026A 		vmov.f32	s12, #9.0e+0
+ 106 008e 27EE866A 		vmul.f32	s12, s15, s12
+ 107 0092 F0EE475A 		vmov.f32	s11, s14
+ 108 0096 E7EEA75A 		vfma.f32	s11, s15, s15
+ 109 009a A7EE867A 		vfma.f32	s14, s15, s12
+ 110 009e 67EEA57A 		vmul.f32	s15, s15, s11
+ 111 00a2 F0EE476A 		vmov.f32	s13, s14
+ 112 00a6 87EEA67A 		vdiv.f32	s14, s15, s13
+ 113 00aa B6EE000A 		vmov.f32	s0, #5.0e-1
+ 114 00ae 27EE000A 		vmul.f32	s0, s14, s0
+ 115              	.L8:
+ 116 00b2 F6EE007A 		vmov.f32	s15, #5.0e-1
+ 117 00b6 A8EE270A 		vfma.f32	s0, s16, s15
+ARM GAS  /var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccP216dH.s 			page 3
+
+
+ 118 00ba BDEC028B 		vldm	sp!, {d8}
+ 119 00be A2EC017A 		vstmia.32	r2!, {s14}
+ 120 00c2 40F69C70 		movw	r0, #3996
+ 121 00c6 A2EB010C 		sub	ip, r2, r1
+ 122 00ca 0433     		adds	r3, r3, #4
+ 123 00cc 8445     		cmp	ip, r0
+ 124 00ce C8BF     		it	gt
+ 125 00d0 0A46     		movgt	r2, r1
+ 126 00d2 114D     		ldr	r5, .L14+32
+ 127 00d4 2260     		str	r2, [r4]
+ 128 00d6 5A1A     		subs	r2, r3, r1
+ 129 00d8 8242     		cmp	r2, r0
+ 130 00da C8BF     		it	gt
+ 131 00dc 0B46     		movgt	r3, r1
+ 132 00de 2B60     		str	r3, [r5]
+ 133 00e0 38BD     		pop	{r3, r4, r5, pc}
+ 134              	.L12:
+ 135 00e2 B6EE000A 		vmov.f32	s0, #5.0e-1
+ 136 00e6 B7EE007A 		vmov.f32	s14, #1.0e+0
+ 137 00ea E2E7     		b	.L8
+ 138              	.L11:
+ 139 00ec BEEE000A 		vmov.f32	s0, #-5.0e-1
+ 140 00f0 BFEE007A 		vmov.f32	s14, #-1.0e+0
+ 141 00f4 DDE7     		b	.L8
+ 142              	.L15:
+ 143 00f6 00BF     		.align	2
+ 144              	.L14:
+ 145 00f8 00000000 		.word	flanger_lfo
+ 146 00fc CDCCCC3D 		.word	1036831949
+ 147 0100 00000000 		.word	FLwriteptr
+ 148 0104 00004843 		.word	1128792064
+ 149 0108 0000C842 		.word	1120403456
+ 150 010c 00C07944 		.word	1148829696
+ 151 0110 00000000 		.word	flanger_buff
+ 152 0114 6666663F 		.word	1063675494
+ 153 0118 00000000 		.word	FLreadptr
+ 155              		.section	.bss.FLwriteptr,"aw",%nobits
+ 156              		.align	2
+ 159              	FLwriteptr:
+ 160 0000 00000000 		.space	4
+ 161              		.section	.bss.FLreadptr,"aw",%nobits
+ 162              		.align	2
+ 165              	FLreadptr:
+ 166 0000 00000000 		.space	4
+ 167              		.section	.bss.flanger_buff,"aw",%nobits
+ 168              		.align	2
+ 171              	flanger_buff:
+ 172 0000 00000000 		.space	4008
+ 172      00000000 
+ 172      00000000 
+ 172      00000000 
+ 172      00000000 
+ 173              		.ident	"GCC: (xPack GNU Arm Embedded GCC arm64) 13.3.1 20240614"
+ARM GAS  /var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccP216dH.s 			page 4
+
+
+DEFINED SYMBOLS
+                            *ABS*:00000000 flanger.c
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccP216dH.s:18     .text.flanger_init:00000000 $t
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccP216dH.s:25     .text.flanger_init:00000000 flanger_init
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccP216dH.s:47     .text.flanger_init:00000030 $d
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccP216dH.s:171    .bss.flanger_buff:00000000 flanger_buff
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccP216dH.s:165    .bss.FLreadptr:00000000 FLreadptr
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccP216dH.s:159    .bss.FLwriteptr:00000000 FLwriteptr
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccP216dH.s:54     .text.flanger_compute:00000000 $t
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccP216dH.s:61     .text.flanger_compute:00000000 flanger_compute
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccP216dH.s:145    .text.flanger_compute:000000f8 $d
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccP216dH.s:156    .bss.FLwriteptr:00000000 $d
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccP216dH.s:162    .bss.FLreadptr:00000000 $d
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccP216dH.s:168    .bss.flanger_buff:00000000 $d
+
+UNDEFINED SYMBOLS
+osc_init
+flanger_lfo
+osc_Sine
+clip

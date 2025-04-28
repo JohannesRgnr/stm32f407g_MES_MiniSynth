@@ -1,0 +1,422 @@
+ARM GAS  /var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccbmY4zh.s 			page 1
+
+
+   1              		.cpu cortex-m4
+   2              		.arch armv7e-m
+   3              		.fpu fpv4-sp-d16
+   4              		.eabi_attribute 27, 1
+   5              		.eabi_attribute 28, 1
+   6              		.eabi_attribute 20, 1
+   7              		.eabi_attribute 21, 1
+   8              		.eabi_attribute 23, 3
+   9              		.eabi_attribute 24, 1
+  10              		.eabi_attribute 25, 1
+  11              		.eabi_attribute 26, 1
+  12              		.eabi_attribute 30, 2
+  13              		.eabi_attribute 34, 1
+  14              		.eabi_attribute 18, 4
+  15              		.file	"MIDI_event.c"
+  16              		.text
+  17              		.section	.text.allNotesOff,"ax",%progbits
+  18              		.align	1
+  19              		.p2align 2,,3
+  20              		.global	allNotesOff
+  21              		.syntax unified
+  22              		.thumb
+  23              		.thumb_func
+  25              	allNotesOff:
+  26              		@ args = 0, pretend = 0, frame = 0
+  27              		@ frame_needed = 0, uses_anonymous_args = 0
+  28 0000 2DE9F843 		push	{r3, r4, r5, r6, r7, r8, r9, lr}
+  29 0004 0C4C     		ldr	r4, .L6
+  30 0006 DFF83C90 		ldr	r9, .L6+12
+  31 000a DFF83C80 		ldr	r8, .L6+16
+  32 000e 0B4F     		ldr	r7, .L6+4
+  33 0010 04F18006 		add	r6, r4, #128
+  34              	.L2:
+  35 0014 0025     		movs	r5, #0
+  36 0016 04F8015F 		strb	r5, [r4, #1]!
+  37 001a 4846     		mov	r0, r9
+  38 001c FFF7FEFF 		bl	ADSR_keyOff
+  39 0020 4046     		mov	r0, r8
+  40 0022 FFF7FEFF 		bl	ADSR_keyOff
+  41 0026 3846     		mov	r0, r7
+  42 0028 FFF7FEFF 		bl	ADSR_keyOff
+  43 002c B442     		cmp	r4, r6
+  44 002e F1D1     		bne	.L2
+  45 0030 034B     		ldr	r3, .L6+8
+  46 0032 1D70     		strb	r5, [r3]
+  47 0034 BDE8F883 		pop	{r3, r4, r5, r6, r7, r8, r9, pc}
+  48              	.L7:
+  49              		.align	2
+  50              	.L6:
+  51 0038 FFFFFFFF 		.word	notes_Active-1
+  52 003c 00000000 		.word	adsr_index
+  53 0040 00000000 		.word	notesCount
+  54 0044 00000000 		.word	adsr_amp
+  55 0048 00000000 		.word	adsr_filt
+  57              		.section	.text.MIDI_eventInit,"ax",%progbits
+  58              		.align	1
+  59              		.p2align 2,,3
+ARM GAS  /var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccbmY4zh.s 			page 2
+
+
+  60              		.global	MIDI_eventInit
+  61              		.syntax unified
+  62              		.thumb
+  63              		.thumb_func
+  65              	MIDI_eventInit:
+  66              		@ args = 0, pretend = 0, frame = 0
+  67              		@ frame_needed = 0, uses_anonymous_args = 0
+  68              		@ link register save eliminated.
+  69 0000 024B     		ldr	r3, .L9
+  70 0002 4FF40052 		mov	r2, #8192
+  71 0006 1A80     		strh	r2, [r3]	@ movhi
+  72 0008 7047     		bx	lr
+  73              	.L10:
+  74 000a 00BF     		.align	2
+  75              	.L9:
+  76 000c 00000000 		.word	pitchbend
+  78              		.section	.text.ProcessMIDI,"ax",%progbits
+  79              		.align	1
+  80              		.p2align 2,,3
+  81              		.global	ProcessMIDI
+  82              		.syntax unified
+  83              		.thumb
+  84              		.thumb_func
+  86              	ProcessMIDI:
+  87              		@ args = 0, pretend = 0, frame = 0
+  88              		@ frame_needed = 0, uses_anonymous_args = 0
+  89 0000 38B5     		push	{r3, r4, r5, lr}
+  90 0002 C0F30742 		ubfx	r2, r0, #16, #8
+  91 0006 C0F30763 		ubfx	r3, r0, #24, #8
+  92 000a 010E     		lsrs	r1, r0, #24
+  93 000c C0F30720 		ubfx	r0, r0, #8, #8
+  94 0010 00F0F000 		and	r0, r0, #240
+  95 0014 9028     		cmp	r0, #144
+  96 0016 1446     		mov	r4, r2
+  97 0018 21D0     		beq	.L12
+  98 001a E028     		cmp	r0, #224
+  99 001c 1AD0     		beq	.L13
+ 100 001e 8028     		cmp	r0, #128
+ 101 0020 17D1     		bne	.L11
+ 102 0022 344D     		ldr	r5, .L32
+ 103 0024 344A     		ldr	r2, .L32+4
+ 104 0026 2978     		ldrb	r1, [r5]	@ zero_extendqisi2
+ 105 0028 0139     		subs	r1, r1, #1
+ 106 002a 0023     		movs	r3, #0
+ 107 002c 49B2     		sxtb	r1, r1
+ 108 002e 9942     		cmp	r1, r3
+ 109 0030 1355     		strb	r3, [r2, r4]
+ 110 0032 2970     		strb	r1, [r5]
+ 111 0034 4BDD     		ble	.L21
+ 112 0036 314D     		ldr	r5, .L32+8
+ 113 0038 2978     		ldrb	r1, [r5]	@ zero_extendqisi2
+ 114 003a A142     		cmp	r1, r4
+ 115 003c 09D1     		bne	.L11
+ 116 003e 02E0     		b	.L18
+ 117              	.L29:
+ 118 0040 0133     		adds	r3, r3, #1
+ 119 0042 802B     		cmp	r3, #128
+ARM GAS  /var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccbmY4zh.s 			page 3
+
+
+ 120 0044 04D0     		beq	.L19
+ 121              	.L18:
+ 122 0046 12F8011B 		ldrb	r1, [r2], #1	@ zero_extendqisi2
+ 123 004a 0129     		cmp	r1, #1
+ 124 004c F8D1     		bne	.L29
+ 125 004e D8B2     		uxtb	r0, r3
+ 126              	.L19:
+ 127 0050 2870     		strb	r0, [r5]
+ 128              	.L11:
+ 129 0052 38BD     		pop	{r3, r4, r5, pc}
+ 130              	.L13:
+ 131 0054 2A4A     		ldr	r2, .L32+12
+ 132 0056 04EBC113 		add	r3, r4, r1, lsl #7
+ 133 005a 1380     		strh	r3, [r2]	@ movhi
+ 134 005c 38BD     		pop	{r3, r4, r5, pc}
+ 135              	.L12:
+ 136 005e 2948     		ldr	r0, .L32+16
+ 137 0060 0370     		strb	r3, [r0]
+ 138 0062 C9B9     		cbnz	r1, .L30
+ 139 0064 234D     		ldr	r5, .L32
+ 140 0066 244A     		ldr	r2, .L32+4
+ 141 0068 1355     		strb	r3, [r2, r4]
+ 142 006a 2B78     		ldrb	r3, [r5]	@ zero_extendqisi2
+ 143 006c 013B     		subs	r3, r3, #1
+ 144 006e 5BB2     		sxtb	r3, r3
+ 145 0070 002B     		cmp	r3, #0
+ 146 0072 2B70     		strb	r3, [r5]
+ 147 0074 2BDD     		ble	.L21
+ 148 0076 214D     		ldr	r5, .L32+8
+ 149 0078 2B78     		ldrb	r3, [r5]	@ zero_extendqisi2
+ 150 007a A342     		cmp	r3, r4
+ 151 007c E9D1     		bne	.L11
+ 152 007e 1346     		mov	r3, r2
+ 153 0080 0A46     		mov	r2, r1
+ 154 0082 02E0     		b	.L24
+ 155              	.L31:
+ 156 0084 0132     		adds	r2, r2, #1
+ 157 0086 802A     		cmp	r2, #128
+ 158 0088 04D0     		beq	.L25
+ 159              	.L24:
+ 160 008a 13F8011B 		ldrb	r1, [r3], #1	@ zero_extendqisi2
+ 161 008e 0129     		cmp	r1, #1
+ 162 0090 F8D1     		bne	.L31
+ 163 0092 D2B2     		uxtb	r2, r2
+ 164              	.L25:
+ 165 0094 2A70     		strb	r2, [r5]
+ 166 0096 38BD     		pop	{r3, r4, r5, pc}
+ 167              	.L30:
+ 168 0098 1848     		ldr	r0, .L32+8
+ 169 009a 1B49     		ldr	r1, .L32+20
+ 170 009c 0270     		strb	r2, [r0]
+ 171 009e 1B48     		ldr	r0, .L32+24
+ 172 00a0 0B70     		strb	r3, [r1]
+ 173 00a2 FFF7FEFF 		bl	ADSR_keyOn
+ 174 00a6 1A48     		ldr	r0, .L32+28
+ 175 00a8 FFF7FEFF 		bl	ADSR_keyOn
+ 176 00ac 1948     		ldr	r0, .L32+32
+ARM GAS  /var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccbmY4zh.s 			page 4
+
+
+ 177 00ae FFF7FEFF 		bl	ADSR_keyOn
+ 178 00b2 1948     		ldr	r0, .L32+36
+ 179 00b4 0122     		movs	r2, #1
+ 180 00b6 4FF48041 		mov	r1, #16384
+ 181 00ba FFF7FEFF 		bl	HAL_GPIO_WritePin
+ 182 00be 0D4A     		ldr	r2, .L32
+ 183 00c0 0D49     		ldr	r1, .L32+4
+ 184 00c2 1378     		ldrb	r3, [r2]	@ zero_extendqisi2
+ 185 00c4 0120     		movs	r0, #1
+ 186 00c6 0344     		add	r3, r3, r0
+ 187 00c8 0855     		strb	r0, [r1, r4]
+ 188 00ca 1370     		strb	r3, [r2]
+ 189 00cc 38BD     		pop	{r3, r4, r5, pc}
+ 190              	.L21:
+ 191 00ce 0F48     		ldr	r0, .L32+24
+ 192 00d0 FFF7FEFF 		bl	ADSR_keyOff
+ 193 00d4 0E48     		ldr	r0, .L32+28
+ 194 00d6 FFF7FEFF 		bl	ADSR_keyOff
+ 195 00da 0E48     		ldr	r0, .L32+32
+ 196 00dc FFF7FEFF 		bl	ADSR_keyOff
+ 197 00e0 0022     		movs	r2, #0
+ 198 00e2 2A70     		strb	r2, [r5]
+ 199 00e4 BDE83840 		pop	{r3, r4, r5, lr}
+ 200 00e8 0B48     		ldr	r0, .L32+36
+ 201 00ea 4FF48041 		mov	r1, #16384
+ 202 00ee FFF7FEBF 		b	HAL_GPIO_WritePin
+ 203              	.L33:
+ 204 00f2 00BF     		.align	2
+ 205              	.L32:
+ 206 00f4 00000000 		.word	notesCount
+ 207 00f8 00000000 		.word	notes_Active
+ 208 00fc 00000000 		.word	currentPitch
+ 209 0100 00000000 		.word	pitchbend
+ 210 0104 00000000 		.word	velocity
+ 211 0108 00000000 		.word	noteOn_velocity
+ 212 010c 00000000 		.word	adsr_amp
+ 213 0110 00000000 		.word	adsr_filt
+ 214 0114 00000000 		.word	adsr_index
+ 215 0118 000C0240 		.word	1073875968
+ 217              		.section	.text.USBH_UserProcess_callback,"ax",%progbits
+ 218              		.align	1
+ 219              		.p2align 2,,3
+ 220              		.global	USBH_UserProcess_callback
+ 221              		.syntax unified
+ 222              		.thumb
+ 223              		.thumb_func
+ 225              	USBH_UserProcess_callback:
+ 226              		@ args = 0, pretend = 0, frame = 0
+ 227              		@ frame_needed = 0, uses_anonymous_args = 0
+ 228 0000 0429     		cmp	r1, #4
+ 229 0002 17D0     		beq	.L35
+ 230 0004 0529     		cmp	r1, #5
+ 231 0006 10B5     		push	{r4, lr}
+ 232 0008 0B46     		mov	r3, r1
+ 233 000a 02D0     		beq	.L36
+ 234 000c 0229     		cmp	r1, #2
+ 235 000e 19D0     		beq	.L37
+ARM GAS  /var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccbmY4zh.s 			page 5
+
+
+ 236 0010 10BD     		pop	{r4, pc}
+ 237              	.L36:
+ 238 0012 174B     		ldr	r3, .L43
+ 239 0014 1748     		ldr	r0, .L43+4
+ 240 0016 0424     		movs	r4, #4
+ 241 0018 0022     		movs	r2, #0
+ 242 001a 4FF48051 		mov	r1, #4096
+ 243 001e 1C70     		strb	r4, [r3]
+ 244 0020 FFF7FEFF 		bl	HAL_GPIO_WritePin
+ 245 0024 BDE81040 		pop	{r4, lr}
+ 246 0028 1248     		ldr	r0, .L43+4
+ 247 002a 0022     		movs	r2, #0
+ 248 002c 4FF40041 		mov	r1, #32768
+ 249 0030 FFF7FEBF 		b	HAL_GPIO_WritePin
+ 250              	.L35:
+ 251 0034 0E4B     		ldr	r3, .L43
+ 252 0036 0F48     		ldr	r0, .L43+4
+ 253 0038 0122     		movs	r2, #1
+ 254 003a 4FF40041 		mov	r1, #32768
+ 255 003e 1A70     		strb	r2, [r3]
+ 256 0040 FFF7FEBF 		b	HAL_GPIO_WritePin
+ 257              	.L37:
+ 258 0044 0A4C     		ldr	r4, .L43
+ 259 0046 0B48     		ldr	r0, .L43+4
+ 260 0048 2370     		strb	r3, [r4]
+ 261 004a 0122     		movs	r2, #1
+ 262 004c 4FF48051 		mov	r1, #4096
+ 263 0050 FFF7FEFF 		bl	HAL_GPIO_WritePin
+ 264 0054 0748     		ldr	r0, .L43+4
+ 265 0056 0022     		movs	r2, #0
+ 266 0058 4FF40041 		mov	r1, #32768
+ 267 005c FFF7FEFF 		bl	HAL_GPIO_WritePin
+ 268 0060 BDE81040 		pop	{r4, lr}
+ 269 0064 0348     		ldr	r0, .L43+4
+ 270 0066 0022     		movs	r2, #0
+ 271 0068 4FF48041 		mov	r1, #16384
+ 272 006c FFF7FEBF 		b	HAL_GPIO_WritePin
+ 273              	.L44:
+ 274              		.align	2
+ 275              	.L43:
+ 276 0070 00000000 		.word	Appli_state
+ 277 0074 000C0240 		.word	1073875968
+ 279              		.section	.text.HAL_GPIO_EXTI_Callback,"ax",%progbits
+ 280              		.align	1
+ 281              		.p2align 2,,3
+ 282              		.global	HAL_GPIO_EXTI_Callback
+ 283              		.syntax unified
+ 284              		.thumb
+ 285              		.thumb_func
+ 287              	HAL_GPIO_EXTI_Callback:
+ 288              		@ args = 0, pretend = 0, frame = 0
+ 289              		@ frame_needed = 0, uses_anonymous_args = 0
+ 290 0000 2DE9F843 		push	{r3, r4, r5, r6, r7, r8, r9, lr}
+ 291 0004 0F4C     		ldr	r4, .L49
+ 292 0006 DFF84C90 		ldr	r9, .L49+16
+ 293 000a DFF84C80 		ldr	r8, .L49+20
+ 294 000e 0E4F     		ldr	r7, .L49+4
+ARM GAS  /var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccbmY4zh.s 			page 6
+
+
+ 295 0010 04F18006 		add	r6, r4, #128
+ 296              	.L46:
+ 297 0014 0025     		movs	r5, #0
+ 298 0016 04F8015F 		strb	r5, [r4, #1]!
+ 299 001a 4846     		mov	r0, r9
+ 300 001c FFF7FEFF 		bl	ADSR_keyOff
+ 301 0020 4046     		mov	r0, r8
+ 302 0022 FFF7FEFF 		bl	ADSR_keyOff
+ 303 0026 3846     		mov	r0, r7
+ 304 0028 FFF7FEFF 		bl	ADSR_keyOff
+ 305 002c B442     		cmp	r4, r6
+ 306 002e F1D1     		bne	.L46
+ 307 0030 064B     		ldr	r3, .L49+8
+ 308 0032 0748     		ldr	r0, .L49+12
+ 309 0034 1D70     		strb	r5, [r3]
+ 310 0036 2A46     		mov	r2, r5
+ 311 0038 4FF48041 		mov	r1, #16384
+ 312 003c BDE8F843 		pop	{r3, r4, r5, r6, r7, r8, r9, lr}
+ 313 0040 FFF7FEBF 		b	HAL_GPIO_WritePin
+ 314              	.L50:
+ 315              		.align	2
+ 316              	.L49:
+ 317 0044 FFFFFFFF 		.word	notes_Active-1
+ 318 0048 00000000 		.word	adsr_index
+ 319 004c 00000000 		.word	notesCount
+ 320 0050 000C0240 		.word	1073875968
+ 321 0054 00000000 		.word	adsr_amp
+ 322 0058 00000000 		.word	adsr_filt
+ 324              		.global	notesCount
+ 325              		.section	.bss.notesCount,"aw",%nobits
+ 328              	notesCount:
+ 329 0000 00       		.space	1
+ 330              		.global	notes_Active
+ 331              		.section	.bss.notes_Active,"aw",%nobits
+ 332              		.align	2
+ 335              	notes_Active:
+ 336 0000 00000000 		.space	128
+ 336      00000000 
+ 336      00000000 
+ 336      00000000 
+ 336      00000000 
+ 337              		.global	noteOn_velocity
+ 338              		.section	.bss.noteOn_velocity,"aw",%nobits
+ 341              	noteOn_velocity:
+ 342 0000 00       		.space	1
+ 343              		.global	velocity
+ 344              		.section	.bss.velocity,"aw",%nobits
+ 347              	velocity:
+ 348 0000 00       		.space	1
+ 349              		.global	currentPitch
+ 350              		.section	.bss.currentPitch,"aw",%nobits
+ 353              	currentPitch:
+ 354 0000 00       		.space	1
+ 355              		.global	pitchbend
+ 356              		.section	.bss.pitchbend,"aw",%nobits
+ 357              		.align	1
+ 360              	pitchbend:
+ARM GAS  /var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccbmY4zh.s 			page 7
+
+
+ 361 0000 0000     		.space	2
+ 362              		.global	Appli_state
+ 363              		.section	.bss.Appli_state,"aw",%nobits
+ 366              	Appli_state:
+ 367 0000 00       		.space	1
+ 368              		.global	hUSBHost
+ 369              		.section	.bss.hUSBHost,"aw",%nobits
+ 370              		.align	2
+ 373              	hUSBHost:
+ 374 0000 00000000 		.space	1564
+ 374      00000000 
+ 374      00000000 
+ 374      00000000 
+ 374      00000000 
+ 375              		.ident	"GCC: (xPack GNU Arm Embedded GCC arm64) 13.3.1 20240614"
+ARM GAS  /var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccbmY4zh.s 			page 8
+
+
+DEFINED SYMBOLS
+                            *ABS*:00000000 MIDI_event.c
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccbmY4zh.s:18     .text.allNotesOff:00000000 $t
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccbmY4zh.s:25     .text.allNotesOff:00000000 allNotesOff
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccbmY4zh.s:51     .text.allNotesOff:00000038 $d
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccbmY4zh.s:335    .bss.notes_Active:00000000 notes_Active
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccbmY4zh.s:328    .bss.notesCount:00000000 notesCount
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccbmY4zh.s:58     .text.MIDI_eventInit:00000000 $t
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccbmY4zh.s:65     .text.MIDI_eventInit:00000000 MIDI_eventInit
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccbmY4zh.s:76     .text.MIDI_eventInit:0000000c $d
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccbmY4zh.s:360    .bss.pitchbend:00000000 pitchbend
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccbmY4zh.s:79     .text.ProcessMIDI:00000000 $t
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccbmY4zh.s:86     .text.ProcessMIDI:00000000 ProcessMIDI
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccbmY4zh.s:206    .text.ProcessMIDI:000000f4 $d
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccbmY4zh.s:353    .bss.currentPitch:00000000 currentPitch
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccbmY4zh.s:347    .bss.velocity:00000000 velocity
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccbmY4zh.s:341    .bss.noteOn_velocity:00000000 noteOn_velocity
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccbmY4zh.s:218    .text.USBH_UserProcess_callback:00000000 $t
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccbmY4zh.s:225    .text.USBH_UserProcess_callback:00000000 USBH_UserProcess_callback
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccbmY4zh.s:276    .text.USBH_UserProcess_callback:00000070 $d
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccbmY4zh.s:366    .bss.Appli_state:00000000 Appli_state
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccbmY4zh.s:280    .text.HAL_GPIO_EXTI_Callback:00000000 $t
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccbmY4zh.s:287    .text.HAL_GPIO_EXTI_Callback:00000000 HAL_GPIO_EXTI_Callback
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccbmY4zh.s:317    .text.HAL_GPIO_EXTI_Callback:00000044 $d
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccbmY4zh.s:329    .bss.notesCount:00000000 $d
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccbmY4zh.s:332    .bss.notes_Active:00000000 $d
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccbmY4zh.s:342    .bss.noteOn_velocity:00000000 $d
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccbmY4zh.s:348    .bss.velocity:00000000 $d
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccbmY4zh.s:354    .bss.currentPitch:00000000 $d
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccbmY4zh.s:357    .bss.pitchbend:00000000 $d
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccbmY4zh.s:367    .bss.Appli_state:00000000 $d
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccbmY4zh.s:373    .bss.hUSBHost:00000000 hUSBHost
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccbmY4zh.s:370    .bss.hUSBHost:00000000 $d
+
+UNDEFINED SYMBOLS
+ADSR_keyOff
+adsr_index
+adsr_amp
+adsr_filt
+ADSR_keyOn
+HAL_GPIO_WritePin

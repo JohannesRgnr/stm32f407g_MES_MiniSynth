@@ -1,0 +1,410 @@
+ARM GAS  /var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccVCKynV.s 			page 1
+
+
+   1              		.cpu cortex-m4
+   2              		.arch armv7e-m
+   3              		.fpu fpv4-sp-d16
+   4              		.eabi_attribute 27, 1
+   5              		.eabi_attribute 28, 1
+   6              		.eabi_attribute 20, 1
+   7              		.eabi_attribute 21, 1
+   8              		.eabi_attribute 23, 3
+   9              		.eabi_attribute 24, 1
+  10              		.eabi_attribute 25, 1
+  11              		.eabi_attribute 26, 1
+  12              		.eabi_attribute 30, 1
+  13              		.eabi_attribute 34, 1
+  14              		.eabi_attribute 18, 4
+  15              		.file	"ladder_filter.c"
+  16              		.text
+  17              	.Ltext0:
+  18              		.cfi_sections	.debug_frame
+  19              		.file 1 "Core/Src/ladder_filter.c"
+  20              		.section	.text.MoogLP_init,"ax",%progbits
+  21              		.align	1
+  22              		.global	MoogLP_init
+  23              		.syntax unified
+  24              		.thumb
+  25              		.thumb_func
+  27              	MoogLP_init:
+  28              	.LVL0:
+  29              	.LFB3:
+   1:Core/Src/ladder_filter.c **** /**
+   2:Core/Src/ladder_filter.c ****  * @file ladder_filter.c
+   3:Core/Src/ladder_filter.c ****  * @author johannes regnier
+   4:Core/Src/ladder_filter.c ****  * @brief Zero delay feedback 4-pole ladder filter
+   5:Core/Src/ladder_filter.c ****  * @note Simple implementation following Vadim Zavalishin (2008) - Preserving the LTI system topolo
+   6:Core/Src/ladder_filter.c ****  * @version 0.1
+   7:Core/Src/ladder_filter.c ****  * @date 2023-12-31
+   8:Core/Src/ladder_filter.c ****  * 
+   9:Core/Src/ladder_filter.c ****  * @copyright Copyright (c) 2023
+  10:Core/Src/ladder_filter.c ****  * 
+  11:Core/Src/ladder_filter.c ****  */
+  12:Core/Src/ladder_filter.c **** 
+  13:Core/Src/ladder_filter.c **** #include "ladder_filter.h"
+  14:Core/Src/ladder_filter.c **** #include "helper_functions.h"
+  15:Core/Src/ladder_filter.c **** #include "CONSTS.h"
+  16:Core/Src/ladder_filter.c **** #include "lut_tan.h"
+  17:Core/Src/ladder_filter.c **** 
+  18:Core/Src/ladder_filter.c **** ZDFLadder_t Moog_filter;
+  19:Core/Src/ladder_filter.c **** 
+  20:Core/Src/ladder_filter.c **** 
+  21:Core/Src/ladder_filter.c **** void MoogLP_init(ZDFLadder_t * filter){
+  30              		.loc 1 21 39 view -0
+  31              		.cfi_startproc
+  32              		@ args = 0, pretend = 0, frame = 0
+  33              		@ frame_needed = 0, uses_anonymous_args = 0
+  34              		@ link register save eliminated.
+  22:Core/Src/ladder_filter.c ****     filter->cutoff = 100.0f;
+  35              		.loc 1 22 5 view .LVU1
+  36              		.loc 1 22 20 is_stmt 0 view .LVU2
+ARM GAS  /var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccVCKynV.s 			page 2
+
+
+  37 0000 044B     		ldr	r3, .L2
+  38 0002 0360     		str	r3, [r0]	@ float
+  23:Core/Src/ladder_filter.c ****     filter->s1 = 0.0f;
+  39              		.loc 1 23 5 is_stmt 1 view .LVU3
+  40              		.loc 1 23 16 is_stmt 0 view .LVU4
+  41 0004 0023     		movs	r3, #0
+  42 0006 4360     		str	r3, [r0, #4]	@ float
+  24:Core/Src/ladder_filter.c ****     filter->s2 = 0.0f;
+  43              		.loc 1 24 5 is_stmt 1 view .LVU5
+  44              		.loc 1 24 16 is_stmt 0 view .LVU6
+  45 0008 8360     		str	r3, [r0, #8]	@ float
+  25:Core/Src/ladder_filter.c ****     filter->s3 = 0.0f;
+  46              		.loc 1 25 5 is_stmt 1 view .LVU7
+  47              		.loc 1 25 16 is_stmt 0 view .LVU8
+  48 000a C360     		str	r3, [r0, #12]	@ float
+  26:Core/Src/ladder_filter.c ****     filter->s4 = 0.0f;
+  49              		.loc 1 26 5 is_stmt 1 view .LVU9
+  50              		.loc 1 26 16 is_stmt 0 view .LVU10
+  51 000c 0361     		str	r3, [r0, #16]	@ float
+  27:Core/Src/ladder_filter.c ****     filter->k = 0.0f;
+  52              		.loc 1 27 5 is_stmt 1 view .LVU11
+  53              		.loc 1 27 15 is_stmt 0 view .LVU12
+  54 000e 4361     		str	r3, [r0, #20]	@ float
+  28:Core/Src/ladder_filter.c **** }
+  55              		.loc 1 28 1 view .LVU13
+  56 0010 7047     		bx	lr
+  57              	.L3:
+  58 0012 00BF     		.align	2
+  59              	.L2:
+  60 0014 0000C842 		.word	1120403456
+  61              		.cfi_endproc
+  62              	.LFE3:
+  64              		.global	__aeabi_f2d
+  65              		.global	__aeabi_dmul
+  66              		.global	__aeabi_d2f
+  67              		.section	.text.MoogLP_compute,"ax",%progbits
+  68              		.align	1
+  69              		.global	MoogLP_compute
+  70              		.syntax unified
+  71              		.thumb
+  72              		.thumb_func
+  74              	MoogLP_compute:
+  75              	.LVL1:
+  76              	.LFB4:
+  29:Core/Src/ladder_filter.c **** 
+  30:Core/Src/ladder_filter.c **** 
+  31:Core/Src/ladder_filter.c **** 
+  32:Core/Src/ladder_filter.c **** 
+  33:Core/Src/ladder_filter.c **** float MoogLP_compute(ZDFLadder_t * filter, float input)
+  34:Core/Src/ladder_filter.c **** {
+  77              		.loc 1 34 1 is_stmt 1 view -0
+  78              		.cfi_startproc
+  79              		@ args = 0, pretend = 0, frame = 0
+  80              		@ frame_needed = 0, uses_anonymous_args = 0
+  81              		.loc 1 34 1 is_stmt 0 view .LVU15
+  82 0000 10B5     		push	{r4, lr}
+  83              		.cfi_def_cfa_offset 8
+ARM GAS  /var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccVCKynV.s 			page 3
+
+
+  84              		.cfi_offset 4, -8
+  85              		.cfi_offset 14, -4
+  86 0002 2DED0A8B 		vpush.64	{d8, d9, d10, d11, d12}
+  87              		.cfi_def_cfa_offset 48
+  88              		.cfi_offset 80, -48
+  89              		.cfi_offset 81, -44
+  90              		.cfi_offset 82, -40
+  91              		.cfi_offset 83, -36
+  92              		.cfi_offset 84, -32
+  93              		.cfi_offset 85, -28
+  94              		.cfi_offset 86, -24
+  95              		.cfi_offset 87, -20
+  96              		.cfi_offset 88, -16
+  97              		.cfi_offset 89, -12
+  98 0006 0446     		mov	r4, r0
+  99 0008 F0EE409A 		vmov.f32	s19, s0
+  35:Core/Src/ladder_filter.c **** 	float f, one_over_oneplusf, g, G, y1, y2, y3, y4, feedback;
+ 100              		.loc 1 35 2 is_stmt 1 view .LVU16
+  36:Core/Src/ladder_filter.c ****     f = interp_lin_lut(LUT_TAN_SIZE * (0.5*PI * filter->cutoff * TS), LUT_TAN_SIZE, tan_lut);
+ 101              		.loc 1 36 5 view .LVU17
+ 102              		.loc 1 36 55 is_stmt 0 view .LVU18
+ 103 000c 0068     		ldr	r0, [r0]	@ float
+ 104              	.LVL2:
+ 105              		.loc 1 36 55 view .LVU19
+ 106 000e FFF7FEFF 		bl	__aeabi_f2d
+ 107              	.LVL3:
+ 108              		.loc 1 36 47 view .LVU20
+ 109 0012 49A3     		adr	r3, .L6+8
+ 110 0014 D3E90023 		ldrd	r2, [r3]
+ 111 0018 FFF7FEFF 		bl	__aeabi_dmul
+ 112              	.LVL4:
+ 113              		.loc 1 36 64 view .LVU21
+ 114 001c 48A3     		adr	r3, .L6+16
+ 115 001e D3E90023 		ldrd	r2, [r3]
+ 116 0022 FFF7FEFF 		bl	__aeabi_dmul
+ 117              	.LVL5:
+ 118              		.loc 1 36 37 view .LVU22
+ 119 0026 0022     		movs	r2, #0
+ 120 0028 414B     		ldr	r3, .L6
+ 121 002a FFF7FEFF 		bl	__aeabi_dmul
+ 122              	.LVL6:
+ 123              		.loc 1 36 9 view .LVU23
+ 124 002e FFF7FEFF 		bl	__aeabi_d2f
+ 125              	.LVL7:
+ 126 0032 00EE100A 		vmov	s0, r0
+ 127 0036 3F49     		ldr	r1, .L6+4
+ 128 0038 4FF40060 		mov	r0, #2048
+ 129 003c FFF7FEFF 		bl	interp_lin_lut
+ 130              	.LVL8:
+ 131 0040 B0EE409A 		vmov.f32	s18, s0
+ 132              	.LVL9:
+  37:Core/Src/ladder_filter.c ****     // f = tanf(PI * filter->cutoff * TS);
+  38:Core/Src/ladder_filter.c **** 	one_over_oneplusf = 1 / (1 + f);
+ 133              		.loc 1 38 2 is_stmt 1 view .LVU24
+ 134              		.loc 1 38 29 is_stmt 0 view .LVU25
+ 135 0044 F7EE005A 		vmov.f32	s11, #1.0e+0
+ 136 0048 70EE257A 		vadd.f32	s15, s0, s11
+ARM GAS  /var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccVCKynV.s 			page 4
+
+
+ 137              		.loc 1 38 20 view .LVU26
+ 138 004c 85EEA7AA 		vdiv.f32	s20, s11, s15
+ 139              	.LVL10:
+  39:Core/Src/ladder_filter.c **** 	g = f * one_over_oneplusf;
+ 140              		.loc 1 39 2 is_stmt 1 view .LVU27
+ 141              		.loc 1 39 4 is_stmt 0 view .LVU28
+ 142 0050 20EE0A8A 		vmul.f32	s16, s0, s20
+ 143              	.LVL11:
+  40:Core/Src/ladder_filter.c **** 	G = g*g*g*g;
+ 144              		.loc 1 40 2 is_stmt 1 view .LVU29
+ 145              		.loc 1 40 7 is_stmt 0 view .LVU30
+ 146 0054 28EE086A 		vmul.f32	s12, s16, s16
+ 147              		.loc 1 40 9 view .LVU31
+ 148 0058 66EE086A 		vmul.f32	s13, s12, s16
+ 149              		.loc 1 40 4 view .LVU32
+ 150 005c 26EE887A 		vmul.f32	s14, s13, s16
+ 151              	.LVL12:
+  41:Core/Src/ladder_filter.c **** 	// at output of 4th stage
+  42:Core/Src/ladder_filter.c **** 	y4 = ((one_over_oneplusf)*(filter->s4 + g*filter->s3 + g*g*filter->s2 + g*g*g*filter->s1) + G*inpu
+ 152              		.loc 1 42 2 is_stmt 1 view .LVU33
+ 153              		.loc 1 42 35 is_stmt 0 view .LVU34
+ 154 0060 D4ED047A 		vldr.32	s15, [r4, #16]
+ 155              		.loc 1 42 50 view .LVU35
+ 156 0064 D4ED03AA 		vldr.32	s21, [r4, #12]
+ 157              		.loc 1 42 43 view .LVU36
+ 158 0068 2AEE885A 		vmul.f32	s10, s21, s16
+ 159              		.loc 1 42 40 view .LVU37
+ 160 006c 77EE857A 		vadd.f32	s15, s15, s10
+ 161              		.loc 1 42 67 view .LVU38
+ 162 0070 94ED02BA 		vldr.32	s22, [r4, #8]
+ 163              		.loc 1 42 60 view .LVU39
+ 164 0074 26EE0B6A 		vmul.f32	s12, s12, s22
+ 165              		.loc 1 42 55 view .LVU40
+ 166 0078 77EE867A 		vadd.f32	s15, s15, s12
+ 167              		.loc 1 42 86 view .LVU41
+ 168 007c D4ED01BA 		vldr.32	s23, [r4, #4]
+ 169              		.loc 1 42 79 view .LVU42
+ 170 0080 66EEAB6A 		vmul.f32	s13, s13, s23
+ 171              		.loc 1 42 72 view .LVU43
+ 172 0084 77EEA67A 		vadd.f32	s15, s15, s13
+ 173              		.loc 1 42 27 view .LVU44
+ 174 0088 67EE8A7A 		vmul.f32	s15, s15, s20
+ 175              		.loc 1 42 95 view .LVU45
+ 176 008c 67EE296A 		vmul.f32	s13, s14, s19
+ 177              		.loc 1 42 92 view .LVU46
+ 178 0090 77EEA67A 		vadd.f32	s15, s15, s13
+ 179              		.loc 1 42 116 view .LVU47
+ 180 0094 94ED05CA 		vldr.32	s24, [r4, #20]
+ 181              		.loc 1 42 119 view .LVU48
+ 182 0098 2CEE077A 		vmul.f32	s14, s24, s14
+ 183              	.LVL13:
+ 184              		.loc 1 42 108 view .LVU49
+ 185 009c 37EE257A 		vadd.f32	s14, s14, s11
+ 186              		.loc 1 42 5 view .LVU50
+ 187 00a0 C7EE878A 		vdiv.f32	s17, s15, s14
+ 188              	.LVL14:
+  43:Core/Src/ladder_filter.c **** 	// at other outputs
+ARM GAS  /var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccVCKynV.s 			page 5
+
+
+  44:Core/Src/ladder_filter.c **** 	feedback = (SoftClip(input) - SoftClip(filter->k*y4)); // naive but good enough
+ 189              		.loc 1 44 2 is_stmt 1 view .LVU51
+ 190              		.loc 1 44 14 is_stmt 0 view .LVU52
+ 191 00a4 B0EE690A 		vmov.f32	s0, s19
+ 192              	.LVL15:
+ 193              		.loc 1 44 14 view .LVU53
+ 194 00a8 FFF7FEFF 		bl	SoftClip
+ 195              	.LVL16:
+ 196 00ac F0EE409A 		vmov.f32	s19, s0
+ 197              	.LVL17:
+ 198              		.loc 1 44 32 discriminator 1 view .LVU54
+ 199 00b0 2CEE280A 		vmul.f32	s0, s24, s17
+ 200 00b4 FFF7FEFF 		bl	SoftClip
+ 201              	.LVL18:
+ 202              		.loc 1 44 11 discriminator 2 view .LVU55
+ 203 00b8 39EEC00A 		vsub.f32	s0, s19, s0
+ 204              	.LVL19:
+  45:Core/Src/ladder_filter.c **** 	y1 = g*feedback + (filter->s1) * one_over_oneplusf;
+ 205              		.loc 1 45 2 is_stmt 1 view .LVU56
+ 206              		.loc 1 45 8 is_stmt 0 view .LVU57
+ 207 00bc 28EE007A 		vmul.f32	s14, s16, s0
+ 208              		.loc 1 45 33 view .LVU58
+ 209 00c0 6BEE8ABA 		vmul.f32	s23, s23, s20
+ 210              		.loc 1 45 5 view .LVU59
+ 211 00c4 37EE2B7A 		vadd.f32	s14, s14, s23
+ 212              	.LVL20:
+  46:Core/Src/ladder_filter.c **** 	y2 = g*y1 + filter->s2 * one_over_oneplusf;
+ 213              		.loc 1 46 2 is_stmt 1 view .LVU60
+ 214              		.loc 1 46 8 is_stmt 0 view .LVU61
+ 215 00c8 68EE077A 		vmul.f32	s15, s16, s14
+ 216              		.loc 1 46 25 view .LVU62
+ 217 00cc 2BEE0ABA 		vmul.f32	s22, s22, s20
+ 218              		.loc 1 46 5 view .LVU63
+ 219 00d0 77EE8B7A 		vadd.f32	s15, s15, s22
+ 220              	.LVL21:
+  47:Core/Src/ladder_filter.c **** 	y3 = g*y2 + filter->s3 * one_over_oneplusf;
+ 221              		.loc 1 47 2 is_stmt 1 view .LVU64
+ 222              		.loc 1 47 8 is_stmt 0 view .LVU65
+ 223 00d4 28EE278A 		vmul.f32	s16, s16, s15
+ 224              	.LVL22:
+ 225              		.loc 1 47 25 view .LVU66
+ 226 00d8 6AEE8AAA 		vmul.f32	s21, s21, s20
+ 227              		.loc 1 47 5 view .LVU67
+ 228 00dc 38EE2A8A 		vadd.f32	s16, s16, s21
+ 229              	.LVL23:
+  48:Core/Src/ladder_filter.c **** 	//update states s = y + v = y + f*(x-y) (=2v + s = 2*f(x-y) + s)
+  49:Core/Src/ladder_filter.c **** 	filter->s1 = y1 + f*(feedback - y1);
+ 230              		.loc 1 49 2 is_stmt 1 view .LVU68
+ 231              		.loc 1 49 32 is_stmt 0 view .LVU69
+ 232 00e0 30EE470A 		vsub.f32	s0, s0, s14
+ 233              	.LVL24:
+ 234              		.loc 1 49 21 view .LVU70
+ 235 00e4 20EE090A 		vmul.f32	s0, s0, s18
+ 236              		.loc 1 49 18 view .LVU71
+ 237 00e8 30EE070A 		vadd.f32	s0, s0, s14
+ 238              		.loc 1 49 13 view .LVU72
+ 239 00ec 84ED010A 		vstr.32	s0, [r4, #4]
+ARM GAS  /var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccVCKynV.s 			page 6
+
+
+  50:Core/Src/ladder_filter.c **** 	filter->s2 = y2 + f*(y1 - y2);
+ 240              		.loc 1 50 2 is_stmt 1 view .LVU73
+ 241              		.loc 1 50 26 is_stmt 0 view .LVU74
+ 242 00f0 37EE677A 		vsub.f32	s14, s14, s15
+ 243              	.LVL25:
+ 244              		.loc 1 50 21 view .LVU75
+ 245 00f4 27EE097A 		vmul.f32	s14, s14, s18
+ 246              		.loc 1 50 18 view .LVU76
+ 247 00f8 37EE277A 		vadd.f32	s14, s14, s15
+ 248              		.loc 1 50 13 view .LVU77
+ 249 00fc 84ED027A 		vstr.32	s14, [r4, #8]
+  51:Core/Src/ladder_filter.c **** 	filter->s3 = y3 + f*(y2 - y3);
+ 250              		.loc 1 51 2 is_stmt 1 view .LVU78
+ 251              		.loc 1 51 26 is_stmt 0 view .LVU79
+ 252 0100 77EEC87A 		vsub.f32	s15, s15, s16
+ 253              	.LVL26:
+ 254              		.loc 1 51 21 view .LVU80
+ 255 0104 67EE897A 		vmul.f32	s15, s15, s18
+ 256              		.loc 1 51 18 view .LVU81
+ 257 0108 77EE887A 		vadd.f32	s15, s15, s16
+ 258              		.loc 1 51 13 view .LVU82
+ 259 010c C4ED037A 		vstr.32	s15, [r4, #12]
+  52:Core/Src/ladder_filter.c **** 	filter->s4 = y4 + f*(y3 - y4);
+ 260              		.loc 1 52 2 is_stmt 1 view .LVU83
+ 261              		.loc 1 52 26 is_stmt 0 view .LVU84
+ 262 0110 38EE688A 		vsub.f32	s16, s16, s17
+ 263              	.LVL27:
+ 264              		.loc 1 52 21 view .LVU85
+ 265 0114 28EE090A 		vmul.f32	s0, s16, s18
+ 266              		.loc 1 52 18 view .LVU86
+ 267 0118 30EE280A 		vadd.f32	s0, s0, s17
+ 268              		.loc 1 52 13 view .LVU87
+ 269 011c 84ED040A 		vstr.32	s0, [r4, #16]
+  53:Core/Src/ladder_filter.c **** 	return(y4);
+ 270              		.loc 1 53 2 is_stmt 1 view .LVU88
+  54:Core/Src/ladder_filter.c **** }...
+ 271              		.loc 1 54 1 is_stmt 0 view .LVU89
+ 272 0120 B0EE680A 		vmov.f32	s0, s17
+ 273 0124 BDEC0A8B 		vldm	sp!, {d8-d12}
+ 274              		.cfi_restore 88
+ 275              		.cfi_restore 89
+ 276              		.cfi_restore 86
+ 277              		.cfi_restore 87
+ 278              		.cfi_restore 84
+ 279              		.cfi_restore 85
+ 280              		.cfi_restore 82
+ 281              		.cfi_restore 83
+ 282              		.cfi_restore 80
+ 283              		.cfi_restore 81
+ 284              		.cfi_def_cfa_offset 8
+ 285              	.LVL28:
+ 286              		.loc 1 54 1 view .LVU90
+ 287 0128 10BD     		pop	{r4, pc}
+ 288              	.LVL29:
+ 289              	.L7:
+ 290              		.loc 1 54 1 view .LVU91
+ 291 012a 00BFAFF3 		.align	3
+ARM GAS  /var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccVCKynV.s 			page 7
+
+
+ 291      0080
+ 292              	.L6:
+ 293 0130 0000A040 		.word	1084227584
+ 294 0134 00000000 		.word	tan_lut
+ 295 0138 EA2E4454 		.word	1413754602
+ 296 013c FB21F93F 		.word	1073291771
+ 297 0140 000000C0 		.word	-1073741824
+ 298 0144 F8C6F73E 		.word	1056425720
+ 299              		.cfi_endproc
+ 300              	.LFE4:
+ 302              		.global	Moog_filter
+ 303              		.section	.bss.Moog_filter,"aw",%nobits
+ 304              		.align	2
+ 307              	Moog_filter:
+ 308 0000 00000000 		.space	24
+ 308      00000000 
+ 308      00000000 
+ 308      00000000 
+ 308      00000000 
+ 309              		.text
+ 310              	.Letext0:
+ 311              		.file 2 "Core/Inc/ladder_filter.h"
+ 312              		.file 3 "/Users/jr/Library/Application Support/Code/User/globalStorage/bmd.stm32-for-vscode/@xpack
+ 313              		.file 4 "/Users/jr/Library/Application Support/Code/User/globalStorage/bmd.stm32-for-vscode/@xpack
+ 314              		.file 5 "Core/Inc/lut_tan.h"
+ 315              		.file 6 "Core/Inc/helper_functions.h"
+ARM GAS  /var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccVCKynV.s 			page 8
+
+
+DEFINED SYMBOLS
+                            *ABS*:00000000 ladder_filter.c
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccVCKynV.s:21     .text.MoogLP_init:00000000 $t
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccVCKynV.s:27     .text.MoogLP_init:00000000 MoogLP_init
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccVCKynV.s:60     .text.MoogLP_init:00000014 $d
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccVCKynV.s:68     .text.MoogLP_compute:00000000 $t
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccVCKynV.s:74     .text.MoogLP_compute:00000000 MoogLP_compute
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccVCKynV.s:293    .text.MoogLP_compute:00000130 $d
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccVCKynV.s:307    .bss.Moog_filter:00000000 Moog_filter
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccVCKynV.s:304    .bss.Moog_filter:00000000 $d
+
+UNDEFINED SYMBOLS
+__aeabi_f2d
+__aeabi_dmul
+__aeabi_d2f
+interp_lin_lut
+SoftClip
+tan_lut

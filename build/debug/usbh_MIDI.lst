@@ -1,0 +1,1941 @@
+ARM GAS  /var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccU3Yg4i.s 			page 1
+
+
+   1              		.cpu cortex-m4
+   2              		.arch armv7e-m
+   3              		.fpu fpv4-sp-d16
+   4              		.eabi_attribute 27, 1
+   5              		.eabi_attribute 28, 1
+   6              		.eabi_attribute 20, 1
+   7              		.eabi_attribute 21, 1
+   8              		.eabi_attribute 23, 3
+   9              		.eabi_attribute 24, 1
+  10              		.eabi_attribute 25, 1
+  11              		.eabi_attribute 26, 1
+  12              		.eabi_attribute 30, 1
+  13              		.eabi_attribute 34, 1
+  14              		.eabi_attribute 18, 4
+  15              		.file	"usbh_MIDI.c"
+  16              		.text
+  17              	.Ltext0:
+  18              		.cfi_sections	.debug_frame
+  19              		.file 1 "Core/Src/usbh_MIDI.c"
+  20              		.section	.text.USBH_MIDI_ClassRequest,"ax",%progbits
+  21              		.align	1
+  22              		.syntax unified
+  23              		.thumb
+  24              		.thumb_func
+  26              	USBH_MIDI_ClassRequest:
+  27              	.LVL0:
+  28              	.LFB240:
+   1:Core/Src/usbh_MIDI.c **** /**
+   2:Core/Src/usbh_MIDI.c ****  ******************************************************************************
+   3:Core/Src/usbh_MIDI.c ****  * @file    usbh_MIDI.c
+   4:Core/Src/usbh_MIDI.c ****  * @author	Xavier Halgand
+   5:Core/Src/usbh_MIDI.c ****  * @version
+   6:Core/Src/usbh_MIDI.c ****  * @date
+   7:Core/Src/usbh_MIDI.c ****  * @brief   This file is the MIDI Layer Handlers for USB Host MIDI streaming class.
+   8:Core/Src/usbh_MIDI.c ****  *
+   9:Core/Src/usbh_MIDI.c ****  *
+  10:Core/Src/usbh_MIDI.c ****  ******************************************************************************
+  11:Core/Src/usbh_MIDI.c ****  */
+  12:Core/Src/usbh_MIDI.c **** 
+  13:Core/Src/usbh_MIDI.c **** /*
+  14:Core/Src/usbh_MIDI.c ****  * This program is free software; you can redistribute it and/or modify
+  15:Core/Src/usbh_MIDI.c ****  * it under the terms of the GNU General Public License as published by
+  16:Core/Src/usbh_MIDI.c ****  * the Free Software Foundation; either version 2 of the License, or
+  17:Core/Src/usbh_MIDI.c ****  * (at your option) any later version.
+  18:Core/Src/usbh_MIDI.c ****  *
+  19:Core/Src/usbh_MIDI.c ****  * This program is distributed in the hope that it will be useful,
+  20:Core/Src/usbh_MIDI.c ****  * but WITHOUT ANY WARRANTY; without even the implied warranty of
+  21:Core/Src/usbh_MIDI.c ****  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+  22:Core/Src/usbh_MIDI.c ****  * GNU General Public License for more details.
+  23:Core/Src/usbh_MIDI.c ****  *
+  24:Core/Src/usbh_MIDI.c ****  * You should have received a copy of the GNU General Public License
+  25:Core/Src/usbh_MIDI.c ****  * along with this program; if not, write to the Free Software
+  26:Core/Src/usbh_MIDI.c ****  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+  27:Core/Src/usbh_MIDI.c ****  *
+  28:Core/Src/usbh_MIDI.c ****  */
+  29:Core/Src/usbh_MIDI.c **** 
+  30:Core/Src/usbh_MIDI.c **** /* Includes ------------------------------------------------------------------*/
+ARM GAS  /var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccU3Yg4i.s 			page 2
+
+
+  31:Core/Src/usbh_MIDI.c **** #include "../Inc/usbh_MIDI.h"
+  32:Core/Src/usbh_MIDI.c **** 
+  33:Core/Src/usbh_MIDI.c **** /*-------------------------------------------------------------------------------------------------
+  34:Core/Src/usbh_MIDI.c **** 
+  35:Core/Src/usbh_MIDI.c **** /** @defgroup USBH_MIDI_CORE_Private_FunctionPrototypes
+  36:Core/Src/usbh_MIDI.c ****  * @{
+  37:Core/Src/usbh_MIDI.c ****  */
+  38:Core/Src/usbh_MIDI.c **** 
+  39:Core/Src/usbh_MIDI.c **** static USBH_StatusTypeDef USBH_MIDI_InterfaceInit  (USBH_HandleTypeDef *phost);
+  40:Core/Src/usbh_MIDI.c **** 
+  41:Core/Src/usbh_MIDI.c **** static USBH_StatusTypeDef USBH_MIDI_InterfaceDeInit  (USBH_HandleTypeDef *phost);
+  42:Core/Src/usbh_MIDI.c **** 
+  43:Core/Src/usbh_MIDI.c **** static USBH_StatusTypeDef USBH_MIDI_Process(USBH_HandleTypeDef *phost);
+  44:Core/Src/usbh_MIDI.c **** 
+  45:Core/Src/usbh_MIDI.c **** static USBH_StatusTypeDef USBH_MIDI_SOFProcess(USBH_HandleTypeDef *phost);
+  46:Core/Src/usbh_MIDI.c **** 
+  47:Core/Src/usbh_MIDI.c **** static USBH_StatusTypeDef USBH_MIDI_ClassRequest (USBH_HandleTypeDef *phost);
+  48:Core/Src/usbh_MIDI.c **** 
+  49:Core/Src/usbh_MIDI.c **** static void MIDI_ProcessTransmission(USBH_HandleTypeDef *phost);
+  50:Core/Src/usbh_MIDI.c **** 
+  51:Core/Src/usbh_MIDI.c **** static void MIDI_ProcessReception(USBH_HandleTypeDef *phost);
+  52:Core/Src/usbh_MIDI.c **** 
+  53:Core/Src/usbh_MIDI.c **** /*-------------------------------------------------------------------------*/
+  54:Core/Src/usbh_MIDI.c **** 
+  55:Core/Src/usbh_MIDI.c **** USBH_ClassTypeDef  MIDI_Class =
+  56:Core/Src/usbh_MIDI.c **** {
+  57:Core/Src/usbh_MIDI.c **** 		"MIDI",
+  58:Core/Src/usbh_MIDI.c **** 		USB_AUDIO_CLASS,
+  59:Core/Src/usbh_MIDI.c **** 		USBH_MIDI_InterfaceInit,
+  60:Core/Src/usbh_MIDI.c **** 		USBH_MIDI_InterfaceDeInit,
+  61:Core/Src/usbh_MIDI.c **** 		USBH_MIDI_ClassRequest,
+  62:Core/Src/usbh_MIDI.c **** 		USBH_MIDI_Process, // background process called in HOST_CLASS state (core state machine)
+  63:Core/Src/usbh_MIDI.c **** 		USBH_MIDI_SOFProcess,
+  64:Core/Src/usbh_MIDI.c **** 		NULL // MIDI handle structure
+  65:Core/Src/usbh_MIDI.c **** };
+  66:Core/Src/usbh_MIDI.c **** 
+  67:Core/Src/usbh_MIDI.c **** /*-------------------------------------------------------------------------------------------------
+  68:Core/Src/usbh_MIDI.c **** 
+  69:Core/Src/usbh_MIDI.c **** /**
+  70:Core/Src/usbh_MIDI.c ****  * @brief  USBH_MIDI_InterfaceInit
+  71:Core/Src/usbh_MIDI.c ****  *         The function init the MIDI class.
+  72:Core/Src/usbh_MIDI.c ****  * @param  phost: Host handle
+  73:Core/Src/usbh_MIDI.c ****  * @retval USBH Status
+  74:Core/Src/usbh_MIDI.c ****  */
+  75:Core/Src/usbh_MIDI.c **** static USBH_StatusTypeDef USBH_MIDI_InterfaceInit (USBH_HandleTypeDef *phost)
+  76:Core/Src/usbh_MIDI.c **** {	
+  77:Core/Src/usbh_MIDI.c **** 
+  78:Core/Src/usbh_MIDI.c **** 	USBH_StatusTypeDef status = USBH_FAIL ;
+  79:Core/Src/usbh_MIDI.c **** 	uint8_t interface = 0;
+  80:Core/Src/usbh_MIDI.c **** 	MIDI_HandleTypeDef *MIDI_Handle;
+  81:Core/Src/usbh_MIDI.c **** 
+  82:Core/Src/usbh_MIDI.c **** 	//USB_MIDI_ChangeConnectionState(0);
+  83:Core/Src/usbh_MIDI.c **** 
+  84:Core/Src/usbh_MIDI.c **** 	interface = USBH_FindInterface(phost, USB_AUDIO_CLASS, USB_MIDISTREAMING_SubCLASS, 0xFF);
+  85:Core/Src/usbh_MIDI.c **** 
+  86:Core/Src/usbh_MIDI.c **** 	if(interface == 0xFF) /* No Valid Interface */
+  87:Core/Src/usbh_MIDI.c **** 	{
+ARM GAS  /var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccU3Yg4i.s 			page 3
+
+
+  88:Core/Src/usbh_MIDI.c **** 		USBH_DbgLog ("Cannot Find the interface for MIDI Interface Class.", phost->pActiveClass->Name);
+  89:Core/Src/usbh_MIDI.c **** 		status = USBH_FAIL;
+  90:Core/Src/usbh_MIDI.c **** 	}
+  91:Core/Src/usbh_MIDI.c **** 	else
+  92:Core/Src/usbh_MIDI.c **** 	{
+  93:Core/Src/usbh_MIDI.c **** 		USBH_SelectInterface (phost, interface);
+  94:Core/Src/usbh_MIDI.c **** 
+  95:Core/Src/usbh_MIDI.c **** 		phost->pActiveClass->pData = (MIDI_HandleTypeDef *)USBH_malloc (sizeof(MIDI_HandleTypeDef));
+  96:Core/Src/usbh_MIDI.c **** 		MIDI_Handle =  phost->pActiveClass->pData;
+  97:Core/Src/usbh_MIDI.c **** 
+  98:Core/Src/usbh_MIDI.c **** 		if(phost->device.CfgDesc.Itf_Desc[phost->device.current_interface].Ep_Desc[0].bEndpointAddress & 
+  99:Core/Src/usbh_MIDI.c **** 		{
+ 100:Core/Src/usbh_MIDI.c **** 			MIDI_Handle->InEp = (phost->device.CfgDesc.Itf_Desc[phost->device.current_interface].Ep_Desc[0].
+ 101:Core/Src/usbh_MIDI.c **** 			MIDI_Handle->InEpSize  = phost->device.CfgDesc.Itf_Desc[phost->device.current_interface].Ep_Desc
+ 102:Core/Src/usbh_MIDI.c **** 		}
+ 103:Core/Src/usbh_MIDI.c **** 		else
+ 104:Core/Src/usbh_MIDI.c **** 		{
+ 105:Core/Src/usbh_MIDI.c **** 			MIDI_Handle->OutEp = (phost->device.CfgDesc.Itf_Desc[phost->device.current_interface].Ep_Desc[0]
+ 106:Core/Src/usbh_MIDI.c **** 			MIDI_Handle->OutEpSize  = phost->device.CfgDesc.Itf_Desc[phost->device.current_interface].Ep_Des
+ 107:Core/Src/usbh_MIDI.c **** 		}
+ 108:Core/Src/usbh_MIDI.c **** 
+ 109:Core/Src/usbh_MIDI.c **** 		if(phost->device.CfgDesc.Itf_Desc[phost->device.current_interface].Ep_Desc[1].bEndpointAddress & 
+ 110:Core/Src/usbh_MIDI.c **** 		{
+ 111:Core/Src/usbh_MIDI.c **** 			MIDI_Handle->InEp = (phost->device.CfgDesc.Itf_Desc[phost->device.current_interface].Ep_Desc[1].
+ 112:Core/Src/usbh_MIDI.c **** 			MIDI_Handle->InEpSize  = phost->device.CfgDesc.Itf_Desc[phost->device.current_interface].Ep_Desc
+ 113:Core/Src/usbh_MIDI.c **** 		}
+ 114:Core/Src/usbh_MIDI.c **** 		else
+ 115:Core/Src/usbh_MIDI.c **** 		{
+ 116:Core/Src/usbh_MIDI.c **** 			MIDI_Handle->OutEp = (phost->device.CfgDesc.Itf_Desc[phost->device.current_interface].Ep_Desc[1]
+ 117:Core/Src/usbh_MIDI.c **** 			MIDI_Handle->OutEpSize  = phost->device.CfgDesc.Itf_Desc[phost->device.current_interface].Ep_Des
+ 118:Core/Src/usbh_MIDI.c **** 		}
+ 119:Core/Src/usbh_MIDI.c **** 
+ 120:Core/Src/usbh_MIDI.c **** 		MIDI_Handle->OutPipe = USBH_AllocPipe(phost, MIDI_Handle->OutEp);
+ 121:Core/Src/usbh_MIDI.c **** 		MIDI_Handle->InPipe = USBH_AllocPipe(phost, MIDI_Handle->InEp);
+ 122:Core/Src/usbh_MIDI.c **** 
+ 123:Core/Src/usbh_MIDI.c **** 
+ 124:Core/Src/usbh_MIDI.c **** 		/* Open the new channels */
+ 125:Core/Src/usbh_MIDI.c **** 		USBH_OpenPipe  (phost,
+ 126:Core/Src/usbh_MIDI.c **** 				MIDI_Handle->OutPipe,
+ 127:Core/Src/usbh_MIDI.c **** 				MIDI_Handle->OutEp,
+ 128:Core/Src/usbh_MIDI.c **** 				phost->device.address,
+ 129:Core/Src/usbh_MIDI.c **** 				phost->device.speed,
+ 130:Core/Src/usbh_MIDI.c **** 				USB_EP_TYPE_BULK,
+ 131:Core/Src/usbh_MIDI.c **** 				MIDI_Handle->OutEpSize);
+ 132:Core/Src/usbh_MIDI.c **** 
+ 133:Core/Src/usbh_MIDI.c **** 		USBH_OpenPipe  (phost,
+ 134:Core/Src/usbh_MIDI.c **** 				MIDI_Handle->InPipe,
+ 135:Core/Src/usbh_MIDI.c **** 				MIDI_Handle->InEp,
+ 136:Core/Src/usbh_MIDI.c **** 				phost->device.address,
+ 137:Core/Src/usbh_MIDI.c **** 				phost->device.speed,
+ 138:Core/Src/usbh_MIDI.c **** 				USB_EP_TYPE_BULK,
+ 139:Core/Src/usbh_MIDI.c **** 				MIDI_Handle->InEpSize);
+ 140:Core/Src/usbh_MIDI.c **** 
+ 141:Core/Src/usbh_MIDI.c **** 		//USB_MIDI_ChangeConnectionState(1);
+ 142:Core/Src/usbh_MIDI.c **** 		MIDI_Handle->state = MIDI_IDLE_STATE;
+ 143:Core/Src/usbh_MIDI.c **** 
+ 144:Core/Src/usbh_MIDI.c **** 
+ARM GAS  /var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccU3Yg4i.s 			page 4
+
+
+ 145:Core/Src/usbh_MIDI.c **** 		USBH_LL_SetToggle  (phost, MIDI_Handle->InPipe,0);
+ 146:Core/Src/usbh_MIDI.c **** 		USBH_LL_SetToggle  (phost, MIDI_Handle->OutPipe,0);
+ 147:Core/Src/usbh_MIDI.c **** 		status = USBH_OK;
+ 148:Core/Src/usbh_MIDI.c **** 	}
+ 149:Core/Src/usbh_MIDI.c **** 	return status;
+ 150:Core/Src/usbh_MIDI.c **** }
+ 151:Core/Src/usbh_MIDI.c **** 
+ 152:Core/Src/usbh_MIDI.c **** 
+ 153:Core/Src/usbh_MIDI.c **** /*-------------------------------------------------------------------------------------------------
+ 154:Core/Src/usbh_MIDI.c **** 
+ 155:Core/Src/usbh_MIDI.c **** /**
+ 156:Core/Src/usbh_MIDI.c ****  * @brief  USBH_MIDI_InterfaceDeInit
+ 157:Core/Src/usbh_MIDI.c ****  *         The function DeInit the Pipes used for the MIDI class.
+ 158:Core/Src/usbh_MIDI.c ****  * @param  phost: Host handle
+ 159:Core/Src/usbh_MIDI.c ****  * @retval USBH Status
+ 160:Core/Src/usbh_MIDI.c ****  */
+ 161:Core/Src/usbh_MIDI.c **** USBH_StatusTypeDef USBH_MIDI_InterfaceDeInit (USBH_HandleTypeDef *phost)
+ 162:Core/Src/usbh_MIDI.c **** {
+ 163:Core/Src/usbh_MIDI.c **** 	MIDI_HandleTypeDef *MIDI_Handle =  phost->pActiveClass->pData;
+ 164:Core/Src/usbh_MIDI.c **** 
+ 165:Core/Src/usbh_MIDI.c **** 	if ( MIDI_Handle->OutPipe)
+ 166:Core/Src/usbh_MIDI.c **** 	{
+ 167:Core/Src/usbh_MIDI.c **** 		USBH_ClosePipe(phost, MIDI_Handle->OutPipe);
+ 168:Core/Src/usbh_MIDI.c **** 		USBH_FreePipe  (phost, MIDI_Handle->OutPipe);
+ 169:Core/Src/usbh_MIDI.c **** 		MIDI_Handle->OutPipe = 0;     /* Reset the Channel as Free */
+ 170:Core/Src/usbh_MIDI.c **** 	}
+ 171:Core/Src/usbh_MIDI.c **** 
+ 172:Core/Src/usbh_MIDI.c **** 	if ( MIDI_Handle->InPipe)
+ 173:Core/Src/usbh_MIDI.c **** 	{
+ 174:Core/Src/usbh_MIDI.c **** 		USBH_ClosePipe(phost, MIDI_Handle->InPipe);
+ 175:Core/Src/usbh_MIDI.c **** 		USBH_FreePipe  (phost, MIDI_Handle->InPipe);
+ 176:Core/Src/usbh_MIDI.c **** 		MIDI_Handle->InPipe = 0;     /* Reset the Channel as Free */
+ 177:Core/Src/usbh_MIDI.c **** 	}
+ 178:Core/Src/usbh_MIDI.c **** 
+ 179:Core/Src/usbh_MIDI.c **** 	if(phost->pActiveClass->pData)
+ 180:Core/Src/usbh_MIDI.c **** 	{
+ 181:Core/Src/usbh_MIDI.c **** 		USBH_free (phost->pActiveClass->pData);
+ 182:Core/Src/usbh_MIDI.c **** 		phost->pActiveClass->pData = 0;
+ 183:Core/Src/usbh_MIDI.c **** 	}
+ 184:Core/Src/usbh_MIDI.c **** 
+ 185:Core/Src/usbh_MIDI.c **** 	return USBH_OK;
+ 186:Core/Src/usbh_MIDI.c **** }
+ 187:Core/Src/usbh_MIDI.c **** 
+ 188:Core/Src/usbh_MIDI.c **** /*-------------------------------------------------------------------------------------------------
+ 189:Core/Src/usbh_MIDI.c **** 
+ 190:Core/Src/usbh_MIDI.c **** /**
+ 191:Core/Src/usbh_MIDI.c ****  * @brief  USBH_MIDI_ClassRequest
+ 192:Core/Src/usbh_MIDI.c ****  *         The function is responsible for handling Standard requests
+ 193:Core/Src/usbh_MIDI.c ****  *         for MIDI class.
+ 194:Core/Src/usbh_MIDI.c ****  * @param  phost: Host handle
+ 195:Core/Src/usbh_MIDI.c ****  * @retval USBH Status
+ 196:Core/Src/usbh_MIDI.c ****  */
+ 197:Core/Src/usbh_MIDI.c **** static USBH_StatusTypeDef USBH_MIDI_ClassRequest (USBH_HandleTypeDef *phost)
+ 198:Core/Src/usbh_MIDI.c **** {   
+  29              		.loc 1 198 1 view -0
+  30              		.cfi_startproc
+  31              		@ args = 0, pretend = 0, frame = 0
+ARM GAS  /var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccU3Yg4i.s 			page 5
+
+
+  32              		@ frame_needed = 0, uses_anonymous_args = 0
+  33              		.loc 1 198 1 is_stmt 0 view .LVU1
+  34 0000 08B5     		push	{r3, lr}
+  35              		.cfi_def_cfa_offset 8
+  36              		.cfi_offset 3, -8
+  37              		.cfi_offset 14, -4
+ 199:Core/Src/usbh_MIDI.c **** 
+ 200:Core/Src/usbh_MIDI.c **** 	phost->pUser(phost, HOST_USER_CLASS_ACTIVE);
+  38              		.loc 1 200 2 is_stmt 1 view .LVU2
+  39              		.loc 1 200 7 is_stmt 0 view .LVU3
+  40 0002 D0F81836 		ldr	r3, [r0, #1560]
+  41              		.loc 1 200 2 view .LVU4
+  42 0006 0221     		movs	r1, #2
+  43 0008 9847     		blx	r3
+  44              	.LVL1:
+ 201:Core/Src/usbh_MIDI.c **** 
+ 202:Core/Src/usbh_MIDI.c **** 	return USBH_OK;
+  45              		.loc 1 202 2 is_stmt 1 view .LVU5
+ 203:Core/Src/usbh_MIDI.c **** }
+  46              		.loc 1 203 1 is_stmt 0 view .LVU6
+  47 000a 0020     		movs	r0, #0
+  48 000c 08BD     		pop	{r3, pc}
+  49              		.cfi_endproc
+  50              	.LFE240:
+  52              		.section	.text.USBH_MIDI_SOFProcess,"ax",%progbits
+  53              		.align	1
+  54              		.syntax unified
+  55              		.thumb
+  56              		.thumb_func
+  58              	USBH_MIDI_SOFProcess:
+  59              	.LVL2:
+  60              	.LFB243:
+ 204:Core/Src/usbh_MIDI.c **** 
+ 205:Core/Src/usbh_MIDI.c **** /*-------------------------------------------------------------------------------------------------
+ 206:Core/Src/usbh_MIDI.c **** 
+ 207:Core/Src/usbh_MIDI.c **** /**
+ 208:Core/Src/usbh_MIDI.c ****   * @brief  USBH_MIDI_Stop
+ 209:Core/Src/usbh_MIDI.c ****   *         Stop current MIDI Transmission
+ 210:Core/Src/usbh_MIDI.c ****   * @param  phost: Host handle
+ 211:Core/Src/usbh_MIDI.c ****   * @retval USBH Status
+ 212:Core/Src/usbh_MIDI.c ****   */
+ 213:Core/Src/usbh_MIDI.c **** USBH_StatusTypeDef  USBH_MIDI_Stop(USBH_HandleTypeDef *phost)
+ 214:Core/Src/usbh_MIDI.c **** {
+ 215:Core/Src/usbh_MIDI.c ****   MIDI_HandleTypeDef *MIDI_Handle =  phost->pActiveClass->pData;
+ 216:Core/Src/usbh_MIDI.c **** 
+ 217:Core/Src/usbh_MIDI.c ****   if(phost->gState == HOST_CLASS)
+ 218:Core/Src/usbh_MIDI.c ****   {
+ 219:Core/Src/usbh_MIDI.c ****     MIDI_Handle->state = MIDI_IDLE_STATE;
+ 220:Core/Src/usbh_MIDI.c **** 
+ 221:Core/Src/usbh_MIDI.c ****     USBH_ClosePipe(phost, MIDI_Handle->InPipe);
+ 222:Core/Src/usbh_MIDI.c ****     USBH_ClosePipe(phost, MIDI_Handle->OutPipe);
+ 223:Core/Src/usbh_MIDI.c ****   }
+ 224:Core/Src/usbh_MIDI.c ****   return USBH_OK;
+ 225:Core/Src/usbh_MIDI.c **** }
+ 226:Core/Src/usbh_MIDI.c **** 
+ 227:Core/Src/usbh_MIDI.c **** /*-------------------------------------------------------------------------------------------------
+ 228:Core/Src/usbh_MIDI.c **** 
+ARM GAS  /var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccU3Yg4i.s 			page 6
+
+
+ 229:Core/Src/usbh_MIDI.c **** /**
+ 230:Core/Src/usbh_MIDI.c ****  * @brief  USBH_MIDI_Process
+ 231:Core/Src/usbh_MIDI.c ****  *         The function is for managing state machine for MIDI data transfers
+ 232:Core/Src/usbh_MIDI.c ****  *         (background process)
+ 233:Core/Src/usbh_MIDI.c ****  * @param  phost: Host handle
+ 234:Core/Src/usbh_MIDI.c ****  * @retval USBH Status
+ 235:Core/Src/usbh_MIDI.c ****  */
+ 236:Core/Src/usbh_MIDI.c **** static USBH_StatusTypeDef USBH_MIDI_Process (USBH_HandleTypeDef *phost)
+ 237:Core/Src/usbh_MIDI.c **** {
+ 238:Core/Src/usbh_MIDI.c **** 	USBH_StatusTypeDef status = USBH_BUSY;
+ 239:Core/Src/usbh_MIDI.c **** 	USBH_StatusTypeDef req_status = USBH_OK;
+ 240:Core/Src/usbh_MIDI.c **** 	MIDI_HandleTypeDef *MIDI_Handle =  phost->pActiveClass->pData;
+ 241:Core/Src/usbh_MIDI.c **** 
+ 242:Core/Src/usbh_MIDI.c **** 	switch(MIDI_Handle->state)
+ 243:Core/Src/usbh_MIDI.c **** 	{
+ 244:Core/Src/usbh_MIDI.c **** 
+ 245:Core/Src/usbh_MIDI.c **** 	case MIDI_IDLE_STATE:
+ 246:Core/Src/usbh_MIDI.c **** 		status = USBH_OK;
+ 247:Core/Src/usbh_MIDI.c **** 		break;
+ 248:Core/Src/usbh_MIDI.c **** 
+ 249:Core/Src/usbh_MIDI.c **** 	case MIDI_TRANSFER_DATA:
+ 250:Core/Src/usbh_MIDI.c **** 
+ 251:Core/Src/usbh_MIDI.c **** 		MIDI_ProcessTransmission(phost);
+ 252:Core/Src/usbh_MIDI.c **** 		MIDI_ProcessReception(phost);
+ 253:Core/Src/usbh_MIDI.c **** 		break;
+ 254:Core/Src/usbh_MIDI.c **** 
+ 255:Core/Src/usbh_MIDI.c **** 	case MIDI_ERROR_STATE:
+ 256:Core/Src/usbh_MIDI.c **** 		req_status = USBH_ClrFeature(phost, 0x00);
+ 257:Core/Src/usbh_MIDI.c **** 
+ 258:Core/Src/usbh_MIDI.c **** 		if(req_status == USBH_OK )
+ 259:Core/Src/usbh_MIDI.c **** 		{
+ 260:Core/Src/usbh_MIDI.c **** 			/*Change the state to waiting*/
+ 261:Core/Src/usbh_MIDI.c **** 			MIDI_Handle->state = MIDI_IDLE_STATE ;
+ 262:Core/Src/usbh_MIDI.c **** 		}
+ 263:Core/Src/usbh_MIDI.c **** 		break;
+ 264:Core/Src/usbh_MIDI.c **** 
+ 265:Core/Src/usbh_MIDI.c **** 	default:
+ 266:Core/Src/usbh_MIDI.c **** 		break;
+ 267:Core/Src/usbh_MIDI.c **** 
+ 268:Core/Src/usbh_MIDI.c **** 	}
+ 269:Core/Src/usbh_MIDI.c **** 
+ 270:Core/Src/usbh_MIDI.c **** 	return status;
+ 271:Core/Src/usbh_MIDI.c **** }
+ 272:Core/Src/usbh_MIDI.c **** /*-------------------------------------------------------------------------------------------------
+ 273:Core/Src/usbh_MIDI.c **** 
+ 274:Core/Src/usbh_MIDI.c **** /**
+ 275:Core/Src/usbh_MIDI.c ****   * @brief  USBH_MIDI_SOFProcess 
+ 276:Core/Src/usbh_MIDI.c ****   *         The function is for managing SOF callback 
+ 277:Core/Src/usbh_MIDI.c ****   * @param  phost: Host handle
+ 278:Core/Src/usbh_MIDI.c ****   * @retval USBH Status
+ 279:Core/Src/usbh_MIDI.c ****   */
+ 280:Core/Src/usbh_MIDI.c **** static USBH_StatusTypeDef USBH_MIDI_SOFProcess (USBH_HandleTypeDef *phost)
+ 281:Core/Src/usbh_MIDI.c **** {
+  61              		.loc 1 281 1 is_stmt 1 view -0
+  62              		.cfi_startproc
+  63              		@ args = 0, pretend = 0, frame = 0
+  64              		@ frame_needed = 0, uses_anonymous_args = 0
+ARM GAS  /var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccU3Yg4i.s 			page 7
+
+
+  65              		@ link register save eliminated.
+ 282:Core/Src/usbh_MIDI.c ****   return USBH_OK;  
+  66              		.loc 1 282 3 view .LVU8
+ 283:Core/Src/usbh_MIDI.c **** }
+  67              		.loc 1 283 1 is_stmt 0 view .LVU9
+  68 0000 0020     		movs	r0, #0
+  69              	.LVL3:
+  70              		.loc 1 283 1 view .LVU10
+  71 0002 7047     		bx	lr
+  72              		.cfi_endproc
+  73              	.LFE243:
+  75              		.section	.text.USBH_MIDI_InterfaceDeInit,"ax",%progbits
+  76              		.align	1
+  77              		.syntax unified
+  78              		.thumb
+  79              		.thumb_func
+  81              	USBH_MIDI_InterfaceDeInit:
+  82              	.LVL4:
+  83              	.LFB239:
+ 162:Core/Src/usbh_MIDI.c **** 	MIDI_HandleTypeDef *MIDI_Handle =  phost->pActiveClass->pData;
+  84              		.loc 1 162 1 is_stmt 1 view -0
+  85              		.cfi_startproc
+  86              		@ args = 0, pretend = 0, frame = 0
+  87              		@ frame_needed = 0, uses_anonymous_args = 0
+ 162:Core/Src/usbh_MIDI.c **** 	MIDI_HandleTypeDef *MIDI_Handle =  phost->pActiveClass->pData;
+  88              		.loc 1 162 1 is_stmt 0 view .LVU12
+  89 0000 38B5     		push	{r3, r4, r5, lr}
+  90              		.cfi_def_cfa_offset 16
+  91              		.cfi_offset 3, -16
+  92              		.cfi_offset 4, -12
+  93              		.cfi_offset 5, -8
+  94              		.cfi_offset 14, -4
+  95 0002 0446     		mov	r4, r0
+ 163:Core/Src/usbh_MIDI.c **** 
+  96              		.loc 1 163 2 is_stmt 1 view .LVU13
+ 163:Core/Src/usbh_MIDI.c **** 
+  97              		.loc 1 163 42 is_stmt 0 view .LVU14
+  98 0004 D0F8C835 		ldr	r3, [r0, #1480]
+ 163:Core/Src/usbh_MIDI.c **** 
+  99              		.loc 1 163 22 view .LVU15
+ 100 0008 DD69     		ldr	r5, [r3, #28]
+ 101              	.LVL5:
+ 165:Core/Src/usbh_MIDI.c **** 	{
+ 102              		.loc 1 165 2 is_stmt 1 view .LVU16
+ 165:Core/Src/usbh_MIDI.c **** 	{
+ 103              		.loc 1 165 18 is_stmt 0 view .LVU17
+ 104 000a A978     		ldrb	r1, [r5, #2]	@ zero_extendqisi2
+ 165:Core/Src/usbh_MIDI.c **** 	{
+ 105              		.loc 1 165 5 view .LVU18
+ 106 000c 69B9     		cbnz	r1, .L9
+ 107              	.LVL6:
+ 108              	.L5:
+ 172:Core/Src/usbh_MIDI.c **** 	{
+ 109              		.loc 1 172 2 is_stmt 1 view .LVU19
+ 172:Core/Src/usbh_MIDI.c **** 	{
+ 110              		.loc 1 172 18 is_stmt 0 view .LVU20
+ 111 000e 6978     		ldrb	r1, [r5, #1]	@ zero_extendqisi2
+ARM GAS  /var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccU3Yg4i.s 			page 8
+
+
+ 172:Core/Src/usbh_MIDI.c **** 	{
+ 112              		.loc 1 172 5 view .LVU21
+ 113 0010 A1B9     		cbnz	r1, .L10
+ 114              	.L6:
+ 179:Core/Src/usbh_MIDI.c **** 	{
+ 115              		.loc 1 179 2 is_stmt 1 view .LVU22
+ 179:Core/Src/usbh_MIDI.c **** 	{
+ 116              		.loc 1 179 10 is_stmt 0 view .LVU23
+ 117 0012 D4F8C835 		ldr	r3, [r4, #1480]
+ 179:Core/Src/usbh_MIDI.c **** 	{
+ 118              		.loc 1 179 24 view .LVU24
+ 119 0016 D869     		ldr	r0, [r3, #28]
+ 179:Core/Src/usbh_MIDI.c **** 	{
+ 120              		.loc 1 179 4 view .LVU25
+ 121 0018 28B1     		cbz	r0, .L7
+ 181:Core/Src/usbh_MIDI.c **** 		phost->pActiveClass->pData = 0;
+ 122              		.loc 1 181 3 is_stmt 1 view .LVU26
+ 123 001a FFF7FEFF 		bl	free
+ 124              	.LVL7:
+ 182:Core/Src/usbh_MIDI.c **** 	}
+ 125              		.loc 1 182 3 view .LVU27
+ 182:Core/Src/usbh_MIDI.c **** 	}
+ 126              		.loc 1 182 8 is_stmt 0 view .LVU28
+ 127 001e D4F8C835 		ldr	r3, [r4, #1480]
+ 182:Core/Src/usbh_MIDI.c **** 	}
+ 128              		.loc 1 182 30 view .LVU29
+ 129 0022 0022     		movs	r2, #0
+ 130 0024 DA61     		str	r2, [r3, #28]
+ 131              	.L7:
+ 185:Core/Src/usbh_MIDI.c **** }
+ 132              		.loc 1 185 2 is_stmt 1 view .LVU30
+ 186:Core/Src/usbh_MIDI.c **** 
+ 133              		.loc 1 186 1 is_stmt 0 view .LVU31
+ 134 0026 0020     		movs	r0, #0
+ 135 0028 38BD     		pop	{r3, r4, r5, pc}
+ 136              	.LVL8:
+ 137              	.L9:
+ 167:Core/Src/usbh_MIDI.c **** 		USBH_FreePipe  (phost, MIDI_Handle->OutPipe);
+ 138              		.loc 1 167 3 is_stmt 1 view .LVU32
+ 139 002a FFF7FEFF 		bl	USBH_ClosePipe
+ 140              	.LVL9:
+ 168:Core/Src/usbh_MIDI.c **** 		MIDI_Handle->OutPipe = 0;     /* Reset the Channel as Free */
+ 141              		.loc 1 168 3 view .LVU33
+ 142 002e A978     		ldrb	r1, [r5, #2]	@ zero_extendqisi2
+ 143 0030 2046     		mov	r0, r4
+ 144 0032 FFF7FEFF 		bl	USBH_FreePipe
+ 145              	.LVL10:
+ 169:Core/Src/usbh_MIDI.c **** 	}
+ 146              		.loc 1 169 3 view .LVU34
+ 169:Core/Src/usbh_MIDI.c **** 	}
+ 147              		.loc 1 169 24 is_stmt 0 view .LVU35
+ 148 0036 0023     		movs	r3, #0
+ 149 0038 AB70     		strb	r3, [r5, #2]
+ 150 003a E8E7     		b	.L5
+ 151              	.L10:
+ 174:Core/Src/usbh_MIDI.c **** 		USBH_FreePipe  (phost, MIDI_Handle->InPipe);
+ 152              		.loc 1 174 3 is_stmt 1 view .LVU36
+ARM GAS  /var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccU3Yg4i.s 			page 9
+
+
+ 153 003c 2046     		mov	r0, r4
+ 154 003e FFF7FEFF 		bl	USBH_ClosePipe
+ 155              	.LVL11:
+ 175:Core/Src/usbh_MIDI.c **** 		MIDI_Handle->InPipe = 0;     /* Reset the Channel as Free */
+ 156              		.loc 1 175 3 view .LVU37
+ 157 0042 6978     		ldrb	r1, [r5, #1]	@ zero_extendqisi2
+ 158 0044 2046     		mov	r0, r4
+ 159 0046 FFF7FEFF 		bl	USBH_FreePipe
+ 160              	.LVL12:
+ 176:Core/Src/usbh_MIDI.c **** 	}
+ 161              		.loc 1 176 3 view .LVU38
+ 176:Core/Src/usbh_MIDI.c **** 	}
+ 162              		.loc 1 176 23 is_stmt 0 view .LVU39
+ 163 004a 0023     		movs	r3, #0
+ 164 004c 6B70     		strb	r3, [r5, #1]
+ 165 004e E0E7     		b	.L6
+ 166              		.cfi_endproc
+ 167              	.LFE239:
+ 169              		.section	.text.USBH_MIDI_InterfaceInit,"ax",%progbits
+ 170              		.align	1
+ 171              		.syntax unified
+ 172              		.thumb
+ 173              		.thumb_func
+ 175              	USBH_MIDI_InterfaceInit:
+ 176              	.LVL13:
+ 177              	.LFB238:
+  76:Core/Src/usbh_MIDI.c **** 
+ 178              		.loc 1 76 1 is_stmt 1 view -0
+ 179              		.cfi_startproc
+ 180              		@ args = 0, pretend = 0, frame = 0
+ 181              		@ frame_needed = 0, uses_anonymous_args = 0
+  76:Core/Src/usbh_MIDI.c **** 
+ 182              		.loc 1 76 1 is_stmt 0 view .LVU41
+ 183 0000 70B5     		push	{r4, r5, r6, lr}
+ 184              		.cfi_def_cfa_offset 16
+ 185              		.cfi_offset 4, -16
+ 186              		.cfi_offset 5, -12
+ 187              		.cfi_offset 6, -8
+ 188              		.cfi_offset 14, -4
+ 189 0002 84B0     		sub	sp, sp, #16
+ 190              		.cfi_def_cfa_offset 32
+ 191 0004 0446     		mov	r4, r0
+  78:Core/Src/usbh_MIDI.c **** 	uint8_t interface = 0;
+ 192              		.loc 1 78 2 is_stmt 1 view .LVU42
+ 193              	.LVL14:
+  79:Core/Src/usbh_MIDI.c **** 	MIDI_HandleTypeDef *MIDI_Handle;
+ 194              		.loc 1 79 2 view .LVU43
+  80:Core/Src/usbh_MIDI.c **** 
+ 195              		.loc 1 80 2 view .LVU44
+  84:Core/Src/usbh_MIDI.c **** 
+ 196              		.loc 1 84 2 view .LVU45
+  84:Core/Src/usbh_MIDI.c **** 
+ 197              		.loc 1 84 14 is_stmt 0 view .LVU46
+ 198 0006 FF23     		movs	r3, #255
+ 199 0008 0322     		movs	r2, #3
+ 200 000a 0121     		movs	r1, #1
+ 201 000c FFF7FEFF 		bl	USBH_FindInterface
+ARM GAS  /var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccU3Yg4i.s 			page 10
+
+
+ 202              	.LVL15:
+  86:Core/Src/usbh_MIDI.c **** 	{
+ 203              		.loc 1 86 2 is_stmt 1 view .LVU47
+  86:Core/Src/usbh_MIDI.c **** 	{
+ 204              		.loc 1 86 4 is_stmt 0 view .LVU48
+ 205 0010 FF28     		cmp	r0, #255
+ 206 0012 7CD0     		beq	.L17
+ 207 0014 0146     		mov	r1, r0
+  93:Core/Src/usbh_MIDI.c **** 
+ 208              		.loc 1 93 3 is_stmt 1 view .LVU49
+ 209 0016 2046     		mov	r0, r4
+ 210              	.LVL16:
+  93:Core/Src/usbh_MIDI.c **** 
+ 211              		.loc 1 93 3 is_stmt 0 view .LVU50
+ 212 0018 FFF7FEFF 		bl	USBH_SelectInterface
+ 213              	.LVL17:
+  95:Core/Src/usbh_MIDI.c **** 		MIDI_Handle =  phost->pActiveClass->pData;
+ 214              		.loc 1 95 3 is_stmt 1 view .LVU51
+  95:Core/Src/usbh_MIDI.c **** 		MIDI_Handle =  phost->pActiveClass->pData;
+ 215              		.loc 1 95 8 is_stmt 0 view .LVU52
+ 216 001c D4F8C855 		ldr	r5, [r4, #1480]
+  95:Core/Src/usbh_MIDI.c **** 		MIDI_Handle =  phost->pActiveClass->pData;
+ 217              		.loc 1 95 54 view .LVU53
+ 218 0020 1C20     		movs	r0, #28
+ 219 0022 FFF7FEFF 		bl	malloc
+ 220              	.LVL18:
+  95:Core/Src/usbh_MIDI.c **** 		MIDI_Handle =  phost->pActiveClass->pData;
+ 221              		.loc 1 95 30 discriminator 1 view .LVU54
+ 222 0026 E861     		str	r0, [r5, #28]
+  96:Core/Src/usbh_MIDI.c **** 
+ 223              		.loc 1 96 3 is_stmt 1 view .LVU55
+  96:Core/Src/usbh_MIDI.c **** 
+ 224              		.loc 1 96 23 is_stmt 0 view .LVU56
+ 225 0028 D4F8C835 		ldr	r3, [r4, #1480]
+  96:Core/Src/usbh_MIDI.c **** 
+ 226              		.loc 1 96 15 view .LVU57
+ 227 002c DD69     		ldr	r5, [r3, #28]
+ 228              	.LVL19:
+  98:Core/Src/usbh_MIDI.c **** 		{
+ 229              		.loc 1 98 3 is_stmt 1 view .LVU58
+  98:Core/Src/usbh_MIDI.c **** 		{
+ 230              		.loc 1 98 50 is_stmt 0 view .LVU59
+ 231 002e 94F82032 		ldrb	r3, [r4, #544]	@ zero_extendqisi2
+  98:Core/Src/usbh_MIDI.c **** 		{
+ 232              		.loc 1 98 80 view .LVU60
+ 233 0032 5A22     		movs	r2, #90
+ 234 0034 02FB0343 		mla	r3, r2, r3, r4
+ 235 0038 93F84A22 		ldrb	r2, [r3, #586]	@ zero_extendqisi2
+  98:Core/Src/usbh_MIDI.c **** 		{
+ 236              		.loc 1 98 6 view .LVU61
+ 237 003c 93F94A32 		ldrsb	r3, [r3, #586]
+  98:Core/Src/usbh_MIDI.c **** 		{
+ 238              		.loc 1 98 5 view .LVU62
+ 239 0040 002B     		cmp	r3, #0
+ 240 0042 50DB     		blt	.L19
+ 105:Core/Src/usbh_MIDI.c **** 			MIDI_Handle->OutEpSize  = phost->device.CfgDesc.Itf_Desc[phost->device.current_interface].Ep_Des
+ 241              		.loc 1 105 4 is_stmt 1 view .LVU63
+ARM GAS  /var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccU3Yg4i.s 			page 11
+
+
+ 105:Core/Src/usbh_MIDI.c **** 			MIDI_Handle->OutEpSize  = phost->device.CfgDesc.Itf_Desc[phost->device.current_interface].Ep_Des
+ 242              		.loc 1 105 23 is_stmt 0 view .LVU64
+ 243 0044 EA70     		strb	r2, [r5, #3]
+ 106:Core/Src/usbh_MIDI.c **** 		}
+ 244              		.loc 1 106 4 is_stmt 1 view .LVU65
+ 106:Core/Src/usbh_MIDI.c **** 		}
+ 245              		.loc 1 106 74 is_stmt 0 view .LVU66
+ 246 0046 94F82032 		ldrb	r3, [r4, #544]	@ zero_extendqisi2
+ 106:Core/Src/usbh_MIDI.c **** 		}
+ 247              		.loc 1 106 104 view .LVU67
+ 248 004a 5A22     		movs	r2, #90
+ 249 004c 02FB0343 		mla	r3, r2, r3, r4
+ 250 0050 B3F84C32 		ldrh	r3, [r3, #588]
+ 106:Core/Src/usbh_MIDI.c **** 		}
+ 251              		.loc 1 106 28 view .LVU68
+ 252 0054 EB80     		strh	r3, [r5, #6]	@ movhi
+ 253              	.L14:
+ 109:Core/Src/usbh_MIDI.c **** 		{
+ 254              		.loc 1 109 3 is_stmt 1 view .LVU69
+ 109:Core/Src/usbh_MIDI.c **** 		{
+ 255              		.loc 1 109 50 is_stmt 0 view .LVU70
+ 256 0056 94F82032 		ldrb	r3, [r4, #544]	@ zero_extendqisi2
+ 109:Core/Src/usbh_MIDI.c **** 		{
+ 257              		.loc 1 109 80 view .LVU71
+ 258 005a 5A22     		movs	r2, #90
+ 259 005c 02FB0343 		mla	r3, r2, r3, r4
+ 260 0060 93F85222 		ldrb	r2, [r3, #594]	@ zero_extendqisi2
+ 109:Core/Src/usbh_MIDI.c **** 		{
+ 261              		.loc 1 109 6 view .LVU72
+ 262 0064 93F95232 		ldrsb	r3, [r3, #594]
+ 109:Core/Src/usbh_MIDI.c **** 		{
+ 263              		.loc 1 109 5 view .LVU73
+ 264 0068 002B     		cmp	r3, #0
+ 265 006a 46DB     		blt	.L20
+ 116:Core/Src/usbh_MIDI.c **** 			MIDI_Handle->OutEpSize  = phost->device.CfgDesc.Itf_Desc[phost->device.current_interface].Ep_Des
+ 266              		.loc 1 116 4 is_stmt 1 view .LVU74
+ 116:Core/Src/usbh_MIDI.c **** 			MIDI_Handle->OutEpSize  = phost->device.CfgDesc.Itf_Desc[phost->device.current_interface].Ep_Des
+ 267              		.loc 1 116 23 is_stmt 0 view .LVU75
+ 268 006c EA70     		strb	r2, [r5, #3]
+ 117:Core/Src/usbh_MIDI.c **** 		}
+ 269              		.loc 1 117 4 is_stmt 1 view .LVU76
+ 117:Core/Src/usbh_MIDI.c **** 		}
+ 270              		.loc 1 117 74 is_stmt 0 view .LVU77
+ 271 006e 94F82032 		ldrb	r3, [r4, #544]	@ zero_extendqisi2
+ 117:Core/Src/usbh_MIDI.c **** 		}
+ 272              		.loc 1 117 104 view .LVU78
+ 273 0072 5A22     		movs	r2, #90
+ 274 0074 02FB0343 		mla	r3, r2, r3, r4
+ 275 0078 B3F85432 		ldrh	r3, [r3, #596]
+ 117:Core/Src/usbh_MIDI.c **** 		}
+ 276              		.loc 1 117 28 view .LVU79
+ 277 007c EB80     		strh	r3, [r5, #6]	@ movhi
+ 278              	.L16:
+ 120:Core/Src/usbh_MIDI.c **** 		MIDI_Handle->InPipe = USBH_AllocPipe(phost, MIDI_Handle->InEp);
+ 279              		.loc 1 120 3 is_stmt 1 view .LVU80
+ 120:Core/Src/usbh_MIDI.c **** 		MIDI_Handle->InPipe = USBH_AllocPipe(phost, MIDI_Handle->InEp);
+ 280              		.loc 1 120 26 is_stmt 0 view .LVU81
+ARM GAS  /var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccU3Yg4i.s 			page 12
+
+
+ 281 007e E978     		ldrb	r1, [r5, #3]	@ zero_extendqisi2
+ 282 0080 2046     		mov	r0, r4
+ 283 0082 FFF7FEFF 		bl	USBH_AllocPipe
+ 284              	.LVL20:
+ 120:Core/Src/usbh_MIDI.c **** 		MIDI_Handle->InPipe = USBH_AllocPipe(phost, MIDI_Handle->InEp);
+ 285              		.loc 1 120 24 discriminator 1 view .LVU82
+ 286 0086 A870     		strb	r0, [r5, #2]
+ 121:Core/Src/usbh_MIDI.c **** 
+ 287              		.loc 1 121 3 is_stmt 1 view .LVU83
+ 121:Core/Src/usbh_MIDI.c **** 
+ 288              		.loc 1 121 25 is_stmt 0 view .LVU84
+ 289 0088 2979     		ldrb	r1, [r5, #4]	@ zero_extendqisi2
+ 290 008a 2046     		mov	r0, r4
+ 291 008c FFF7FEFF 		bl	USBH_AllocPipe
+ 292              	.LVL21:
+ 121:Core/Src/usbh_MIDI.c **** 
+ 293              		.loc 1 121 23 discriminator 1 view .LVU85
+ 294 0090 6870     		strb	r0, [r5, #1]
+ 125:Core/Src/usbh_MIDI.c **** 				MIDI_Handle->OutPipe,
+ 295              		.loc 1 125 3 is_stmt 1 view .LVU86
+ 296 0092 EA78     		ldrb	r2, [r5, #3]	@ zero_extendqisi2
+ 297 0094 A978     		ldrb	r1, [r5, #2]	@ zero_extendqisi2
+ 298 0096 EB88     		ldrh	r3, [r5, #6]
+ 299 0098 0293     		str	r3, [sp, #8]
+ 300 009a 0226     		movs	r6, #2
+ 301 009c 0196     		str	r6, [sp, #4]
+ 302 009e 94F81D32 		ldrb	r3, [r4, #541]	@ zero_extendqisi2
+ 303 00a2 0093     		str	r3, [sp]
+ 304 00a4 94F81C32 		ldrb	r3, [r4, #540]	@ zero_extendqisi2
+ 305 00a8 2046     		mov	r0, r4
+ 306 00aa FFF7FEFF 		bl	USBH_OpenPipe
+ 307              	.LVL22:
+ 133:Core/Src/usbh_MIDI.c **** 				MIDI_Handle->InPipe,
+ 308              		.loc 1 133 3 view .LVU87
+ 309 00ae 2A79     		ldrb	r2, [r5, #4]	@ zero_extendqisi2
+ 310 00b0 6978     		ldrb	r1, [r5, #1]	@ zero_extendqisi2
+ 311 00b2 2B89     		ldrh	r3, [r5, #8]
+ 312 00b4 0293     		str	r3, [sp, #8]
+ 313 00b6 0196     		str	r6, [sp, #4]
+ 314 00b8 94F81D32 		ldrb	r3, [r4, #541]	@ zero_extendqisi2
+ 315 00bc 0093     		str	r3, [sp]
+ 316 00be 94F81C32 		ldrb	r3, [r4, #540]	@ zero_extendqisi2
+ 317 00c2 2046     		mov	r0, r4
+ 318 00c4 FFF7FEFF 		bl	USBH_OpenPipe
+ 319              	.LVL23:
+ 142:Core/Src/usbh_MIDI.c **** 
+ 320              		.loc 1 142 3 view .LVU88
+ 142:Core/Src/usbh_MIDI.c **** 
+ 321              		.loc 1 142 22 is_stmt 0 view .LVU89
+ 322 00c8 0026     		movs	r6, #0
+ 323 00ca 2E70     		strb	r6, [r5]
+ 145:Core/Src/usbh_MIDI.c **** 		USBH_LL_SetToggle  (phost, MIDI_Handle->OutPipe,0);
+ 324              		.loc 1 145 3 is_stmt 1 view .LVU90
+ 325 00cc 3246     		mov	r2, r6
+ 326 00ce 6978     		ldrb	r1, [r5, #1]	@ zero_extendqisi2
+ 327 00d0 2046     		mov	r0, r4
+ 328 00d2 FFF7FEFF 		bl	USBH_LL_SetToggle
+ARM GAS  /var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccU3Yg4i.s 			page 13
+
+
+ 329              	.LVL24:
+ 146:Core/Src/usbh_MIDI.c **** 		status = USBH_OK;
+ 330              		.loc 1 146 3 view .LVU91
+ 331 00d6 3246     		mov	r2, r6
+ 332 00d8 A978     		ldrb	r1, [r5, #2]	@ zero_extendqisi2
+ 333 00da 2046     		mov	r0, r4
+ 334 00dc FFF7FEFF 		bl	USBH_LL_SetToggle
+ 335              	.LVL25:
+ 147:Core/Src/usbh_MIDI.c **** 	}
+ 336              		.loc 1 147 3 view .LVU92
+ 147:Core/Src/usbh_MIDI.c **** 	}
+ 337              		.loc 1 147 10 is_stmt 0 view .LVU93
+ 338 00e0 3046     		mov	r0, r6
+ 339              	.LVL26:
+ 340              	.L12:
+ 149:Core/Src/usbh_MIDI.c **** }
+ 341              		.loc 1 149 2 is_stmt 1 view .LVU94
+ 150:Core/Src/usbh_MIDI.c **** 
+ 342              		.loc 1 150 1 is_stmt 0 view .LVU95
+ 343 00e2 04B0     		add	sp, sp, #16
+ 344              		.cfi_remember_state
+ 345              		.cfi_def_cfa_offset 16
+ 346              		@ sp needed
+ 347 00e4 70BD     		pop	{r4, r5, r6, pc}
+ 348              	.LVL27:
+ 349              	.L19:
+ 350              		.cfi_restore_state
+ 100:Core/Src/usbh_MIDI.c **** 			MIDI_Handle->InEpSize  = phost->device.CfgDesc.Itf_Desc[phost->device.current_interface].Ep_Desc
+ 351              		.loc 1 100 4 is_stmt 1 view .LVU96
+ 100:Core/Src/usbh_MIDI.c **** 			MIDI_Handle->InEpSize  = phost->device.CfgDesc.Itf_Desc[phost->device.current_interface].Ep_Desc
+ 352              		.loc 1 100 22 is_stmt 0 view .LVU97
+ 353 00e6 2A71     		strb	r2, [r5, #4]
+ 101:Core/Src/usbh_MIDI.c **** 		}
+ 354              		.loc 1 101 4 is_stmt 1 view .LVU98
+ 101:Core/Src/usbh_MIDI.c **** 		}
+ 355              		.loc 1 101 73 is_stmt 0 view .LVU99
+ 356 00e8 94F82032 		ldrb	r3, [r4, #544]	@ zero_extendqisi2
+ 101:Core/Src/usbh_MIDI.c **** 		}
+ 357              		.loc 1 101 103 view .LVU100
+ 358 00ec 5A22     		movs	r2, #90
+ 359 00ee 02FB0343 		mla	r3, r2, r3, r4
+ 360 00f2 B3F84C32 		ldrh	r3, [r3, #588]
+ 101:Core/Src/usbh_MIDI.c **** 		}
+ 361              		.loc 1 101 27 view .LVU101
+ 362 00f6 2B81     		strh	r3, [r5, #8]	@ movhi
+ 363 00f8 ADE7     		b	.L14
+ 364              	.L20:
+ 111:Core/Src/usbh_MIDI.c **** 			MIDI_Handle->InEpSize  = phost->device.CfgDesc.Itf_Desc[phost->device.current_interface].Ep_Desc
+ 365              		.loc 1 111 4 is_stmt 1 view .LVU102
+ 111:Core/Src/usbh_MIDI.c **** 			MIDI_Handle->InEpSize  = phost->device.CfgDesc.Itf_Desc[phost->device.current_interface].Ep_Desc
+ 366              		.loc 1 111 22 is_stmt 0 view .LVU103
+ 367 00fa 2A71     		strb	r2, [r5, #4]
+ 112:Core/Src/usbh_MIDI.c **** 		}
+ 368              		.loc 1 112 4 is_stmt 1 view .LVU104
+ 112:Core/Src/usbh_MIDI.c **** 		}
+ 369              		.loc 1 112 73 is_stmt 0 view .LVU105
+ 370 00fc 94F82032 		ldrb	r3, [r4, #544]	@ zero_extendqisi2
+ARM GAS  /var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccU3Yg4i.s 			page 14
+
+
+ 112:Core/Src/usbh_MIDI.c **** 		}
+ 371              		.loc 1 112 103 view .LVU106
+ 372 0100 5A22     		movs	r2, #90
+ 373 0102 02FB0343 		mla	r3, r2, r3, r4
+ 374 0106 B3F85432 		ldrh	r3, [r3, #596]
+ 112:Core/Src/usbh_MIDI.c **** 		}
+ 375              		.loc 1 112 27 view .LVU107
+ 376 010a 2B81     		strh	r3, [r5, #8]	@ movhi
+ 377 010c B7E7     		b	.L16
+ 378              	.LVL28:
+ 379              	.L17:
+  89:Core/Src/usbh_MIDI.c **** 	}
+ 380              		.loc 1 89 10 view .LVU108
+ 381 010e 0220     		movs	r0, #2
+ 382              	.LVL29:
+  89:Core/Src/usbh_MIDI.c **** 	}
+ 383              		.loc 1 89 10 view .LVU109
+ 384 0110 E7E7     		b	.L12
+ 385              		.cfi_endproc
+ 386              	.LFE238:
+ 388              		.section	.text.USBH_MIDI_Stop,"ax",%progbits
+ 389              		.align	1
+ 390              		.global	USBH_MIDI_Stop
+ 391              		.syntax unified
+ 392              		.thumb
+ 393              		.thumb_func
+ 395              	USBH_MIDI_Stop:
+ 396              	.LVL30:
+ 397              	.LFB241:
+ 214:Core/Src/usbh_MIDI.c ****   MIDI_HandleTypeDef *MIDI_Handle =  phost->pActiveClass->pData;
+ 398              		.loc 1 214 1 is_stmt 1 view -0
+ 399              		.cfi_startproc
+ 400              		@ args = 0, pretend = 0, frame = 0
+ 401              		@ frame_needed = 0, uses_anonymous_args = 0
+ 214:Core/Src/usbh_MIDI.c ****   MIDI_HandleTypeDef *MIDI_Handle =  phost->pActiveClass->pData;
+ 402              		.loc 1 214 1 is_stmt 0 view .LVU111
+ 403 0000 38B5     		push	{r3, r4, r5, lr}
+ 404              		.cfi_def_cfa_offset 16
+ 405              		.cfi_offset 3, -16
+ 406              		.cfi_offset 4, -12
+ 407              		.cfi_offset 5, -8
+ 408              		.cfi_offset 14, -4
+ 215:Core/Src/usbh_MIDI.c **** 
+ 409              		.loc 1 215 3 is_stmt 1 view .LVU112
+ 215:Core/Src/usbh_MIDI.c **** 
+ 410              		.loc 1 215 43 is_stmt 0 view .LVU113
+ 411 0002 D0F8C835 		ldr	r3, [r0, #1480]
+ 215:Core/Src/usbh_MIDI.c **** 
+ 412              		.loc 1 215 23 view .LVU114
+ 413 0006 DD69     		ldr	r5, [r3, #28]
+ 414              	.LVL31:
+ 217:Core/Src/usbh_MIDI.c ****   {
+ 415              		.loc 1 217 3 is_stmt 1 view .LVU115
+ 217:Core/Src/usbh_MIDI.c ****   {
+ 416              		.loc 1 217 11 is_stmt 0 view .LVU116
+ 417 0008 0378     		ldrb	r3, [r0]	@ zero_extendqisi2
+ 418 000a DBB2     		uxtb	r3, r3
+ARM GAS  /var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccU3Yg4i.s 			page 15
+
+
+ 217:Core/Src/usbh_MIDI.c ****   {
+ 419              		.loc 1 217 5 view .LVU117
+ 420 000c 0B2B     		cmp	r3, #11
+ 421 000e 01D0     		beq	.L24
+ 422              	.LVL32:
+ 423              	.L22:
+ 224:Core/Src/usbh_MIDI.c **** }
+ 424              		.loc 1 224 3 is_stmt 1 view .LVU118
+ 225:Core/Src/usbh_MIDI.c **** 
+ 425              		.loc 1 225 1 is_stmt 0 view .LVU119
+ 426 0010 0020     		movs	r0, #0
+ 427 0012 38BD     		pop	{r3, r4, r5, pc}
+ 428              	.LVL33:
+ 429              	.L24:
+ 225:Core/Src/usbh_MIDI.c **** 
+ 430              		.loc 1 225 1 view .LVU120
+ 431 0014 0446     		mov	r4, r0
+ 219:Core/Src/usbh_MIDI.c **** 
+ 432              		.loc 1 219 5 is_stmt 1 view .LVU121
+ 219:Core/Src/usbh_MIDI.c **** 
+ 433              		.loc 1 219 24 is_stmt 0 view .LVU122
+ 434 0016 0023     		movs	r3, #0
+ 435 0018 2B70     		strb	r3, [r5]
+ 221:Core/Src/usbh_MIDI.c ****     USBH_ClosePipe(phost, MIDI_Handle->OutPipe);
+ 436              		.loc 1 221 5 is_stmt 1 view .LVU123
+ 437 001a 6978     		ldrb	r1, [r5, #1]	@ zero_extendqisi2
+ 438 001c FFF7FEFF 		bl	USBH_ClosePipe
+ 439              	.LVL34:
+ 222:Core/Src/usbh_MIDI.c ****   }
+ 440              		.loc 1 222 5 view .LVU124
+ 441 0020 A978     		ldrb	r1, [r5, #2]	@ zero_extendqisi2
+ 442 0022 2046     		mov	r0, r4
+ 443 0024 FFF7FEFF 		bl	USBH_ClosePipe
+ 444              	.LVL35:
+ 445 0028 F2E7     		b	.L22
+ 446              		.cfi_endproc
+ 447              	.LFE241:
+ 449              		.section	.text.USBH_MIDI_GetLastReceivedDataSize,"ax",%progbits
+ 450              		.align	1
+ 451              		.global	USBH_MIDI_GetLastReceivedDataSize
+ 452              		.syntax unified
+ 453              		.thumb
+ 454              		.thumb_func
+ 456              	USBH_MIDI_GetLastReceivedDataSize:
+ 457              	.LVL36:
+ 458              	.LFB244:
+ 284:Core/Src/usbh_MIDI.c ****   
+ 285:Core/Src/usbh_MIDI.c **** /*-------------------------------------------------------------------------------------------------
+ 286:Core/Src/usbh_MIDI.c **** 
+ 287:Core/Src/usbh_MIDI.c **** /**
+ 288:Core/Src/usbh_MIDI.c ****  * @brief  This function return last recieved data size
+ 289:Core/Src/usbh_MIDI.c ****  * @param  None
+ 290:Core/Src/usbh_MIDI.c ****  * @retval None
+ 291:Core/Src/usbh_MIDI.c ****  */
+ 292:Core/Src/usbh_MIDI.c **** uint16_t USBH_MIDI_GetLastReceivedDataSize(USBH_HandleTypeDef *phost)
+ 293:Core/Src/usbh_MIDI.c **** {
+ 459              		.loc 1 293 1 view -0
+ARM GAS  /var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccU3Yg4i.s 			page 16
+
+
+ 460              		.cfi_startproc
+ 461              		@ args = 0, pretend = 0, frame = 0
+ 462              		@ frame_needed = 0, uses_anonymous_args = 0
+ 463              		.loc 1 293 1 is_stmt 0 view .LVU126
+ 464 0000 08B5     		push	{r3, lr}
+ 465              		.cfi_def_cfa_offset 8
+ 466              		.cfi_offset 3, -8
+ 467              		.cfi_offset 14, -4
+ 294:Core/Src/usbh_MIDI.c **** 	MIDI_HandleTypeDef *MIDI_Handle =  phost->pActiveClass->pData;
+ 468              		.loc 1 294 2 is_stmt 1 view .LVU127
+ 469              		.loc 1 294 42 is_stmt 0 view .LVU128
+ 470 0002 D0F8C835 		ldr	r3, [r0, #1480]
+ 471              		.loc 1 294 22 view .LVU129
+ 472 0006 DA69     		ldr	r2, [r3, #28]
+ 473              	.LVL37:
+ 295:Core/Src/usbh_MIDI.c **** 
+ 296:Core/Src/usbh_MIDI.c **** 	if(phost->gState == HOST_CLASS)
+ 474              		.loc 1 296 2 is_stmt 1 view .LVU130
+ 475              		.loc 1 296 10 is_stmt 0 view .LVU131
+ 476 0008 0378     		ldrb	r3, [r0]	@ zero_extendqisi2
+ 477 000a DBB2     		uxtb	r3, r3
+ 478              		.loc 1 296 4 view .LVU132
+ 479 000c 0B2B     		cmp	r3, #11
+ 480 000e 01D0     		beq	.L29
+ 297:Core/Src/usbh_MIDI.c **** 	{
+ 298:Core/Src/usbh_MIDI.c **** 		return USBH_LL_GetLastXferSize(phost, MIDI_Handle->InPipe);
+ 299:Core/Src/usbh_MIDI.c **** 	}
+ 300:Core/Src/usbh_MIDI.c **** 	else
+ 301:Core/Src/usbh_MIDI.c **** 	{
+ 302:Core/Src/usbh_MIDI.c **** 		return 0;
+ 481              		.loc 1 302 10 view .LVU133
+ 482 0010 0020     		movs	r0, #0
+ 483              	.LVL38:
+ 484              	.L26:
+ 303:Core/Src/usbh_MIDI.c **** 	}
+ 304:Core/Src/usbh_MIDI.c **** }
+ 485              		.loc 1 304 1 view .LVU134
+ 486 0012 08BD     		pop	{r3, pc}
+ 487              	.LVL39:
+ 488              	.L29:
+ 298:Core/Src/usbh_MIDI.c **** 	}
+ 489              		.loc 1 298 3 is_stmt 1 view .LVU135
+ 298:Core/Src/usbh_MIDI.c **** 	}
+ 490              		.loc 1 298 10 is_stmt 0 view .LVU136
+ 491 0014 5178     		ldrb	r1, [r2, #1]	@ zero_extendqisi2
+ 492 0016 FFF7FEFF 		bl	USBH_LL_GetLastXferSize
+ 493              	.LVL40:
+ 298:Core/Src/usbh_MIDI.c **** 	}
+ 494              		.loc 1 298 10 discriminator 1 view .LVU137
+ 495 001a 80B2     		uxth	r0, r0
+ 298:Core/Src/usbh_MIDI.c **** 	}
+ 496              		.loc 1 298 10 view .LVU138
+ 497 001c F9E7     		b	.L26
+ 498              		.cfi_endproc
+ 499              	.LFE244:
+ 501              		.section	.text.USBH_MIDI_Transmit,"ax",%progbits
+ 502              		.align	1
+ARM GAS  /var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccU3Yg4i.s 			page 17
+
+
+ 503              		.global	USBH_MIDI_Transmit
+ 504              		.syntax unified
+ 505              		.thumb
+ 506              		.thumb_func
+ 508              	USBH_MIDI_Transmit:
+ 509              	.LVL41:
+ 510              	.LFB245:
+ 305:Core/Src/usbh_MIDI.c **** 
+ 306:Core/Src/usbh_MIDI.c **** /*-------------------------------------------------------------------------------------------------
+ 307:Core/Src/usbh_MIDI.c **** 
+ 308:Core/Src/usbh_MIDI.c **** /**
+ 309:Core/Src/usbh_MIDI.c ****  * @brief  This function prepares the state before issuing the class specific commands
+ 310:Core/Src/usbh_MIDI.c ****  * @param  None
+ 311:Core/Src/usbh_MIDI.c ****  * @retval None
+ 312:Core/Src/usbh_MIDI.c ****  */
+ 313:Core/Src/usbh_MIDI.c **** USBH_StatusTypeDef  USBH_MIDI_Transmit(USBH_HandleTypeDef *phost, uint8_t *pbuff, uint16_t length)
+ 314:Core/Src/usbh_MIDI.c **** {
+ 511              		.loc 1 314 1 is_stmt 1 view -0
+ 512              		.cfi_startproc
+ 513              		@ args = 0, pretend = 0, frame = 0
+ 514              		@ frame_needed = 0, uses_anonymous_args = 0
+ 515              		@ link register save eliminated.
+ 315:Core/Src/usbh_MIDI.c **** 	USBH_StatusTypeDef Status = USBH_BUSY;
+ 516              		.loc 1 315 2 view .LVU140
+ 316:Core/Src/usbh_MIDI.c **** 	MIDI_HandleTypeDef *MIDI_Handle =  phost->pActiveClass->pData;
+ 517              		.loc 1 316 2 view .LVU141
+ 518              		.loc 1 316 42 is_stmt 0 view .LVU142
+ 519 0000 D0F8C835 		ldr	r3, [r0, #1480]
+ 520              		.loc 1 316 22 view .LVU143
+ 521 0004 DB69     		ldr	r3, [r3, #28]
+ 522              	.LVL42:
+ 317:Core/Src/usbh_MIDI.c **** 
+ 318:Core/Src/usbh_MIDI.c **** 	if((MIDI_Handle->state == MIDI_IDLE_STATE) || (MIDI_Handle->state == MIDI_TRANSFER_DATA))
+ 523              		.loc 1 318 2 is_stmt 1 view .LVU144
+ 524              		.loc 1 318 17 is_stmt 0 view .LVU145
+ 525 0006 1878     		ldrb	r0, [r3]	@ zero_extendqisi2
+ 526              	.LVL43:
+ 527              		.loc 1 318 4 view .LVU146
+ 528 0008 0128     		cmp	r0, #1
+ 529 000a 01D9     		bls	.L33
+ 315:Core/Src/usbh_MIDI.c **** 	MIDI_HandleTypeDef *MIDI_Handle =  phost->pActiveClass->pData;
+ 530              		.loc 1 315 21 view .LVU147
+ 531 000c 0120     		movs	r0, #1
+ 532              	.LVL44:
+ 319:Core/Src/usbh_MIDI.c **** 	{
+ 320:Core/Src/usbh_MIDI.c **** 		MIDI_Handle->pTxData = pbuff;
+ 321:Core/Src/usbh_MIDI.c **** 		MIDI_Handle->TxDataLength = length;
+ 322:Core/Src/usbh_MIDI.c **** 		MIDI_Handle->state = MIDI_TRANSFER_DATA;
+ 323:Core/Src/usbh_MIDI.c **** 		MIDI_Handle->data_tx_state = MIDI_SEND_DATA;
+ 324:Core/Src/usbh_MIDI.c **** 		Status = USBH_OK;
+ 325:Core/Src/usbh_MIDI.c **** #if (USBH_USE_OS == 1)
+ 326:Core/Src/usbh_MIDI.c **** 		osMessagePut ( phost->os_event, USBH_CLASS_EVENT, 0);
+ 327:Core/Src/usbh_MIDI.c **** #endif
+ 328:Core/Src/usbh_MIDI.c **** 	}
+ 329:Core/Src/usbh_MIDI.c **** 	return Status;
+ 533              		.loc 1 329 2 is_stmt 1 view .LVU148
+ 330:Core/Src/usbh_MIDI.c **** }
+ARM GAS  /var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccU3Yg4i.s 			page 18
+
+
+ 534              		.loc 1 330 1 is_stmt 0 view .LVU149
+ 535 000e 7047     		bx	lr
+ 536              	.LVL45:
+ 537              	.L33:
+ 320:Core/Src/usbh_MIDI.c **** 		MIDI_Handle->TxDataLength = length;
+ 538              		.loc 1 320 3 is_stmt 1 view .LVU150
+ 320:Core/Src/usbh_MIDI.c **** 		MIDI_Handle->TxDataLength = length;
+ 539              		.loc 1 320 24 is_stmt 0 view .LVU151
+ 540 0010 D960     		str	r1, [r3, #12]
+ 321:Core/Src/usbh_MIDI.c **** 		MIDI_Handle->state = MIDI_TRANSFER_DATA;
+ 541              		.loc 1 321 3 is_stmt 1 view .LVU152
+ 321:Core/Src/usbh_MIDI.c **** 		MIDI_Handle->state = MIDI_TRANSFER_DATA;
+ 542              		.loc 1 321 29 is_stmt 0 view .LVU153
+ 543 0012 9A82     		strh	r2, [r3, #20]	@ movhi
+ 322:Core/Src/usbh_MIDI.c **** 		MIDI_Handle->data_tx_state = MIDI_SEND_DATA;
+ 544              		.loc 1 322 3 is_stmt 1 view .LVU154
+ 322:Core/Src/usbh_MIDI.c **** 		MIDI_Handle->data_tx_state = MIDI_SEND_DATA;
+ 545              		.loc 1 322 22 is_stmt 0 view .LVU155
+ 546 0014 0122     		movs	r2, #1
+ 547              	.LVL46:
+ 322:Core/Src/usbh_MIDI.c **** 		MIDI_Handle->data_tx_state = MIDI_SEND_DATA;
+ 548              		.loc 1 322 22 view .LVU156
+ 549 0016 1A70     		strb	r2, [r3]
+ 323:Core/Src/usbh_MIDI.c **** 		Status = USBH_OK;
+ 550              		.loc 1 323 3 is_stmt 1 view .LVU157
+ 323:Core/Src/usbh_MIDI.c **** 		Status = USBH_OK;
+ 551              		.loc 1 323 30 is_stmt 0 view .LVU158
+ 552 0018 1A76     		strb	r2, [r3, #24]
+ 324:Core/Src/usbh_MIDI.c **** #if (USBH_USE_OS == 1)
+ 553              		.loc 1 324 3 is_stmt 1 view .LVU159
+ 554              	.LVL47:
+ 324:Core/Src/usbh_MIDI.c **** #if (USBH_USE_OS == 1)
+ 555              		.loc 1 324 10 is_stmt 0 view .LVU160
+ 556 001a 0020     		movs	r0, #0
+ 557 001c 7047     		bx	lr
+ 558              		.cfi_endproc
+ 559              	.LFE245:
+ 561              		.section	.text.USBH_MIDI_Receive,"ax",%progbits
+ 562              		.align	1
+ 563              		.global	USBH_MIDI_Receive
+ 564              		.syntax unified
+ 565              		.thumb
+ 566              		.thumb_func
+ 568              	USBH_MIDI_Receive:
+ 569              	.LVL48:
+ 570              	.LFB246:
+ 331:Core/Src/usbh_MIDI.c **** 
+ 332:Core/Src/usbh_MIDI.c **** /*-------------------------------------------------------------------------------------------------
+ 333:Core/Src/usbh_MIDI.c **** 
+ 334:Core/Src/usbh_MIDI.c **** /**
+ 335:Core/Src/usbh_MIDI.c ****  * @brief  This function prepares the state before issuing the class specific commands
+ 336:Core/Src/usbh_MIDI.c ****  * @param  None
+ 337:Core/Src/usbh_MIDI.c ****  * @retval None
+ 338:Core/Src/usbh_MIDI.c ****  */
+ 339:Core/Src/usbh_MIDI.c **** USBH_StatusTypeDef  USBH_MIDI_Receive(USBH_HandleTypeDef *phost, uint8_t *pbuff, uint16_t length)
+ 340:Core/Src/usbh_MIDI.c **** {
+ 571              		.loc 1 340 1 is_stmt 1 view -0
+ARM GAS  /var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccU3Yg4i.s 			page 19
+
+
+ 572              		.cfi_startproc
+ 573              		@ args = 0, pretend = 0, frame = 0
+ 574              		@ frame_needed = 0, uses_anonymous_args = 0
+ 575              		@ link register save eliminated.
+ 341:Core/Src/usbh_MIDI.c **** 	USBH_StatusTypeDef Status = USBH_BUSY;
+ 576              		.loc 1 341 2 view .LVU162
+ 342:Core/Src/usbh_MIDI.c **** 	MIDI_HandleTypeDef *MIDI_Handle =  phost->pActiveClass->pData;
+ 577              		.loc 1 342 2 view .LVU163
+ 578              		.loc 1 342 42 is_stmt 0 view .LVU164
+ 579 0000 D0F8C835 		ldr	r3, [r0, #1480]
+ 580              		.loc 1 342 22 view .LVU165
+ 581 0004 DB69     		ldr	r3, [r3, #28]
+ 582              	.LVL49:
+ 343:Core/Src/usbh_MIDI.c **** 
+ 344:Core/Src/usbh_MIDI.c **** 	if((MIDI_Handle->state == MIDI_IDLE_STATE) || (MIDI_Handle->state == MIDI_TRANSFER_DATA))
+ 583              		.loc 1 344 2 is_stmt 1 view .LVU166
+ 584              		.loc 1 344 17 is_stmt 0 view .LVU167
+ 585 0006 1878     		ldrb	r0, [r3]	@ zero_extendqisi2
+ 586              	.LVL50:
+ 587              		.loc 1 344 4 view .LVU168
+ 588 0008 0128     		cmp	r0, #1
+ 589 000a 01D9     		bls	.L37
+ 341:Core/Src/usbh_MIDI.c **** 	MIDI_HandleTypeDef *MIDI_Handle =  phost->pActiveClass->pData;
+ 590              		.loc 1 341 21 view .LVU169
+ 591 000c 0120     		movs	r0, #1
+ 592              	.LVL51:
+ 345:Core/Src/usbh_MIDI.c **** 	{
+ 346:Core/Src/usbh_MIDI.c **** 		MIDI_Handle->pRxData = pbuff;
+ 347:Core/Src/usbh_MIDI.c **** 		MIDI_Handle->RxDataLength = length;
+ 348:Core/Src/usbh_MIDI.c **** 		MIDI_Handle->state = MIDI_TRANSFER_DATA;
+ 349:Core/Src/usbh_MIDI.c **** 		MIDI_Handle->data_rx_state = MIDI_RECEIVE_DATA;
+ 350:Core/Src/usbh_MIDI.c **** 		Status = USBH_OK;
+ 351:Core/Src/usbh_MIDI.c **** #if (USBH_USE_OS == 1)
+ 352:Core/Src/usbh_MIDI.c **** 		osMessagePut ( phost->os_event, USBH_CLASS_EVENT, 0);
+ 353:Core/Src/usbh_MIDI.c **** #endif
+ 354:Core/Src/usbh_MIDI.c **** 	}
+ 355:Core/Src/usbh_MIDI.c **** 	return Status;
+ 593              		.loc 1 355 2 is_stmt 1 view .LVU170
+ 356:Core/Src/usbh_MIDI.c **** }
+ 594              		.loc 1 356 1 is_stmt 0 view .LVU171
+ 595 000e 7047     		bx	lr
+ 596              	.LVL52:
+ 597              	.L37:
+ 346:Core/Src/usbh_MIDI.c **** 		MIDI_Handle->RxDataLength = length;
+ 598              		.loc 1 346 3 is_stmt 1 view .LVU172
+ 346:Core/Src/usbh_MIDI.c **** 		MIDI_Handle->RxDataLength = length;
+ 599              		.loc 1 346 24 is_stmt 0 view .LVU173
+ 600 0010 1961     		str	r1, [r3, #16]
+ 347:Core/Src/usbh_MIDI.c **** 		MIDI_Handle->state = MIDI_TRANSFER_DATA;
+ 601              		.loc 1 347 3 is_stmt 1 view .LVU174
+ 347:Core/Src/usbh_MIDI.c **** 		MIDI_Handle->state = MIDI_TRANSFER_DATA;
+ 602              		.loc 1 347 29 is_stmt 0 view .LVU175
+ 603 0012 DA82     		strh	r2, [r3, #22]	@ movhi
+ 348:Core/Src/usbh_MIDI.c **** 		MIDI_Handle->data_rx_state = MIDI_RECEIVE_DATA;
+ 604              		.loc 1 348 3 is_stmt 1 view .LVU176
+ 348:Core/Src/usbh_MIDI.c **** 		MIDI_Handle->data_rx_state = MIDI_RECEIVE_DATA;
+ 605              		.loc 1 348 22 is_stmt 0 view .LVU177
+ARM GAS  /var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccU3Yg4i.s 			page 20
+
+
+ 606 0014 0122     		movs	r2, #1
+ 607              	.LVL53:
+ 348:Core/Src/usbh_MIDI.c **** 		MIDI_Handle->data_rx_state = MIDI_RECEIVE_DATA;
+ 608              		.loc 1 348 22 view .LVU178
+ 609 0016 1A70     		strb	r2, [r3]
+ 349:Core/Src/usbh_MIDI.c **** 		Status = USBH_OK;
+ 610              		.loc 1 349 3 is_stmt 1 view .LVU179
+ 349:Core/Src/usbh_MIDI.c **** 		Status = USBH_OK;
+ 611              		.loc 1 349 30 is_stmt 0 view .LVU180
+ 612 0018 0322     		movs	r2, #3
+ 613 001a 5A76     		strb	r2, [r3, #25]
+ 350:Core/Src/usbh_MIDI.c **** #if (USBH_USE_OS == 1)
+ 614              		.loc 1 350 3 is_stmt 1 view .LVU181
+ 615              	.LVL54:
+ 350:Core/Src/usbh_MIDI.c **** #if (USBH_USE_OS == 1)
+ 616              		.loc 1 350 10 is_stmt 0 view .LVU182
+ 617 001c 0020     		movs	r0, #0
+ 618 001e 7047     		bx	lr
+ 619              		.cfi_endproc
+ 620              	.LFE246:
+ 622              		.section	.text.USBH_MIDI_TransmitCallback,"ax",%progbits
+ 623              		.align	1
+ 624              		.weak	USBH_MIDI_TransmitCallback
+ 625              		.syntax unified
+ 626              		.thumb
+ 627              		.thumb_func
+ 629              	USBH_MIDI_TransmitCallback:
+ 630              	.LVL55:
+ 631              	.LFB249:
+ 357:Core/Src/usbh_MIDI.c **** 
+ 358:Core/Src/usbh_MIDI.c **** /*-------------------------------------------------------------------------------------------------
+ 359:Core/Src/usbh_MIDI.c **** 
+ 360:Core/Src/usbh_MIDI.c **** /**
+ 361:Core/Src/usbh_MIDI.c ****  * @brief  The function is responsible for sending data to the device
+ 362:Core/Src/usbh_MIDI.c ****  *  @param  pdev: Selected device
+ 363:Core/Src/usbh_MIDI.c ****  * @retval None
+ 364:Core/Src/usbh_MIDI.c ****  */
+ 365:Core/Src/usbh_MIDI.c **** static void MIDI_ProcessTransmission(USBH_HandleTypeDef *phost)
+ 366:Core/Src/usbh_MIDI.c **** {
+ 367:Core/Src/usbh_MIDI.c **** 	MIDI_HandleTypeDef *MIDI_Handle =  phost->pActiveClass->pData;
+ 368:Core/Src/usbh_MIDI.c **** 	USBH_URBStateTypeDef URB_Status = USBH_URB_IDLE;
+ 369:Core/Src/usbh_MIDI.c **** 
+ 370:Core/Src/usbh_MIDI.c **** 	switch(MIDI_Handle->data_tx_state)
+ 371:Core/Src/usbh_MIDI.c **** 	{
+ 372:Core/Src/usbh_MIDI.c **** 
+ 373:Core/Src/usbh_MIDI.c **** 	case MIDI_SEND_DATA:
+ 374:Core/Src/usbh_MIDI.c **** 		if(MIDI_Handle->TxDataLength > MIDI_Handle->OutEpSize)
+ 375:Core/Src/usbh_MIDI.c **** 		{
+ 376:Core/Src/usbh_MIDI.c **** 			USBH_BulkSendData (phost,
+ 377:Core/Src/usbh_MIDI.c **** 					MIDI_Handle->pTxData,
+ 378:Core/Src/usbh_MIDI.c **** 					MIDI_Handle->OutEpSize,
+ 379:Core/Src/usbh_MIDI.c **** 					MIDI_Handle->OutPipe,
+ 380:Core/Src/usbh_MIDI.c **** 					1);
+ 381:Core/Src/usbh_MIDI.c **** 		}
+ 382:Core/Src/usbh_MIDI.c **** 		else
+ 383:Core/Src/usbh_MIDI.c **** 		{
+ 384:Core/Src/usbh_MIDI.c **** 			USBH_BulkSendData (phost,
+ARM GAS  /var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccU3Yg4i.s 			page 21
+
+
+ 385:Core/Src/usbh_MIDI.c **** 					MIDI_Handle->pTxData,
+ 386:Core/Src/usbh_MIDI.c **** 					MIDI_Handle->TxDataLength,
+ 387:Core/Src/usbh_MIDI.c **** 					MIDI_Handle->OutPipe,
+ 388:Core/Src/usbh_MIDI.c **** 					1);
+ 389:Core/Src/usbh_MIDI.c **** 		}
+ 390:Core/Src/usbh_MIDI.c **** 
+ 391:Core/Src/usbh_MIDI.c **** 		MIDI_Handle->data_tx_state = MIDI_SEND_DATA_WAIT;
+ 392:Core/Src/usbh_MIDI.c **** 
+ 393:Core/Src/usbh_MIDI.c **** 		break;
+ 394:Core/Src/usbh_MIDI.c **** 
+ 395:Core/Src/usbh_MIDI.c **** 	case MIDI_SEND_DATA_WAIT:
+ 396:Core/Src/usbh_MIDI.c **** 
+ 397:Core/Src/usbh_MIDI.c **** 		URB_Status = USBH_LL_GetURBState(phost, MIDI_Handle->OutPipe);
+ 398:Core/Src/usbh_MIDI.c **** 
+ 399:Core/Src/usbh_MIDI.c **** 		/*Check the status done for transmission*/
+ 400:Core/Src/usbh_MIDI.c **** 		if(URB_Status == USBH_URB_DONE )
+ 401:Core/Src/usbh_MIDI.c **** 		{
+ 402:Core/Src/usbh_MIDI.c **** 			if(MIDI_Handle->TxDataLength > MIDI_Handle->OutEpSize)
+ 403:Core/Src/usbh_MIDI.c **** 			{
+ 404:Core/Src/usbh_MIDI.c **** 				MIDI_Handle->TxDataLength -= MIDI_Handle->OutEpSize ;
+ 405:Core/Src/usbh_MIDI.c **** 				MIDI_Handle->pTxData += MIDI_Handle->OutEpSize;
+ 406:Core/Src/usbh_MIDI.c **** 			}
+ 407:Core/Src/usbh_MIDI.c **** 			else
+ 408:Core/Src/usbh_MIDI.c **** 			{
+ 409:Core/Src/usbh_MIDI.c **** 				MIDI_Handle->TxDataLength = 0;
+ 410:Core/Src/usbh_MIDI.c **** 			}
+ 411:Core/Src/usbh_MIDI.c **** 
+ 412:Core/Src/usbh_MIDI.c **** 			if( MIDI_Handle->TxDataLength > 0)
+ 413:Core/Src/usbh_MIDI.c **** 			{
+ 414:Core/Src/usbh_MIDI.c **** 				MIDI_Handle->data_tx_state = MIDI_SEND_DATA;
+ 415:Core/Src/usbh_MIDI.c **** 			}
+ 416:Core/Src/usbh_MIDI.c **** 			else
+ 417:Core/Src/usbh_MIDI.c **** 			{
+ 418:Core/Src/usbh_MIDI.c **** 				MIDI_Handle->data_tx_state = MIDI_IDLE;
+ 419:Core/Src/usbh_MIDI.c **** 				USBH_MIDI_TransmitCallback(phost);
+ 420:Core/Src/usbh_MIDI.c **** 			}
+ 421:Core/Src/usbh_MIDI.c **** #if (USBH_USE_OS == 1)
+ 422:Core/Src/usbh_MIDI.c **** 			osMessagePut ( phost->os_event, USBH_CLASS_EVENT, 0);
+ 423:Core/Src/usbh_MIDI.c **** #endif
+ 424:Core/Src/usbh_MIDI.c **** 		}
+ 425:Core/Src/usbh_MIDI.c **** 		else if( URB_Status == USBH_URB_NOTREADY )
+ 426:Core/Src/usbh_MIDI.c **** 		{
+ 427:Core/Src/usbh_MIDI.c **** 			MIDI_Handle->data_tx_state = MIDI_SEND_DATA;
+ 428:Core/Src/usbh_MIDI.c **** #if (USBH_USE_OS == 1)
+ 429:Core/Src/usbh_MIDI.c **** 			osMessagePut ( phost->os_event, USBH_CLASS_EVENT, 0);
+ 430:Core/Src/usbh_MIDI.c **** #endif
+ 431:Core/Src/usbh_MIDI.c **** 		}
+ 432:Core/Src/usbh_MIDI.c **** 		break;
+ 433:Core/Src/usbh_MIDI.c **** 	default:
+ 434:Core/Src/usbh_MIDI.c **** 		break;
+ 435:Core/Src/usbh_MIDI.c **** 	}
+ 436:Core/Src/usbh_MIDI.c **** }
+ 437:Core/Src/usbh_MIDI.c **** 
+ 438:Core/Src/usbh_MIDI.c **** /*-------------------------------------------------------------------------------------------------
+ 439:Core/Src/usbh_MIDI.c **** 
+ 440:Core/Src/usbh_MIDI.c **** /**
+ 441:Core/Src/usbh_MIDI.c ****  * @brief  This function responsible for reception of data from the device
+ARM GAS  /var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccU3Yg4i.s 			page 22
+
+
+ 442:Core/Src/usbh_MIDI.c ****  *  @param  pdev: Selected device
+ 443:Core/Src/usbh_MIDI.c ****  * @retval None
+ 444:Core/Src/usbh_MIDI.c ****  */
+ 445:Core/Src/usbh_MIDI.c **** 
+ 446:Core/Src/usbh_MIDI.c **** static void MIDI_ProcessReception(USBH_HandleTypeDef *phost)
+ 447:Core/Src/usbh_MIDI.c **** {
+ 448:Core/Src/usbh_MIDI.c **** 	MIDI_HandleTypeDef *MIDI_Handle =  phost->pActiveClass->pData;
+ 449:Core/Src/usbh_MIDI.c **** 	USBH_URBStateTypeDef URB_Status = USBH_URB_IDLE;
+ 450:Core/Src/usbh_MIDI.c **** 	uint16_t length;
+ 451:Core/Src/usbh_MIDI.c **** 
+ 452:Core/Src/usbh_MIDI.c **** 	switch(MIDI_Handle->data_rx_state)
+ 453:Core/Src/usbh_MIDI.c **** 	{
+ 454:Core/Src/usbh_MIDI.c **** 
+ 455:Core/Src/usbh_MIDI.c **** 	case MIDI_RECEIVE_DATA:
+ 456:Core/Src/usbh_MIDI.c **** 
+ 457:Core/Src/usbh_MIDI.c **** 		USBH_BulkReceiveData (phost,
+ 458:Core/Src/usbh_MIDI.c **** 				MIDI_Handle->pRxData,
+ 459:Core/Src/usbh_MIDI.c **** 				MIDI_Handle->InEpSize,
+ 460:Core/Src/usbh_MIDI.c **** 				MIDI_Handle->InPipe);
+ 461:Core/Src/usbh_MIDI.c **** 
+ 462:Core/Src/usbh_MIDI.c **** 		MIDI_Handle->data_rx_state = MIDI_RECEIVE_DATA_WAIT;
+ 463:Core/Src/usbh_MIDI.c **** 		//BSP_LED_On(LED_Red); //ok only here
+ 464:Core/Src/usbh_MIDI.c **** 
+ 465:Core/Src/usbh_MIDI.c **** 		break;
+ 466:Core/Src/usbh_MIDI.c **** 
+ 467:Core/Src/usbh_MIDI.c **** 	case MIDI_RECEIVE_DATA_WAIT:
+ 468:Core/Src/usbh_MIDI.c **** 
+ 469:Core/Src/usbh_MIDI.c **** 		URB_Status = USBH_LL_GetURBState(phost, MIDI_Handle->InPipe);
+ 470:Core/Src/usbh_MIDI.c **** 
+ 471:Core/Src/usbh_MIDI.c **** 
+ 472:Core/Src/usbh_MIDI.c **** 
+ 473:Core/Src/usbh_MIDI.c **** 		/*Check the status done for reception*/
+ 474:Core/Src/usbh_MIDI.c **** 		if(URB_Status == USBH_URB_DONE )
+ 475:Core/Src/usbh_MIDI.c **** 		{
+ 476:Core/Src/usbh_MIDI.c **** 
+ 477:Core/Src/usbh_MIDI.c **** 
+ 478:Core/Src/usbh_MIDI.c **** 			length = USBH_LL_GetLastXferSize(phost, MIDI_Handle->InPipe);
+ 479:Core/Src/usbh_MIDI.c **** 
+ 480:Core/Src/usbh_MIDI.c **** 			if(((MIDI_Handle->RxDataLength - length) > 0) && (length > MIDI_Handle->InEpSize))
+ 481:Core/Src/usbh_MIDI.c **** 			{
+ 482:Core/Src/usbh_MIDI.c **** 				MIDI_Handle->RxDataLength -= length ;
+ 483:Core/Src/usbh_MIDI.c **** 				MIDI_Handle->pRxData += length;
+ 484:Core/Src/usbh_MIDI.c **** 				MIDI_Handle->data_rx_state = MIDI_RECEIVE_DATA;
+ 485:Core/Src/usbh_MIDI.c **** 			}
+ 486:Core/Src/usbh_MIDI.c **** 			else
+ 487:Core/Src/usbh_MIDI.c **** 			{
+ 488:Core/Src/usbh_MIDI.c **** 				MIDI_Handle->data_rx_state = MIDI_IDLE;
+ 489:Core/Src/usbh_MIDI.c **** 				USBH_MIDI_ReceiveCallback(phost);
+ 490:Core/Src/usbh_MIDI.c **** 			}
+ 491:Core/Src/usbh_MIDI.c **** #if (USBH_USE_OS == 1)
+ 492:Core/Src/usbh_MIDI.c **** 			osMessagePut ( phost->os_event, USBH_CLASS_EVENT, 0);
+ 493:Core/Src/usbh_MIDI.c **** #endif
+ 494:Core/Src/usbh_MIDI.c **** 		}
+ 495:Core/Src/usbh_MIDI.c **** 		break;
+ 496:Core/Src/usbh_MIDI.c **** 
+ 497:Core/Src/usbh_MIDI.c **** 	default:
+ 498:Core/Src/usbh_MIDI.c **** 		break;
+ARM GAS  /var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccU3Yg4i.s 			page 23
+
+
+ 499:Core/Src/usbh_MIDI.c **** 	}
+ 500:Core/Src/usbh_MIDI.c **** }
+ 501:Core/Src/usbh_MIDI.c **** 
+ 502:Core/Src/usbh_MIDI.c **** 
+ 503:Core/Src/usbh_MIDI.c **** /*-------------------------------------------------------------------------------------------------
+ 504:Core/Src/usbh_MIDI.c **** 
+ 505:Core/Src/usbh_MIDI.c **** /**
+ 506:Core/Src/usbh_MIDI.c ****  * @brief  The function informs user that data have been transmitted.
+ 507:Core/Src/usbh_MIDI.c ****  *  @param  pdev: Selected device
+ 508:Core/Src/usbh_MIDI.c ****  * @retval None
+ 509:Core/Src/usbh_MIDI.c ****  */
+ 510:Core/Src/usbh_MIDI.c **** __weak void USBH_MIDI_TransmitCallback(USBH_HandleTypeDef *phost)
+ 511:Core/Src/usbh_MIDI.c **** {
+ 632              		.loc 1 511 1 is_stmt 1 view -0
+ 633              		.cfi_startproc
+ 634              		@ args = 0, pretend = 0, frame = 0
+ 635              		@ frame_needed = 0, uses_anonymous_args = 0
+ 636              		@ link register save eliminated.
+ 512:Core/Src/usbh_MIDI.c **** 
+ 513:Core/Src/usbh_MIDI.c **** }
+ 637              		.loc 1 513 1 view .LVU184
+ 638 0000 7047     		bx	lr
+ 639              		.cfi_endproc
+ 640              	.LFE249:
+ 642              		.section	.text.MIDI_ProcessTransmission,"ax",%progbits
+ 643              		.align	1
+ 644              		.syntax unified
+ 645              		.thumb
+ 646              		.thumb_func
+ 648              	MIDI_ProcessTransmission:
+ 649              	.LVL56:
+ 650              	.LFB247:
+ 366:Core/Src/usbh_MIDI.c **** 	MIDI_HandleTypeDef *MIDI_Handle =  phost->pActiveClass->pData;
+ 651              		.loc 1 366 1 view -0
+ 652              		.cfi_startproc
+ 653              		@ args = 0, pretend = 0, frame = 0
+ 654              		@ frame_needed = 0, uses_anonymous_args = 0
+ 366:Core/Src/usbh_MIDI.c **** 	MIDI_HandleTypeDef *MIDI_Handle =  phost->pActiveClass->pData;
+ 655              		.loc 1 366 1 is_stmt 0 view .LVU186
+ 656 0000 30B5     		push	{r4, r5, lr}
+ 657              		.cfi_def_cfa_offset 12
+ 658              		.cfi_offset 4, -12
+ 659              		.cfi_offset 5, -8
+ 660              		.cfi_offset 14, -4
+ 661 0002 83B0     		sub	sp, sp, #12
+ 662              		.cfi_def_cfa_offset 24
+ 663 0004 0546     		mov	r5, r0
+ 367:Core/Src/usbh_MIDI.c **** 	USBH_URBStateTypeDef URB_Status = USBH_URB_IDLE;
+ 664              		.loc 1 367 2 is_stmt 1 view .LVU187
+ 367:Core/Src/usbh_MIDI.c **** 	USBH_URBStateTypeDef URB_Status = USBH_URB_IDLE;
+ 665              		.loc 1 367 42 is_stmt 0 view .LVU188
+ 666 0006 D0F8C835 		ldr	r3, [r0, #1480]
+ 367:Core/Src/usbh_MIDI.c **** 	USBH_URBStateTypeDef URB_Status = USBH_URB_IDLE;
+ 667              		.loc 1 367 22 view .LVU189
+ 668 000a DC69     		ldr	r4, [r3, #28]
+ 669              	.LVL57:
+ 368:Core/Src/usbh_MIDI.c **** 
+ARM GAS  /var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccU3Yg4i.s 			page 24
+
+
+ 670              		.loc 1 368 2 is_stmt 1 view .LVU190
+ 370:Core/Src/usbh_MIDI.c **** 	{
+ 671              		.loc 1 370 2 view .LVU191
+ 370:Core/Src/usbh_MIDI.c **** 	{
+ 672              		.loc 1 370 20 is_stmt 0 view .LVU192
+ 673 000c 237E     		ldrb	r3, [r4, #24]	@ zero_extendqisi2
+ 370:Core/Src/usbh_MIDI.c **** 	{
+ 674              		.loc 1 370 2 view .LVU193
+ 675 000e 012B     		cmp	r3, #1
+ 676 0010 0BD0     		beq	.L40
+ 677 0012 022B     		cmp	r3, #2
+ 678 0014 17D1     		bne	.L39
+ 397:Core/Src/usbh_MIDI.c **** 
+ 679              		.loc 1 397 3 is_stmt 1 view .LVU194
+ 397:Core/Src/usbh_MIDI.c **** 
+ 680              		.loc 1 397 16 is_stmt 0 view .LVU195
+ 681 0016 A178     		ldrb	r1, [r4, #2]	@ zero_extendqisi2
+ 682 0018 FFF7FEFF 		bl	USBH_LL_GetURBState
+ 683              	.LVL58:
+ 400:Core/Src/usbh_MIDI.c **** 		{
+ 684              		.loc 1 400 3 is_stmt 1 view .LVU196
+ 400:Core/Src/usbh_MIDI.c **** 		{
+ 685              		.loc 1 400 5 is_stmt 0 view .LVU197
+ 686 001c 0128     		cmp	r0, #1
+ 687 001e 1CD0     		beq	.L50
+ 425:Core/Src/usbh_MIDI.c **** 		{
+ 688              		.loc 1 425 8 is_stmt 1 view .LVU198
+ 425:Core/Src/usbh_MIDI.c **** 		{
+ 689              		.loc 1 425 10 is_stmt 0 view .LVU199
+ 690 0020 0228     		cmp	r0, #2
+ 691 0022 10D1     		bne	.L39
+ 427:Core/Src/usbh_MIDI.c **** #if (USBH_USE_OS == 1)
+ 692              		.loc 1 427 4 is_stmt 1 view .LVU200
+ 427:Core/Src/usbh_MIDI.c **** #if (USBH_USE_OS == 1)
+ 693              		.loc 1 427 31 is_stmt 0 view .LVU201
+ 694 0024 0123     		movs	r3, #1
+ 695 0026 2376     		strb	r3, [r4, #24]
+ 436:Core/Src/usbh_MIDI.c **** 
+ 696              		.loc 1 436 1 view .LVU202
+ 697 0028 0DE0     		b	.L39
+ 698              	.LVL59:
+ 699              	.L40:
+ 374:Core/Src/usbh_MIDI.c **** 		{
+ 700              		.loc 1 374 3 is_stmt 1 view .LVU203
+ 374:Core/Src/usbh_MIDI.c **** 		{
+ 701              		.loc 1 374 17 is_stmt 0 view .LVU204
+ 702 002a A28A     		ldrh	r2, [r4, #20]
+ 374:Core/Src/usbh_MIDI.c **** 		{
+ 703              		.loc 1 374 45 view .LVU205
+ 704 002c E088     		ldrh	r0, [r4, #6]
+ 705              	.LVL60:
+ 374:Core/Src/usbh_MIDI.c **** 		{
+ 706              		.loc 1 374 5 view .LVU206
+ 707 002e 8242     		cmp	r2, r0
+ 708 0030 0BD9     		bls	.L43
+ 376:Core/Src/usbh_MIDI.c **** 					MIDI_Handle->pTxData,
+ 709              		.loc 1 376 4 is_stmt 1 view .LVU207
+ARM GAS  /var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccU3Yg4i.s 			page 25
+
+
+ 710 0032 A378     		ldrb	r3, [r4, #2]	@ zero_extendqisi2
+ 711 0034 E168     		ldr	r1, [r4, #12]
+ 712 0036 0122     		movs	r2, #1
+ 713 0038 0092     		str	r2, [sp]
+ 714 003a 0246     		mov	r2, r0
+ 715 003c 2846     		mov	r0, r5
+ 716 003e FFF7FEFF 		bl	USBH_BulkSendData
+ 717              	.LVL61:
+ 718              	.L44:
+ 391:Core/Src/usbh_MIDI.c **** 
+ 719              		.loc 1 391 3 view .LVU208
+ 391:Core/Src/usbh_MIDI.c **** 
+ 720              		.loc 1 391 30 is_stmt 0 view .LVU209
+ 721 0042 0223     		movs	r3, #2
+ 722 0044 2376     		strb	r3, [r4, #24]
+ 393:Core/Src/usbh_MIDI.c **** 
+ 723              		.loc 1 393 3 is_stmt 1 view .LVU210
+ 724              	.LVL62:
+ 725              	.L39:
+ 436:Core/Src/usbh_MIDI.c **** 
+ 726              		.loc 1 436 1 is_stmt 0 view .LVU211
+ 727 0046 03B0     		add	sp, sp, #12
+ 728              		.cfi_remember_state
+ 729              		.cfi_def_cfa_offset 12
+ 730              		@ sp needed
+ 731 0048 30BD     		pop	{r4, r5, pc}
+ 732              	.LVL63:
+ 733              	.L43:
+ 734              		.cfi_restore_state
+ 384:Core/Src/usbh_MIDI.c **** 					MIDI_Handle->pTxData,
+ 735              		.loc 1 384 4 is_stmt 1 view .LVU212
+ 736 004a A378     		ldrb	r3, [r4, #2]	@ zero_extendqisi2
+ 737 004c E168     		ldr	r1, [r4, #12]
+ 738 004e 0120     		movs	r0, #1
+ 739 0050 0090     		str	r0, [sp]
+ 740 0052 2846     		mov	r0, r5
+ 741 0054 FFF7FEFF 		bl	USBH_BulkSendData
+ 742              	.LVL64:
+ 743 0058 F3E7     		b	.L44
+ 744              	.LVL65:
+ 745              	.L50:
+ 402:Core/Src/usbh_MIDI.c **** 			{
+ 746              		.loc 1 402 4 view .LVU213
+ 402:Core/Src/usbh_MIDI.c **** 			{
+ 747              		.loc 1 402 18 is_stmt 0 view .LVU214
+ 748 005a A38A     		ldrh	r3, [r4, #20]
+ 402:Core/Src/usbh_MIDI.c **** 			{
+ 749              		.loc 1 402 46 view .LVU215
+ 750 005c E288     		ldrh	r2, [r4, #6]
+ 402:Core/Src/usbh_MIDI.c **** 			{
+ 751              		.loc 1 402 6 view .LVU216
+ 752 005e 9342     		cmp	r3, r2
+ 753 0060 09D9     		bls	.L46
+ 404:Core/Src/usbh_MIDI.c **** 				MIDI_Handle->pTxData += MIDI_Handle->OutEpSize;
+ 754              		.loc 1 404 5 is_stmt 1 view .LVU217
+ 404:Core/Src/usbh_MIDI.c **** 				MIDI_Handle->pTxData += MIDI_Handle->OutEpSize;
+ 755              		.loc 1 404 31 is_stmt 0 view .LVU218
+ARM GAS  /var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccU3Yg4i.s 			page 26
+
+
+ 756 0062 9B1A     		subs	r3, r3, r2
+ 757 0064 A382     		strh	r3, [r4, #20]	@ movhi
+ 405:Core/Src/usbh_MIDI.c **** 			}
+ 758              		.loc 1 405 5 is_stmt 1 view .LVU219
+ 405:Core/Src/usbh_MIDI.c **** 			}
+ 759              		.loc 1 405 16 is_stmt 0 view .LVU220
+ 760 0066 E368     		ldr	r3, [r4, #12]
+ 405:Core/Src/usbh_MIDI.c **** 			}
+ 761              		.loc 1 405 26 view .LVU221
+ 762 0068 1344     		add	r3, r3, r2
+ 763 006a E360     		str	r3, [r4, #12]
+ 764              	.L47:
+ 412:Core/Src/usbh_MIDI.c **** 			{
+ 765              		.loc 1 412 4 is_stmt 1 view .LVU222
+ 412:Core/Src/usbh_MIDI.c **** 			{
+ 766              		.loc 1 412 19 is_stmt 0 view .LVU223
+ 767 006c A38A     		ldrh	r3, [r4, #20]
+ 412:Core/Src/usbh_MIDI.c **** 			{
+ 768              		.loc 1 412 6 view .LVU224
+ 769 006e 2BB1     		cbz	r3, .L48
+ 414:Core/Src/usbh_MIDI.c **** 			}
+ 770              		.loc 1 414 5 is_stmt 1 view .LVU225
+ 414:Core/Src/usbh_MIDI.c **** 			}
+ 771              		.loc 1 414 32 is_stmt 0 view .LVU226
+ 772 0070 0123     		movs	r3, #1
+ 773 0072 2376     		strb	r3, [r4, #24]
+ 774 0074 E7E7     		b	.L39
+ 775              	.L46:
+ 409:Core/Src/usbh_MIDI.c **** 			}
+ 776              		.loc 1 409 5 is_stmt 1 view .LVU227
+ 409:Core/Src/usbh_MIDI.c **** 			}
+ 777              		.loc 1 409 31 is_stmt 0 view .LVU228
+ 778 0076 0023     		movs	r3, #0
+ 779 0078 A382     		strh	r3, [r4, #20]	@ movhi
+ 780 007a F7E7     		b	.L47
+ 781              	.L48:
+ 418:Core/Src/usbh_MIDI.c **** 				USBH_MIDI_TransmitCallback(phost);
+ 782              		.loc 1 418 5 is_stmt 1 view .LVU229
+ 418:Core/Src/usbh_MIDI.c **** 				USBH_MIDI_TransmitCallback(phost);
+ 783              		.loc 1 418 32 is_stmt 0 view .LVU230
+ 784 007c 0023     		movs	r3, #0
+ 785 007e 2376     		strb	r3, [r4, #24]
+ 419:Core/Src/usbh_MIDI.c **** 			}
+ 786              		.loc 1 419 5 is_stmt 1 view .LVU231
+ 787 0080 2846     		mov	r0, r5
+ 788              	.LVL66:
+ 419:Core/Src/usbh_MIDI.c **** 			}
+ 789              		.loc 1 419 5 is_stmt 0 view .LVU232
+ 790 0082 FFF7FEFF 		bl	USBH_MIDI_TransmitCallback
+ 791              	.LVL67:
+ 792 0086 DEE7     		b	.L39
+ 793              		.cfi_endproc
+ 794              	.LFE247:
+ 796              		.section	.text.USBH_MIDI_ReceiveCallback,"ax",%progbits
+ 797              		.align	1
+ 798              		.weak	USBH_MIDI_ReceiveCallback
+ 799              		.syntax unified
+ARM GAS  /var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccU3Yg4i.s 			page 27
+
+
+ 800              		.thumb
+ 801              		.thumb_func
+ 803              	USBH_MIDI_ReceiveCallback:
+ 804              	.LVL68:
+ 805              	.LFB250:
+ 514:Core/Src/usbh_MIDI.c **** 
+ 515:Core/Src/usbh_MIDI.c **** /*-------------------------------------------------------------------------------------------------
+ 516:Core/Src/usbh_MIDI.c **** 
+ 517:Core/Src/usbh_MIDI.c **** /**
+ 518:Core/Src/usbh_MIDI.c ****  * @brief  The function informs user that data have been received.
+ 519:Core/Src/usbh_MIDI.c ****  * @retval None
+ 520:Core/Src/usbh_MIDI.c ****  */
+ 521:Core/Src/usbh_MIDI.c **** __weak void USBH_MIDI_ReceiveCallback(USBH_HandleTypeDef *phost)
+ 522:Core/Src/usbh_MIDI.c **** {
+ 806              		.loc 1 522 1 is_stmt 1 view -0
+ 807              		.cfi_startproc
+ 808              		@ args = 0, pretend = 0, frame = 0
+ 809              		@ frame_needed = 0, uses_anonymous_args = 0
+ 810              		@ link register save eliminated.
+ 523:Core/Src/usbh_MIDI.c **** 
+ 524:Core/Src/usbh_MIDI.c **** }
+ 811              		.loc 1 524 1 view .LVU234
+ 812 0000 7047     		bx	lr
+ 813              		.cfi_endproc
+ 814              	.LFE250:
+ 816              		.section	.text.MIDI_ProcessReception,"ax",%progbits
+ 817              		.align	1
+ 818              		.syntax unified
+ 819              		.thumb
+ 820              		.thumb_func
+ 822              	MIDI_ProcessReception:
+ 823              	.LVL69:
+ 824              	.LFB248:
+ 447:Core/Src/usbh_MIDI.c **** 	MIDI_HandleTypeDef *MIDI_Handle =  phost->pActiveClass->pData;
+ 825              		.loc 1 447 1 view -0
+ 826              		.cfi_startproc
+ 827              		@ args = 0, pretend = 0, frame = 0
+ 828              		@ frame_needed = 0, uses_anonymous_args = 0
+ 447:Core/Src/usbh_MIDI.c **** 	MIDI_HandleTypeDef *MIDI_Handle =  phost->pActiveClass->pData;
+ 829              		.loc 1 447 1 is_stmt 0 view .LVU236
+ 830 0000 38B5     		push	{r3, r4, r5, lr}
+ 831              		.cfi_def_cfa_offset 16
+ 832              		.cfi_offset 3, -16
+ 833              		.cfi_offset 4, -12
+ 834              		.cfi_offset 5, -8
+ 835              		.cfi_offset 14, -4
+ 836 0002 0446     		mov	r4, r0
+ 448:Core/Src/usbh_MIDI.c **** 	USBH_URBStateTypeDef URB_Status = USBH_URB_IDLE;
+ 837              		.loc 1 448 2 is_stmt 1 view .LVU237
+ 448:Core/Src/usbh_MIDI.c **** 	USBH_URBStateTypeDef URB_Status = USBH_URB_IDLE;
+ 838              		.loc 1 448 42 is_stmt 0 view .LVU238
+ 839 0004 D0F8C835 		ldr	r3, [r0, #1480]
+ 448:Core/Src/usbh_MIDI.c **** 	USBH_URBStateTypeDef URB_Status = USBH_URB_IDLE;
+ 840              		.loc 1 448 22 view .LVU239
+ 841 0008 DD69     		ldr	r5, [r3, #28]
+ 842              	.LVL70:
+ 449:Core/Src/usbh_MIDI.c **** 	uint16_t length;
+ARM GAS  /var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccU3Yg4i.s 			page 28
+
+
+ 843              		.loc 1 449 2 is_stmt 1 view .LVU240
+ 450:Core/Src/usbh_MIDI.c **** 
+ 844              		.loc 1 450 2 view .LVU241
+ 452:Core/Src/usbh_MIDI.c **** 	{
+ 845              		.loc 1 452 2 view .LVU242
+ 452:Core/Src/usbh_MIDI.c **** 	{
+ 846              		.loc 1 452 20 is_stmt 0 view .LVU243
+ 847 000a 6B7E     		ldrb	r3, [r5, #25]	@ zero_extendqisi2
+ 452:Core/Src/usbh_MIDI.c **** 	{
+ 848              		.loc 1 452 2 view .LVU244
+ 849 000c 032B     		cmp	r3, #3
+ 850 000e 1AD0     		beq	.L53
+ 851 0010 042B     		cmp	r3, #4
+ 852 0012 1FD1     		bne	.L52
+ 469:Core/Src/usbh_MIDI.c **** 
+ 853              		.loc 1 469 3 is_stmt 1 view .LVU245
+ 469:Core/Src/usbh_MIDI.c **** 
+ 854              		.loc 1 469 16 is_stmt 0 view .LVU246
+ 855 0014 6978     		ldrb	r1, [r5, #1]	@ zero_extendqisi2
+ 856 0016 FFF7FEFF 		bl	USBH_LL_GetURBState
+ 857              	.LVL71:
+ 474:Core/Src/usbh_MIDI.c **** 		{
+ 858              		.loc 1 474 3 is_stmt 1 view .LVU247
+ 474:Core/Src/usbh_MIDI.c **** 		{
+ 859              		.loc 1 474 5 is_stmt 0 view .LVU248
+ 860 001a 0128     		cmp	r0, #1
+ 861 001c 1AD1     		bne	.L52
+ 478:Core/Src/usbh_MIDI.c **** 
+ 862              		.loc 1 478 4 is_stmt 1 view .LVU249
+ 478:Core/Src/usbh_MIDI.c **** 
+ 863              		.loc 1 478 13 is_stmt 0 view .LVU250
+ 864 001e 6978     		ldrb	r1, [r5, #1]	@ zero_extendqisi2
+ 865 0020 2046     		mov	r0, r4
+ 866              	.LVL72:
+ 478:Core/Src/usbh_MIDI.c **** 
+ 867              		.loc 1 478 13 view .LVU251
+ 868 0022 FFF7FEFF 		bl	USBH_LL_GetLastXferSize
+ 869              	.LVL73:
+ 478:Core/Src/usbh_MIDI.c **** 
+ 870              		.loc 1 478 11 discriminator 1 view .LVU252
+ 871 0026 80B2     		uxth	r0, r0
+ 872              	.LVL74:
+ 480:Core/Src/usbh_MIDI.c **** 			{
+ 873              		.loc 1 480 4 is_stmt 1 view .LVU253
+ 480:Core/Src/usbh_MIDI.c **** 			{
+ 874              		.loc 1 480 20 is_stmt 0 view .LVU254
+ 875 0028 EB8A     		ldrh	r3, [r5, #22]
+ 480:Core/Src/usbh_MIDI.c **** 			{
+ 876              		.loc 1 480 35 view .LVU255
+ 877 002a 1A1A     		subs	r2, r3, r0
+ 480:Core/Src/usbh_MIDI.c **** 			{
+ 878              		.loc 1 480 6 view .LVU256
+ 879 002c 002A     		cmp	r2, #0
+ 880 002e 12DD     		ble	.L56
+ 480:Core/Src/usbh_MIDI.c **** 			{
+ 881              		.loc 1 480 74 discriminator 1 view .LVU257
+ 882 0030 2A89     		ldrh	r2, [r5, #8]
+ARM GAS  /var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccU3Yg4i.s 			page 29
+
+
+ 480:Core/Src/usbh_MIDI.c **** 			{
+ 883              		.loc 1 480 50 discriminator 1 view .LVU258
+ 884 0032 8242     		cmp	r2, r0
+ 885 0034 0FD2     		bcs	.L56
+ 482:Core/Src/usbh_MIDI.c **** 				MIDI_Handle->pRxData += length;
+ 886              		.loc 1 482 5 is_stmt 1 view .LVU259
+ 482:Core/Src/usbh_MIDI.c **** 				MIDI_Handle->pRxData += length;
+ 887              		.loc 1 482 31 is_stmt 0 view .LVU260
+ 888 0036 1B1A     		subs	r3, r3, r0
+ 889 0038 EB82     		strh	r3, [r5, #22]	@ movhi
+ 483:Core/Src/usbh_MIDI.c **** 				MIDI_Handle->data_rx_state = MIDI_RECEIVE_DATA;
+ 890              		.loc 1 483 5 is_stmt 1 view .LVU261
+ 483:Core/Src/usbh_MIDI.c **** 				MIDI_Handle->data_rx_state = MIDI_RECEIVE_DATA;
+ 891              		.loc 1 483 16 is_stmt 0 view .LVU262
+ 892 003a 2B69     		ldr	r3, [r5, #16]
+ 483:Core/Src/usbh_MIDI.c **** 				MIDI_Handle->data_rx_state = MIDI_RECEIVE_DATA;
+ 893              		.loc 1 483 26 view .LVU263
+ 894 003c 0344     		add	r3, r3, r0
+ 895 003e 2B61     		str	r3, [r5, #16]
+ 484:Core/Src/usbh_MIDI.c **** 			}
+ 896              		.loc 1 484 5 is_stmt 1 view .LVU264
+ 484:Core/Src/usbh_MIDI.c **** 			}
+ 897              		.loc 1 484 32 is_stmt 0 view .LVU265
+ 898 0040 0323     		movs	r3, #3
+ 899 0042 6B76     		strb	r3, [r5, #25]
+ 900 0044 06E0     		b	.L52
+ 901              	.LVL75:
+ 902              	.L53:
+ 457:Core/Src/usbh_MIDI.c **** 				MIDI_Handle->pRxData,
+ 903              		.loc 1 457 3 is_stmt 1 view .LVU266
+ 904 0046 6B78     		ldrb	r3, [r5, #1]	@ zero_extendqisi2
+ 905 0048 2A89     		ldrh	r2, [r5, #8]
+ 906 004a 2969     		ldr	r1, [r5, #16]
+ 907 004c FFF7FEFF 		bl	USBH_BulkReceiveData
+ 908              	.LVL76:
+ 462:Core/Src/usbh_MIDI.c **** 		//BSP_LED_On(LED_Red); //ok only here
+ 909              		.loc 1 462 3 view .LVU267
+ 462:Core/Src/usbh_MIDI.c **** 		//BSP_LED_On(LED_Red); //ok only here
+ 910              		.loc 1 462 30 is_stmt 0 view .LVU268
+ 911 0050 0423     		movs	r3, #4
+ 912 0052 6B76     		strb	r3, [r5, #25]
+ 465:Core/Src/usbh_MIDI.c **** 
+ 913              		.loc 1 465 3 is_stmt 1 view .LVU269
+ 914              	.LVL77:
+ 915              	.L52:
+ 500:Core/Src/usbh_MIDI.c **** 
+ 916              		.loc 1 500 1 is_stmt 0 view .LVU270
+ 917 0054 38BD     		pop	{r3, r4, r5, pc}
+ 918              	.LVL78:
+ 919              	.L56:
+ 488:Core/Src/usbh_MIDI.c **** 				USBH_MIDI_ReceiveCallback(phost);
+ 920              		.loc 1 488 5 is_stmt 1 view .LVU271
+ 488:Core/Src/usbh_MIDI.c **** 				USBH_MIDI_ReceiveCallback(phost);
+ 921              		.loc 1 488 32 is_stmt 0 view .LVU272
+ 922 0056 0023     		movs	r3, #0
+ 923 0058 6B76     		strb	r3, [r5, #25]
+ 489:Core/Src/usbh_MIDI.c **** 			}
+ARM GAS  /var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccU3Yg4i.s 			page 30
+
+
+ 924              		.loc 1 489 5 is_stmt 1 view .LVU273
+ 925 005a 2046     		mov	r0, r4
+ 926              	.LVL79:
+ 489:Core/Src/usbh_MIDI.c **** 			}
+ 927              		.loc 1 489 5 is_stmt 0 view .LVU274
+ 928 005c FFF7FEFF 		bl	USBH_MIDI_ReceiveCallback
+ 929              	.LVL80:
+ 500:Core/Src/usbh_MIDI.c **** 
+ 930              		.loc 1 500 1 view .LVU275
+ 931 0060 F8E7     		b	.L52
+ 932              		.cfi_endproc
+ 933              	.LFE248:
+ 935              		.section	.text.USBH_MIDI_Process,"ax",%progbits
+ 936              		.align	1
+ 937              		.syntax unified
+ 938              		.thumb
+ 939              		.thumb_func
+ 941              	USBH_MIDI_Process:
+ 942              	.LVL81:
+ 943              	.LFB242:
+ 237:Core/Src/usbh_MIDI.c **** 	USBH_StatusTypeDef status = USBH_BUSY;
+ 944              		.loc 1 237 1 is_stmt 1 view -0
+ 945              		.cfi_startproc
+ 946              		@ args = 0, pretend = 0, frame = 0
+ 947              		@ frame_needed = 0, uses_anonymous_args = 0
+ 237:Core/Src/usbh_MIDI.c **** 	USBH_StatusTypeDef status = USBH_BUSY;
+ 948              		.loc 1 237 1 is_stmt 0 view .LVU277
+ 949 0000 70B5     		push	{r4, r5, r6, lr}
+ 950              		.cfi_def_cfa_offset 16
+ 951              		.cfi_offset 4, -16
+ 952              		.cfi_offset 5, -12
+ 953              		.cfi_offset 6, -8
+ 954              		.cfi_offset 14, -4
+ 955 0002 0546     		mov	r5, r0
+ 238:Core/Src/usbh_MIDI.c **** 	USBH_StatusTypeDef req_status = USBH_OK;
+ 956              		.loc 1 238 2 is_stmt 1 view .LVU278
+ 957              	.LVL82:
+ 239:Core/Src/usbh_MIDI.c **** 	MIDI_HandleTypeDef *MIDI_Handle =  phost->pActiveClass->pData;
+ 958              		.loc 1 239 2 view .LVU279
+ 240:Core/Src/usbh_MIDI.c **** 
+ 959              		.loc 1 240 2 view .LVU280
+ 240:Core/Src/usbh_MIDI.c **** 
+ 960              		.loc 1 240 42 is_stmt 0 view .LVU281
+ 961 0004 D0F8C835 		ldr	r3, [r0, #1480]
+ 240:Core/Src/usbh_MIDI.c **** 
+ 962              		.loc 1 240 22 view .LVU282
+ 963 0008 DE69     		ldr	r6, [r3, #28]
+ 964              	.LVL83:
+ 242:Core/Src/usbh_MIDI.c **** 	{
+ 965              		.loc 1 242 2 is_stmt 1 view .LVU283
+ 242:Core/Src/usbh_MIDI.c **** 	{
+ 966              		.loc 1 242 20 is_stmt 0 view .LVU284
+ 967 000a 3478     		ldrb	r4, [r6]	@ zero_extendqisi2
+ 242:Core/Src/usbh_MIDI.c **** 	{
+ 968              		.loc 1 242 2 view .LVU285
+ 969 000c 012C     		cmp	r4, #1
+ 970 000e 04D0     		beq	.L59
+ARM GAS  /var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccU3Yg4i.s 			page 31
+
+
+ 971 0010 022C     		cmp	r4, #2
+ 972 0012 09D0     		beq	.L60
+ 973 0014 34B1     		cbz	r4, .L61
+ 974 0016 0124     		movs	r4, #1
+ 975 0018 04E0     		b	.L61
+ 976              	.L59:
+ 251:Core/Src/usbh_MIDI.c **** 		MIDI_ProcessReception(phost);
+ 977              		.loc 1 251 3 is_stmt 1 view .LVU286
+ 978 001a FFF7FEFF 		bl	MIDI_ProcessTransmission
+ 979              	.LVL84:
+ 252:Core/Src/usbh_MIDI.c **** 		break;
+ 980              		.loc 1 252 3 view .LVU287
+ 981 001e 2846     		mov	r0, r5
+ 982 0020 FFF7FEFF 		bl	MIDI_ProcessReception
+ 983              	.LVL85:
+ 253:Core/Src/usbh_MIDI.c **** 
+ 984              		.loc 1 253 3 view .LVU288
+ 985              	.L61:
+ 270:Core/Src/usbh_MIDI.c **** }
+ 986              		.loc 1 270 2 view .LVU289
+ 271:Core/Src/usbh_MIDI.c **** /*-------------------------------------------------------------------------------------------------
+ 987              		.loc 1 271 1 is_stmt 0 view .LVU290
+ 988 0024 2046     		mov	r0, r4
+ 989 0026 70BD     		pop	{r4, r5, r6, pc}
+ 990              	.LVL86:
+ 991              	.L60:
+ 256:Core/Src/usbh_MIDI.c **** 
+ 992              		.loc 1 256 3 is_stmt 1 view .LVU291
+ 256:Core/Src/usbh_MIDI.c **** 
+ 993              		.loc 1 256 16 is_stmt 0 view .LVU292
+ 994 0028 0021     		movs	r1, #0
+ 995 002a FFF7FEFF 		bl	USBH_ClrFeature
+ 996              	.LVL87:
+ 258:Core/Src/usbh_MIDI.c **** 		{
+ 997              		.loc 1 258 3 is_stmt 1 view .LVU293
+ 258:Core/Src/usbh_MIDI.c **** 		{
+ 998              		.loc 1 258 5 is_stmt 0 view .LVU294
+ 999 002e 18B9     		cbnz	r0, .L63
+ 261:Core/Src/usbh_MIDI.c **** 		}
+ 1000              		.loc 1 261 4 is_stmt 1 view .LVU295
+ 261:Core/Src/usbh_MIDI.c **** 		}
+ 1001              		.loc 1 261 23 is_stmt 0 view .LVU296
+ 1002 0030 0023     		movs	r3, #0
+ 1003 0032 3370     		strb	r3, [r6]
+ 238:Core/Src/usbh_MIDI.c **** 	USBH_StatusTypeDef req_status = USBH_OK;
+ 1004              		.loc 1 238 21 view .LVU297
+ 1005 0034 0124     		movs	r4, #1
+ 1006 0036 F5E7     		b	.L61
+ 1007              	.L63:
+ 238:Core/Src/usbh_MIDI.c **** 	USBH_StatusTypeDef req_status = USBH_OK;
+ 1008              		.loc 1 238 21 view .LVU298
+ 1009 0038 0124     		movs	r4, #1
+ 1010 003a F3E7     		b	.L61
+ 1011              		.cfi_endproc
+ 1012              	.LFE242:
+ 1014              		.global	MIDI_Class
+ 1015              		.section	.rodata.str1.4,"aMS",%progbits,1
+ARM GAS  /var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccU3Yg4i.s 			page 32
+
+
+ 1016              		.align	2
+ 1017              	.LC0:
+ 1018 0000 4D494449 		.ascii	"MIDI\000"
+ 1018      00
+ 1019              		.section	.data.MIDI_Class,"aw"
+ 1020              		.align	2
+ 1023              	MIDI_Class:
+ 1024 0000 00000000 		.word	.LC0
+ 1025 0004 01       		.byte	1
+ 1026 0005 000000   		.space	3
+ 1027 0008 00000000 		.word	USBH_MIDI_InterfaceInit
+ 1028 000c 00000000 		.word	USBH_MIDI_InterfaceDeInit
+ 1029 0010 00000000 		.word	USBH_MIDI_ClassRequest
+ 1030 0014 00000000 		.word	USBH_MIDI_Process
+ 1031 0018 00000000 		.word	USBH_MIDI_SOFProcess
+ 1032 001c 00000000 		.word	0
+ 1033              		.text
+ 1034              	.Letext0:
+ 1035              		.file 2 "/Users/jr/Library/Application Support/Code/User/globalStorage/bmd.stm32-for-vscode/@xpack
+ 1036              		.file 3 "/Users/jr/Library/Application Support/Code/User/globalStorage/bmd.stm32-for-vscode/@xpack
+ 1037              		.file 4 "/Users/jr/Library/Application Support/Code/User/globalStorage/bmd.stm32-for-vscode/@xpack
+ 1038              		.file 5 "Middlewares/ST/STM32_USB_Host_Library/Core/Inc/usbh_def.h"
+ 1039              		.file 6 "Core/Src/../Inc/usbh_MIDI.h"
+ 1040              		.file 7 "Middlewares/ST/STM32_USB_Host_Library/Core/Inc/usbh_core.h"
+ 1041              		.file 8 "Middlewares/ST/STM32_USB_Host_Library/Core/Inc/usbh_pipes.h"
+ 1042              		.file 9 "/Users/jr/Library/Application Support/Code/User/globalStorage/bmd.stm32-for-vscode/@xpack
+ 1043              		.file 10 "Middlewares/ST/STM32_USB_Host_Library/Core/Inc/usbh_ioreq.h"
+ 1044              		.file 11 "Middlewares/ST/STM32_USB_Host_Library/Core/Inc/usbh_ctlreq.h"
+ARM GAS  /var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccU3Yg4i.s 			page 33
+
+
+DEFINED SYMBOLS
+                            *ABS*:00000000 usbh_MIDI.c
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccU3Yg4i.s:21     .text.USBH_MIDI_ClassRequest:00000000 $t
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccU3Yg4i.s:26     .text.USBH_MIDI_ClassRequest:00000000 USBH_MIDI_ClassRequest
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccU3Yg4i.s:53     .text.USBH_MIDI_SOFProcess:00000000 $t
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccU3Yg4i.s:58     .text.USBH_MIDI_SOFProcess:00000000 USBH_MIDI_SOFProcess
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccU3Yg4i.s:76     .text.USBH_MIDI_InterfaceDeInit:00000000 $t
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccU3Yg4i.s:81     .text.USBH_MIDI_InterfaceDeInit:00000000 USBH_MIDI_InterfaceDeInit
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccU3Yg4i.s:170    .text.USBH_MIDI_InterfaceInit:00000000 $t
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccU3Yg4i.s:175    .text.USBH_MIDI_InterfaceInit:00000000 USBH_MIDI_InterfaceInit
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccU3Yg4i.s:389    .text.USBH_MIDI_Stop:00000000 $t
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccU3Yg4i.s:395    .text.USBH_MIDI_Stop:00000000 USBH_MIDI_Stop
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccU3Yg4i.s:450    .text.USBH_MIDI_GetLastReceivedDataSize:00000000 $t
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccU3Yg4i.s:456    .text.USBH_MIDI_GetLastReceivedDataSize:00000000 USBH_MIDI_GetLastReceivedDataSize
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccU3Yg4i.s:502    .text.USBH_MIDI_Transmit:00000000 $t
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccU3Yg4i.s:508    .text.USBH_MIDI_Transmit:00000000 USBH_MIDI_Transmit
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccU3Yg4i.s:562    .text.USBH_MIDI_Receive:00000000 $t
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccU3Yg4i.s:568    .text.USBH_MIDI_Receive:00000000 USBH_MIDI_Receive
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccU3Yg4i.s:623    .text.USBH_MIDI_TransmitCallback:00000000 $t
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccU3Yg4i.s:629    .text.USBH_MIDI_TransmitCallback:00000000 USBH_MIDI_TransmitCallback
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccU3Yg4i.s:643    .text.MIDI_ProcessTransmission:00000000 $t
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccU3Yg4i.s:648    .text.MIDI_ProcessTransmission:00000000 MIDI_ProcessTransmission
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccU3Yg4i.s:797    .text.USBH_MIDI_ReceiveCallback:00000000 $t
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccU3Yg4i.s:803    .text.USBH_MIDI_ReceiveCallback:00000000 USBH_MIDI_ReceiveCallback
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccU3Yg4i.s:817    .text.MIDI_ProcessReception:00000000 $t
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccU3Yg4i.s:822    .text.MIDI_ProcessReception:00000000 MIDI_ProcessReception
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccU3Yg4i.s:936    .text.USBH_MIDI_Process:00000000 $t
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccU3Yg4i.s:941    .text.USBH_MIDI_Process:00000000 USBH_MIDI_Process
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccU3Yg4i.s:1023   .data.MIDI_Class:00000000 MIDI_Class
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccU3Yg4i.s:1016   .rodata.str1.4:00000000 $d
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccU3Yg4i.s:1020   .data.MIDI_Class:00000000 $d
+
+UNDEFINED SYMBOLS
+free
+USBH_ClosePipe
+USBH_FreePipe
+USBH_FindInterface
+USBH_SelectInterface
+malloc
+USBH_AllocPipe
+USBH_OpenPipe
+USBH_LL_SetToggle
+USBH_LL_GetLastXferSize
+USBH_LL_GetURBState
+USBH_BulkSendData
+USBH_BulkReceiveData
+USBH_ClrFeature

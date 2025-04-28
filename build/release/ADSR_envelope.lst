@@ -1,0 +1,1733 @@
+ARM GAS  /var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cc8jNjWT.s 			page 1
+
+
+   1              		.cpu cortex-m4
+   2              		.arch armv7e-m
+   3              		.fpu fpv4-sp-d16
+   4              		.eabi_attribute 27, 1
+   5              		.eabi_attribute 28, 1
+   6              		.eabi_attribute 20, 1
+   7              		.eabi_attribute 21, 1
+   8              		.eabi_attribute 23, 3
+   9              		.eabi_attribute 24, 1
+  10              		.eabi_attribute 25, 1
+  11              		.eabi_attribute 26, 1
+  12              		.eabi_attribute 30, 2
+  13              		.eabi_attribute 34, 1
+  14              		.eabi_attribute 18, 4
+  15              		.file	"ADSR_envelope.c"
+  16              		.text
+  17              		.section	.text.ADSR_init,"ax",%progbits
+  18              		.align	1
+  19              		.p2align 2,,3
+  20              		.global	ADSR_init
+  21              		.syntax unified
+  22              		.thumb
+  23              		.thumb_func
+  25              	ADSR_init:
+  26              		@ args = 0, pretend = 0, frame = 0
+  27              		@ frame_needed = 0, uses_anonymous_args = 0
+  28 0000 38B5     		push	{r3, r4, r5, lr}
+  29 0002 0446     		mov	r4, r0
+  30 0004 0425     		movs	r5, #4
+  31 0006 2DED068B 		vpush.64	{d8, d9, d10}
+  32 000a 3848     		ldr	r0, .L4
+  33 000c 384B     		ldr	r3, .L4+4
+  34 000e A560     		str	r5, [r4, #8]
+  35 0010 384D     		ldr	r5, .L4+8
+  36 0012 394A     		ldr	r2, .L4+12
+  37 0014 6060     		str	r0, [r4, #4]	@ float
+  38 0016 0021     		movs	r1, #0
+  39 0018 3848     		ldr	r0, .L4+16
+  40 001a E360     		str	r3, [r4, #12]	@ float
+  41 001c 4FF08043 		mov	r3, #1073741824
+  42 0020 6261     		str	r2, [r4, #20]	@ float
+  43 0022 A361     		str	r3, [r4, #24]	@ float
+  44 0024 2061     		str	r0, [r4, #16]	@ float
+  45 0026 2160     		str	r1, [r4]	@ float
+  46 0028 4FF48060 		mov	r0, #1024
+  47 002c 2946     		mov	r1, r5
+  48 002e 9FED340A 		vldr.32	s0, .L4+20
+  49 0032 DFED34AA 		vldr.32	s21, .L4+24
+  50 0036 DFED349A 		vldr.32	s19, .L4+28
+  51 003a 9FED34AA 		vldr.32	s20, .L4+32
+  52 003e FFF7FEFF 		bl	interp_lin_lut
+  53 0042 2946     		mov	r1, r5
+  54 0044 B0EE408A 		vmov.f32	s16, s0
+  55 0048 4FF48060 		mov	r0, #1024
+  56 004c B0EE6A0A 		vmov.f32	s0, s21
+  57 0050 FFF7FEFF 		bl	interp_lin_lut
+  58 0054 9FED2E7A 		vldr.32	s14, .L4+36
+ARM GAS  /var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cc8jNjWT.s 			page 2
+
+
+  59 0058 94ED049A 		vldr.32	s18, [r4, #16]
+  60 005c 38EE408A 		vsub.f32	s16, s16, s0
+  61 0060 F7EE008A 		vmov.f32	s17, #1.0e+0
+  62 0064 C8EE077A 		vdiv.f32	s15, s16, s14
+  63 0068 2946     		mov	r1, r5
+  64 006a 4FF48060 		mov	r0, #1024
+  65 006e 94ED050A 		vldr.32	s0, [r4, #20]
+  66 0072 77EEA87A 		vadd.f32	s15, s15, s17
+  67 0076 20EE290A 		vmul.f32	s0, s0, s19
+  68 007a C4ED077A 		vstr.32	s15, [r4, #28]
+  69 007e FFF7FEFF 		bl	interp_lin_lut
+  70 0082 4FF48060 		mov	r0, #1024
+  71 0086 B0EE408A 		vmov.f32	s16, s0
+  72 008a 2946     		mov	r1, r5
+  73 008c B0EE690A 		vmov.f32	s0, s19
+  74 0090 FFF7FEFF 		bl	interp_lin_lut
+  75 0094 29EE0A9A 		vmul.f32	s18, s18, s20
+  76 0098 38EE408A 		vsub.f32	s16, s16, s0
+  77 009c 2946     		mov	r1, r5
+  78 009e C8EE097A 		vdiv.f32	s15, s16, s18
+  79 00a2 4FF48060 		mov	r0, #1024
+  80 00a6 B0EE6A0A 		vmov.f32	s0, s21
+  81 00aa 77EEA87A 		vadd.f32	s15, s15, s17
+  82 00ae D4ED05AA 		vldr.32	s21, [r4, #20]
+  83 00b2 C4ED087A 		vstr.32	s15, [r4, #32]
+  84 00b6 94ED069A 		vldr.32	s18, [r4, #24]
+  85 00ba FFF7FEFF 		bl	interp_lin_lut
+  86 00be 4FF48060 		mov	r0, #1024
+  87 00c2 B0EE408A 		vmov.f32	s16, s0
+  88 00c6 2946     		mov	r1, r5
+  89 00c8 2AEEA90A 		vmul.f32	s0, s21, s19
+  90 00cc FFF7FEFF 		bl	interp_lin_lut
+  91 00d0 29EE0A9A 		vmul.f32	s18, s18, s20
+  92 00d4 38EE408A 		vsub.f32	s16, s16, s0
+  93 00d8 C8EE097A 		vdiv.f32	s15, s16, s18
+  94 00dc 77EEA87A 		vadd.f32	s15, s15, s17
+  95 00e0 BDEC068B 		vldm	sp!, {d8-d10}
+  96 00e4 C4ED097A 		vstr.32	s15, [r4, #36]
+  97 00e8 38BD     		pop	{r3, r4, r5, pc}
+  98              	.L5:
+  99 00ea 00BF     		.align	2
+ 100              	.L4:
+ 101 00ec 6666A63F 		.word	1067869798
+ 102 00f0 6F12833A 		.word	981668463
+ 103 00f4 00000000 		.word	log_lut
+ 104 00f8 CDCCCC3D 		.word	1036831949
+ 105 00fc 00004040 		.word	1077936128
+ 106 0100 6666A644 		.word	1151755878
+ 107 0104 17B7D13D 		.word	1037154071
+ 108 0108 00008044 		.word	1149239296
+ 109 010c 00442C47 		.word	1194083328
+ 110 0110 67663042 		.word	1110468199
+ 112              		.section	.text.ADSR_keyOn,"ax",%progbits
+ 113              		.align	1
+ 114              		.p2align 2,,3
+ 115              		.global	ADSR_keyOn
+ 116              		.syntax unified
+ARM GAS  /var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cc8jNjWT.s 			page 3
+
+
+ 117              		.thumb
+ 118              		.thumb_func
+ 120              	ADSR_keyOn:
+ 121              		@ args = 0, pretend = 0, frame = 0
+ 122              		@ frame_needed = 0, uses_anonymous_args = 0
+ 123              		@ link register save eliminated.
+ 124 0000 034A     		ldr	r2, .L7
+ 125 0002 0260     		str	r2, [r0]	@ float
+ 126 0004 4FF07E51 		mov	r1, #1065353216
+ 127 0008 0023     		movs	r3, #0
+ 128 000a 4160     		str	r1, [r0, #4]	@ float
+ 129 000c 8360     		str	r3, [r0, #8]
+ 130 000e 7047     		bx	lr
+ 131              	.L8:
+ 132              		.align	2
+ 133              	.L7:
+ 134 0010 17B7D138 		.word	953267991
+ 136              		.section	.text.ADSR_keyOff,"ax",%progbits
+ 137              		.align	1
+ 138              		.p2align 2,,3
+ 139              		.global	ADSR_keyOff
+ 140              		.syntax unified
+ 141              		.thumb
+ 142              		.thumb_func
+ 144              	ADSR_keyOff:
+ 145              		@ args = 0, pretend = 0, frame = 0
+ 146              		@ frame_needed = 0, uses_anonymous_args = 0
+ 147              		@ link register save eliminated.
+ 148 0000 0022     		movs	r2, #0
+ 149 0002 0323     		movs	r3, #3
+ 150 0004 4260     		str	r2, [r0, #4]	@ float
+ 151 0006 8360     		str	r3, [r0, #8]
+ 152 0008 7047     		bx	lr
+ 154 000a 00BF     		.section	.text.ADSR_setAttackTime,"ax",%progbits
+ 155              		.align	1
+ 156              		.p2align 2,,3
+ 157              		.global	ADSR_setAttackTime
+ 158              		.syntax unified
+ 159              		.thumb
+ 160              		.thumb_func
+ 162              	ADSR_setAttackTime:
+ 163              		@ args = 0, pretend = 0, frame = 0
+ 164              		@ frame_needed = 0, uses_anonymous_args = 0
+ 165 0000 38B5     		push	{r3, r4, r5, lr}
+ 166 0002 DFED157A 		vldr.32	s15, .L12
+ 167 0006 90ED010A 		vldr.32	s0, [r0, #4]
+ 168 000a 144D     		ldr	r5, .L12+4
+ 169 000c 2DED028B 		vpush.64	{d8}
+ 170 0010 20EE270A 		vmul.f32	s0, s0, s15
+ 171 0014 0446     		mov	r4, r0
+ 172 0016 2946     		mov	r1, r5
+ 173 0018 4FF48060 		mov	r0, #1024
+ 174 001c D4ED038A 		vldr.32	s17, [r4, #12]
+ 175 0020 FFF7FEFF 		bl	interp_lin_lut
+ 176 0024 4FF48060 		mov	r0, #1024
+ 177 0028 B0EE408A 		vmov.f32	s16, s0
+ 178 002c 2946     		mov	r1, r5
+ARM GAS  /var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cc8jNjWT.s 			page 4
+
+
+ 179 002e 9FED0C0A 		vldr.32	s0, .L12+8
+ 180 0032 FFF7FEFF 		bl	interp_lin_lut
+ 181 0036 DFED0B7A 		vldr.32	s15, .L12+12
+ 182 003a 38EE408A 		vsub.f32	s16, s16, s0
+ 183 003e 68EEA78A 		vmul.f32	s17, s17, s15
+ 184 0042 B7EE007A 		vmov.f32	s14, #1.0e+0
+ 185 0046 C8EE287A 		vdiv.f32	s15, s16, s17
+ 186 004a BDEC028B 		vldm	sp!, {d8}
+ 187 004e 77EE877A 		vadd.f32	s15, s15, s14
+ 188 0052 C4ED077A 		vstr.32	s15, [r4, #28]
+ 189 0056 38BD     		pop	{r3, r4, r5, pc}
+ 190              	.L13:
+ 191              		.align	2
+ 192              	.L12:
+ 193 0058 00008044 		.word	1149239296
+ 194 005c 00000000 		.word	log_lut
+ 195 0060 17B7D13D 		.word	1037154071
+ 196 0064 00442C47 		.word	1194083328
+ 198              		.section	.text.ADSR_setDecayTime,"ax",%progbits
+ 199              		.align	1
+ 200              		.p2align 2,,3
+ 201              		.global	ADSR_setDecayTime
+ 202              		.syntax unified
+ 203              		.thumb
+ 204              		.thumb_func
+ 206              	ADSR_setDecayTime:
+ 207              		@ args = 0, pretend = 0, frame = 0
+ 208              		@ frame_needed = 0, uses_anonymous_args = 0
+ 209 0000 38B5     		push	{r3, r4, r5, lr}
+ 210 0002 90ED050A 		vldr.32	s0, [r0, #20]
+ 211 0006 154D     		ldr	r5, .L16
+ 212 0008 2DED048B 		vpush.64	{d8, d9}
+ 213 000c 9FED149A 		vldr.32	s18, .L16+4
+ 214 0010 0446     		mov	r4, r0
+ 215 0012 20EE090A 		vmul.f32	s0, s0, s18
+ 216 0016 2946     		mov	r1, r5
+ 217 0018 4FF48060 		mov	r0, #1024
+ 218 001c D4ED019A 		vldr.32	s19, [r4, #4]
+ 219 0020 D4ED048A 		vldr.32	s17, [r4, #16]
+ 220 0024 FFF7FEFF 		bl	interp_lin_lut
+ 221 0028 4FF48060 		mov	r0, #1024
+ 222 002c B0EE408A 		vmov.f32	s16, s0
+ 223 0030 2946     		mov	r1, r5
+ 224 0032 29EE890A 		vmul.f32	s0, s19, s18
+ 225 0036 FFF7FEFF 		bl	interp_lin_lut
+ 226 003a DFED0A7A 		vldr.32	s15, .L16+8
+ 227 003e 38EE408A 		vsub.f32	s16, s16, s0
+ 228 0042 68EEA78A 		vmul.f32	s17, s17, s15
+ 229 0046 B7EE007A 		vmov.f32	s14, #1.0e+0
+ 230 004a C8EE287A 		vdiv.f32	s15, s16, s17
+ 231 004e BDEC048B 		vldm	sp!, {d8-d9}
+ 232 0052 77EE877A 		vadd.f32	s15, s15, s14
+ 233 0056 C4ED087A 		vstr.32	s15, [r4, #32]
+ 234 005a 38BD     		pop	{r3, r4, r5, pc}
+ 235              	.L17:
+ 236              		.align	2
+ 237              	.L16:
+ARM GAS  /var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cc8jNjWT.s 			page 5
+
+
+ 238 005c 00000000 		.word	log_lut
+ 239 0060 00008044 		.word	1149239296
+ 240 0064 00442C47 		.word	1194083328
+ 242              		.section	.text.ADSR_setSustainLevel,"ax",%progbits
+ 243              		.align	1
+ 244              		.p2align 2,,3
+ 245              		.global	ADSR_setSustainLevel
+ 246              		.syntax unified
+ 247              		.thumb
+ 248              		.thumb_func
+ 250              	ADSR_setSustainLevel:
+ 251              		@ args = 0, pretend = 0, frame = 0
+ 252              		@ frame_needed = 0, uses_anonymous_args = 0
+ 253              		@ link register save eliminated.
+ 254 0000 80ED050A 		vstr.32	s0, [r0, #20]
+ 255 0004 7047     		bx	lr
+ 257 0006 00BF     		.section	.text.ADSR_setReleaseTime,"ax",%progbits
+ 258              		.align	1
+ 259              		.p2align 2,,3
+ 260              		.global	ADSR_setReleaseTime
+ 261              		.syntax unified
+ 262              		.thumb
+ 263              		.thumb_func
+ 265              	ADSR_setReleaseTime:
+ 266              		@ args = 0, pretend = 0, frame = 0
+ 267              		@ frame_needed = 0, uses_anonymous_args = 0
+ 268 0000 38B5     		push	{r3, r4, r5, lr}
+ 269 0002 154D     		ldr	r5, .L21
+ 270 0004 9FED150A 		vldr.32	s0, .L21+4
+ 271 0008 2DED048B 		vpush.64	{d8, d9}
+ 272 000c 0446     		mov	r4, r0
+ 273 000e 2946     		mov	r1, r5
+ 274 0010 4FF48060 		mov	r0, #1024
+ 275 0014 94ED059A 		vldr.32	s18, [r4, #20]
+ 276 0018 D4ED068A 		vldr.32	s17, [r4, #24]
+ 277 001c FFF7FEFF 		bl	interp_lin_lut
+ 278 0020 B0EE408A 		vmov.f32	s16, s0
+ 279 0024 9FED0E0A 		vldr.32	s0, .L21+8
+ 280 0028 2946     		mov	r1, r5
+ 281 002a 29EE000A 		vmul.f32	s0, s18, s0
+ 282 002e 4FF48060 		mov	r0, #1024
+ 283 0032 FFF7FEFF 		bl	interp_lin_lut
+ 284 0036 DFED0B7A 		vldr.32	s15, .L21+12
+ 285 003a 38EE408A 		vsub.f32	s16, s16, s0
+ 286 003e 68EEA78A 		vmul.f32	s17, s17, s15
+ 287 0042 B7EE007A 		vmov.f32	s14, #1.0e+0
+ 288 0046 C8EE287A 		vdiv.f32	s15, s16, s17
+ 289 004a BDEC048B 		vldm	sp!, {d8-d9}
+ 290 004e 77EE877A 		vadd.f32	s15, s15, s14
+ 291 0052 C4ED097A 		vstr.32	s15, [r4, #36]
+ 292 0056 38BD     		pop	{r3, r4, r5, pc}
+ 293              	.L22:
+ 294              		.align	2
+ 295              	.L21:
+ 296 0058 00000000 		.word	log_lut
+ 297 005c 17B7D13D 		.word	1037154071
+ 298 0060 00008044 		.word	1149239296
+ARM GAS  /var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cc8jNjWT.s 			page 6
+
+
+ 299 0064 00442C47 		.word	1194083328
+ 301              		.section	.text.ADSR_calculateMultiplier,"ax",%progbits
+ 302              		.align	1
+ 303              		.p2align 2,,3
+ 304              		.global	ADSR_calculateMultiplier
+ 305              		.syntax unified
+ 306              		.thumb
+ 307              		.thumb_func
+ 309              	ADSR_calculateMultiplier:
+ 310              		@ args = 0, pretend = 0, frame = 0
+ 311              		@ frame_needed = 0, uses_anonymous_args = 0
+ 312 0000 10B5     		push	{r4, lr}
+ 313 0002 144C     		ldr	r4, .L25
+ 314 0004 2DED048B 		vpush.64	{d8, d9}
+ 315 0008 DFED139A 		vldr.32	s19, .L25+4
+ 316 000c B0EE409A 		vmov.f32	s18, s0
+ 317 0010 2146     		mov	r1, r4
+ 318 0012 20EEA90A 		vmul.f32	s0, s1, s19
+ 319 0016 4FF48060 		mov	r0, #1024
+ 320 001a B0EE418A 		vmov.f32	s16, s2
+ 321 001e FFF7FEFF 		bl	interp_lin_lut
+ 322 0022 4FF48060 		mov	r0, #1024
+ 323 0026 F0EE408A 		vmov.f32	s17, s0
+ 324 002a 2146     		mov	r1, r4
+ 325 002c 29EE290A 		vmul.f32	s0, s18, s19
+ 326 0030 FFF7FEFF 		bl	interp_lin_lut
+ 327 0034 DFED097A 		vldr.32	s15, .L25+8
+ 328 0038 78EEC08A 		vsub.f32	s17, s17, s0
+ 329 003c 28EE278A 		vmul.f32	s16, s16, s15
+ 330 0040 F7EE007A 		vmov.f32	s15, #1.0e+0
+ 331 0044 88EE880A 		vdiv.f32	s0, s17, s16
+ 332 0048 BDEC048B 		vldm	sp!, {d8-d9}
+ 333 004c 30EE270A 		vadd.f32	s0, s0, s15
+ 334 0050 10BD     		pop	{r4, pc}
+ 335              	.L26:
+ 336 0052 00BF     		.align	2
+ 337              	.L25:
+ 338 0054 00000000 		.word	log_lut
+ 339 0058 00008044 		.word	1149239296
+ 340 005c 00442C47 		.word	1194083328
+ 342              		.section	.text.ADSR_setAllTimes,"ax",%progbits
+ 343              		.align	1
+ 344              		.p2align 2,,3
+ 345              		.global	ADSR_setAllTimes
+ 346              		.syntax unified
+ 347              		.thumb
+ 348              		.thumb_func
+ 350              	ADSR_setAllTimes:
+ 351              		@ args = 0, pretend = 0, frame = 0
+ 352              		@ frame_needed = 0, uses_anonymous_args = 0
+ 353 0000 38B5     		push	{r3, r4, r5, lr}
+ 354 0002 90ED010A 		vldr.32	s0, [r0, #4]
+ 355 0006 354D     		ldr	r5, .L29
+ 356 0008 2DED088B 		vpush.64	{d8, d9, d10, d11}
+ 357 000c DFED348A 		vldr.32	s17, .L29+4
+ 358 0010 9FED34BA 		vldr.32	s22, .L29+8
+ 359 0014 DFED34AA 		vldr.32	s21, .L29+12
+ARM GAS  /var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cc8jNjWT.s 			page 7
+
+
+ 360 0018 0446     		mov	r4, r0
+ 361 001a 20EE280A 		vmul.f32	s0, s0, s17
+ 362 001e 2946     		mov	r1, r5
+ 363 0020 4FF48060 		mov	r0, #1024
+ 364 0024 B0EE419A 		vmov.f32	s18, s2
+ 365 0028 D4ED039A 		vldr.32	s19, [r4, #12]
+ 366 002c FFF7FEFF 		bl	interp_lin_lut
+ 367 0030 2946     		mov	r1, r5
+ 368 0032 B0EE408A 		vmov.f32	s16, s0
+ 369 0036 4FF48060 		mov	r0, #1024
+ 370 003a B0EE4B0A 		vmov.f32	s0, s22
+ 371 003e FFF7FEFF 		bl	interp_lin_lut
+ 372 0042 29EEAA7A 		vmul.f32	s14, s19, s21
+ 373 0046 38EE408A 		vsub.f32	s16, s16, s0
+ 374 004a F7EE009A 		vmov.f32	s19, #1.0e+0
+ 375 004e C8EE077A 		vdiv.f32	s15, s16, s14
+ 376 0052 2946     		mov	r1, r5
+ 377 0054 4FF48060 		mov	r0, #1024
+ 378 0058 94ED050A 		vldr.32	s0, [r4, #20]
+ 379 005c D4ED01BA 		vldr.32	s23, [r4, #4]
+ 380 0060 94ED04AA 		vldr.32	s20, [r4, #16]
+ 381 0064 77EEA97A 		vadd.f32	s15, s15, s19
+ 382 0068 20EE280A 		vmul.f32	s0, s0, s17
+ 383 006c C4ED077A 		vstr.32	s15, [r4, #28]
+ 384 0070 FFF7FEFF 		bl	interp_lin_lut
+ 385 0074 4FF48060 		mov	r0, #1024
+ 386 0078 B0EE408A 		vmov.f32	s16, s0
+ 387 007c 2946     		mov	r1, r5
+ 388 007e 2BEEA80A 		vmul.f32	s0, s23, s17
+ 389 0082 FFF7FEFF 		bl	interp_lin_lut
+ 390 0086 2AEE2AAA 		vmul.f32	s20, s20, s21
+ 391 008a 38EE408A 		vsub.f32	s16, s16, s0
+ 392 008e 4FF48060 		mov	r0, #1024
+ 393 0092 C8EE0A7A 		vdiv.f32	s15, s16, s20
+ 394 0096 2946     		mov	r1, r5
+ 395 0098 B0EE4B0A 		vmov.f32	s0, s22
+ 396 009c 77EEA97A 		vadd.f32	s15, s15, s19
+ 397 00a0 84ED059A 		vstr.32	s18, [r4, #20]
+ 398 00a4 C4ED087A 		vstr.32	s15, [r4, #32]
+ 399 00a8 94ED06AA 		vldr.32	s20, [r4, #24]
+ 400 00ac FFF7FEFF 		bl	interp_lin_lut
+ 401 00b0 4FF48060 		mov	r0, #1024
+ 402 00b4 B0EE408A 		vmov.f32	s16, s0
+ 403 00b8 2946     		mov	r1, r5
+ 404 00ba 29EE280A 		vmul.f32	s0, s18, s17
+ 405 00be FFF7FEFF 		bl	interp_lin_lut
+ 406 00c2 2AEE2AAA 		vmul.f32	s20, s20, s21
+ 407 00c6 38EE408A 		vsub.f32	s16, s16, s0
+ 408 00ca C8EE0A7A 		vdiv.f32	s15, s16, s20
+ 409 00ce 77EEA97A 		vadd.f32	s15, s15, s19
+ 410 00d2 BDEC088B 		vldm	sp!, {d8-d11}
+ 411 00d6 C4ED097A 		vstr.32	s15, [r4, #36]
+ 412 00da 38BD     		pop	{r3, r4, r5, pc}
+ 413              	.L30:
+ 414              		.align	2
+ 415              	.L29:
+ 416 00dc 00000000 		.word	log_lut
+ARM GAS  /var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cc8jNjWT.s 			page 8
+
+
+ 417 00e0 00008044 		.word	1149239296
+ 418 00e4 17B7D13D 		.word	1037154071
+ 419 00e8 00442C47 		.word	1194083328
+ 421              		.section	.text.ADSR_setTarget,"ax",%progbits
+ 422              		.align	1
+ 423              		.p2align 2,,3
+ 424              		.global	ADSR_setTarget
+ 425              		.syntax unified
+ 426              		.thumb
+ 427              		.thumb_func
+ 429              	ADSR_setTarget:
+ 430              		@ args = 0, pretend = 0, frame = 0
+ 431              		@ frame_needed = 0, uses_anonymous_args = 0
+ 432              		@ link register save eliminated.
+ 433 0000 D0ED007A 		vldr.32	s15, [r0]
+ 434 0004 80ED010A 		vstr.32	s0, [r0, #4]
+ 435 0008 F4EEC07A 		vcmpe.f32	s15, s0
+ 436 000c F1EE10FA 		vmrs	APSR_nzcv, FPSCR
+ 437 0010 04D5     		bpl	.L38
+ 438 0012 0023     		movs	r3, #0
+ 439 0014 8360     		str	r3, [r0, #8]
+ 440 0016 80ED050A 		vstr.32	s0, [r0, #20]
+ 441 001a 7047     		bx	lr
+ 442              	.L38:
+ 443 001c 03DD     		ble	.L31
+ 444 001e 0123     		movs	r3, #1
+ 445 0020 80ED050A 		vstr.32	s0, [r0, #20]
+ 446 0024 8360     		str	r3, [r0, #8]
+ 447              	.L31:
+ 448 0026 7047     		bx	lr
+ 450              		.section	.text.ADSR_setValue,"ax",%progbits
+ 451              		.align	1
+ 452              		.p2align 2,,3
+ 453              		.global	ADSR_setValue
+ 454              		.syntax unified
+ 455              		.thumb
+ 456              		.thumb_func
+ 458              	ADSR_setValue:
+ 459              		@ args = 0, pretend = 0, frame = 0
+ 460              		@ frame_needed = 0, uses_anonymous_args = 0
+ 461              		@ link register save eliminated.
+ 462 0000 0223     		movs	r3, #2
+ 463 0002 8360     		str	r3, [r0, #8]
+ 464 0004 80ED010A 		vstr.32	s0, [r0, #4]
+ 465 0008 80ED000A 		vstr.32	s0, [r0]
+ 466 000c 80ED050A 		vstr.32	s0, [r0, #20]
+ 467 0010 7047     		bx	lr
+ 469 0012 00BF     		.section	.text.ADSR_getState,"ax",%progbits
+ 470              		.align	1
+ 471              		.p2align 2,,3
+ 472              		.global	ADSR_getState
+ 473              		.syntax unified
+ 474              		.thumb
+ 475              		.thumb_func
+ 477              	ADSR_getState:
+ 478              		@ args = 0, pretend = 0, frame = 0
+ 479              		@ frame_needed = 0, uses_anonymous_args = 0
+ARM GAS  /var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cc8jNjWT.s 			page 9
+
+
+ 480              		@ link register save eliminated.
+ 481 0000 8068     		ldr	r0, [r0, #8]
+ 482 0002 7047     		bx	lr
+ 484              		.global	__aeabi_f2d
+ 485              		.global	__aeabi_dcmple
+ 486              		.section	.text.ADSR_compute,"ax",%progbits
+ 487              		.align	1
+ 488              		.p2align 2,,3
+ 489              		.global	ADSR_compute
+ 490              		.syntax unified
+ 491              		.thumb
+ 492              		.thumb_func
+ 494              	ADSR_compute:
+ 495              		@ args = 0, pretend = 0, frame = 0
+ 496              		@ frame_needed = 0, uses_anonymous_args = 0
+ 497 0000 10B5     		push	{r4, lr}
+ 498 0002 8368     		ldr	r3, [r0, #8]
+ 499 0004 012B     		cmp	r3, #1
+ 500 0006 2DED028B 		vpush.64	{d8}
+ 501 000a 0446     		mov	r4, r0
+ 502 000c 90ED008A 		vldr.32	s16, [r0]
+ 503 0010 2FD0     		beq	.L42
+ 504 0012 032B     		cmp	r3, #3
+ 505 0014 18D0     		beq	.L43
+ 506 0016 3BBB     		cbnz	r3, .L41
+ 507 0018 90ED077A 		vldr.32	s14, [r0, #28]
+ 508 001c 28EE078A 		vmul.f32	s16, s16, s14
+ 509 0020 F7EE007A 		vmov.f32	s15, #1.0e+0
+ 510 0024 B4EEE78A 		vcmpe.f32	s16, s15
+ 511 0028 F1EE10FA 		vmrs	APSR_nzcv, FPSCR
+ 512 002c 1ADB     		blt	.L50
+ 513 002e B0EE678A 		vmov.f32	s16, s15
+ 514 0032 B0EE480A 		vmov.f32	s0, s16
+ 515 0036 BDEC028B 		vldm	sp!, {d8}
+ 516 003a 4269     		ldr	r2, [r0, #20]	@ float
+ 517 003c C0ED007A 		vstr.32	s15, [r0]
+ 518 0040 0123     		movs	r3, #1
+ 519 0042 4260     		str	r2, [r0, #4]	@ float
+ 520 0044 8360     		str	r3, [r0, #8]
+ 521 0046 10BD     		pop	{r4, pc}
+ 522              	.L43:
+ 523 0048 D0ED097A 		vldr.32	s15, [r0, #36]
+ 524 004c 28EE278A 		vmul.f32	s16, s16, s15
+ 525 0050 18EE100A 		vmov	r0, s16
+ 526 0054 FFF7FEFF 		bl	__aeabi_f2d
+ 527 0058 1AA3     		adr	r3, .L51+4
+ 528 005a D3E90023 		ldrd	r2, [r3]
+ 529 005e FFF7FEFF 		bl	__aeabi_dcmple
+ 530 0062 F0B9     		cbnz	r0, .L47
+ 531              	.L50:
+ 532 0064 84ED008A 		vstr.32	s16, [r4]
+ 533              	.L41:
+ 534 0068 B0EE480A 		vmov.f32	s0, s16
+ 535 006c BDEC028B 		vldm	sp!, {d8}
+ 536 0070 10BD     		pop	{r4, pc}
+ 537              	.L42:
+ 538 0072 90ED087A 		vldr.32	s14, [r0, #32]
+ARM GAS  /var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cc8jNjWT.s 			page 10
+
+
+ 539 0076 D0ED057A 		vldr.32	s15, [r0, #20]
+ 540 007a 28EE078A 		vmul.f32	s16, s16, s14
+ 541 007e B4EEE78A 		vcmpe.f32	s16, s15
+ 542 0082 F1EE10FA 		vmrs	APSR_nzcv, FPSCR
+ 543 0086 80ED008A 		vstr.32	s16, [r0]
+ 544 008a EDD8     		bhi	.L41
+ 545 008c B0EE678A 		vmov.f32	s16, s15
+ 546 0090 B0EE480A 		vmov.f32	s0, s16
+ 547 0094 BDEC028B 		vldm	sp!, {d8}
+ 548 0098 0223     		movs	r3, #2
+ 549 009a C0ED007A 		vstr.32	s15, [r0]
+ 550 009e 8360     		str	r3, [r0, #8]
+ 551 00a0 10BD     		pop	{r4, pc}
+ 552              	.L47:
+ 553 00a2 DFED077A 		vldr.32	s15, .L51
+ 554 00a6 B0EE678A 		vmov.f32	s16, s15
+ 555 00aa B0EE480A 		vmov.f32	s0, s16
+ 556 00ae BDEC028B 		vldm	sp!, {d8}
+ 557 00b2 0423     		movs	r3, #4
+ 558 00b4 C4ED007A 		vstr.32	s15, [r4]
+ 559 00b8 A360     		str	r3, [r4, #8]
+ 560 00ba 10BD     		pop	{r4, pc}
+ 561              	.L52:
+ 562 00bc AFF30080 		.align	3
+ 563              	.L51:
+ 564 00c0 00000000 		.word	0
+ 565 00c4 2D431CEB 		.word	-350469331
+ 566 00c8 E2361A3F 		.word	1058682594
+ 568              		.global	adsr_index
+ 569              		.section	.ccmram,"aw"
+ 570              		.align	2
+ 573              	adsr_index:
+ 574 0000 00000000 		.space	40
+ 574      00000000 
+ 574      00000000 
+ 574      00000000 
+ 574      00000000 
+ 575              		.global	adsr_filt
+ 576              		.align	2
+ 579              	adsr_filt:
+ 580 0028 00000000 		.space	40
+ 580      00000000 
+ 580      00000000 
+ 580      00000000 
+ 580      00000000 
+ 581              		.global	adsr_amp
+ 582              		.align	2
+ 585              	adsr_amp:
+ 586 0050 00000000 		.space	40
+ 586      00000000 
+ 586      00000000 
+ 586      00000000 
+ 586      00000000 
+ 587              		.global	log_lut
+ 588              		.section	.rodata.log_lut,"a"
+ 589              		.align	2
+ 592              	log_lut:
+ARM GAS  /var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cc8jNjWT.s 			page 11
+
+
+ 593 0000 8D5D13C1 		.word	-1055695475
+ 594 0004 FBAFDAC0 		.word	-1059409925
+ 595 0008 4F07C6C0 		.word	-1060763825
+ 596 000c D593B9C0 		.word	-1061579819
+ 597 0010 05A3B0C0 		.word	-1062165755
+ 598 0014 07A8A9C0 		.word	-1062623225
+ 599 0018 E5EDA3C0 		.word	-1062998555
+ 600 001c C0129FC0 		.word	-1063316800
+ 601 0020 A3DB9AC0 		.word	-1063593053
+ 602 0024 462297C0 		.word	-1063837114
+ 603 0028 62CC93C0 		.word	-1064055710
+ 604 002c 28C790C0 		.word	-1064253656
+ 605 0030 A7048EC0 		.word	-1064434521
+ 606 0034 467A8BC0 		.word	-1064601018
+ 607 0038 C31F89C0 		.word	-1064755261
+ 608 003c 89EE86C0 		.word	-1064898935
+ 609 0040 4EE184C0 		.word	-1065033394
+ 610 0044 BDF382C0 		.word	-1065159747
+ 611 0048 382281C0 		.word	-1065278920
+ 612 004c 7CD37EC0 		.word	-1065430148
+ 613 0050 7E8F7BC0 		.word	-1065644162
+ 614 0054 157478C0 		.word	-1065847787
+ 615 0058 857D75C0 		.word	-1066041979
+ 616 005c 82A872C0 		.word	-1066227582
+ 617 0060 3DF26FC0 		.word	-1066405315
+ 618 0064 32586DC0 		.word	-1066575822
+ 619 0068 30D86AC0 		.word	-1066739664
+ 620 006c 3B7068C0 		.word	-1066897349
+ 621 0070 971E66C0 		.word	-1067049321
+ 622 0074 B5E163C0 		.word	-1067195979
+ 623 0078 30B861C0 		.word	-1067337680
+ 624 007c C3A05FC0 		.word	-1067474749
+ 625 0080 469A5DC0 		.word	-1067607482
+ 626 0084 B1A35BC0 		.word	-1067736143
+ 627 0088 12BC59C0 		.word	-1067860974
+ 628 008c 8BE257C0 		.word	-1067982197
+ 629 0090 511656C0 		.word	-1068100015
+ 630 0094 AC5654C0 		.word	-1068214612
+ 631 0098 F0A252C0 		.word	-1068326160
+ 632 009c 7BFA50C0 		.word	-1068434821
+ 633 00a0 C05C4FC0 		.word	-1068540736
+ 634 00a4 32C94DC0 		.word	-1068644046
+ 635 00a8 5B3F4CC0 		.word	-1068744869
+ 636 00ac C2BE4AC0 		.word	-1068843326
+ 637 00b0 FE4649C0 		.word	-1068939522
+ 638 00b4 A1D747C0 		.word	-1069033567
+ 639 00b8 587046C0 		.word	-1069125544
+ 640 00bc C31045C0 		.word	-1069215549
+ 641 00c0 91B843C0 		.word	-1069303663
+ 642 00c4 736742C0 		.word	-1069389965
+ 643 00c8 211D41C0 		.word	-1069474527
+ 644 00cc 55D93FC0 		.word	-1069557419
+ 645 00d0 D49B3EC0 		.word	-1069638700
+ 646 00d4 5A643DC0 		.word	-1069718438
+ 647 00d8 AD323CC0 		.word	-1069796691
+ 648 00dc 9E063BC0 		.word	-1069873506
+ 649 00e0 F0DF39C0 		.word	-1069948944
+ARM GAS  /var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cc8jNjWT.s 			page 12
+
+
+ 650 00e4 7BBE38C0 		.word	-1070023045
+ 651 00e8 0AA237C0 		.word	-1070095862
+ 652 00ec 728A36C0 		.word	-1070167438
+ 653 00f0 8E7735C0 		.word	-1070237810
+ 654 00f4 346934C0 		.word	-1070307020
+ 655 00f8 395F33C0 		.word	-1070375111
+ 656 00fc 815932C0 		.word	-1070442111
+ 657 0100 E65731C0 		.word	-1070508058
+ 658 0104 475A30C0 		.word	-1070572985
+ 659 0108 89602FC0 		.word	-1070636919
+ 660 010c 876A2EC0 		.word	-1070699897
+ 661 0110 29782DC0 		.word	-1070761943
+ 662 0114 55892CC0 		.word	-1070823083
+ 663 0118 F19D2BC0 		.word	-1070883343
+ 664 011c E1B52AC0 		.word	-1070942751
+ 665 0120 0BD129C0 		.word	-1071001333
+ 666 0124 63EF28C0 		.word	-1071059101
+ 667 0128 C71028C0 		.word	-1071116089
+ 668 012c 263527C0 		.word	-1071172314
+ 669 0130 705C26C0 		.word	-1071227792
+ 670 0134 8C8625C0 		.word	-1071282548
+ 671 0138 6CB324C0 		.word	-1071336596
+ 672 013c FCE223C0 		.word	-1071389956
+ 673 0140 271523C0 		.word	-1071442649
+ 674 0144 E04922C0 		.word	-1071494688
+ 675 0148 1B8121C0 		.word	-1071546085
+ 676 014c BFBA20C0 		.word	-1071596865
+ 677 0150 C7F61FC0 		.word	-1071647033
+ 678 0154 1E351FC0 		.word	-1071696610
+ 679 0158 B8751EC0 		.word	-1071745608
+ 680 015c 84B81DC0 		.word	-1071794044
+ 681 0160 7EFD1CC0 		.word	-1071841922
+ 682 0164 95441CC0 		.word	-1071889259
+ 683 0168 B98D1BC0 		.word	-1071936071
+ 684 016c E4D81AC0 		.word	-1071982364
+ 685 0170 07261AC0 		.word	-1072028153
+ 686 0174 197519C0 		.word	-1072073447
+ 687 0178 0DC618C0 		.word	-1072118259
+ 688 017c DF1818C0 		.word	-1072162593
+ 689 0180 7F6D17C0 		.word	-1072206465
+ 690 0184 E3C316C0 		.word	-1072249885
+ 691 0188 041C16C0 		.word	-1072292860
+ 692 018c DA7515C0 		.word	-1072335398
+ 693 0190 5BD114C0 		.word	-1072377509
+ 694 0194 7F2E14C0 		.word	-1072419201
+ 695 0198 3F8D13C0 		.word	-1072460481
+ 696 019c 8DED12C0 		.word	-1072501363
+ 697 01a0 6A4F12C0 		.word	-1072541846
+ 698 01a4 C8B211C0 		.word	-1072581944
+ 699 01a8 A01711C0 		.word	-1072621664
+ 700 01ac ED7D10C0 		.word	-1072661011
+ 701 01b0 ACE50FC0 		.word	-1072699988
+ 702 01b4 CF4E0FC0 		.word	-1072738609
+ 703 01b8 52B90EC0 		.word	-1072776878
+ 704 01bc 31250EC0 		.word	-1072814799
+ 705 01c0 60920DC0 		.word	-1072852384
+ 706 01c4 DE000DC0 		.word	-1072889634
+ARM GAS  /var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cc8jNjWT.s 			page 13
+
+
+ 707 01c8 A8700CC0 		.word	-1072926552
+ 708 01cc B1E10BC0 		.word	-1072963151
+ 709 01d0 F4530BC0 		.word	-1072999436
+ 710 01d4 71C70AC0 		.word	-1073035407
+ 711 01d8 213C0AC0 		.word	-1073071071
+ 712 01dc FBB109C0 		.word	-1073106437
+ 713 01e0 FE2809C0 		.word	-1073141506
+ 714 01e4 23A108C0 		.word	-1073176285
+ 715 01e8 691A08C0 		.word	-1073210775
+ 716 01ec C49407C0 		.word	-1073244988
+ 717 01f0 381007C0 		.word	-1073278920
+ 718 01f4 B98C06C0 		.word	-1073312583
+ 719 01f8 4A0A06C0 		.word	-1073345974
+ 720 01fc DF8805C0 		.word	-1073379105
+ 721 0200 780805C0 		.word	-1073411976
+ 722 0204 128904C0 		.word	-1073444590
+ 723 0208 A60A04C0 		.word	-1073476954
+ 724 020c 338D03C0 		.word	-1073509069
+ 725 0210 B21003C0 		.word	-1073540942
+ 726 0214 259502C0 		.word	-1073572571
+ 727 0218 821A02C0 		.word	-1073603966
+ 728 021c CBA001C0 		.word	-1073635125
+ 729 0220 F62701C0 		.word	-1073666058
+ 730 0224 08B000C0 		.word	-1073696760
+ 731 0228 F33800C0 		.word	-1073727245
+ 732 022c 7B85FFBF 		.word	-1073773189
+ 733 0230 C39AFEBF 		.word	-1073833277
+ 734 0234 B8B1FDBF 		.word	-1073892936
+ 735 0238 4FCAFCBF 		.word	-1073952177
+ 736 023c 82E4FBBF 		.word	-1074011006
+ 737 0240 5800FBBF 		.word	-1074069416
+ 738 0244 B81DFABF 		.word	-1074127432
+ 739 0248 AC3CF9BF 		.word	-1074185044
+ 740 024c 295DF8BF 		.word	-1074242263
+ 741 0250 287FF7BF 		.word	-1074299096
+ 742 0254 A1A2F6BF 		.word	-1074355551
+ 743 0258 9BC7F5BF 		.word	-1074411621
+ 744 025c 07EEF4BF 		.word	-1074467321
+ 745 0260 E415F4BF 		.word	-1074522652
+ 746 0264 293FF3BF 		.word	-1074577623
+ 747 0268 CF69F2BF 		.word	-1074632241
+ 748 026c DD95F1BF 		.word	-1074686499
+ 749 0270 4CC3F0BF 		.word	-1074740404
+ 750 0274 0AF2EFBF 		.word	-1074793974
+ 751 0278 2122EFBF 		.word	-1074847199
+ 752 027c 8753EEBF 		.word	-1074900089
+ 753 0280 3486EDBF 		.word	-1074952652
+ 754 0284 30BAECBF 		.word	-1075004880
+ 755 0288 6BEFEBBF 		.word	-1075056789
+ 756 028c E525EBBF 		.word	-1075108379
+ 757 0290 965DEABF 		.word	-1075159658
+ 758 0294 8596E9BF 		.word	-1075210619
+ 759 0298 A2D0E8BF 		.word	-1075261278
+ 760 029c F60BE8BF 		.word	-1075311626
+ 761 02a0 6F48E7BF 		.word	-1075361681
+ 762 02a4 1686E6BF 		.word	-1075411434
+ 763 02a8 E3C4E5BF 		.word	-1075460893
+ARM GAS  /var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cc8jNjWT.s 			page 14
+
+
+ 764 02ac D504E5BF 		.word	-1075510059
+ 765 02b0 DD45E4BF 		.word	-1075558947
+ 766 02b4 0188E3BF 		.word	-1075607551
+ 767 02b8 43CBE2BF 		.word	-1075655869
+ 768 02bc 990FE2BF 		.word	-1075703911
+ 769 02c0 FC54E1BF 		.word	-1075751684
+ 770 02c4 749BE0BF 		.word	-1075799180
+ 771 02c8 EFE2DFBF 		.word	-1075846417
+ 772 02cc 772BDFBF 		.word	-1075893385
+ 773 02d0 0475DEBF 		.word	-1075940092
+ 774 02d4 94BFDDBF 		.word	-1075986540
+ 775 02d8 280BDDBF 		.word	-1076032728
+ 776 02dc B057DCBF 		.word	-1076078672
+ 777 02e0 3CA5DBBF 		.word	-1076124356
+ 778 02e4 BAF3DABF 		.word	-1076169798
+ 779 02e8 2D43DABF 		.word	-1076214995
+ 780 02ec 9293D9BF 		.word	-1076259950
+ 781 02f0 E2E4D8BF 		.word	-1076304670
+ 782 02f4 2637D8BF 		.word	-1076349146
+ 783 02f8 558AD7BF 		.word	-1076393387
+ 784 02fc 65DED6BF 		.word	-1076437403
+ 785 0300 6133D6BF 		.word	-1076481183
+ 786 0304 4089D5BF 		.word	-1076524736
+ 787 0308 01E0D4BF 		.word	-1076568063
+ 788 030c 9B37D4BF 		.word	-1076611173
+ 789 0310 1990D3BF 		.word	-1076654055
+ 790 0314 68E9D2BF 		.word	-1076696728
+ 791 0318 9A43D2BF 		.word	-1076739174
+ 792 031c 9D9ED1BF 		.word	-1076781411
+ 793 0320 72FAD0BF 		.word	-1076823438
+ 794 0324 1957D0BF 		.word	-1076865255
+ 795 0328 89B4CFBF 		.word	-1076906871
+ 796 032c D312CFBF 		.word	-1076948269
+ 797 0330 DE71CEBF 		.word	-1076989474
+ 798 0334 B3D1CDBF 		.word	-1077030477
+ 799 0338 5932CDBF 		.word	-1077071271
+ 800 033c B893CCBF 		.word	-1077111880
+ 801 0340 E8F5CBBF 		.word	-1077152280
+ 802 0344 D158CBBF 		.word	-1077192495
+ 803 0348 7BBCCABF 		.word	-1077232517
+ 804 034c DE20CABF 		.word	-1077272354
+ 805 0350 0A86C9BF 		.word	-1077311990
+ 806 0354 E6EBC8BF 		.word	-1077351450
+ 807 0358 7A52C8BF 		.word	-1077390726
+ 808 035c D0B9C7BF 		.word	-1077429808
+ 809 0360 CD21C7BF 		.word	-1077468723
+ 810 0364 8B8AC6BF 		.word	-1077507445
+ 811 0368 F1F3C5BF 		.word	-1077545999
+ 812 036c 0F5EC5BF 		.word	-1077584369
+ 813 0370 D6C8C4BF 		.word	-1077622570
+ 814 0374 4C34C4BF 		.word	-1077660596
+ 815 0378 6AA0C3BF 		.word	-1077698454
+ 816 037c 390DC3BF 		.word	-1077736135
+ 817 0380 AF7AC2BF 		.word	-1077773649
+ 818 0384 C4E8C1BF 		.word	-1077811004
+ 819 0388 8A57C1BF 		.word	-1077848182
+ 820 038c EFC6C0BF 		.word	-1077885201
+ARM GAS  /var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cc8jNjWT.s 			page 15
+
+
+ 821 0390 F436C0BF 		.word	-1077922060
+ 822 0394 A0A7BFBF 		.word	-1077958752
+ 823 0398 E318BFBF 		.word	-1077995293
+ 824 039c CE8ABEBF 		.word	-1078031666
+ 825 03a0 50FDBDBF 		.word	-1078067888
+ 826 03a4 7270BDBF 		.word	-1078103950
+ 827 03a8 2AE4BCBF 		.word	-1078139862
+ 828 03ac 8258BCBF 		.word	-1078175614
+ 829 03b0 68CDBBBF 		.word	-1078211224
+ 830 03b4 EE42BBBF 		.word	-1078246674
+ 831 03b8 02B9BABF 		.word	-1078281982
+ 832 03bc AD2FBABF 		.word	-1078317139
+ 833 03c0 E7A6B9BF 		.word	-1078352153
+ 834 03c4 B81EB9BF 		.word	-1078387016
+ 835 03c8 1897B8BF 		.word	-1078421736
+ 836 03cc 0610B8BF 		.word	-1078456314
+ 837 03d0 8389B7BF 		.word	-1078490749
+ 838 03d4 8E03B7BF 		.word	-1078525042
+ 839 03d8 207EB6BF 		.word	-1078559200
+ 840 03dc 40F9B5BF 		.word	-1078593216
+ 841 03e0 E674B5BF 		.word	-1078627098
+ 842 03e4 1BF1B4BF 		.word	-1078660837
+ 843 03e8 CE6DB4BF 		.word	-1078694450
+ 844 03ec 10EBB3BF 		.word	-1078727920
+ 845 03f0 CF68B3BF 		.word	-1078761265
+ 846 03f4 1DE7B2BF 		.word	-1078794467
+ 847 03f8 E065B2BF 		.word	-1078827552
+ 848 03fc 32E5B1BF 		.word	-1078860494
+ 849 0400 F964B1BF 		.word	-1078893319
+ 850 0404 47E5B0BF 		.word	-1078926009
+ 851 0408 1366B0BF 		.word	-1078958573
+ 852 040c 5CE7AFBF 		.word	-1078991012
+ 853 0410 2369AFBF 		.word	-1079023325
+ 854 0414 68EBAEBF 		.word	-1079055512
+ 855 0418 2B6EAEBF 		.word	-1079087573
+ 856 041c 5AF1ADBF 		.word	-1079119526
+ 857 0420 1075ADBF 		.word	-1079151344
+ 858 0424 3CF9ACBF 		.word	-1079183044
+ 859 0428 DD7DACBF 		.word	-1079214627
+ 860 042c F302ACBF 		.word	-1079246093
+ 861 0430 7F88ABBF 		.word	-1079277441
+ 862 0434 800EABBF 		.word	-1079308672
+ 863 0438 F794AABF 		.word	-1079339785
+ 864 043c DA1BAABF 		.word	-1079370790
+ 865 0440 33A3A9BF 		.word	-1079401677
+ 866 0444 022BA9BF 		.word	-1079432446
+ 867 0448 3EB3A8BF 		.word	-1079463106
+ 868 044c E63BA8BF 		.word	-1079493658
+ 869 0450 05C5A7BF 		.word	-1079524091
+ 870 0454 904EA7BF 		.word	-1079554416
+ 871 0458 80D8A6BF 		.word	-1079584640
+ 872 045c E562A6BF 		.word	-1079614747
+ 873 0460 B7EDA5BF 		.word	-1079644745
+ 874 0464 EE78A5BF 		.word	-1079674642
+ 875 0468 9204A5BF 		.word	-1079704430
+ 876 046c 9B90A4BF 		.word	-1079734117
+ 877 0470 111DA4BF 		.word	-1079763695
+ARM GAS  /var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cc8jNjWT.s 			page 16
+
+
+ 878 0474 EBA9A3BF 		.word	-1079793173
+ 879 0478 3337A3BF 		.word	-1079822541
+ 880 047c DFC4A2BF 		.word	-1079851809
+ 881 0480 F052A2BF 		.word	-1079880976
+ 882 0484 65E1A1BF 		.word	-1079910043
+ 883 0488 3F70A1BF 		.word	-1079939009
+ 884 048c 7EFFA0BF 		.word	-1079967874
+ 885 0490 198FA0BF 		.word	-1079996647
+ 886 0494 211FA0BF 		.word	-1080025311
+ 887 0498 86AF9FBF 		.word	-1080053882
+ 888 049c 46409FBF 		.word	-1080082362
+ 889 04a0 6CD19EBF 		.word	-1080110740
+ 890 04a4 F6629EBF 		.word	-1080139018
+ 891 04a8 DCF49DBF 		.word	-1080167204
+ 892 04ac 1E879DBF 		.word	-1080195298
+ 893 04b0 BD199DBF 		.word	-1080223299
+ 894 04b4 B8AC9CBF 		.word	-1080251208
+ 895 04b8 18409CBF 		.word	-1080279016
+ 896 04bc CCD39BBF 		.word	-1080306740
+ 897 04c0 DC679BBF 		.word	-1080334372
+ 898 04c4 48FC9ABF 		.word	-1080361912
+ 899 04c8 10919ABF 		.word	-1080389360
+ 900 04cc 35269ABF 		.word	-1080416715
+ 901 04d0 AEBB99BF 		.word	-1080443986
+ 902 04d4 7A5199BF 		.word	-1080471174
+ 903 04d8 A3E798BF 		.word	-1080498269
+ 904 04dc 287E98BF 		.word	-1080525272
+ 905 04e0 F91498BF 		.word	-1080552199
+ 906 04e4 2EAC97BF 		.word	-1080579026
+ 907 04e8 AF4397BF 		.word	-1080605777
+ 908 04ec 83DB96BF 		.word	-1080632445
+ 909 04f0 B47396BF 		.word	-1080659020
+ 910 04f4 310C96BF 		.word	-1080685519
+ 911 04f8 01A595BF 		.word	-1080711935
+ 912 04fc 2D3E95BF 		.word	-1080738259
+ 913 0500 A5D794BF 		.word	-1080764507
+ 914 0504 717194BF 		.word	-1080790671
+ 915 0508 890B94BF 		.word	-1080816759
+ 916 050c FCA593BF 		.word	-1080842756
+ 917 0510 B34093BF 		.word	-1080868685
+ 918 0514 C6DB92BF 		.word	-1080894522
+ 919 0518 1D7792BF 		.word	-1080920291
+ 920 051c CF1292BF 		.word	-1080945969
+ 921 0520 C5AE91BF 		.word	-1080971579
+ 922 0524 0E4B91BF 		.word	-1080997106
+ 923 0528 A3E790BF 		.word	-1081022557
+ 924 052c 848490BF 		.word	-1081047932
+ 925 0530 AF2190BF 		.word	-1081073233
+ 926 0534 2FBF8FBF 		.word	-1081098449
+ 927 0538 F25C8FBF 		.word	-1081123598
+ 928 053c 09FB8EBF 		.word	-1081148663
+ 929 0540 63998EBF 		.word	-1081173661
+ 930 0544 09388EBF 		.word	-1081198583
+ 931 0548 F9D68DBF 		.word	-1081223431
+ 932 054c 36768DBF 		.word	-1081248202
+ 933 0550 B5158DBF 		.word	-1081272907
+ 934 0554 80B58CBF 		.word	-1081297536
+ARM GAS  /var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cc8jNjWT.s 			page 17
+
+
+ 935 0558 97558CBF 		.word	-1081322089
+ 936 055c F1F58BBF 		.word	-1081346575
+ 937 0560 96968BBF 		.word	-1081370986
+ 938 0564 7E378BBF 		.word	-1081395330
+ 939 0568 A9D88ABF 		.word	-1081419607
+ 940 056c 207A8ABF 		.word	-1081443808
+ 941 0570 DA1B8ABF 		.word	-1081467942
+ 942 0574 E0BD89BF 		.word	-1081492000
+ 943 0578 206089BF 		.word	-1081516000
+ 944 057c AC0289BF 		.word	-1081539924
+ 945 0580 7AA588BF 		.word	-1081563782
+ 946 0584 8C4888BF 		.word	-1081587572
+ 947 0588 E1EB87BF 		.word	-1081611295
+ 948 058c 7A8F87BF 		.word	-1081634950
+ 949 0590 4C3387BF 		.word	-1081658548
+ 950 0594 6BD786BF 		.word	-1081682069
+ 951 0598 CC7B86BF 		.word	-1081705524
+ 952 059c 682086BF 		.word	-1081728920
+ 953 05a0 48C585BF 		.word	-1081752248
+ 954 05a4 6A6A85BF 		.word	-1081775510
+ 955 05a8 D00F85BF 		.word	-1081798704
+ 956 05ac 70B584BF 		.word	-1081821840
+ 957 05b0 535B84BF 		.word	-1081844909
+ 958 05b4 710184BF 		.word	-1081867919
+ 959 05b8 D2A783BF 		.word	-1081890862
+ 960 05bc 6E4E83BF 		.word	-1081913746
+ 961 05c0 4DF582BF 		.word	-1081936563
+ 962 05c4 679C82BF 		.word	-1081959321
+ 963 05c8 BB4382BF 		.word	-1081982021
+ 964 05cc 53EB81BF 		.word	-1082004653
+ 965 05d0 259381BF 		.word	-1082027227
+ 966 05d4 323B81BF 		.word	-1082049742
+ 967 05d8 7AE380BF 		.word	-1082072198
+ 968 05dc 058C80BF 		.word	-1082094587
+ 969 05e0 C23480BF 		.word	-1082116926
+ 970 05e4 84BB7FBF 		.word	-1082147964
+ 971 05e8 FA0D7FBF 		.word	-1082192390
+ 972 05ec D4607EBF 		.word	-1082236716
+ 973 05f0 35B47DBF 		.word	-1082280907
+ 974 05f4 0B087DBF 		.word	-1082324981
+ 975 05f8 465C7CBF 		.word	-1082368954
+ 976 05fc F7B07BBF 		.word	-1082412809
+ 977 0600 2D067BBF 		.word	-1082456531
+ 978 0604 C85B7ABF 		.word	-1082500152
+ 979 0608 C8B179BF 		.word	-1082543672
+ 980 060c 4F0879BF 		.word	-1082587057
+ 981 0610 395F78BF 		.word	-1082630343
+ 982 0614 89B677BF 		.word	-1082673527
+ 983 0618 5E0E77BF 		.word	-1082716578
+ 984 061c 886676BF 		.word	-1082759544
+ 985 0620 38BF75BF 		.word	-1082802376
+ 986 0624 4C1875BF 		.word	-1082845108
+ 987 0628 C57174BF 		.word	-1082887739
+ 988 062c B4CB73BF 		.word	-1082930252
+ 989 0630 072673BF 		.word	-1082972665
+ 990 0634 D08072BF 		.word	-1083014960
+ 991 0638 FDDB71BF 		.word	-1083057155
+ARM GAS  /var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cc8jNjWT.s 			page 18
+
+
+ 992 063c 8F3771BF 		.word	-1083099249
+ 993 0640 869370BF 		.word	-1083141242
+ 994 0644 F2EF6FBF 		.word	-1083183118
+ 995 0648 C24C6FBF 		.word	-1083224894
+ 996 064c F8A96EBF 		.word	-1083266568
+ 997 0650 92076EBF 		.word	-1083308142
+ 998 0654 A1656DBF 		.word	-1083349599
+ 999 0658 05C46CBF 		.word	-1083390971
+ 1000 065c DD226CBF 		.word	-1083432227
+ 1001 0660 1B826BBF 		.word	-1083473381
+ 1002 0664 ACE16ABF 		.word	-1083514452
+ 1003 0668 B3416ABF 		.word	-1083555405
+ 1004 066c 0EA269BF 		.word	-1083596274
+ 1005 0670 DE0269BF 		.word	-1083637026
+ 1006 0674 026468BF 		.word	-1083677694
+ 1007 0678 9CC567BF 		.word	-1083718244
+ 1008 067c 892767BF 		.word	-1083758711
+ 1009 0680 CA8966BF 		.word	-1083799094
+ 1010 0684 81EC65BF 		.word	-1083839359
+ 1011 0688 8B4F65BF 		.word	-1083879541
+ 1012 068c 0BB364BF 		.word	-1083919605
+ 1013 0690 CE1664BF 		.word	-1083959602
+ 1014 0694 077B63BF 		.word	-1083999481
+ 1015 0698 93DF62BF 		.word	-1084039277
+ 1016 069c 854462BF 		.word	-1084078971
+ 1017 06a0 CAA961BF 		.word	-1084118582
+ 1018 06a4 730F61BF 		.word	-1084158093
+ 1019 06a8 717560BF 		.word	-1084197519
+ 1020 06ac D3DB5FBF 		.word	-1084236845
+ 1021 06b0 89425FBF 		.word	-1084276087
+ 1022 06b4 A4A95EBF 		.word	-1084315228
+ 1023 06b8 12115EBF 		.word	-1084354286
+ 1024 06bc E6785DBF 		.word	-1084393242
+ 1025 06c0 0DE15CBF 		.word	-1084432115
+ 1026 06c4 99495CBF 		.word	-1084470887
+ 1027 06c8 68B25BBF 		.word	-1084509592
+ 1028 06cc 9B1B5BBF 		.word	-1084548197
+ 1029 06d0 34855ABF 		.word	-1084586700
+ 1030 06d4 0FEF59BF 		.word	-1084625137
+ 1031 06d8 4F5959BF 		.word	-1084663473
+ 1032 06dc E3C358BF 		.word	-1084701725
+ 1033 06e0 CB2E58BF 		.word	-1084739893
+ 1034 06e4 179A57BF 		.word	-1084777961
+ 1035 06e8 A70557BF 		.word	-1084815961
+ 1036 06ec 9B7156BF 		.word	-1084853861
+ 1037 06f0 E3DD55BF 		.word	-1084891677
+ 1038 06f4 6F4A55BF 		.word	-1084929425
+ 1039 06f8 5FB754BF 		.word	-1084967073
+ 1040 06fc A22454BF 		.word	-1085004638
+ 1041 0700 3A9253BF 		.word	-1085042118
+ 1042 0704 260053BF 		.word	-1085079514
+ 1043 0708 656E52BF 		.word	-1085116827
+ 1044 070c E8DC51BF 		.word	-1085154072
+ 1045 0710 CF4B51BF 		.word	-1085191217
+ 1046 0714 0ABB50BF 		.word	-1085228278
+ 1047 0718 882A50BF 		.word	-1085265272
+ 1048 071c 5B9A4FBF 		.word	-1085302181
+ARM GAS  /var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cc8jNjWT.s 			page 19
+
+
+ 1049 0720 810A4FBF 		.word	-1085339007
+ 1050 0724 FA7A4EBF 		.word	-1085375750
+ 1051 0728 C8EB4DBF 		.word	-1085412408
+ 1052 072c EA5C4DBF 		.word	-1085448982
+ 1053 0730 4FCE4CBF 		.word	-1085485489
+ 1054 0734 07404CBF 		.word	-1085521913
+ 1055 0738 03B24BBF 		.word	-1085558269
+ 1056 073c 64244BBF 		.word	-1085594524
+ 1057 0740 07974ABF 		.word	-1085630713
+ 1058 0744 EE094ABF 		.word	-1085666834
+ 1059 0748 287D49BF 		.word	-1085702872
+ 1060 074c B7F048BF 		.word	-1085738825
+ 1061 0750 996448BF 		.word	-1085774695
+ 1062 0754 BED847BF 		.word	-1085810498
+ 1063 0758 274D47BF 		.word	-1085846233
+ 1064 075c E3C146BF 		.word	-1085881885
+ 1065 0760 F43646BF 		.word	-1085917452
+ 1066 0764 47AC45BF 		.word	-1085952953
+ 1067 0768 DE2145BF 		.word	-1085988386
+ 1068 076c C89744BF 		.word	-1086023736
+ 1069 0770 060E44BF 		.word	-1086059002
+ 1070 0774 888443BF 		.word	-1086094200
+ 1071 0778 4CFB42BF 		.word	-1086129332
+ 1072 077c 547242BF 		.word	-1086164396
+ 1073 0780 AFE941BF 		.word	-1086199377
+ 1074 0784 5F6141BF 		.word	-1086234273
+ 1075 0788 40D940BF 		.word	-1086269120
+ 1076 078c 765140BF 		.word	-1086303882
+ 1077 0790 EFC93FBF 		.word	-1086338577
+ 1078 0794 BB423FBF 		.word	-1086373189
+ 1079 0798 CBBB3EBF 		.word	-1086407733
+ 1080 079c 0D353EBF 		.word	-1086442227
+ 1081 07a0 B4AE3DBF 		.word	-1086476620
+ 1082 07a4 8D283DBF 		.word	-1086510963
+ 1083 07a8 A9A23CBF 		.word	-1086545239
+ 1084 07ac 191D3CBF 		.word	-1086579431
+ 1085 07b0 CC973BBF 		.word	-1086613556
+ 1086 07b4 C2123BBF 		.word	-1086647614
+ 1087 07b8 FC8D3ABF 		.word	-1086681604
+ 1088 07bc 78093ABF 		.word	-1086715528
+ 1089 07c0 388539BF 		.word	-1086749384
+ 1090 07c4 4B0139BF 		.word	-1086783157
+ 1091 07c8 917D38BF 		.word	-1086816879
+ 1092 07cc 2BFA37BF 		.word	-1086850517
+ 1093 07d0 F77637BF 		.word	-1086884105
+ 1094 07d4 06F436BF 		.word	-1086917626
+ 1095 07d8 697136BF 		.word	-1086951063
+ 1096 07dc FEEE35BF 		.word	-1086984450
+ 1097 07e0 D76C35BF 		.word	-1087017769
+ 1098 07e4 03EB34BF 		.word	-1087051005
+ 1099 07e8 626934BF 		.word	-1087084190
+ 1100 07ec 04E833BF 		.word	-1087117308
+ 1101 07f0 E86633BF 		.word	-1087150360
+ 1102 07f4 10E632BF 		.word	-1087183344
+ 1103 07f8 6B6532BF 		.word	-1087216277
+ 1104 07fc 19E531BF 		.word	-1087249127
+ 1105 0800 F96431BF 		.word	-1087281927
+ARM GAS  /var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cc8jNjWT.s 			page 20
+
+
+ 1106 0804 1DE530BF 		.word	-1087314659
+ 1107 0808 846530BF 		.word	-1087347324
+ 1108 080c 2EE62FBF 		.word	-1087379922
+ 1109 0810 1B672FBF 		.word	-1087412453
+ 1110 0814 3AE82EBF 		.word	-1087444934
+ 1111 0818 9C692EBF 		.word	-1087477348
+ 1112 081c 42EB2DBF 		.word	-1087509694
+ 1113 0820 1A6D2DBF 		.word	-1087541990
+ 1114 0824 35EF2CBF 		.word	-1087574219
+ 1115 0828 93712CBF 		.word	-1087606381
+ 1116 082c 34F42BBF 		.word	-1087638476
+ 1117 0830 08772BBF 		.word	-1087670520
+ 1118 0834 1EFA2ABF 		.word	-1087702498
+ 1119 0838 677D2ABF 		.word	-1087734425
+ 1120 083c F3002ABF 		.word	-1087766285
+ 1121 0840 C28429BF 		.word	-1087798078
+ 1122 0844 C40829BF 		.word	-1087829820
+ 1123 0848 098D28BF 		.word	-1087861495
+ 1124 084c 801128BF 		.word	-1087893120
+ 1125 0850 3A9627BF 		.word	-1087924678
+ 1126 0854 261B27BF 		.word	-1087956186
+ 1127 0858 55A026BF 		.word	-1087987627
+ 1128 085c C82526BF 		.word	-1088019000
+ 1129 0860 6DAB25BF 		.word	-1088050323
+ 1130 0864 443125BF 		.word	-1088081596
+ 1131 0868 5FB724BF 		.word	-1088112801
+ 1132 086c AB3D24BF 		.word	-1088143957
+ 1133 0870 3BC423BF 		.word	-1088175045
+ 1134 0874 FD4A23BF 		.word	-1088206083
+ 1135 0878 03D222BF 		.word	-1088237053
+ 1136 087c 3A5922BF 		.word	-1088267974
+ 1137 0880 A4E021BF 		.word	-1088298844
+ 1138 0884 516821BF 		.word	-1088329647
+ 1139 0888 30F020BF 		.word	-1088360400
+ 1140 088c 537820BF 		.word	-1088391085
+ 1141 0890 A80020BF 		.word	-1088421720
+ 1142 0894 2F891FBF 		.word	-1088452305
+ 1143 0898 E8111FBF 		.word	-1088482840
+ 1144 089c E59A1EBF 		.word	-1088513307
+ 1145 08a0 14241EBF 		.word	-1088543724
+ 1146 08a4 86AD1DBF 		.word	-1088574074
+ 1147 08a8 19371DBF 		.word	-1088604391
+ 1148 08ac F0C01CBF 		.word	-1088634640
+ 1149 08b0 F94A1CBF 		.word	-1088664839
+ 1150 08b4 45D51BBF 		.word	-1088694971
+ 1151 08b8 B35F1BBF 		.word	-1088725069
+ 1152 08bc 64EA1ABF 		.word	-1088755100
+ 1153 08c0 47751ABF 		.word	-1088785081
+ 1154 08c4 5C001ABF 		.word	-1088815012
+ 1155 08c8 B58B19BF 		.word	-1088844875
+ 1156 08cc 2F1719BF 		.word	-1088874705
+ 1157 08d0 ECA218BF 		.word	-1088904468
+ 1158 08d4 DC2E18BF 		.word	-1088934180
+ 1159 08d8 FEBA17BF 		.word	-1088963842
+ 1160 08dc 524717BF 		.word	-1088993454
+ 1161 08e0 D8D316BF 		.word	-1089023016
+ 1162 08e4 916016BF 		.word	-1089052527
+ARM GAS  /var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cc8jNjWT.s 			page 21
+
+
+ 1163 08e8 8DED15BF 		.word	-1089081971
+ 1164 08ec AB7A15BF 		.word	-1089111381
+ 1165 08f0 0B0815BF 		.word	-1089140725
+ 1166 08f4 8E9514BF 		.word	-1089170034
+ 1167 08f8 532314BF 		.word	-1089199277
+ 1168 08fc 4BB113BF 		.word	-1089228469
+ 1169 0900 643F13BF 		.word	-1089257628
+ 1170 0904 C0CD12BF 		.word	-1089286720
+ 1171 0908 4F5C12BF 		.word	-1089315761
+ 1172 090c FFEA11BF 		.word	-1089344769
+ 1173 0910 F27911BF 		.word	-1089373710
+ 1174 0914 180911BF 		.word	-1089402600
+ 1175 0918 5F9810BF 		.word	-1089431457
+ 1176 091c E92710BF 		.word	-1089460247
+ 1177 0920 95B70FBF 		.word	-1089489003
+ 1178 0924 84470FBF 		.word	-1089517692
+ 1179 0928 95D70EBF 		.word	-1089546347
+ 1180 092c E8670EBF 		.word	-1089574936
+ 1181 0930 5DF80DBF 		.word	-1089603491
+ 1182 0934 05890DBF 		.word	-1089631995
+ 1183 0938 DF190DBF 		.word	-1089660449
+ 1184 093c EBAA0CBF 		.word	-1089688853
+ 1185 0940 193C0CBF 		.word	-1089717223
+ 1186 0944 8ACD0BBF 		.word	-1089745526
+ 1187 0948 1C5F0BBF 		.word	-1089773796
+ 1188 094c E1F00ABF 		.word	-1089802015
+ 1189 0950 D8820ABF 		.word	-1089830184
+ 1190 0954 01150ABF 		.word	-1089858303
+ 1191 0958 5DA709BF 		.word	-1089886371
+ 1192 095c DA3909BF 		.word	-1089914406
+ 1193 0960 8ACC08BF 		.word	-1089942390
+ 1194 0964 7C5F08BF 		.word	-1089970308
+ 1195 0968 80F207BF 		.word	-1089998208
+ 1196 096c C68507BF 		.word	-1090026042
+ 1197 0970 2F1907BF 		.word	-1090053841
+ 1198 0974 C9AC06BF 		.word	-1090081591
+ 1199 0978 964006BF 		.word	-1090109290
+ 1200 097c 84D405BF 		.word	-1090136956
+ 1201 0980 B66805BF 		.word	-1090164554
+ 1202 0984 F8FC04BF 		.word	-1090192136
+ 1203 0988 7D9104BF 		.word	-1090219651
+ 1204 098c 242604BF 		.word	-1090247132
+ 1205 0990 FEBA03BF 		.word	-1090274562
+ 1206 0994 095003BF 		.word	-1090301943
+ 1207 0998 36E502BF 		.word	-1090329290
+ 1208 099c 967A02BF 		.word	-1090356586
+ 1209 09a0 281002BF 		.word	-1090383832
+ 1210 09a4 DBA501BF 		.word	-1090411045
+ 1211 09a8 C13B01BF 		.word	-1090438207
+ 1212 09ac C8D100BF 		.word	-1090465336
+ 1213 09b0 016800BF 		.word	-1090492415
+ 1214 09b4 DBFCFFBE 		.word	-1090519845
+ 1215 09b8 F629FFBE 		.word	-1090573834
+ 1216 09bc 7557FEBE 		.word	-1090627723
+ 1217 09c0 3885FDBE 		.word	-1090681544
+ 1218 09c4 5FB3FCBE 		.word	-1090735265
+ 1219 09c8 EBE1FBBE 		.word	-1090788885
+ARM GAS  /var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cc8jNjWT.s 			page 22
+
+
+ 1220 09cc BA10FBBE 		.word	-1090842438
+ 1221 09d0 EE3FFABE 		.word	-1090895890
+ 1222 09d4 656FF9BE 		.word	-1090949275
+ 1223 09d8 1F9FF8BE 		.word	-1091002593
+ 1224 09dc 5FCFF7BE 		.word	-1091055777
+ 1225 09e0 C1FFF6BE 		.word	-1091108927
+ 1226 09e4 A930F6BE 		.word	-1091161943
+ 1227 09e8 B361F5BE 		.word	-1091214925
+ 1228 09ec 4293F4BE 		.word	-1091267774
+ 1229 09f0 F4C4F3BE 		.word	-1091320588
+ 1230 09f4 0AF7F2BE 		.word	-1091373302
+ 1231 09f8 8429F2BE 		.word	-1091425916
+ 1232 09fc 425CF1BE 		.word	-1091478462
+ 1233 0a00 658FF0BE 		.word	-1091530907
+ 1234 0a04 CAC2EFBE 		.word	-1091583286
+ 1235 0a08 73F6EEBE 		.word	-1091635597
+ 1236 0a0c 802AEEBE 		.word	-1091687808
+ 1237 0a10 D05EEDBE 		.word	-1091739952
+ 1238 0a14 8693ECBE 		.word	-1091791994
+ 1239 0a18 7EC8EBBE 		.word	-1091843970
+ 1240 0a1c B9FDEABE 		.word	-1091895879
+ 1241 0a20 5933EABE 		.word	-1091947687
+ 1242 0a24 3C69E9BE 		.word	-1091999428
+ 1243 0a28 849FE8BE 		.word	-1092051068
+ 1244 0a2c 0FD6E7BE 		.word	-1092102641
+ 1245 0a30 DD0CE7BE 		.word	-1092154147
+ 1246 0a34 0F44E6BE 		.word	-1092205553
+ 1247 0a38 857BE5BE 		.word	-1092256891
+ 1248 0a3c 3EB3E4BE 		.word	-1092308162
+ 1249 0a40 5BEBE3BE 		.word	-1092359333
+ 1250 0a44 BC23E3BE 		.word	-1092410436
+ 1251 0a48 5F5CE2BE 		.word	-1092461473
+ 1252 0a4c 6895E1BE 		.word	-1092512408
+ 1253 0a50 B3CEE0BE 		.word	-1092563277
+ 1254 0a54 4208E0BE 		.word	-1092614078
+ 1255 0a58 3542DFBE 		.word	-1092664779
+ 1256 0a5c 4A7CDEBE 		.word	-1092715446
+ 1257 0a60 C3B6DDBE 		.word	-1092766013
+ 1258 0a64 A2F1DCBE 		.word	-1092816478
+ 1259 0a68 A12CDCBE 		.word	-1092866911
+ 1260 0a6c 0668DBBE 		.word	-1092917242
+ 1261 0a70 ADA3DABE 		.word	-1092967507
+ 1262 0a74 B9DFD9BE 		.word	-1093017671
+ 1263 0a78 E71BD9BE 		.word	-1093067801
+ 1264 0a7c 7958D8BE 		.word	-1093117831
+ 1265 0a80 4F95D7BE 		.word	-1093167793
+ 1266 0a84 67D2D6BE 		.word	-1093217689
+ 1267 0a88 E40FD6BE 		.word	-1093267484
+ 1268 0a8c 834DD5BE 		.word	-1093317245
+ 1269 0a90 878BD4BE 		.word	-1093366905
+ 1270 0a94 CDC9D3BE 		.word	-1093416499
+ 1271 0a98 5708D3BE 		.word	-1093466025
+ 1272 0a9c 4547D2BE 		.word	-1093515451
+ 1273 0aa0 5586D1BE 		.word	-1093564843
+ 1274 0aa4 CAC5D0BE 		.word	-1093614134
+ 1275 0aa8 8105D0BE 		.word	-1093663359
+ 1276 0aac 7C45CFBE 		.word	-1093712516
+ARM GAS  /var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cc8jNjWT.s 			page 23
+
+
+ 1277 0ab0 BA85CEBE 		.word	-1093761606
+ 1278 0ab4 3BC6CDBE 		.word	-1093810629
+ 1279 0ab8 2107CDBE 		.word	-1093859551
+ 1280 0abc 2848CCBE 		.word	-1093908440
+ 1281 0ac0 9489CBBE 		.word	-1093957228
+ 1282 0ac4 43CBCABE 		.word	-1094005949
+ 1283 0ac8 350DCABE 		.word	-1094054603
+ 1284 0acc 6A4FC9BE 		.word	-1094103190
+ 1285 0ad0 E291C8BE 		.word	-1094151710
+ 1286 0ad4 9DD4C7BE 		.word	-1094200163
+ 1287 0ad8 9C17C7BE 		.word	-1094248548
+ 1288 0adc FF5AC6BE 		.word	-1094296833
+ 1289 0ae0 849EC5BE 		.word	-1094345084
+ 1290 0ae4 4CE2C4BE 		.word	-1094393268
+ 1291 0ae8 7826C4BE 		.word	-1094441352
+ 1292 0aec E86AC3BE 		.word	-1094489368
+ 1293 0af0 79AFC2BE 		.word	-1094537351
+ 1294 0af4 6FF4C1BE 		.word	-1094585233
+ 1295 0af8 A839C1BE 		.word	-1094633048
+ 1296 0afc 027FC0BE 		.word	-1094680830
+ 1297 0b00 C1C4BFBE 		.word	-1094728511
+ 1298 0b04 C40ABFBE 		.word	-1094776124
+ 1299 0b08 0951BEBE 		.word	-1094823671
+ 1300 0b0c 7097BDBE 		.word	-1094871184
+ 1301 0b10 3CDEBCBE 		.word	-1094918596
+ 1302 0b14 4A25BCBE 		.word	-1094965942
+ 1303 0b18 9C6CBBBE 		.word	-1095013220
+ 1304 0b1c 0FB4BABE 		.word	-1095060465
+ 1305 0b20 E7FBB9BE 		.word	-1095107609
+ 1306 0b24 0344B9BE 		.word	-1095154685
+ 1307 0b28 3F8CB8BE 		.word	-1095201729
+ 1308 0b2c E1D4B7BE 		.word	-1095248671
+ 1309 0b30 C51DB7BE 		.word	-1095295547
+ 1310 0b34 CB66B6BE 		.word	-1095342389
+ 1311 0b38 36B0B5BE 		.word	-1095389130
+ 1312 0b3c C2F9B4BE 		.word	-1095435838
+ 1313 0b40 9143B4BE 		.word	-1095482479
+ 1314 0b44 C58DB3BE 		.word	-1095529019
+ 1315 0b48 1BD8B2BE 		.word	-1095575525
+ 1316 0b4c B422B2BE 		.word	-1095621964
+ 1317 0b50 8F6DB1BE 		.word	-1095668337
+ 1318 0b54 AEB8B0BE 		.word	-1095714642
+ 1319 0b58 1004B0BE 		.word	-1095760880
+ 1320 0b5c 944FAFBE 		.word	-1095807084
+ 1321 0b60 7C9BAEBE 		.word	-1095853188
+ 1322 0b64 A7E7ADBE 		.word	-1095899225
+ 1323 0b68 F433ADBE 		.word	-1095945228
+ 1324 0b6c 8480ACBE 		.word	-1095991164
+ 1325 0b70 57CDABBE 		.word	-1096037033
+ 1326 0b74 6D1AABBE 		.word	-1096082835
+ 1327 0b78 C767AABE 		.word	-1096128569
+ 1328 0b7c 63B5A9BE 		.word	-1096174237
+ 1329 0b80 4303A9BE 		.word	-1096219837
+ 1330 0b84 4451A8BE 		.word	-1096265404
+ 1331 0b88 889FA7BE 		.word	-1096310904
+ 1332 0b8c 0FEEA6BE 		.word	-1096356337
+ 1333 0b90 DA3CA6BE 		.word	-1096401702
+ARM GAS  /var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cc8jNjWT.s 			page 24
+
+
+ 1334 0b94 E78BA5BE 		.word	-1096447001
+ 1335 0b98 38DBA4BE 		.word	-1096492232
+ 1336 0b9c AA2AA4BE 		.word	-1096537430
+ 1337 0ba0 5F7AA3BE 		.word	-1096582561
+ 1338 0ba4 58CAA2BE 		.word	-1096627624
+ 1339 0ba8 931AA2BE 		.word	-1096672621
+ 1340 0bac 126BA1BE 		.word	-1096717550
+ 1341 0bb0 B2BBA0BE 		.word	-1096762446
+ 1342 0bb4 950CA0BE 		.word	-1096807275
+ 1343 0bb8 BC5D9FBE 		.word	-1096852036
+ 1344 0bbc 25AF9EBE 		.word	-1096896731
+ 1345 0bc0 B0009EBE 		.word	-1096941392
+ 1346 0bc4 A0529DBE 		.word	-1096985952
+ 1347 0bc8 B1A49CBE 		.word	-1097030479
+ 1348 0bcc E4F69BBE 		.word	-1097074972
+ 1349 0bd0 7B499BBE 		.word	-1097119365
+ 1350 0bd4 349C9ABE 		.word	-1097163724
+ 1351 0bd8 31EF99BE 		.word	-1097208015
+ 1352 0bdc 704299BE 		.word	-1097252240
+ 1353 0be0 F29598BE 		.word	-1097296398
+ 1354 0be4 96E997BE 		.word	-1097340522
+ 1355 0be8 7D3D97BE 		.word	-1097384579
+ 1356 0bec A79196BE 		.word	-1097428569
+ 1357 0bf0 F3E595BE 		.word	-1097472525
+ 1358 0bf4 823A95BE 		.word	-1097516414
+ 1359 0bf8 548F94BE 		.word	-1097560236
+ 1360 0bfc 69E493BE 		.word	-1097603991
+ 1361 0c00 9F3993BE 		.word	-1097647713
+ 1362 0c04 198F92BE 		.word	-1097691367
+ 1363 0c08 B4E491BE 		.word	-1097734988
+ 1364 0c0c B43A91BE 		.word	-1097778508
+ 1365 0c10 D69090BE 		.word	-1097821994
+ 1366 0c14 19E78FBE 		.word	-1097865447
+ 1367 0c18 C03D8FBE 		.word	-1097908800
+ 1368 0c1c 8A948EBE 		.word	-1097952118
+ 1369 0c20 74EB8DBE 		.word	-1097995404
+ 1370 0c24 C4428DBE 		.word	-1098038588
+ 1371 0c28 359A8CBE 		.word	-1098081739
+ 1372 0c2c C7F18BBE 		.word	-1098124857
+ 1373 0c30 BF498BBE 		.word	-1098167873
+ 1374 0c34 D7A18ABE 		.word	-1098210857
+ 1375 0c38 12FA89BE 		.word	-1098253806
+ 1376 0c3c 8F5289BE 		.word	-1098296689
+ 1377 0c40 50AB88BE 		.word	-1098339504
+ 1378 0c44 530488BE 		.word	-1098382253
+ 1379 0c48 795D87BE 		.word	-1098424967
+ 1380 0c4c BFB686BE 		.word	-1098467649
+ 1381 0c50 6B1086BE 		.word	-1098510229
+ 1382 0c54 386A85BE 		.word	-1098552776
+ 1383 0c58 26C484BE 		.word	-1098595290
+ 1384 0c5c 581E84BE 		.word	-1098637736
+ 1385 0c60 CD7883BE 		.word	-1098680115
+ 1386 0c64 63D382BE 		.word	-1098722461
+ 1387 0c68 3C2E82BE 		.word	-1098764740
+ 1388 0c6c 598981BE 		.word	-1098806951
+ 1389 0c70 97E480BE 		.word	-1098849129
+ 1390 0c74 184080BE 		.word	-1098891240
+ARM GAS  /var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cc8jNjWT.s 			page 25
+
+
+ 1391 0c78 76377FBE 		.word	-1098958986
+ 1392 0c7c 41EF7DBE 		.word	-1099043007
+ 1393 0c80 50A77CBE 		.word	-1099126960
+ 1394 0c84 E55F7BBE 		.word	-1099210779
+ 1395 0c88 01197ABE 		.word	-1099294463
+ 1396 0c8c 5FD278BE 		.word	-1099378081
+ 1397 0c90 008C77BE 		.word	-1099461632
+ 1398 0c94 284676BE 		.word	-1099545048
+ 1399 0c98 D60075BE 		.word	-1099628330
+ 1400 0c9c C7BB73BE 		.word	-1099711545
+ 1401 0ca0 3E7772BE 		.word	-1099794626
+ 1402 0ca4 F83271BE 		.word	-1099877640
+ 1403 0ca8 39EF6FBE 		.word	-1099960519
+ 1404 0cac BDAB6EBE 		.word	-1100043331
+ 1405 0cb0 C7686DBE 		.word	-1100126009
+ 1406 0cb4 57266CBE 		.word	-1100208553
+ 1407 0cb8 2AE46ABE 		.word	-1100291030
+ 1408 0cbc 40A269BE 		.word	-1100373440
+ 1409 0cc0 DD6068BE 		.word	-1100455715
+ 1410 0cc4 BC1F67BE 		.word	-1100537924
+ 1411 0cc8 22DF65BE 		.word	-1100619998
+ 1412 0ccc 0E9F64BE 		.word	-1100701938
+ 1413 0cd0 3D5F63BE 		.word	-1100783811
+ 1414 0cd4 B01F62BE 		.word	-1100865616
+ 1415 0cd8 A8E060BE 		.word	-1100947288
+ 1416 0cdc E4A15FBE 		.word	-1101028892
+ 1417 0ce0 A6635EBE 		.word	-1101110362
+ 1418 0ce4 AB255DBE 		.word	-1101191765
+ 1419 0ce8 36E85BBE 		.word	-1101273034
+ 1420 0cec 04AB5ABE 		.word	-1101354236
+ 1421 0cf0 596E59BE 		.word	-1101435303
+ 1422 0cf4 F03158BE 		.word	-1101516304
+ 1423 0cf8 0EF656BE 		.word	-1101597170
+ 1424 0cfc 6FBA55BE 		.word	-1101677969
+ 1425 0d00 137F54BE 		.word	-1101758701
+ 1426 0d04 3D4453BE 		.word	-1101839299
+ 1427 0d08 EE0952BE 		.word	-1101919762
+ 1428 0d0c 9ECF50BE 		.word	-1102000226
+ 1429 0d10 18964FBE 		.word	-1102080488
+ 1430 0d14 925C4EBE 		.word	-1102160750
+ 1431 0d18 D5234DBE 		.word	-1102240811
+ 1432 0d1c 18EB4BBE 		.word	-1102320872
+ 1433 0d20 E1B24ABE 		.word	-1102400799
+ 1434 0d24 EE7A49BE 		.word	-1102480658
+ 1435 0d28 814348BE 		.word	-1102560383
+ 1436 0d2c 560C47BE 		.word	-1102640042
+ 1437 0d30 B2D545BE 		.word	-1102719566
+ 1438 0d34 519F44BE 		.word	-1102799023
+ 1439 0d38 346943BE 		.word	-1102878412
+ 1440 0d3c 9C3342BE 		.word	-1102957668
+ 1441 0d40 48FE40BE 		.word	-1103036856
+ 1442 0d44 79C93FBE 		.word	-1103115911
+ 1443 0d48 EE943EBE 		.word	-1103194898
+ 1444 0d4c A6603DBE 		.word	-1103273818
+ 1445 0d50 E42C3CBE 		.word	-1103352604
+ 1446 0d54 66F93ABE 		.word	-1103431322
+ 1447 0d58 6DC639BE 		.word	-1103509907
+ARM GAS  /var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cc8jNjWT.s 			page 26
+
+
+ 1448 0d5c B89338BE 		.word	-1103588424
+ 1449 0d60 466137BE 		.word	-1103666874
+ 1450 0d64 162F36BE 		.word	-1103745258
+ 1451 0d68 6DFD34BE 		.word	-1103823507
+ 1452 0d6c 4BCC33BE 		.word	-1103901621
+ 1453 0d70 289B32BE 		.word	-1103979736
+ 1454 0d74 8C6A31BE 		.word	-1104057716
+ 1455 0d78 753A30BE 		.word	-1104135563
+ 1456 0d7c 5F0A2FBE 		.word	-1104213409
+ 1457 0d80 12DB2DBE 		.word	-1104291054
+ 1458 0d84 C5AB2CBE 		.word	-1104368699
+ 1459 0d88 FE7C2BBE 		.word	-1104446210
+ 1460 0d8c 7B4E2ABE 		.word	-1104523653
+ 1461 0d90 3A2029BE 		.word	-1104601030
+ 1462 0d94 80F227BE 		.word	-1104678272
+ 1463 0d98 09C526BE 		.word	-1104755447
+ 1464 0d9c D59725BE 		.word	-1104832555
+ 1465 0da0 276B24BE 		.word	-1104909529
+ 1466 0da4 BC3E23BE 		.word	-1104986436
+ 1467 0da8 941222BE 		.word	-1105063276
+ 1468 0dac F3E620BE 		.word	-1105139981
+ 1469 0db0 95BB1FBE 		.word	-1105216619
+ 1470 0db4 79901EBE 		.word	-1105293191
+ 1471 0db8 E4651DBE 		.word	-1105369628
+ 1472 0dbc 4F3B1CBE 		.word	-1105446065
+ 1473 0dc0 84111BBE 		.word	-1105522300
+ 1474 0dc4 B8E719BE 		.word	-1105598536
+ 1475 0dc8 73BE18BE 		.word	-1105674637
+ 1476 0dcc 709517BE 		.word	-1105750672
+ 1477 0dd0 B16C16BE 		.word	-1105826639
+ 1478 0dd4 354415BE 		.word	-1105902539
+ 1479 0dd8 3F1C14BE 		.word	-1105978305
+ 1480 0ddc 8CF412BE 		.word	-1106054004
+ 1481 0de0 60CD11BE 		.word	-1106129568
+ 1482 0de4 33A610BE 		.word	-1106205133
+ 1483 0de8 8D7F0FBE 		.word	-1106280563
+ 1484 0dec 29590EBE 		.word	-1106355927
+ 1485 0df0 4C330DBE 		.word	-1106431156
+ 1486 0df4 B20D0CBE 		.word	-1106506318
+ 1487 0df8 19E80ABE 		.word	-1106581479
+ 1488 0dfc 48C309BE 		.word	-1106656440
+ 1489 0e00 779E08BE 		.word	-1106731401
+ 1490 0e04 2D7A07BE 		.word	-1106806227
+ 1491 0e08 265606BE 		.word	-1106880986
+ 1492 0e0c 613205BE 		.word	-1106955679
+ 1493 0e10 E00E04BE 		.word	-1107030304
+ 1494 0e14 E6EB02BE 		.word	-1107104794
+ 1495 0e18 2EC901BE 		.word	-1107179218
+ 1496 0e1c B9A600BE 		.word	-1107253575
+ 1497 0e20 0F09FFBD 		.word	-1107359473
+ 1498 0e24 B9C5FCBD 		.word	-1107507783
+ 1499 0e28 6282FABD 		.word	-1107656094
+ 1500 0e2c 1840F8BD 		.word	-1107804136
+ 1501 0e30 DAFEF5BD 		.word	-1107951910
+ 1502 0e34 9DBDF3BD 		.word	-1108099683
+ 1503 0e38 6B7DF1BD 		.word	-1108247189
+ 1504 0e3c C03DEFBD 		.word	-1108394560
+ARM GAS  /var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cc8jNjWT.s 			page 27
+
+
+ 1505 0e40 9BFEECBD 		.word	-1108541797
+ 1506 0e44 FDBFEABD 		.word	-1108688899
+ 1507 0e48 E481E8BD 		.word	-1108835868
+ 1508 0e4c D844E6BD 		.word	-1108982568
+ 1509 0e50 5308E4BD 		.word	-1109129133
+ 1510 0e54 53CCE1BD 		.word	-1109275565
+ 1511 0e58 DA90DFBD 		.word	-1109421862
+ 1512 0e5c E755DDBD 		.word	-1109568025
+ 1513 0e60 001CDBBD 		.word	-1109713920
+ 1514 0e64 A0E2D8BD 		.word	-1109859680
+ 1515 0e68 C5A9D6BD 		.word	-1110005307
+ 1516 0e6c 7171D4BD 		.word	-1110150799
+ 1517 0e70 A439D2BD 		.word	-1110296156
+ 1518 0e74 5C02D0BD 		.word	-1110441380
+ 1519 0e78 21CCCDBD 		.word	-1110586335
+ 1520 0e7c 6C96CBBD 		.word	-1110731156
+ 1521 0e80 3D61C9BD 		.word	-1110875843
+ 1522 0e84 952CC7BD 		.word	-1111020395
+ 1523 0e88 72F8C4BD 		.word	-1111164814
+ 1524 0e8c 5DC5C2BD 		.word	-1111308963
+ 1525 0e90 4792C0BD 		.word	-1111453113
+ 1526 0e94 3D60BEBD 		.word	-1111596995
+ 1527 0e98 BA2EBCBD 		.word	-1111740742
+ 1528 0e9c BDFDB9BD 		.word	-1111884355
+ 1529 0ea0 46CDB7BD 		.word	-1112027834
+ 1530 0ea4 569DB5BD 		.word	-1112171178
+ 1531 0ea8 726EB3BD 		.word	-1112314254
+ 1532 0eac 8E3FB1BD 		.word	-1112457330
+ 1533 0eb0 B611AFBD 		.word	-1112600138
+ 1534 0eb4 65E4ACBD 		.word	-1112742811
+ 1535 0eb8 99B7AABD 		.word	-1112885351
+ 1536 0ebc 548BA8BD 		.word	-1113027756
+ 1537 0ec0 965FA6BD 		.word	-1113170026
+ 1538 0ec4 E334A4BD 		.word	-1113312029
+ 1539 0ec8 310AA2BD 		.word	-1113454031
+ 1540 0ecc 8BE09FBD 		.word	-1113595765
+ 1541 0ed0 E5B69DBD 		.word	-1113737499
+ 1542 0ed4 4C8E9BBD 		.word	-1113878964
+ 1543 0ed8 386699BD 		.word	-1114020296
+ 1544 0edc AB3E97BD 		.word	-1114161493
+ 1545 0ee0 A41795BD 		.word	-1114302556
+ 1546 0ee4 24F192BD 		.word	-1114443484
+ 1547 0ee8 B0CB90BD 		.word	-1114584144
+ 1548 0eec 3BA68EBD 		.word	-1114724805
+ 1549 0ef0 D4818CBD 		.word	-1114865196
+ 1550 0ef4 6C5D8ABD 		.word	-1115005588
+ 1551 0ef8 113A88BD 		.word	-1115145711
+ 1552 0efc 3C1786BD 		.word	-1115285700
+ 1553 0f00 EDF483BD 		.word	-1115425555
+ 1554 0f04 24D381BD 		.word	-1115565276
+ 1555 0f08 C3637FBD 		.word	-1115724861
+ 1556 0f0c 4B227BBD 		.word	-1116003765
+ 1557 0f10 DFE176BD 		.word	-1116282401
+ 1558 0f14 8CA372BD 		.word	-1116560500
+ 1559 0f18 38656EBD 		.word	-1116838600
+ 1560 0f1c F2276ABD 		.word	-1117116430
+ 1561 0f20 C4EC65BD 		.word	-1117393724
+ARM GAS  /var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cc8jNjWT.s 			page 28
+
+
+ 1562 0f24 A2B261BD 		.word	-1117670750
+ 1563 0f28 81785DBD 		.word	-1117947775
+ 1564 0f2c 794059BD 		.word	-1118224263
+ 1565 0f30 7D0955BD 		.word	-1118500483
+ 1566 0f34 80D250BD 		.word	-1118776704
+ 1567 0f38 9D9D4CBD 		.word	-1119052387
+ 1568 0f3c C66948BD 		.word	-1119327802
+ 1569 0f40 FC3644BD 		.word	-1119602948
+ 1570 0f44 3E0540BD 		.word	-1119877826
+ 1571 0f48 8DD43BBD 		.word	-1120152435
+ 1572 0f4c F4A537BD 		.word	-1120426508
+ 1573 0f50 5C7733BD 		.word	-1120700580
+ 1574 0f54 CF492FBD 		.word	-1120974385
+ 1575 0f58 501D2BBD 		.word	-1121247920
+ 1576 0f5c E9F226BD 		.word	-1121520919
+ 1577 0f60 82C822BD 		.word	-1121793918
+ 1578 0f64 279F1EBD 		.word	-1122066649
+ 1579 0f68 E6771ABD 		.word	-1122338842
+ 1580 0f6c A45016BD 		.word	-1122611036
+ 1581 0f70 6F2A12BD 		.word	-1122882961
+ 1582 0f74 53060EBD 		.word	-1123154349
+ 1583 0f78 37E209BD 		.word	-1123425737
+ 1584 0f7c 33C005BD 		.word	-1123696589
+ 1585 0f80 309E01BD 		.word	-1123967440
+ 1586 0f84 8BFCFABC 		.word	-1124402037
+ 1587 0f88 CFBEF2BC 		.word	-1124942129
+ 1588 0f8c 1381EABC 		.word	-1125482221
+ 1589 0f90 8847E2BC 		.word	-1126021240
+ 1590 0f94 FE0DDABC 		.word	-1126560258
+ 1591 0f98 A5D8D1BC 		.word	-1127098203
+ 1592 0f9c 65A5C9BC 		.word	-1127635611
+ 1593 0fa0 2672C1BC 		.word	-1128173018
+ 1594 0fa4 1843B9BC 		.word	-1128709352
+ 1595 0fa8 0A14B1BC 		.word	-1129245686
+ 1596 0fac 2DE9A8BC 		.word	-1129780947
+ 1597 0fb0 6AC0A0BC 		.word	-1130315670
+ 1598 0fb4 A69798BC 		.word	-1130850394
+ 1599 0fb8 157390BC 		.word	-1131384043
+ 1600 0fbc 834E88BC 		.word	-1131917693
+ 1601 0fc0 232E80BC 		.word	-1132450269
+ 1602 0fc4 861B70BC 		.word	-1133503610
+ 1603 0fc8 2AE35FBC 		.word	-1134566614
+ 1604 0fcc CEAA4FBC 		.word	-1135629618
+ 1605 0fd0 D57A3FBC 		.word	-1136690475
+ 1606 0fd4 DC4A2FBC 		.word	-1137751332
+ 1607 0fd8 46231FBC 		.word	-1138810042
+ 1608 0fdc B1FB0EBC 		.word	-1139868751
+ 1609 0fe0 9AB0FDBB 		.word	-1141002086
+ 1610 0fe4 9A7ADDBB 		.word	-1143113062
+ 1611 0fe8 9A44BDBB 		.word	-1145224038
+ 1612 0fec FD169DBB 		.word	-1147332867
+ 1613 0ff0 4DF479BB 		.word	-1149635507
+ 1614 0ff4 A1BA39BB 		.word	-1153844575
+ 1615 0ff8 7923F3BA 		.word	-1158470791
+ 1616 0ffc 79E665BA 		.word	-1167726983
+ 1617 1000 00000000 		.word	0
+ 1618              		.ident	"GCC: (xPack GNU Arm Embedded GCC arm64) 13.3.1 20240614"
+ARM GAS  /var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cc8jNjWT.s 			page 29
+
+
+ARM GAS  /var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cc8jNjWT.s 			page 30
+
+
+DEFINED SYMBOLS
+                            *ABS*:00000000 ADSR_envelope.c
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cc8jNjWT.s:18     .text.ADSR_init:00000000 $t
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cc8jNjWT.s:25     .text.ADSR_init:00000000 ADSR_init
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cc8jNjWT.s:101    .text.ADSR_init:000000ec $d
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cc8jNjWT.s:592    .rodata.log_lut:00000000 log_lut
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cc8jNjWT.s:113    .text.ADSR_keyOn:00000000 $t
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cc8jNjWT.s:120    .text.ADSR_keyOn:00000000 ADSR_keyOn
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cc8jNjWT.s:134    .text.ADSR_keyOn:00000010 $d
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cc8jNjWT.s:137    .text.ADSR_keyOff:00000000 $t
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cc8jNjWT.s:144    .text.ADSR_keyOff:00000000 ADSR_keyOff
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cc8jNjWT.s:155    .text.ADSR_setAttackTime:00000000 $t
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cc8jNjWT.s:162    .text.ADSR_setAttackTime:00000000 ADSR_setAttackTime
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cc8jNjWT.s:193    .text.ADSR_setAttackTime:00000058 $d
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cc8jNjWT.s:199    .text.ADSR_setDecayTime:00000000 $t
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cc8jNjWT.s:206    .text.ADSR_setDecayTime:00000000 ADSR_setDecayTime
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cc8jNjWT.s:238    .text.ADSR_setDecayTime:0000005c $d
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cc8jNjWT.s:243    .text.ADSR_setSustainLevel:00000000 $t
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cc8jNjWT.s:250    .text.ADSR_setSustainLevel:00000000 ADSR_setSustainLevel
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cc8jNjWT.s:258    .text.ADSR_setReleaseTime:00000000 $t
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cc8jNjWT.s:265    .text.ADSR_setReleaseTime:00000000 ADSR_setReleaseTime
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cc8jNjWT.s:296    .text.ADSR_setReleaseTime:00000058 $d
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cc8jNjWT.s:302    .text.ADSR_calculateMultiplier:00000000 $t
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cc8jNjWT.s:309    .text.ADSR_calculateMultiplier:00000000 ADSR_calculateMultiplier
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cc8jNjWT.s:338    .text.ADSR_calculateMultiplier:00000054 $d
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cc8jNjWT.s:343    .text.ADSR_setAllTimes:00000000 $t
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cc8jNjWT.s:350    .text.ADSR_setAllTimes:00000000 ADSR_setAllTimes
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cc8jNjWT.s:416    .text.ADSR_setAllTimes:000000dc $d
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cc8jNjWT.s:422    .text.ADSR_setTarget:00000000 $t
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cc8jNjWT.s:429    .text.ADSR_setTarget:00000000 ADSR_setTarget
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cc8jNjWT.s:451    .text.ADSR_setValue:00000000 $t
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cc8jNjWT.s:458    .text.ADSR_setValue:00000000 ADSR_setValue
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cc8jNjWT.s:470    .text.ADSR_getState:00000000 $t
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cc8jNjWT.s:477    .text.ADSR_getState:00000000 ADSR_getState
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cc8jNjWT.s:487    .text.ADSR_compute:00000000 $t
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cc8jNjWT.s:494    .text.ADSR_compute:00000000 ADSR_compute
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cc8jNjWT.s:564    .text.ADSR_compute:000000c0 $d
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cc8jNjWT.s:573    .ccmram:00000000 adsr_index
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cc8jNjWT.s:570    .ccmram:00000000 $d
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cc8jNjWT.s:579    .ccmram:00000028 adsr_filt
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cc8jNjWT.s:585    .ccmram:00000050 adsr_amp
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cc8jNjWT.s:589    .rodata.log_lut:00000000 $d
+
+UNDEFINED SYMBOLS
+interp_lin_lut
+__aeabi_f2d
+__aeabi_dcmple

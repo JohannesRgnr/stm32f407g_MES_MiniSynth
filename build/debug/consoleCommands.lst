@@ -1,0 +1,601 @@
+ARM GAS  /var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cczOiQS3.s 			page 1
+
+
+   1              		.cpu cortex-m4
+   2              		.arch armv7e-m
+   3              		.fpu fpv4-sp-d16
+   4              		.eabi_attribute 27, 1
+   5              		.eabi_attribute 28, 1
+   6              		.eabi_attribute 20, 1
+   7              		.eabi_attribute 21, 1
+   8              		.eabi_attribute 23, 3
+   9              		.eabi_attribute 24, 1
+  10              		.eabi_attribute 25, 1
+  11              		.eabi_attribute 26, 1
+  12              		.eabi_attribute 30, 1
+  13              		.eabi_attribute 34, 1
+  14              		.eabi_attribute 18, 4
+  15              		.file	"consoleCommands.c"
+  16              		.text
+  17              	.Ltext0:
+  18              		.cfi_sections	.debug_frame
+  19              		.file 1 "Core/Src/consoleCommands.c"
+  20              		.section	.text.ConsoleCommandComment,"ax",%progbits
+  21              		.align	1
+  22              		.syntax unified
+  23              		.thumb
+  24              		.thumb_func
+  26              	ConsoleCommandComment:
+  27              	.LVL0:
+  28              	.LFB235:
+   1:Core/Src/consoleCommands.c **** // ConsoleCommands.c
+   2:Core/Src/consoleCommands.c **** // This is where you add commands:
+   3:Core/Src/consoleCommands.c **** //		1. Add a protoype
+   4:Core/Src/consoleCommands.c **** //			static eCommandResult_T ConsoleCommandVer(const char buffer[]);
+   5:Core/Src/consoleCommands.c **** //		2. Add the command to mConsoleCommandTable
+   6:Core/Src/consoleCommands.c **** //		    {"ver", &ConsoleCommandVer, HELP("Get the version string")},
+   7:Core/Src/consoleCommands.c **** //		3. Implement the function, using ConsoleReceiveParam<Type> to get the parameters from the buffe
+   8:Core/Src/consoleCommands.c **** 
+   9:Core/Src/consoleCommands.c **** #include <string.h>
+  10:Core/Src/consoleCommands.c **** #include "stm32f4xx_hal.h"
+  11:Core/Src/consoleCommands.c **** 
+  12:Core/Src/consoleCommands.c **** #include "consoleCommands.h"
+  13:Core/Src/consoleCommands.c **** #include "console.h"
+  14:Core/Src/consoleCommands.c **** #include "consoleIo.h"
+  15:Core/Src/consoleCommands.c **** #include "version.h"
+  16:Core/Src/consoleCommands.c **** 
+  17:Core/Src/consoleCommands.c **** #define IGNORE_UNUSED_VARIABLE(x)     if ( &x == &x ) {}
+  18:Core/Src/consoleCommands.c **** 
+  19:Core/Src/consoleCommands.c **** extern uint16_t saw1_freq;
+  20:Core/Src/consoleCommands.c **** extern uint16_t saw2_freq;
+  21:Core/Src/consoleCommands.c **** 
+  22:Core/Src/consoleCommands.c **** static eCommandResult_T ConsoleCommandComment(const char buffer[]);
+  23:Core/Src/consoleCommands.c **** static eCommandResult_T ConsoleCommandVer(const char buffer[]);
+  24:Core/Src/consoleCommands.c **** static eCommandResult_T ConsoleCommandHelp(const char buffer[]);
+  25:Core/Src/consoleCommands.c **** static eCommandResult_T ConsoleCommandParamSaw1(const char buffer[]);
+  26:Core/Src/consoleCommands.c **** static eCommandResult_T ConsoleCommandParamSaw2(const char buffer[]);
+  27:Core/Src/consoleCommands.c **** 
+  28:Core/Src/consoleCommands.c **** 
+  29:Core/Src/consoleCommands.c **** static const sConsoleCommandTable_T mConsoleCommandTable[] =
+  30:Core/Src/consoleCommands.c **** {
+ARM GAS  /var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cczOiQS3.s 			page 2
+
+
+  31:Core/Src/consoleCommands.c ****     {";", ConsoleCommandComment, HELP("Comment! You do need a space after the semicolon. ")},
+  32:Core/Src/consoleCommands.c ****     {"help", ConsoleCommandHelp, HELP("Lists the commands available")},
+  33:Core/Src/consoleCommands.c ****     {"ver", ConsoleCommandVer, HELP("Get the version string")},
+  34:Core/Src/consoleCommands.c ****     {"saw1", ConsoleCommandParamSaw1, HELP("Specify left-channel sawtooth frequency: saw1 220")},
+  35:Core/Src/consoleCommands.c ****     {"saw2", ConsoleCommandParamSaw2, HELP("Specify right-channel sawtooth frequency: saw2 220")},
+  36:Core/Src/consoleCommands.c **** 
+  37:Core/Src/consoleCommands.c **** 	CONSOLE_COMMAND_TABLE_END // must be LAST
+  38:Core/Src/consoleCommands.c **** };
+  39:Core/Src/consoleCommands.c **** 
+  40:Core/Src/consoleCommands.c **** static eCommandResult_T ConsoleCommandComment(const char buffer[])
+  41:Core/Src/consoleCommands.c **** {
+  29              		.loc 1 41 1 view -0
+  30              		.cfi_startproc
+  31              		@ args = 0, pretend = 0, frame = 0
+  32              		@ frame_needed = 0, uses_anonymous_args = 0
+  33              		@ link register save eliminated.
+  42:Core/Src/consoleCommands.c **** 	// do nothing
+  43:Core/Src/consoleCommands.c **** 	IGNORE_UNUSED_VARIABLE(buffer);
+  34              		.loc 1 43 2 view .LVU1
+  35              		.loc 1 43 2 discriminator 1 view .LVU2
+  36              		.loc 1 43 32 discriminator 1 view .LVU3
+  44:Core/Src/consoleCommands.c **** 	return COMMAND_SUCCESS;
+  37              		.loc 1 44 2 view .LVU4
+  45:Core/Src/consoleCommands.c **** }
+  38              		.loc 1 45 1 is_stmt 0 view .LVU5
+  39 0000 0020     		movs	r0, #0
+  40              	.LVL1:
+  41              		.loc 1 45 1 view .LVU6
+  42 0002 7047     		bx	lr
+  43              		.cfi_endproc
+  44              	.LFE235:
+  46              		.section	.text.ConsoleCommandParamSaw2,"ax",%progbits
+  47              		.align	1
+  48              		.syntax unified
+  49              		.thumb
+  50              		.thumb_func
+  52              	ConsoleCommandParamSaw2:
+  53              	.LVL2:
+  54              	.LFB238:
+  46:Core/Src/consoleCommands.c **** 
+  47:Core/Src/consoleCommands.c **** static eCommandResult_T ConsoleCommandHelp(const char buffer[])
+  48:Core/Src/consoleCommands.c **** {
+  49:Core/Src/consoleCommands.c **** 	uint32_t i;
+  50:Core/Src/consoleCommands.c **** 	uint32_t tableLength;
+  51:Core/Src/consoleCommands.c **** 	eCommandResult_T result = COMMAND_SUCCESS;
+  52:Core/Src/consoleCommands.c **** 
+  53:Core/Src/consoleCommands.c ****     IGNORE_UNUSED_VARIABLE(buffer);
+  54:Core/Src/consoleCommands.c **** 
+  55:Core/Src/consoleCommands.c **** 	tableLength = sizeof(mConsoleCommandTable) / sizeof(mConsoleCommandTable[0]);
+  56:Core/Src/consoleCommands.c **** 	for ( i = 0u ; i < tableLength - 1u ; i++ )
+  57:Core/Src/consoleCommands.c **** 	{
+  58:Core/Src/consoleCommands.c **** 		ConsoleIoSendString(mConsoleCommandTable[i].name);
+  59:Core/Src/consoleCommands.c **** #if CONSOLE_COMMAND_MAX_HELP_LENGTH > 0
+  60:Core/Src/consoleCommands.c **** 		ConsoleIoSendString(" : ");
+  61:Core/Src/consoleCommands.c **** 		ConsoleIoSendString(mConsoleCommandTable[i].help);
+  62:Core/Src/consoleCommands.c **** #endif // CONSOLE_COMMAND_MAX_HELP_LENGTH > 0
+  63:Core/Src/consoleCommands.c **** 		ConsoleIoSendString(STR_ENDLINE);
+ARM GAS  /var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cczOiQS3.s 			page 3
+
+
+  64:Core/Src/consoleCommands.c **** 	}
+  65:Core/Src/consoleCommands.c **** 	return result;
+  66:Core/Src/consoleCommands.c **** }
+  67:Core/Src/consoleCommands.c **** 
+  68:Core/Src/consoleCommands.c **** static eCommandResult_T ConsoleCommandParamSaw1(const char buffer[])
+  69:Core/Src/consoleCommands.c **** {
+  70:Core/Src/consoleCommands.c **** 	int16_t parameterInt;
+  71:Core/Src/consoleCommands.c **** 	eCommandResult_T result;
+  72:Core/Src/consoleCommands.c **** 	result = ConsoleReceiveParamInt16(buffer, 1, &parameterInt);
+  73:Core/Src/consoleCommands.c **** 	if ( COMMAND_SUCCESS == result )
+  74:Core/Src/consoleCommands.c **** 	{
+  75:Core/Src/consoleCommands.c **** 		saw1_freq = parameterInt;
+  76:Core/Src/consoleCommands.c **** 	}
+  77:Core/Src/consoleCommands.c **** 	return result;
+  78:Core/Src/consoleCommands.c **** }
+  79:Core/Src/consoleCommands.c **** 
+  80:Core/Src/consoleCommands.c **** static eCommandResult_T ConsoleCommandParamSaw2(const char buffer[])
+  81:Core/Src/consoleCommands.c **** {
+  55              		.loc 1 81 1 is_stmt 1 view -0
+  56              		.cfi_startproc
+  57              		@ args = 0, pretend = 0, frame = 8
+  58              		@ frame_needed = 0, uses_anonymous_args = 0
+  59              		.loc 1 81 1 is_stmt 0 view .LVU8
+  60 0000 00B5     		push	{lr}
+  61              		.cfi_def_cfa_offset 4
+  62              		.cfi_offset 14, -4
+  63 0002 83B0     		sub	sp, sp, #12
+  64              		.cfi_def_cfa_offset 16
+  82:Core/Src/consoleCommands.c **** 	int16_t parameterInt;
+  65              		.loc 1 82 2 is_stmt 1 view .LVU9
+  83:Core/Src/consoleCommands.c **** 	eCommandResult_T result;
+  66              		.loc 1 83 2 view .LVU10
+  84:Core/Src/consoleCommands.c **** 	result = ConsoleReceiveParamInt16(buffer, 1, &parameterInt);
+  67              		.loc 1 84 2 view .LVU11
+  68              		.loc 1 84 11 is_stmt 0 view .LVU12
+  69 0004 0DF10602 		add	r2, sp, #6
+  70 0008 0121     		movs	r1, #1
+  71 000a FFF7FEFF 		bl	ConsoleReceiveParamInt16
+  72              	.LVL3:
+  85:Core/Src/consoleCommands.c **** 	if ( COMMAND_SUCCESS == result )
+  73              		.loc 1 85 2 is_stmt 1 view .LVU13
+  74              		.loc 1 85 5 is_stmt 0 view .LVU14
+  75 000e 18B9     		cbnz	r0, .L3
+  86:Core/Src/consoleCommands.c **** 	{
+  87:Core/Src/consoleCommands.c **** 		saw2_freq = parameterInt;
+  76              		.loc 1 87 3 is_stmt 1 view .LVU15
+  77              		.loc 1 87 13 is_stmt 0 view .LVU16
+  78 0010 034B     		ldr	r3, .L5
+  79 0012 BDF80620 		ldrh	r2, [sp, #6]
+  80 0016 1A80     		strh	r2, [r3]	@ movhi
+  81              	.L3:
+  88:Core/Src/consoleCommands.c **** 	}
+  89:Core/Src/consoleCommands.c **** 	return result;
+  82              		.loc 1 89 2 is_stmt 1 view .LVU17
+  90:Core/Src/consoleCommands.c **** }
+  83              		.loc 1 90 1 is_stmt 0 view .LVU18
+  84 0018 03B0     		add	sp, sp, #12
+ARM GAS  /var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cczOiQS3.s 			page 4
+
+
+  85              		.cfi_def_cfa_offset 4
+  86              		@ sp needed
+  87 001a 5DF804FB 		ldr	pc, [sp], #4
+  88              	.L6:
+  89 001e 00BF     		.align	2
+  90              	.L5:
+  91 0020 00000000 		.word	saw2_freq
+  92              		.cfi_endproc
+  93              	.LFE238:
+  95              		.section	.text.ConsoleCommandParamSaw1,"ax",%progbits
+  96              		.align	1
+  97              		.syntax unified
+  98              		.thumb
+  99              		.thumb_func
+ 101              	ConsoleCommandParamSaw1:
+ 102              	.LVL4:
+ 103              	.LFB237:
+  69:Core/Src/consoleCommands.c **** 	int16_t parameterInt;
+ 104              		.loc 1 69 1 is_stmt 1 view -0
+ 105              		.cfi_startproc
+ 106              		@ args = 0, pretend = 0, frame = 8
+ 107              		@ frame_needed = 0, uses_anonymous_args = 0
+  69:Core/Src/consoleCommands.c **** 	int16_t parameterInt;
+ 108              		.loc 1 69 1 is_stmt 0 view .LVU20
+ 109 0000 00B5     		push	{lr}
+ 110              		.cfi_def_cfa_offset 4
+ 111              		.cfi_offset 14, -4
+ 112 0002 83B0     		sub	sp, sp, #12
+ 113              		.cfi_def_cfa_offset 16
+  70:Core/Src/consoleCommands.c **** 	eCommandResult_T result;
+ 114              		.loc 1 70 2 is_stmt 1 view .LVU21
+  71:Core/Src/consoleCommands.c **** 	result = ConsoleReceiveParamInt16(buffer, 1, &parameterInt);
+ 115              		.loc 1 71 2 view .LVU22
+  72:Core/Src/consoleCommands.c **** 	if ( COMMAND_SUCCESS == result )
+ 116              		.loc 1 72 2 view .LVU23
+  72:Core/Src/consoleCommands.c **** 	if ( COMMAND_SUCCESS == result )
+ 117              		.loc 1 72 11 is_stmt 0 view .LVU24
+ 118 0004 0DF10602 		add	r2, sp, #6
+ 119 0008 0121     		movs	r1, #1
+ 120 000a FFF7FEFF 		bl	ConsoleReceiveParamInt16
+ 121              	.LVL5:
+  73:Core/Src/consoleCommands.c **** 	{
+ 122              		.loc 1 73 2 is_stmt 1 view .LVU25
+  73:Core/Src/consoleCommands.c **** 	{
+ 123              		.loc 1 73 5 is_stmt 0 view .LVU26
+ 124 000e 18B9     		cbnz	r0, .L8
+  75:Core/Src/consoleCommands.c **** 	}
+ 125              		.loc 1 75 3 is_stmt 1 view .LVU27
+  75:Core/Src/consoleCommands.c **** 	}
+ 126              		.loc 1 75 13 is_stmt 0 view .LVU28
+ 127 0010 034B     		ldr	r3, .L10
+ 128 0012 BDF80620 		ldrh	r2, [sp, #6]
+ 129 0016 1A80     		strh	r2, [r3]	@ movhi
+ 130              	.L8:
+  77:Core/Src/consoleCommands.c **** }
+ 131              		.loc 1 77 2 is_stmt 1 view .LVU29
+  78:Core/Src/consoleCommands.c **** 
+ARM GAS  /var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cczOiQS3.s 			page 5
+
+
+ 132              		.loc 1 78 1 is_stmt 0 view .LVU30
+ 133 0018 03B0     		add	sp, sp, #12
+ 134              		.cfi_def_cfa_offset 4
+ 135              		@ sp needed
+ 136 001a 5DF804FB 		ldr	pc, [sp], #4
+ 137              	.L11:
+ 138 001e 00BF     		.align	2
+ 139              	.L10:
+ 140 0020 00000000 		.word	saw1_freq
+ 141              		.cfi_endproc
+ 142              	.LFE237:
+ 144              		.section	.rodata.ConsoleCommandVer.str1.4,"aMS",%progbits,1
+ 145              		.align	2
+ 146              	.LC0:
+ 147 0000 4D455320 		.ascii	"MES Minisynth STM32F407G-disco 0.1\000"
+ 147      4D696E69 
+ 147      73796E74 
+ 147      68205354 
+ 147      4D333246 
+ 148 0023 00       		.align	2
+ 149              	.LC1:
+ 150 0024 0D0A00   		.ascii	"\015\012\000"
+ 151              		.section	.text.ConsoleCommandVer,"ax",%progbits
+ 152              		.align	1
+ 153              		.syntax unified
+ 154              		.thumb
+ 155              		.thumb_func
+ 157              	ConsoleCommandVer:
+ 158              	.LVL6:
+ 159              	.LFB239:
+  91:Core/Src/consoleCommands.c **** 
+  92:Core/Src/consoleCommands.c **** static eCommandResult_T ConsoleCommandVer(const char buffer[])
+  93:Core/Src/consoleCommands.c **** {
+ 160              		.loc 1 93 1 is_stmt 1 view -0
+ 161              		.cfi_startproc
+ 162              		@ args = 0, pretend = 0, frame = 0
+ 163              		@ frame_needed = 0, uses_anonymous_args = 0
+ 164              		.loc 1 93 1 is_stmt 0 view .LVU32
+ 165 0000 08B5     		push	{r3, lr}
+ 166              		.cfi_def_cfa_offset 8
+ 167              		.cfi_offset 3, -8
+ 168              		.cfi_offset 14, -4
+  94:Core/Src/consoleCommands.c **** 	eCommandResult_T result = COMMAND_SUCCESS;
+ 169              		.loc 1 94 2 is_stmt 1 view .LVU33
+ 170              	.LVL7:
+  95:Core/Src/consoleCommands.c **** 
+  96:Core/Src/consoleCommands.c ****     IGNORE_UNUSED_VARIABLE(buffer);
+ 171              		.loc 1 96 5 view .LVU34
+ 172              		.loc 1 96 5 discriminator 1 view .LVU35
+ 173              		.loc 1 96 35 discriminator 1 view .LVU36
+  97:Core/Src/consoleCommands.c **** 
+  98:Core/Src/consoleCommands.c **** 	ConsoleIoSendString(VERSION_STRING);
+ 174              		.loc 1 98 2 view .LVU37
+ 175 0002 0448     		ldr	r0, .L14
+ 176              	.LVL8:
+ 177              		.loc 1 98 2 is_stmt 0 view .LVU38
+ 178 0004 FFF7FEFF 		bl	ConsoleIoSendString
+ARM GAS  /var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cczOiQS3.s 			page 6
+
+
+ 179              	.LVL9:
+  99:Core/Src/consoleCommands.c **** 	ConsoleIoSendString(STR_ENDLINE);
+ 180              		.loc 1 99 2 is_stmt 1 view .LVU39
+ 181 0008 0348     		ldr	r0, .L14+4
+ 182 000a FFF7FEFF 		bl	ConsoleIoSendString
+ 183              	.LVL10:
+ 100:Core/Src/consoleCommands.c **** 	return result;
+ 184              		.loc 1 100 2 view .LVU40
+ 101:Core/Src/consoleCommands.c **** }
+ 185              		.loc 1 101 1 is_stmt 0 view .LVU41
+ 186 000e 0020     		movs	r0, #0
+ 187 0010 08BD     		pop	{r3, pc}
+ 188              	.L15:
+ 189 0012 00BF     		.align	2
+ 190              	.L14:
+ 191 0014 00000000 		.word	.LC0
+ 192 0018 24000000 		.word	.LC1
+ 193              		.cfi_endproc
+ 194              	.LFE239:
+ 196              		.section	.rodata.ConsoleCommandHelp.str1.4,"aMS",%progbits,1
+ 197              		.align	2
+ 198              	.LC2:
+ 199 0000 203A2000 		.ascii	" : \000"
+ 200              		.section	.text.ConsoleCommandHelp,"ax",%progbits
+ 201              		.align	1
+ 202              		.syntax unified
+ 203              		.thumb
+ 204              		.thumb_func
+ 206              	ConsoleCommandHelp:
+ 207              	.LVL11:
+ 208              	.LFB236:
+  48:Core/Src/consoleCommands.c **** 	uint32_t i;
+ 209              		.loc 1 48 1 is_stmt 1 view -0
+ 210              		.cfi_startproc
+ 211              		@ args = 0, pretend = 0, frame = 0
+ 212              		@ frame_needed = 0, uses_anonymous_args = 0
+  48:Core/Src/consoleCommands.c **** 	uint32_t i;
+ 213              		.loc 1 48 1 is_stmt 0 view .LVU43
+ 214 0000 70B5     		push	{r4, r5, r6, lr}
+ 215              		.cfi_def_cfa_offset 16
+ 216              		.cfi_offset 4, -16
+ 217              		.cfi_offset 5, -12
+ 218              		.cfi_offset 6, -8
+ 219              		.cfi_offset 14, -4
+  49:Core/Src/consoleCommands.c **** 	uint32_t tableLength;
+ 220              		.loc 1 49 2 is_stmt 1 view .LVU44
+  50:Core/Src/consoleCommands.c **** 	eCommandResult_T result = COMMAND_SUCCESS;
+ 221              		.loc 1 50 2 view .LVU45
+  51:Core/Src/consoleCommands.c **** 
+ 222              		.loc 1 51 2 view .LVU46
+ 223              	.LVL12:
+  53:Core/Src/consoleCommands.c **** 
+ 224              		.loc 1 53 5 view .LVU47
+  53:Core/Src/consoleCommands.c **** 
+ 225              		.loc 1 53 5 discriminator 1 view .LVU48
+  53:Core/Src/consoleCommands.c **** 
+ 226              		.loc 1 53 35 discriminator 1 view .LVU49
+ARM GAS  /var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cczOiQS3.s 			page 7
+
+
+  55:Core/Src/consoleCommands.c **** 	for ( i = 0u ; i < tableLength - 1u ; i++ )
+ 227              		.loc 1 55 2 view .LVU50
+  56:Core/Src/consoleCommands.c **** 	{
+ 228              		.loc 1 56 2 view .LVU51
+  56:Core/Src/consoleCommands.c **** 	{
+ 229              		.loc 1 56 10 is_stmt 0 view .LVU52
+ 230 0002 0024     		movs	r4, #0
+  56:Core/Src/consoleCommands.c **** 	{
+ 231              		.loc 1 56 2 view .LVU53
+ 232 0004 14E0     		b	.L17
+ 233              	.LVL13:
+ 234              	.L18:
+  58:Core/Src/consoleCommands.c **** #if CONSOLE_COMMAND_MAX_HELP_LENGTH > 0
+ 235              		.loc 1 58 3 is_stmt 1 view .LVU54
+  58:Core/Src/consoleCommands.c **** #if CONSOLE_COMMAND_MAX_HELP_LENGTH > 0
+ 236              		.loc 1 58 46 is_stmt 0 view .LVU55
+ 237 0006 0C4E     		ldr	r6, .L20
+ 238 0008 E500     		lsls	r5, r4, #3
+ 239 000a 04EBC402 		add	r2, r4, r4, lsl #3
+ 240 000e D300     		lsls	r3, r2, #3
+  58:Core/Src/consoleCommands.c **** #if CONSOLE_COMMAND_MAX_HELP_LENGTH > 0
+ 241              		.loc 1 58 3 view .LVU56
+ 242 0010 F058     		ldr	r0, [r6, r3]
+ 243 0012 FFF7FEFF 		bl	ConsoleIoSendString
+ 244              	.LVL14:
+  60:Core/Src/consoleCommands.c **** 		ConsoleIoSendString(mConsoleCommandTable[i].help);
+ 245              		.loc 1 60 3 is_stmt 1 view .LVU57
+ 246 0016 0948     		ldr	r0, .L20+4
+ 247 0018 FFF7FEFF 		bl	ConsoleIoSendString
+ 248              	.LVL15:
+  61:Core/Src/consoleCommands.c **** #endif // CONSOLE_COMMAND_MAX_HELP_LENGTH > 0
+ 249              		.loc 1 61 3 view .LVU58
+  61:Core/Src/consoleCommands.c **** #endif // CONSOLE_COMMAND_MAX_HELP_LENGTH > 0
+ 250              		.loc 1 61 46 is_stmt 0 view .LVU59
+ 251 001c 2B19     		adds	r3, r5, r4
+ 252 001e D800     		lsls	r0, r3, #3
+ 253 0020 0830     		adds	r0, r0, #8
+  61:Core/Src/consoleCommands.c **** #endif // CONSOLE_COMMAND_MAX_HELP_LENGTH > 0
+ 254              		.loc 1 61 3 view .LVU60
+ 255 0022 3044     		add	r0, r0, r6
+ 256 0024 FFF7FEFF 		bl	ConsoleIoSendString
+ 257              	.LVL16:
+  63:Core/Src/consoleCommands.c **** 	}
+ 258              		.loc 1 63 3 is_stmt 1 view .LVU61
+ 259 0028 0548     		ldr	r0, .L20+8
+ 260 002a FFF7FEFF 		bl	ConsoleIoSendString
+ 261              	.LVL17:
+  56:Core/Src/consoleCommands.c **** 	{
+ 262              		.loc 1 56 41 discriminator 3 view .LVU62
+ 263 002e 0134     		adds	r4, r4, #1
+ 264              	.LVL18:
+ 265              	.L17:
+  56:Core/Src/consoleCommands.c **** 	{
+ 266              		.loc 1 56 19 discriminator 1 view .LVU63
+ 267 0030 042C     		cmp	r4, #4
+ 268 0032 E8D9     		bls	.L18
+  65:Core/Src/consoleCommands.c **** }
+ARM GAS  /var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cczOiQS3.s 			page 8
+
+
+ 269              		.loc 1 65 2 view .LVU64
+  66:Core/Src/consoleCommands.c **** 
+ 270              		.loc 1 66 1 is_stmt 0 view .LVU65
+ 271 0034 0020     		movs	r0, #0
+ 272 0036 70BD     		pop	{r4, r5, r6, pc}
+ 273              	.LVL19:
+ 274              	.L21:
+  66:Core/Src/consoleCommands.c **** 
+ 275              		.loc 1 66 1 view .LVU66
+ 276              		.align	2
+ 277              	.L20:
+ 278 0038 00000000 		.word	mConsoleCommandTable
+ 279 003c 00000000 		.word	.LC2
+ 280 0040 24000000 		.word	.LC1
+ 281              		.cfi_endproc
+ 282              	.LFE236:
+ 284              		.section	.text.ConsoleCommandsGetTable,"ax",%progbits
+ 285              		.align	1
+ 286              		.global	ConsoleCommandsGetTable
+ 287              		.syntax unified
+ 288              		.thumb
+ 289              		.thumb_func
+ 291              	ConsoleCommandsGetTable:
+ 292              	.LFB240:
+ 102:Core/Src/consoleCommands.c **** 
+ 103:Core/Src/consoleCommands.c **** 
+ 104:Core/Src/consoleCommands.c **** const sConsoleCommandTable_T* ConsoleCommandsGetTable(void)
+ 105:Core/Src/consoleCommands.c **** {
+ 293              		.loc 1 105 1 is_stmt 1 view -0
+ 294              		.cfi_startproc
+ 295              		@ args = 0, pretend = 0, frame = 0
+ 296              		@ frame_needed = 0, uses_anonymous_args = 0
+ 297              		@ link register save eliminated.
+ 106:Core/Src/consoleCommands.c **** 	return (mConsoleCommandTable);
+ 298              		.loc 1 106 2 view .LVU68
+ 107:Core/Src/consoleCommands.c **** }
+ 299              		.loc 1 107 1 is_stmt 0 view .LVU69
+ 300 0000 0048     		ldr	r0, .L23
+ 301 0002 7047     		bx	lr
+ 302              	.L24:
+ 303              		.align	2
+ 304              	.L23:
+ 305 0004 00000000 		.word	mConsoleCommandTable
+ 306              		.cfi_endproc
+ 307              	.LFE240:
+ 309              		.section	.rodata.str1.4,"aMS",%progbits,1
+ 310              		.align	2
+ 311              	.LC3:
+ 312 0000 3B00     		.ascii	";\000"
+ 313 0002 0000     		.align	2
+ 314              	.LC4:
+ 315 0004 68656C70 		.ascii	"help\000"
+ 315      00
+ 316 0009 000000   		.align	2
+ 317              	.LC5:
+ 318 000c 76657200 		.ascii	"ver\000"
+ 319              		.align	2
+ARM GAS  /var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cczOiQS3.s 			page 9
+
+
+ 320              	.LC6:
+ 321 0010 73617731 		.ascii	"saw1\000"
+ 321      00
+ 322 0015 000000   		.align	2
+ 323              	.LC7:
+ 324 0018 73617732 		.ascii	"saw2\000"
+ 324      00
+ 325              		.section	.rodata.mConsoleCommandTable,"a"
+ 326              		.align	2
+ 329              	mConsoleCommandTable:
+ 330 0000 00000000 		.word	.LC3
+ 331 0004 00000000 		.word	ConsoleCommandComment
+ 332 0008 436F6D6D 		.ascii	"Comment! You do need a space after the semicolon. \000"
+ 332      656E7421 
+ 332      20596F75 
+ 332      20646F20 
+ 332      6E656564 
+ 333 003b 00000000 		.space	13
+ 333      00000000 
+ 333      00000000 
+ 333      00
+ 334 0048 04000000 		.word	.LC4
+ 335 004c 00000000 		.word	ConsoleCommandHelp
+ 336 0050 4C697374 		.ascii	"Lists the commands available\000"
+ 336      73207468 
+ 336      6520636F 
+ 336      6D6D616E 
+ 336      64732061 
+ 337 006d 00000000 		.space	35
+ 337      00000000 
+ 337      00000000 
+ 337      00000000 
+ 337      00000000 
+ 338 0090 0C000000 		.word	.LC5
+ 339 0094 00000000 		.word	ConsoleCommandVer
+ 340 0098 47657420 		.ascii	"Get the version string\000"
+ 340      74686520 
+ 340      76657273 
+ 340      696F6E20 
+ 340      73747269 
+ 341 00af 00000000 		.space	41
+ 341      00000000 
+ 341      00000000 
+ 341      00000000 
+ 341      00000000 
+ 342 00d8 10000000 		.word	.LC6
+ 343 00dc 00000000 		.word	ConsoleCommandParamSaw1
+ 344 00e0 53706563 		.ascii	"Specify left-channel sawtooth frequency: saw1 220\000"
+ 344      69667920 
+ 344      6C656674 
+ 344      2D636861 
+ 344      6E6E656C 
+ 345 0112 00000000 		.space	14
+ 345      00000000 
+ 345      00000000 
+ 345      0000
+ 346 0120 18000000 		.word	.LC7
+ARM GAS  /var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cczOiQS3.s 			page 10
+
+
+ 347 0124 00000000 		.word	ConsoleCommandParamSaw2
+ 348 0128 53706563 		.ascii	"Specify right-channel sawtooth frequency: saw2 220\000"
+ 348      69667920 
+ 348      72696768 
+ 348      742D6368 
+ 348      616E6E65 
+ 349 015b 00000000 		.space	13
+ 349      00000000 
+ 349      00000000 
+ 349      00
+ 350 0168 00000000 		.word	0
+ 351 016c 00000000 		.word	0
+ 352 0170 00       		.ascii	"\000"
+ 353 0171 00000000 		.space	63
+ 353      00000000 
+ 353      00000000 
+ 353      00000000 
+ 353      00000000 
+ 354              		.text
+ 355              	.Letext0:
+ 356              		.file 2 "/Users/jr/Library/Application Support/Code/User/globalStorage/bmd.stm32-for-vscode/@xpack
+ 357              		.file 3 "/Users/jr/Library/Application Support/Code/User/globalStorage/bmd.stm32-for-vscode/@xpack
+ 358              		.file 4 "Core/Inc/console.h"
+ 359              		.file 5 "Core/Inc/consoleCommands.h"
+ 360              		.file 6 "Core/Inc/consoleIo.h"
+ARM GAS  /var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cczOiQS3.s 			page 11
+
+
+DEFINED SYMBOLS
+                            *ABS*:00000000 consoleCommands.c
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cczOiQS3.s:21     .text.ConsoleCommandComment:00000000 $t
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cczOiQS3.s:26     .text.ConsoleCommandComment:00000000 ConsoleCommandComment
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cczOiQS3.s:47     .text.ConsoleCommandParamSaw2:00000000 $t
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cczOiQS3.s:52     .text.ConsoleCommandParamSaw2:00000000 ConsoleCommandParamSaw2
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cczOiQS3.s:91     .text.ConsoleCommandParamSaw2:00000020 $d
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cczOiQS3.s:96     .text.ConsoleCommandParamSaw1:00000000 $t
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cczOiQS3.s:101    .text.ConsoleCommandParamSaw1:00000000 ConsoleCommandParamSaw1
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cczOiQS3.s:140    .text.ConsoleCommandParamSaw1:00000020 $d
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cczOiQS3.s:145    .rodata.ConsoleCommandVer.str1.4:00000000 $d
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cczOiQS3.s:152    .text.ConsoleCommandVer:00000000 $t
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cczOiQS3.s:157    .text.ConsoleCommandVer:00000000 ConsoleCommandVer
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cczOiQS3.s:191    .text.ConsoleCommandVer:00000014 $d
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cczOiQS3.s:197    .rodata.ConsoleCommandHelp.str1.4:00000000 $d
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cczOiQS3.s:201    .text.ConsoleCommandHelp:00000000 $t
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cczOiQS3.s:206    .text.ConsoleCommandHelp:00000000 ConsoleCommandHelp
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cczOiQS3.s:278    .text.ConsoleCommandHelp:00000038 $d
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cczOiQS3.s:329    .rodata.mConsoleCommandTable:00000000 mConsoleCommandTable
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cczOiQS3.s:285    .text.ConsoleCommandsGetTable:00000000 $t
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cczOiQS3.s:291    .text.ConsoleCommandsGetTable:00000000 ConsoleCommandsGetTable
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cczOiQS3.s:305    .text.ConsoleCommandsGetTable:00000004 $d
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cczOiQS3.s:310    .rodata.str1.4:00000000 $d
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cczOiQS3.s:326    .rodata.mConsoleCommandTable:00000000 $d
+
+UNDEFINED SYMBOLS
+ConsoleReceiveParamInt16
+saw2_freq
+saw1_freq
+ConsoleIoSendString

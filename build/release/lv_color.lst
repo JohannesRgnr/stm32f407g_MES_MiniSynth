@@ -1,0 +1,956 @@
+ARM GAS  /var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccTgFCdh.s 			page 1
+
+
+   1              		.cpu cortex-m4
+   2              		.arch armv7e-m
+   3              		.fpu fpv4-sp-d16
+   4              		.eabi_attribute 27, 1
+   5              		.eabi_attribute 28, 1
+   6              		.eabi_attribute 20, 1
+   7              		.eabi_attribute 21, 1
+   8              		.eabi_attribute 23, 3
+   9              		.eabi_attribute 24, 1
+  10              		.eabi_attribute 25, 1
+  11              		.eabi_attribute 26, 1
+  12              		.eabi_attribute 30, 2
+  13              		.eabi_attribute 34, 1
+  14              		.eabi_attribute 18, 4
+  15              		.file	"lv_color.c"
+  16              		.text
+  17              		.section	.text.lv_color_fill,"ax",%progbits
+  18              		.align	1
+  19              		.p2align 2,,3
+  20              		.global	lv_color_fill
+  21              		.syntax unified
+  22              		.thumb
+  23              		.thumb_func
+  25              	lv_color_fill:
+  26              		@ args = 0, pretend = 0, frame = 0
+  27              		@ frame_needed = 0, uses_anonymous_args = 0
+  28 0000 8307     		lsls	r3, r0, #30
+  29 0002 18BF     		it	ne
+  30 0004 02F1FF32 		addne	r2, r2, #-1
+  31 0008 30B5     		push	{r4, r5, lr}
+  32 000a 18BF     		it	ne
+  33 000c 20F8021B 		strhne	r1, [r0], #2	@ movhi
+  34 0010 1FFA81FE 		uxth	lr, r1
+  35 0014 102A     		cmp	r2, #16
+  36 0016 0EEB0E41 		add	r1, lr, lr, lsl #16
+  37 001a 1BD9     		bls	.L3
+  38 001c A2F11105 		sub	r5, r2, #17
+  39 0020 2D09     		lsrs	r5, r5, #4
+  40 0022 6C1C     		adds	r4, r5, #1
+  41 0024 0346     		mov	r3, r0
+  42 0026 4FF0000C 		mov	ip, #0
+  43              	.L4:
+  44 002a 0CF1010C 		add	ip, ip, #1
+  45 002e A445     		cmp	ip, r4
+  46 0030 C3E90011 		strd	r1, r1, [r3]
+  47 0034 C3E90211 		strd	r1, r1, [r3, #8]
+  48 0038 C3E90411 		strd	r1, r1, [r3, #16]
+  49 003c C3E90611 		strd	r1, r1, [r3, #24]
+  50 0040 03F12003 		add	r3, r3, #32
+  51 0044 F1D3     		bcc	.L4
+  52 0046 103A     		subs	r2, r2, #16
+  53 0048 C5EB0575 		rsb	r5, r5, r5, lsl #28
+  54 004c 02EB0512 		add	r2, r2, r5, lsl #4
+  55 0050 00EB4410 		add	r0, r0, r4, lsl #5
+  56              	.L3:
+  57 0054 2AB1     		cbz	r2, .L1
+  58 0056 00EB4202 		add	r2, r0, r2, lsl #1
+ARM GAS  /var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccTgFCdh.s 			page 2
+
+
+  59              	.L6:
+  60 005a 20F802EB 		strh	lr, [r0], #2	@ movhi
+  61 005e 9042     		cmp	r0, r2
+  62 0060 FBD1     		bne	.L6
+  63              	.L1:
+  64 0062 30BD     		pop	{r4, r5, pc}
+  66              		.section	.text.lv_color_lighten,"ax",%progbits
+  67              		.align	1
+  68              		.p2align 2,,3
+  69              		.global	lv_color_lighten
+  70              		.syntax unified
+  71              		.thumb
+  72              		.thumb_func
+  74              	lv_color_lighten:
+  75              		@ args = 0, pretend = 0, frame = 0
+  76              		@ frame_needed = 0, uses_anonymous_args = 0
+  77              		@ link register save eliminated.
+  78 0000 40BA     		rev16	r0, r0
+  79 0002 094B     		ldr	r3, .L18
+  80 0004 0204     		lsls	r2, r0, #16
+  81 0006 12FA80F0 		uxtah	r0, r2, r0
+  82 000a 0431     		adds	r1, r1, #4
+  83 000c 23EA0002 		bic	r2, r3, r0
+  84 0010 C908     		lsrs	r1, r1, #3
+  85 0012 1840     		ands	r0, r0, r3
+  86 0014 02FB01F1 		mul	r1, r2, r1
+  87 0018 00EB5110 		add	r0, r0, r1, lsr #5
+  88 001c 1840     		ands	r0, r0, r3
+  89 001e 40EA1040 		orr	r0, r0, r0, lsr #16
+  90 0022 40BA     		rev16	r0, r0
+  91 0024 7047     		bx	lr
+  92              	.L19:
+  93 0026 00BF     		.align	2
+  94              	.L18:
+  95 0028 1FF8E007 		.word	132184095
+  97              		.section	.text.lv_color_darken,"ax",%progbits
+  98              		.align	1
+  99              		.p2align 2,,3
+ 100              		.global	lv_color_darken
+ 101              		.syntax unified
+ 102              		.thumb
+ 103              		.thumb_func
+ 105              	lv_color_darken:
+ 106              		@ args = 0, pretend = 0, frame = 0
+ 107              		@ frame_needed = 0, uses_anonymous_args = 0
+ 108              		@ link register save eliminated.
+ 109 0000 40BA     		rev16	r0, r0
+ 110 0002 084A     		ldr	r2, .L21
+ 111 0004 0304     		lsls	r3, r0, #16
+ 112 0006 13FA80F0 		uxtah	r0, r3, r0
+ 113 000a 0B1D     		adds	r3, r1, #4
+ 114 000c 1040     		ands	r0, r0, r2
+ 115 000e DB08     		lsrs	r3, r3, #3
+ 116 0010 00FB03F3 		mul	r3, r0, r3
+ 117 0014 5B42     		rsbs	r3, r3, #0
+ 118 0016 00EB5310 		add	r0, r0, r3, lsr #5
+ 119 001a 1040     		ands	r0, r0, r2
+ARM GAS  /var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccTgFCdh.s 			page 3
+
+
+ 120 001c 40EA1040 		orr	r0, r0, r0, lsr #16
+ 121 0020 40BA     		rev16	r0, r0
+ 122 0022 7047     		bx	lr
+ 123              	.L22:
+ 124              		.align	2
+ 125              	.L21:
+ 126 0024 1FF8E007 		.word	132184095
+ 128              		.section	.text.lv_color_change_lightness,"ax",%progbits
+ 129              		.align	1
+ 130              		.p2align 2,,3
+ 131              		.global	lv_color_change_lightness
+ 132              		.syntax unified
+ 133              		.thumb
+ 134              		.thumb_func
+ 136              	lv_color_change_lightness:
+ 137              		@ args = 0, pretend = 0, frame = 0
+ 138              		@ frame_needed = 0, uses_anonymous_args = 0
+ 139              		@ link register save eliminated.
+ 140 0000 7F29     		cmp	r1, #127
+ 141 0002 0ED0     		beq	.L27
+ 142 0004 7E29     		cmp	r1, #126
+ 143 0006 06D8     		bhi	.L26
+ 144 0008 C1F17F01 		rsb	r1, r1, #127
+ 145 000c 4900     		lsls	r1, r1, #1
+ 146 000e 01F0FE01 		and	r1, r1, #254
+ 147 0012 FFF7FEBF 		b	lv_color_darken
+ 148              	.L26:
+ 149 0016 7F39     		subs	r1, r1, #127
+ 150 0018 4900     		lsls	r1, r1, #1
+ 151 001a 01F0FE01 		and	r1, r1, #254
+ 152 001e FFF7FEBF 		b	lv_color_lighten
+ 153              	.L27:
+ 154 0022 7047     		bx	lr
+ 156              		.section	.text.lv_color_hsv_to_rgb,"ax",%progbits
+ 157              		.align	1
+ 158              		.p2align 2,,3
+ 159              		.global	lv_color_hsv_to_rgb
+ 160              		.syntax unified
+ 161              		.thumb
+ 162              		.thumb_func
+ 164              	lv_color_hsv_to_rgb:
+ 165              		@ args = 0, pretend = 0, frame = 0
+ 166              		@ frame_needed = 0, uses_anonymous_args = 0
+ 167 0000 3E4B     		ldr	r3, .L41
+ 168 0002 C1EB0121 		rsb	r1, r1, r1, lsl #8
+ 169 0006 89B2     		uxth	r1, r1
+ 170 0008 C2EB0222 		rsb	r2, r2, r2, lsl #8
+ 171 000c A3FB01C1 		umull	ip, r1, r3, r1
+ 172 0010 92B2     		uxth	r2, r2
+ 173 0012 A3FB0232 		umull	r3, r2, r3, r2
+ 174 0016 C1F34711 		ubfx	r1, r1, #5, #8
+ 175 001a 00B5     		push	{lr}
+ 176 001c C2F34712 		ubfx	r2, r2, #5, #8
+ 177 0020 0029     		cmp	r1, #0
+ 178 0022 4AD0     		beq	.L40
+ 179 0024 364B     		ldr	r3, .L41+4
+ 180 0026 C0EB0020 		rsb	r0, r0, r0, lsl #8
+ARM GAS  /var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccTgFCdh.s 			page 4
+
+
+ 181 002a C008     		lsrs	r0, r0, #3
+ 182 002c A3FB0030 		umull	r3, r0, r3, r0
+ 183 0030 344B     		ldr	r3, .L41+8
+ 184 0032 C0F38F0C 		ubfx	ip, r0, #2, #16
+ 185 0036 A3FB0C3C 		umull	r3, ip, r3, ip
+ 186 003a CCF3C70C 		ubfx	ip, ip, #3, #8
+ 187 003e 6FF02A03 		mvn	r3, #42
+ 188 0042 03FB0CF3 		mul	r3, r3, ip
+ 189 0046 03EB9003 		add	r3, r3, r0, lsr #2
+ 190 004a 03EB4303 		add	r3, r3, r3, lsl #1
+ 191 004e 5B00     		lsls	r3, r3, #1
+ 192 0050 DBB2     		uxtb	r3, r3
+ 193 0052 C3F1FF00 		rsb	r0, r3, #255
+ 194 0056 C1F1FF0E 		rsb	lr, r1, #255
+ 195 005a 11FB03F3 		smulbb	r3, r1, r3
+ 196 005e 00FB01F1 		mul	r1, r0, r1
+ 197 0062 1B12     		asrs	r3, r3, #8
+ 198 0064 0912     		asrs	r1, r1, #8
+ 199 0066 C3F1FF03 		rsb	r3, r3, #255
+ 200 006a C1F1FF01 		rsb	r1, r1, #255
+ 201 006e 02FB0EFE 		mul	lr, r2, lr
+ 202 0072 02FB03F3 		mul	r3, r2, r3
+ 203 0076 02FB01F1 		mul	r1, r2, r1
+ 204 007a CEF3072E 		ubfx	lr, lr, #8, #8
+ 205 007e C3F30723 		ubfx	r3, r3, #8, #8
+ 206 0082 C1F30721 		ubfx	r1, r1, #8, #8
+ 207 0086 BCF1040F 		cmp	ip, #4
+ 208 008a 31D8     		bhi	.L31
+ 209 008c DFE80CF0 		tbb	[pc, ip]
+ 210              	.L33:
+ 211 0090 03       		.byte	(.L37-.L33)/2
+ 212 0091 05       		.byte	(.L36-.L33)/2
+ 213 0092 23       		.byte	(.L35-.L33)/2
+ 214 0093 26       		.byte	(.L34-.L33)/2
+ 215 0094 2B       		.byte	(.L32-.L33)/2
+ 216 0095 00       		.p2align 1
+ 217              	.L37:
+ 218 0096 1346     		mov	r3, r2
+ 219 0098 0A46     		mov	r2, r1
+ 220              	.L36:
+ 221 009a C2F34210 		ubfx	r0, r2, #5, #3
+ 222 009e C3F3C403 		ubfx	r3, r3, #3, #5
+ 223 00a2 CEF3C40E 		ubfx	lr, lr, #3, #5
+ 224 00a6 40EAC300 		orr	r0, r0, r3, lsl #3
+ 225 00aa C2F38202 		ubfx	r2, r2, #2, #3
+ 226 00ae 40EA0E20 		orr	r0, r0, lr, lsl #8
+ 227 00b2 40EA4230 		orr	r0, r0, r2, lsl #13
+ 228 00b6 5DF804FB 		ldr	pc, [sp], #4
+ 229              	.L40:
+ 230 00ba 4FEAD20E 		lsr	lr, r2, #3
+ 231 00be 5009     		lsrs	r0, r2, #5
+ 232 00c0 7346     		mov	r3, lr
+ 233 00c2 40EAC300 		orr	r0, r0, r3, lsl #3
+ 234 00c6 C2F38202 		ubfx	r2, r2, #2, #3
+ 235 00ca 40EA0E20 		orr	r0, r0, lr, lsl #8
+ 236 00ce 40EA4230 		orr	r0, r0, r2, lsl #13
+ 237 00d2 5DF804FB 		ldr	pc, [sp], #4
+ARM GAS  /var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccTgFCdh.s 			page 5
+
+
+ 238              	.L35:
+ 239 00d6 7346     		mov	r3, lr
+ 240 00d8 8E46     		mov	lr, r1
+ 241 00da DEE7     		b	.L36
+ 242              	.L34:
+ 243 00dc 1946     		mov	r1, r3
+ 244 00de 7346     		mov	r3, lr
+ 245 00e0 9646     		mov	lr, r2
+ 246 00e2 0A46     		mov	r2, r1
+ 247 00e4 D9E7     		b	.L36
+ 248              	.L32:
+ 249 00e6 1046     		mov	r0, r2
+ 250 00e8 0B46     		mov	r3, r1
+ 251 00ea 7246     		mov	r2, lr
+ 252 00ec 8646     		mov	lr, r0
+ 253 00ee D4E7     		b	.L36
+ 254              	.L31:
+ 255 00f0 1946     		mov	r1, r3
+ 256 00f2 1346     		mov	r3, r2
+ 257 00f4 7246     		mov	r2, lr
+ 258 00f6 8E46     		mov	lr, r1
+ 259 00f8 CFE7     		b	.L36
+ 260              	.L42:
+ 261 00fa 00BF     		.align	2
+ 262              	.L41:
+ 263 00fc 1F85EB51 		.word	1374389535
+ 264 0100 176CC116 		.word	381774871
+ 265 0104 83BEA02F 		.word	799063683
+ 267              		.section	.text.lv_color_rgb_to_hsv,"ax",%progbits
+ 268              		.align	1
+ 269              		.p2align 2,,3
+ 270              		.global	lv_color_rgb_to_hsv
+ 271              		.syntax unified
+ 272              		.thumb
+ 273              		.thumb_func
+ 275              	lv_color_rgb_to_hsv:
+ 276              		@ args = 0, pretend = 0, frame = 8
+ 277              		@ frame_needed = 0, uses_anonymous_args = 0
+ 278 0000 2DE9F041 		push	{r4, r5, r6, r7, r8, lr}
+ 279 0004 344C     		ldr	r4, .L58
+ 280 0006 4FEA802C 		lsl	ip, r0, #10
+ 281 000a 8902     		lsls	r1, r1, #10
+ 282 000c A4FB0C3C 		umull	r3, ip, r4, ip
+ 283 0010 A4FB0131 		umull	r3, r1, r4, r1
+ 284 0014 9302     		lsls	r3, r2, #10
+ 285 0016 4FEADC16 		lsr	r6, ip, #7
+ 286 001a A4FB0343 		umull	r4, r3, r4, r3
+ 287 001e CC09     		lsrs	r4, r1, #7
+ 288 0020 A642     		cmp	r6, r4
+ 289 0022 4FEAD31E 		lsr	lr, r3, #7
+ 290 0026 B046     		mov	r8, r6
+ 291 0028 38BF     		it	cc
+ 292 002a A046     		movcc	r8, r4
+ 293 002c C645     		cmp	lr, r8
+ 294 002e 7746     		mov	r7, lr
+ 295 0030 38BF     		it	cc
+ 296 0032 4746     		movcc	r7, r8
+ARM GAS  /var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccTgFCdh.s 			page 6
+
+
+ 297 0034 7445     		cmp	r4, lr
+ 298 0036 2046     		mov	r0, r4
+ 299 0038 28BF     		it	cs
+ 300 003a 7046     		movcs	r0, lr
+ 301 003c B042     		cmp	r0, r6
+ 302 003e 98BF     		it	ls
+ 303 0040 3D1A     		subls	r5, r7, r0
+ 304 0042 4FF06402 		mov	r2, #100
+ 305 0046 88BF     		it	hi
+ 306 0048 BD1B     		subhi	r5, r7, r6
+ 307 004a 02FB07F0 		mul	r0, r2, r7
+ 308 004e 022D     		cmp	r5, #2
+ 309 0050 82B0     		sub	sp, sp, #8
+ 310 0052 4FEA9020 		lsr	r0, r0, #10
+ 311 0056 2ADD     		ble	.L51
+ 312 0058 05FB02F2 		mul	r2, r5, r2
+ 313 005c B2FBF7F2 		udiv	r2, r2, r7
+ 314 0060 D2B2     		uxtb	r2, r2
+ 315 0062 022A     		cmp	r2, #2
+ 316 0064 14D9     		bls	.L52
+ 317 0066 BE42     		cmp	r6, r7
+ 318 0068 7346     		mov	r3, lr
+ 319 006a 2AD0     		beq	.L56
+ 320 006c BC42     		cmp	r4, r7
+ 321 006e 21D0     		beq	.L57
+ 322 0070 C645     		cmp	lr, r8
+ 323 0072 0DD3     		bcc	.L52
+ 324 0074 361B     		subs	r6, r6, r4
+ 325 0076 B602     		lsls	r6, r6, #10
+ 326 0078 96FBF5F6 		sdiv	r6, r6, r5
+ 327 007c 06F58053 		add	r3, r6, #4096
+ 328              	.L47:
+ 329 0080 C3EB0313 		rsb	r3, r3, r3, lsl #4
+ 330 0084 1B12     		asrs	r3, r3, #8
+ 331 0086 48BF     		it	mi
+ 332 0088 03F5B473 		addmi	r3, r3, #360
+ 333 008c 9BB2     		uxth	r3, r3
+ 334 008e 00E0     		b	.L44
+ 335              	.L52:
+ 336 0090 0023     		movs	r3, #0
+ 337              	.L44:
+ 338 0092 8DF80700 		strb	r0, [sp, #7]
+ 339 0096 8DF80620 		strb	r2, [sp, #6]
+ 340 009a BDF80620 		ldrh	r2, [sp, #6]
+ 341 009e 0020     		movs	r0, #0
+ 342 00a0 63F30F00 		bfi	r0, r3, #0, #16
+ 343 00a4 62F31F40 		bfi	r0, r2, #16, #16
+ 344 00a8 02B0     		add	sp, sp, #8
+ 345              		@ sp needed
+ 346 00aa BDE8F081 		pop	{r4, r5, r6, r7, r8, pc}
+ 347              	.L51:
+ 348 00ae 0023     		movs	r3, #0
+ 349 00b0 1A46     		mov	r2, r3
+ 350 00b2 EEE7     		b	.L44
+ 351              	.L57:
+ 352 00b4 9B1B     		subs	r3, r3, r6
+ 353 00b6 9B02     		lsls	r3, r3, #10
+ARM GAS  /var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccTgFCdh.s 			page 7
+
+
+ 354 00b8 93FBF5F3 		sdiv	r3, r3, r5
+ 355 00bc 03F50063 		add	r3, r3, #2048
+ 356 00c0 DEE7     		b	.L47
+ 357              	.L56:
+ 358 00c2 E31A     		subs	r3, r4, r3
+ 359 00c4 7445     		cmp	r4, lr
+ 360 00c6 4FEA8323 		lsl	r3, r3, #10
+ 361 00ca 93FBF5F3 		sdiv	r3, r3, r5
+ 362 00ce D7D2     		bcs	.L47
+ 363 00d0 03F5C053 		add	r3, r3, #6144
+ 364 00d4 D4E7     		b	.L47
+ 365              	.L59:
+ 366 00d6 00BF     		.align	2
+ 367              	.L58:
+ 368 00d8 81808080 		.word	-2139062143
+ 370              		.section	.text.lv_color_to_hsv,"ax",%progbits
+ 371              		.align	1
+ 372              		.p2align 2,,3
+ 373              		.global	lv_color_to_hsv
+ 374              		.syntax unified
+ 375              		.thumb
+ 376              		.thumb_func
+ 378              	lv_color_to_hsv:
+ 379              		@ args = 0, pretend = 0, frame = 8
+ 380              		@ frame_needed = 0, uses_anonymous_args = 0
+ 381              		@ link register save eliminated.
+ 382 0000 C0F3C402 		ubfx	r2, r0, #3, #5
+ 383 0004 00F00701 		and	r1, r0, #7
+ 384 0008 C0F34233 		ubfx	r3, r0, #13, #3
+ 385 000c 03EBC103 		add	r3, r3, r1, lsl #3
+ 386 0010 02EB4211 		add	r1, r2, r2, lsl #5
+ 387 0014 C0F30420 		ubfx	r0, r0, #8, #5
+ 388 0018 C2EBC101 		rsb	r1, r2, r1, lsl #3
+ 389 001c 03EBC312 		add	r2, r3, r3, lsl #7
+ 390 0020 03EB4202 		add	r2, r3, r2, lsl #1
+ 391 0024 0731     		adds	r1, r1, #7
+ 392 0026 00EB4013 		add	r3, r0, r0, lsl #5
+ 393 002a 4911     		asrs	r1, r1, #5
+ 394 002c C0EBC303 		rsb	r3, r0, r3, lsl #3
+ 395 0030 4FF0000C 		mov	ip, #0
+ 396 0034 0332     		adds	r2, r2, #3
+ 397 0036 61F3174C 		bfi	ip, r1, #16, #8
+ 398 003a 9211     		asrs	r2, r2, #6
+ 399 003c 0733     		adds	r3, r3, #7
+ 400 003e 62F30F2C 		bfi	ip, r2, #8, #8
+ 401 0042 5B11     		asrs	r3, r3, #5
+ 402 0044 63F3070C 		bfi	ip, r3, #0, #8
+ 403 0048 4CF07F4C 		orr	ip, ip, #-16777216
+ 404 004c 82B0     		sub	sp, sp, #8
+ 405 004e 5FFA8CF2 		uxtb	r2, ip
+ 406 0052 CCF30721 		ubfx	r1, ip, #8, #8
+ 407 0056 CCF30740 		ubfx	r0, ip, #16, #8
+ 408 005a 02B0     		add	sp, sp, #8
+ 409              		@ sp needed
+ 410 005c FFF7FEBF 		b	lv_color_rgb_to_hsv
+ 412              		.section	.text.lv_palette_main,"ax",%progbits
+ 413              		.align	1
+ARM GAS  /var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccTgFCdh.s 			page 8
+
+
+ 414              		.p2align 2,,3
+ 415              		.global	lv_palette_main
+ 416              		.syntax unified
+ 417              		.thumb
+ 418              		.thumb_func
+ 420              	lv_palette_main:
+ 421              		@ args = 0, pretend = 0, frame = 0
+ 422              		@ frame_needed = 0, uses_anonymous_args = 0
+ 423              		@ link register save eliminated.
+ 424 0000 1228     		cmp	r0, #18
+ 425 0002 96BF     		itet	ls
+ 426 0004 024B     		ldrls	r3, .L65
+ 427 0006 0020     		movhi	r0, #0	@ movhi
+ 428 0008 33F81000 		ldrhls	r0, [r3, r0, lsl #1]
+ 429 000c 7047     		bx	lr
+ 430              	.L66:
+ 431 000e 00BF     		.align	2
+ 432              	.L65:
+ 433 0010 00000000 		.word	colors.2
+ 435              		.section	.text.lv_palette_lighten,"ax",%progbits
+ 436              		.align	1
+ 437              		.p2align 2,,3
+ 438              		.global	lv_palette_lighten
+ 439              		.syntax unified
+ 440              		.thumb
+ 441              		.thumb_func
+ 443              	lv_palette_lighten:
+ 444              		@ args = 0, pretend = 0, frame = 0
+ 445              		@ frame_needed = 0, uses_anonymous_args = 0
+ 446              		@ link register save eliminated.
+ 447 0000 1228     		cmp	r0, #18
+ 448 0002 0AD8     		bhi	.L70
+ 449 0004 0139     		subs	r1, r1, #1
+ 450 0006 C9B2     		uxtb	r1, r1
+ 451 0008 0429     		cmp	r1, #4
+ 452 000a 06D8     		bhi	.L70
+ 453 000c 00EB8000 		add	r0, r0, r0, lsl #2
+ 454 0010 034B     		ldr	r3, .L71
+ 455 0012 0844     		add	r0, r0, r1
+ 456 0014 33F81000 		ldrh	r0, [r3, r0, lsl #1]
+ 457 0018 7047     		bx	lr
+ 458              	.L70:
+ 459 001a 4FF00000 		mov	r0, #0	@ movhi
+ 460 001e 7047     		bx	lr
+ 461              	.L72:
+ 462              		.align	2
+ 463              	.L71:
+ 464 0020 00000000 		.word	colors.1
+ 466              		.section	.text.lv_palette_darken,"ax",%progbits
+ 467              		.align	1
+ 468              		.p2align 2,,3
+ 469              		.global	lv_palette_darken
+ 470              		.syntax unified
+ 471              		.thumb
+ 472              		.thumb_func
+ 474              	lv_palette_darken:
+ 475              		@ args = 0, pretend = 0, frame = 0
+ARM GAS  /var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccTgFCdh.s 			page 9
+
+
+ 476              		@ frame_needed = 0, uses_anonymous_args = 0
+ 477              		@ link register save eliminated.
+ 478 0000 1228     		cmp	r0, #18
+ 479 0002 09D8     		bhi	.L76
+ 480 0004 0139     		subs	r1, r1, #1
+ 481 0006 C9B2     		uxtb	r1, r1
+ 482 0008 0329     		cmp	r1, #3
+ 483 000a 05D8     		bhi	.L76
+ 484 000c 044B     		ldr	r3, .L77
+ 485 000e 01EB8000 		add	r0, r1, r0, lsl #2
+ 486 0012 33F81000 		ldrh	r0, [r3, r0, lsl #1]
+ 487 0016 7047     		bx	lr
+ 488              	.L76:
+ 489 0018 4FF00000 		mov	r0, #0	@ movhi
+ 490 001c 7047     		bx	lr
+ 491              	.L78:
+ 492 001e 00BF     		.align	2
+ 493              	.L77:
+ 494 0020 00000000 		.word	colors.0
+ 496              		.section	.rodata.colors.0,"a"
+ 497              		.align	2
+ 500              	colors.0:
+ 501 0000 E1       		.byte	225
+ 502 0001 C6       		.byte	198
+ 503 0002 D1       		.byte	209
+ 504 0003 65       		.byte	101
+ 505 0004 C1       		.byte	193
+ 506 0005 45       		.byte	69
+ 507 0006 B0       		.byte	176
+ 508 0007 E3       		.byte	227
+ 509 0008 D8       		.byte	216
+ 510 0009 CC       		.byte	204
+ 511 000a C0       		.byte	192
+ 512 000b CB       		.byte	203
+ 513 000c A8       		.byte	168
+ 514 000d AA       		.byte	170
+ 515 000e 88       		.byte	136
+ 516 000f 69       		.byte	105
+ 517 0010 89       		.byte	137
+ 518 0011 35       		.byte	53
+ 519 0012 78       		.byte	120
+ 520 0013 F4       		.byte	244
+ 521 0014 68       		.byte	104
+ 522 0015 D3       		.byte	211
+ 523 0016 48       		.byte	72
+ 524 0017 B1       		.byte	177
+ 525 0018 59       		.byte	89
+ 526 0019 B6       		.byte	182
+ 527 001a 51       		.byte	81
+ 528 001b 75       		.byte	117
+ 529 001c 41       		.byte	65
+ 530 001d 34       		.byte	52
+ 531 001e 30       		.byte	48
+ 532 001f D2       		.byte	210
+ 533 0020 3A       		.byte	58
+ 534 0021 55       		.byte	85
+ 535 0022 31       		.byte	49
+ARM GAS  /var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccTgFCdh.s 			page 10
+
+
+ 536 0023 F3       		.byte	243
+ 537 0024 29       		.byte	41
+ 538 0025 B2       		.byte	178
+ 539 0026 19       		.byte	25
+ 540 0027 0F       		.byte	15
+ 541 0028 1C       		.byte	28
+ 542 0029 5C       		.byte	92
+ 543 002a 1B       		.byte	27
+ 544 002b BA       		.byte	186
+ 545 002c 13       		.byte	19
+ 546 002d 38       		.byte	56
+ 547 002e 0A       		.byte	10
+ 548 002f 34       		.byte	52
+ 549 0030 04       		.byte	4
+ 550 0031 DC       		.byte	220
+ 551 0032 04       		.byte	4
+ 552 0033 5A       		.byte	90
+ 553 0034 03       		.byte	3
+ 554 0035 B7       		.byte	183
+ 555 0036 02       		.byte	2
+ 556 0037 B3       		.byte	179
+ 557 0038 05       		.byte	5
+ 558 0039 78       		.byte	120
+ 559 003a 04       		.byte	4
+ 560 003b B4       		.byte	180
+ 561 003c 04       		.byte	4
+ 562 003d 11       		.byte	17
+ 563 003e 03       		.byte	3
+ 564 003f 0C       		.byte	12
+ 565 0040 04       		.byte	4
+ 566 0041 4F       		.byte	79
+ 567 0042 03       		.byte	3
+ 568 0043 CD       		.byte	205
+ 569 0044 03       		.byte	3
+ 570 0045 4B       		.byte	75
+ 571 0046 02       		.byte	2
+ 572 0047 68       		.byte	104
+ 573 0048 45       		.byte	69
+ 574 0049 08       		.byte	8
+ 575 004a 3C       		.byte	60
+ 576 004b 67       		.byte	103
+ 577 004c 2B       		.byte	43
+ 578 004d E6       		.byte	230
+ 579 004e 1A       		.byte	26
+ 580 004f E4       		.byte	228
+ 581 0050 7D       		.byte	125
+ 582 0051 88       		.byte	136
+ 583 0052 6C       		.byte	108
+ 584 0053 E7       		.byte	231
+ 585 0054 54       		.byte	84
+ 586 0055 45       		.byte	69
+ 587 0056 33       		.byte	51
+ 588 0057 43       		.byte	67
+ 589 0058 C6       		.byte	198
+ 590 0059 46       		.byte	70
+ 591 005a AD       		.byte	173
+ 592 005b A5       		.byte	165
+ARM GAS  /var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccTgFCdh.s 			page 11
+
+
+ 593 005c 9C       		.byte	156
+ 594 005d E4       		.byte	228
+ 595 005e 83       		.byte	131
+ 596 005f A2       		.byte	162
+ 597 0060 FE       		.byte	254
+ 598 0061 C6       		.byte	198
+ 599 0062 FE       		.byte	254
+ 600 0063 05       		.byte	5
+ 601 0064 FD       		.byte	253
+ 602 0065 44       		.byte	68
+ 603 0066 F3       		.byte	243
+ 604 0067 E2       		.byte	226
+ 605 0068 FD       		.byte	253
+ 606 0069 80       		.byte	128
+ 607 006a FD       		.byte	253
+ 608 006b 00       		.byte	0
+ 609 006c FC       		.byte	252
+ 610 006d 60       		.byte	96
+ 611 006e FB       		.byte	251
+ 612 006f 60       		.byte	96
+ 613 0070 FC       		.byte	252
+ 614 0071 60       		.byte	96
+ 615 0072 F3       		.byte	243
+ 616 0073 E0       		.byte	224
+ 617 0074 EB       		.byte	235
+ 618 0075 60       		.byte	96
+ 619 0076 E2       		.byte	226
+ 620 0077 80       		.byte	128
+ 621 0078 F2       		.byte	242
+ 622 0079 83       		.byte	131
+ 623 007a E2       		.byte	226
+ 624 007b 43       		.byte	67
+ 625 007c DA       		.byte	218
+ 626 007d 02       		.byte	2
+ 627 007e B9       		.byte	185
+ 628 007f A1       		.byte	161
+ 629 0080 6A       		.byte	106
+ 630 0081 68       		.byte	104
+ 631 0082 5A       		.byte	90
+ 632 0083 06       		.byte	6
+ 633 0084 49       		.byte	73
+ 634 0085 A5       		.byte	165
+ 635 0086 39       		.byte	57
+ 636 0087 24       		.byte	36
+ 637 0088 53       		.byte	83
+ 638 0089 6F       		.byte	111
+ 639 008a 42       		.byte	66
+ 640 008b CC       		.byte	204
+ 641 008c 32       		.byte	50
+ 642 008d 29       		.byte	41
+ 643 008e 21       		.byte	33
+ 644 008f 87       		.byte	135
+ 645 0090 73       		.byte	115
+ 646 0091 AE       		.byte	174
+ 647 0092 63       		.byte	99
+ 648 0093 0C       		.byte	12
+ 649 0094 42       		.byte	66
+ARM GAS  /var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccTgFCdh.s 			page 12
+
+
+ 650 0095 08       		.byte	8
+ 651 0096 21       		.byte	33
+ 652 0097 04       		.byte	4
+ 653              		.section	.rodata.colors.1,"a"
+ 654              		.align	2
+ 657              	colors.1:
+ 658 0000 EA       		.byte	234
+ 659 0001 8A       		.byte	138
+ 660 0002 E3       		.byte	227
+ 661 0003 8E       		.byte	142
+ 662 0004 EC       		.byte	236
+ 663 0005 D3       		.byte	211
+ 664 0006 FE       		.byte	254
+ 665 0007 7A       		.byte	122
+ 666 0008 FF       		.byte	255
+ 667 0009 5D       		.byte	93
+ 668 000a EA       		.byte	234
+ 669 000b 0F       		.byte	15
+ 670 000c F3       		.byte	243
+ 671 000d 12       		.byte	18
+ 672 000e F4       		.byte	244
+ 673 000f 76       		.byte	118
+ 674 0010 FD       		.byte	253
+ 675 0011 DA       		.byte	218
+ 676 0012 FF       		.byte	255
+ 677 0013 3D       		.byte	61
+ 678 0014 AA       		.byte	170
+ 679 0015 37       		.byte	55
+ 680 0016 BB       		.byte	187
+ 681 0017 59       		.byte	89
+ 682 0018 CC       		.byte	204
+ 683 0019 9B       		.byte	155
+ 684 001a E5       		.byte	229
+ 685 001b FC       		.byte	252
+ 686 001c F7       		.byte	247
+ 687 001d 3E       		.byte	62
+ 688 001e 7A       		.byte	122
+ 689 001f B8       		.byte	184
+ 690 0020 93       		.byte	147
+ 691 0021 B9       		.byte	185
+ 692 0022 B4       		.byte	180
+ 693 0023 FB       		.byte	251
+ 694 0024 D6       		.byte	214
+ 695 0025 3D       		.byte	61
+ 696 0026 EF       		.byte	239
+ 697 0027 3E       		.byte	62
+ 698 0028 5B       		.byte	91
+ 699 0029 58       		.byte	88
+ 700 002a 7C       		.byte	124
+ 701 002b 39       		.byte	57
+ 702 002c 9D       		.byte	157
+ 703 002d 5B       		.byte	91
+ 704 002e C6       		.byte	198
+ 705 002f 5D       		.byte	93
+ 706 0030 EF       		.byte	239
+ 707 0031 5E       		.byte	94
+ 708 0032 45       		.byte	69
+ARM GAS  /var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccTgFCdh.s 			page 13
+
+
+ 709 0033 3E       		.byte	62
+ 710 0034 65       		.byte	101
+ 711 0035 BE       		.byte	190
+ 712 0036 96       		.byte	150
+ 713 0037 5F       		.byte	95
+ 714 0038 BE       		.byte	190
+ 715 0039 FF       		.byte	255
+ 716 003a E7       		.byte	231
+ 717 003b 9F       		.byte	159
+ 718 003c 2D       		.byte	45
+ 719 003d BE       		.byte	190
+ 720 003e 4E       		.byte	78
+ 721 003f 1E       		.byte	30
+ 722 0040 86       		.byte	134
+ 723 0041 BF       		.byte	191
+ 724 0042 B7       		.byte	183
+ 725 0043 3F       		.byte	63
+ 726 0044 E7       		.byte	231
+ 727 0045 BF       		.byte	191
+ 728 0046 26       		.byte	38
+ 729 0047 3B       		.byte	59
+ 730 0048 4E       		.byte	78
+ 731 0049 9C       		.byte	156
+ 732 004a 86       		.byte	134
+ 733 004b FD       		.byte	253
+ 734 004c B7       		.byte	183
+ 735 004d 5E       		.byte	94
+ 736 004e E7       		.byte	231
+ 737 004f BF       		.byte	191
+ 738 0050 25       		.byte	37
+ 739 0051 33       		.byte	51
+ 740 0052 4D       		.byte	77
+ 741 0053 B5       		.byte	181
+ 742 0054 86       		.byte	134
+ 743 0055 58       		.byte	88
+ 744 0056 B6       		.byte	182
+ 745 0057 FB       		.byte	251
+ 746 0058 E7       		.byte	231
+ 747 0059 9E       		.byte	158
+ 748 005a 65       		.byte	101
+ 749 005b CD       		.byte	205
+ 750 005c 86       		.byte	134
+ 751 005d 30       		.byte	48
+ 752 005e A6       		.byte	166
+ 753 005f B4       		.byte	180
+ 754 0060 CF       		.byte	207
+ 755 0061 39       		.byte	57
+ 756 0062 EF       		.byte	239
+ 757 0063 BD       		.byte	189
+ 758 0064 9E       		.byte	158
+ 759 0065 6C       		.byte	108
+ 760 0066 AE       		.byte	174
+ 761 0067 B0       		.byte	176
+ 762 0068 C7       		.byte	199
+ 763 0069 14       		.byte	20
+ 764 006a DF       		.byte	223
+ 765 006b 79       		.byte	121
+ARM GAS  /var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccTgFCdh.s 			page 14
+
+
+ 766 006c F7       		.byte	247
+ 767 006d DD       		.byte	221
+ 768 006e D7       		.byte	215
+ 769 006f 0A       		.byte	10
+ 770 0070 DF       		.byte	223
+ 771 0071 2E       		.byte	46
+ 772 0072 E7       		.byte	231
+ 773 0073 73       		.byte	115
+ 774 0074 F7       		.byte	247
+ 775 0075 B8       		.byte	184
+ 776 0076 FF       		.byte	255
+ 777 0077 DC       		.byte	220
+ 778 0078 FF       		.byte	255
+ 779 0079 6B       		.byte	107
+ 780 007a FF       		.byte	255
+ 781 007b 8E       		.byte	142
+ 782 007c FF       		.byte	255
+ 783 007d B3       		.byte	179
+ 784 007e FF       		.byte	255
+ 785 007f D8       		.byte	216
+ 786 0080 FF       		.byte	255
+ 787 0081 FC       		.byte	252
+ 788 0082 FE       		.byte	254
+ 789 0083 45       		.byte	69
+ 790 0084 FE       		.byte	254
+ 791 0085 A9       		.byte	169
+ 792 0086 FF       		.byte	255
+ 793 0087 10       		.byte	16
+ 794 0088 FF       		.byte	255
+ 795 0089 76       		.byte	118
+ 796 008a FF       		.byte	255
+ 797 008b DC       		.byte	220
+ 798 008c FD       		.byte	253
+ 799 008d 24       		.byte	36
+ 800 008e FD       		.byte	253
+ 801 008f A9       		.byte	169
+ 802 0090 FE       		.byte	254
+ 803 0091 70       		.byte	112
+ 804 0092 FF       		.byte	255
+ 805 0093 16       		.byte	22
+ 806 0094 FF       		.byte	255
+ 807 0095 9C       		.byte	156
+ 808 0096 FB       		.byte	251
+ 809 0097 88       		.byte	136
+ 810 0098 FC       		.byte	252
+ 811 0099 4C       		.byte	76
+ 812 009a FD       		.byte	253
+ 813 009b 52       		.byte	82
+ 814 009c FE       		.byte	254
+ 815 009d 77       		.byte	119
+ 816 009e FF       		.byte	255
+ 817 009f 5C       		.byte	92
+ 818 00a0 8B       		.byte	139
+ 819 00a1 6C       		.byte	108
+ 820 00a2 A4       		.byte	164
+ 821 00a3 4F       		.byte	79
+ 822 00a4 BD       		.byte	189
+ARM GAS  /var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccTgFCdh.s 			page 15
+
+
+ 823 00a5 54       		.byte	84
+ 824 00a6 D6       		.byte	214
+ 825 00a7 79       		.byte	121
+ 826 00a8 EF       		.byte	239
+ 827 00a9 5D       		.byte	93
+ 828 00aa 7C       		.byte	124
+ 829 00ab 93       		.byte	147
+ 830 00ac 95       		.byte	149
+ 831 00ad 35       		.byte	53
+ 832 00ae B5       		.byte	181
+ 833 00af F8       		.byte	248
+ 834 00b0 CE       		.byte	206
+ 835 00b1 DB       		.byte	219
+ 836 00b2 EF       		.byte	239
+ 837 00b3 7E       		.byte	126
+ 838 00b4 BD       		.byte	189
+ 839 00b5 F7       		.byte	247
+ 840 00b6 E7       		.byte	231
+ 841 00b7 1C       		.byte	28
+ 842 00b8 EF       		.byte	239
+ 843 00b9 7D       		.byte	125
+ 844 00ba F7       		.byte	247
+ 845 00bb BE       		.byte	190
+ 846 00bc FF       		.byte	255
+ 847 00bd DF       		.byte	223
+ 848              		.section	.rodata.colors.2,"a"
+ 849              		.align	2
+ 852              	colors.2:
+ 853 0000 F2       		.byte	242
+ 854 0001 06       		.byte	6
+ 855 0002 E8       		.byte	232
+ 856 0003 EC       		.byte	236
+ 857 0004 99       		.byte	153
+ 858 0005 36       		.byte	54
+ 859 0006 61       		.byte	97
+ 860 0007 D6       		.byte	214
+ 861 0008 3A       		.byte	58
+ 862 0009 96       		.byte	150
+ 863 000a 24       		.byte	36
+ 864 000b BE       		.byte	190
+ 865 000c 05       		.byte	5
+ 866 000d 5E       		.byte	94
+ 867 000e 05       		.byte	5
+ 868 000f FA       		.byte	250
+ 869 0010 04       		.byte	4
+ 870 0011 B1       		.byte	177
+ 871 0012 4D       		.byte	77
+ 872 0013 6A       		.byte	106
+ 873 0014 8E       		.byte	142
+ 874 0015 09       		.byte	9
+ 875 0016 CE       		.byte	206
+ 876 0017 E7       		.byte	231
+ 877 0018 FF       		.byte	255
+ 878 0019 47       		.byte	71
+ 879 001a FE       		.byte	254
+ 880 001b 00       		.byte	0
+ 881 001c FC       		.byte	252
+ARM GAS  /var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccTgFCdh.s 			page 16
+
+
+ 882 001d C0       		.byte	192
+ 883 001e FA       		.byte	250
+ 884 001f A4       		.byte	164
+ 885 0020 7A       		.byte	122
+ 886 0021 A9       		.byte	169
+ 887 0022 63       		.byte	99
+ 888 0023 F1       		.byte	241
+ 889 0024 9C       		.byte	156
+ 890 0025 F3       		.byte	243
+ 891              		.ident	"GCC: (xPack GNU Arm Embedded GCC arm64) 13.3.1 20240614"
+ARM GAS  /var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccTgFCdh.s 			page 17
+
+
+DEFINED SYMBOLS
+                            *ABS*:00000000 lv_color.c
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccTgFCdh.s:18     .text.lv_color_fill:00000000 $t
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccTgFCdh.s:25     .text.lv_color_fill:00000000 lv_color_fill
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccTgFCdh.s:67     .text.lv_color_lighten:00000000 $t
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccTgFCdh.s:74     .text.lv_color_lighten:00000000 lv_color_lighten
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccTgFCdh.s:95     .text.lv_color_lighten:00000028 $d
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccTgFCdh.s:98     .text.lv_color_darken:00000000 $t
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccTgFCdh.s:105    .text.lv_color_darken:00000000 lv_color_darken
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccTgFCdh.s:126    .text.lv_color_darken:00000024 $d
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccTgFCdh.s:129    .text.lv_color_change_lightness:00000000 $t
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccTgFCdh.s:136    .text.lv_color_change_lightness:00000000 lv_color_change_lightness
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccTgFCdh.s:157    .text.lv_color_hsv_to_rgb:00000000 $t
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccTgFCdh.s:164    .text.lv_color_hsv_to_rgb:00000000 lv_color_hsv_to_rgb
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccTgFCdh.s:211    .text.lv_color_hsv_to_rgb:00000090 $d
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccTgFCdh.s:263    .text.lv_color_hsv_to_rgb:000000fc $d
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccTgFCdh.s:268    .text.lv_color_rgb_to_hsv:00000000 $t
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccTgFCdh.s:275    .text.lv_color_rgb_to_hsv:00000000 lv_color_rgb_to_hsv
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccTgFCdh.s:368    .text.lv_color_rgb_to_hsv:000000d8 $d
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccTgFCdh.s:371    .text.lv_color_to_hsv:00000000 $t
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccTgFCdh.s:378    .text.lv_color_to_hsv:00000000 lv_color_to_hsv
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccTgFCdh.s:413    .text.lv_palette_main:00000000 $t
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccTgFCdh.s:420    .text.lv_palette_main:00000000 lv_palette_main
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccTgFCdh.s:433    .text.lv_palette_main:00000010 $d
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccTgFCdh.s:852    .rodata.colors.2:00000000 colors.2
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccTgFCdh.s:436    .text.lv_palette_lighten:00000000 $t
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccTgFCdh.s:443    .text.lv_palette_lighten:00000000 lv_palette_lighten
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccTgFCdh.s:464    .text.lv_palette_lighten:00000020 $d
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccTgFCdh.s:657    .rodata.colors.1:00000000 colors.1
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccTgFCdh.s:467    .text.lv_palette_darken:00000000 $t
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccTgFCdh.s:474    .text.lv_palette_darken:00000000 lv_palette_darken
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccTgFCdh.s:494    .text.lv_palette_darken:00000020 $d
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccTgFCdh.s:500    .rodata.colors.0:00000000 colors.0
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccTgFCdh.s:497    .rodata.colors.0:00000000 $d
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccTgFCdh.s:654    .rodata.colors.1:00000000 $d
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccTgFCdh.s:849    .rodata.colors.2:00000000 $d
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccTgFCdh.s:216    .text.lv_color_hsv_to_rgb:00000095 $d
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccTgFCdh.s:216    .text.lv_color_hsv_to_rgb:00000096 $t
+
+NO UNDEFINED SYMBOLS

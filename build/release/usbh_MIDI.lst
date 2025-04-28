@@ -1,0 +1,543 @@
+ARM GAS  /var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccGTzUUR.s 			page 1
+
+
+   1              		.cpu cortex-m4
+   2              		.arch armv7e-m
+   3              		.fpu fpv4-sp-d16
+   4              		.eabi_attribute 27, 1
+   5              		.eabi_attribute 28, 1
+   6              		.eabi_attribute 20, 1
+   7              		.eabi_attribute 21, 1
+   8              		.eabi_attribute 23, 3
+   9              		.eabi_attribute 24, 1
+  10              		.eabi_attribute 25, 1
+  11              		.eabi_attribute 26, 1
+  12              		.eabi_attribute 30, 2
+  13              		.eabi_attribute 34, 1
+  14              		.eabi_attribute 18, 4
+  15              		.file	"usbh_MIDI.c"
+  16              		.text
+  17              		.section	.text.USBH_MIDI_ClassRequest,"ax",%progbits
+  18              		.align	1
+  19              		.p2align 2,,3
+  20              		.syntax unified
+  21              		.thumb
+  22              		.thumb_func
+  24              	USBH_MIDI_ClassRequest:
+  25              		@ args = 0, pretend = 0, frame = 0
+  26              		@ frame_needed = 0, uses_anonymous_args = 0
+  27 0000 08B5     		push	{r3, lr}
+  28 0002 0221     		movs	r1, #2
+  29 0004 D0F81836 		ldr	r3, [r0, #1560]
+  30 0008 9847     		blx	r3
+  31 000a 0020     		movs	r0, #0
+  32 000c 08BD     		pop	{r3, pc}
+  34 000e 00BF     		.section	.text.USBH_MIDI_SOFProcess,"ax",%progbits
+  35              		.align	1
+  36              		.p2align 2,,3
+  37              		.syntax unified
+  38              		.thumb
+  39              		.thumb_func
+  41              	USBH_MIDI_SOFProcess:
+  42              		@ args = 0, pretend = 0, frame = 0
+  43              		@ frame_needed = 0, uses_anonymous_args = 0
+  44              		@ link register save eliminated.
+  45 0000 0020     		movs	r0, #0
+  46 0002 7047     		bx	lr
+  48              		.section	.text.USBH_MIDI_InterfaceDeInit,"ax",%progbits
+  49              		.align	1
+  50              		.p2align 2,,3
+  51              		.syntax unified
+  52              		.thumb
+  53              		.thumb_func
+  55              	USBH_MIDI_InterfaceDeInit:
+  56              		@ args = 0, pretend = 0, frame = 0
+  57              		@ frame_needed = 0, uses_anonymous_args = 0
+  58 0000 38B5     		push	{r3, r4, r5, lr}
+  59 0002 D0F8C835 		ldr	r3, [r0, #1480]
+  60 0006 DD69     		ldr	r5, [r3, #28]
+  61 0008 A978     		ldrb	r1, [r5, #2]	@ zero_extendqisi2
+  62 000a 0446     		mov	r4, r0
+ARM GAS  /var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccGTzUUR.s 			page 2
+
+
+  63 000c 51B9     		cbnz	r1, .L20
+  64 000e 6978     		ldrb	r1, [r5, #1]	@ zero_extendqisi2
+  65 0010 91B9     		cbnz	r1, .L9
+  66              	.L10:
+  67 0012 2846     		mov	r0, r5
+  68 0014 FFF7FEFF 		bl	free
+  69 0018 D4F8C835 		ldr	r3, [r4, #1480]
+  70 001c 0022     		movs	r2, #0
+  71 001e DA61     		str	r2, [r3, #28]
+  72 0020 0020     		movs	r0, #0
+  73 0022 38BD     		pop	{r3, r4, r5, pc}
+  74              	.L20:
+  75 0024 FFF7FEFF 		bl	USBH_ClosePipe
+  76 0028 A978     		ldrb	r1, [r5, #2]	@ zero_extendqisi2
+  77 002a 2046     		mov	r0, r4
+  78 002c FFF7FEFF 		bl	USBH_FreePipe
+  79 0030 6978     		ldrb	r1, [r5, #1]	@ zero_extendqisi2
+  80 0032 0023     		movs	r3, #0
+  81 0034 AB70     		strb	r3, [r5, #2]
+  82 0036 41B1     		cbz	r1, .L7
+  83              	.L9:
+  84 0038 2046     		mov	r0, r4
+  85 003a FFF7FEFF 		bl	USBH_ClosePipe
+  86 003e 6978     		ldrb	r1, [r5, #1]	@ zero_extendqisi2
+  87 0040 2046     		mov	r0, r4
+  88 0042 FFF7FEFF 		bl	USBH_FreePipe
+  89 0046 0023     		movs	r3, #0
+  90 0048 6B70     		strb	r3, [r5, #1]
+  91              	.L7:
+  92 004a D4F8C835 		ldr	r3, [r4, #1480]
+  93 004e DD69     		ldr	r5, [r3, #28]
+  94 0050 002D     		cmp	r5, #0
+  95 0052 DED1     		bne	.L10
+  96 0054 0020     		movs	r0, #0
+  97 0056 38BD     		pop	{r3, r4, r5, pc}
+  99              		.section	.text.USBH_MIDI_InterfaceInit,"ax",%progbits
+ 100              		.align	1
+ 101              		.p2align 2,,3
+ 102              		.syntax unified
+ 103              		.thumb
+ 104              		.thumb_func
+ 106              	USBH_MIDI_InterfaceInit:
+ 107              		@ args = 0, pretend = 0, frame = 0
+ 108              		@ frame_needed = 0, uses_anonymous_args = 0
+ 109 0000 70B5     		push	{r4, r5, r6, lr}
+ 110 0002 FF23     		movs	r3, #255
+ 111 0004 84B0     		sub	sp, sp, #16
+ 112 0006 0322     		movs	r2, #3
+ 113 0008 0121     		movs	r1, #1
+ 114 000a 0546     		mov	r5, r0
+ 115 000c FFF7FEFF 		bl	USBH_FindInterface
+ 116 0010 FF28     		cmp	r0, #255
+ 117 0012 62D0     		beq	.L27
+ 118 0014 0146     		mov	r1, r0
+ 119 0016 2846     		mov	r0, r5
+ 120 0018 FFF7FEFF 		bl	USBH_SelectInterface
+ 121 001c 1C20     		movs	r0, #28
+ARM GAS  /var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccGTzUUR.s 			page 3
+
+
+ 122 001e D5F8C865 		ldr	r6, [r5, #1480]
+ 123 0022 FFF7FEFF 		bl	malloc
+ 124 0026 F061     		str	r0, [r6, #28]
+ 125 0028 95F82032 		ldrb	r3, [r5, #544]	@ zero_extendqisi2
+ 126 002c 5A22     		movs	r2, #90
+ 127 002e 02FB0352 		mla	r2, r2, r3, r5
+ 128 0032 0446     		mov	r4, r0
+ 129 0034 92F94A02 		ldrsb	r0, [r2, #586]
+ 130 0038 92F84A12 		ldrb	r1, [r2, #586]	@ zero_extendqisi2
+ 131 003c B2F84C22 		ldrh	r2, [r2, #588]
+ 132 0040 0028     		cmp	r0, #0
+ 133 0042 B4BF     		ite	lt
+ 134 0044 2281     		strhlt	r2, [r4, #8]	@ movhi
+ 135 0046 E280     		strhge	r2, [r4, #6]	@ movhi
+ 136 0048 4FF05A02 		mov	r2, #90
+ 137 004c 02FB0353 		mla	r3, r2, r3, r5
+ 138 0050 B4BF     		ite	lt
+ 139 0052 2171     		strblt	r1, [r4, #4]
+ 140 0054 E170     		strbge	r1, [r4, #3]
+ 141 0056 B3F85422 		ldrh	r2, [r3, #596]
+ 142 005a 93F85212 		ldrb	r1, [r3, #594]	@ zero_extendqisi2
+ 143 005e 93F95232 		ldrsb	r3, [r3, #594]
+ 144 0062 002B     		cmp	r3, #0
+ 145 0064 35DB     		blt	.L29
+ 146 0066 E170     		strb	r1, [r4, #3]
+ 147 0068 E280     		strh	r2, [r4, #6]	@ movhi
+ 148              	.L26:
+ 149 006a 2846     		mov	r0, r5
+ 150 006c FFF7FEFF 		bl	USBH_AllocPipe
+ 151 0070 0346     		mov	r3, r0
+ 152 0072 2179     		ldrb	r1, [r4, #4]	@ zero_extendqisi2
+ 153 0074 A370     		strb	r3, [r4, #2]
+ 154 0076 2846     		mov	r0, r5
+ 155 0078 FFF7FEFF 		bl	USBH_AllocPipe
+ 156 007c E388     		ldrh	r3, [r4, #6]
+ 157 007e 0293     		str	r3, [sp, #8]
+ 158 0080 95F81D32 		ldrb	r3, [r5, #541]	@ zero_extendqisi2
+ 159 0084 0226     		movs	r6, #2
+ 160 0086 CDE90036 		strd	r3, r6, [sp]
+ 161 008a 6070     		strb	r0, [r4, #1]
+ 162 008c 95F81C32 		ldrb	r3, [r5, #540]	@ zero_extendqisi2
+ 163 0090 E278     		ldrb	r2, [r4, #3]	@ zero_extendqisi2
+ 164 0092 A178     		ldrb	r1, [r4, #2]	@ zero_extendqisi2
+ 165 0094 2846     		mov	r0, r5
+ 166 0096 FFF7FEFF 		bl	USBH_OpenPipe
+ 167 009a 2389     		ldrh	r3, [r4, #8]
+ 168 009c 95F81D12 		ldrb	r1, [r5, #541]	@ zero_extendqisi2
+ 169 00a0 CDE90163 		strd	r6, r3, [sp, #4]
+ 170 00a4 95F81C32 		ldrb	r3, [r5, #540]	@ zero_extendqisi2
+ 171 00a8 2279     		ldrb	r2, [r4, #4]	@ zero_extendqisi2
+ 172 00aa 0091     		str	r1, [sp]
+ 173 00ac 0026     		movs	r6, #0
+ 174 00ae 6178     		ldrb	r1, [r4, #1]	@ zero_extendqisi2
+ 175 00b0 2846     		mov	r0, r5
+ 176 00b2 FFF7FEFF 		bl	USBH_OpenPipe
+ 177 00b6 6178     		ldrb	r1, [r4, #1]	@ zero_extendqisi2
+ 178 00b8 2670     		strb	r6, [r4]
+ARM GAS  /var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccGTzUUR.s 			page 4
+
+
+ 179 00ba 3246     		mov	r2, r6
+ 180 00bc 2846     		mov	r0, r5
+ 181 00be FFF7FEFF 		bl	USBH_LL_SetToggle
+ 182 00c2 A178     		ldrb	r1, [r4, #2]	@ zero_extendqisi2
+ 183 00c4 3246     		mov	r2, r6
+ 184 00c6 2846     		mov	r0, r5
+ 185 00c8 FFF7FEFF 		bl	USBH_LL_SetToggle
+ 186 00cc 3046     		mov	r0, r6
+ 187 00ce 04B0     		add	sp, sp, #16
+ 188              		@ sp needed
+ 189 00d0 70BD     		pop	{r4, r5, r6, pc}
+ 190              	.L29:
+ 191 00d2 2171     		strb	r1, [r4, #4]
+ 192 00d4 2281     		strh	r2, [r4, #8]	@ movhi
+ 193 00d6 E178     		ldrb	r1, [r4, #3]	@ zero_extendqisi2
+ 194 00d8 C7E7     		b	.L26
+ 195              	.L27:
+ 196 00da 0220     		movs	r0, #2
+ 197 00dc 04B0     		add	sp, sp, #16
+ 198              		@ sp needed
+ 199 00de 70BD     		pop	{r4, r5, r6, pc}
+ 201              		.section	.text.USBH_MIDI_Stop,"ax",%progbits
+ 202              		.align	1
+ 203              		.p2align 2,,3
+ 204              		.global	USBH_MIDI_Stop
+ 205              		.syntax unified
+ 206              		.thumb
+ 207              		.thumb_func
+ 209              	USBH_MIDI_Stop:
+ 210              		@ args = 0, pretend = 0, frame = 0
+ 211              		@ frame_needed = 0, uses_anonymous_args = 0
+ 212 0000 38B5     		push	{r3, r4, r5, lr}
+ 213 0002 0378     		ldrb	r3, [r0]	@ zero_extendqisi2
+ 214 0004 0B2B     		cmp	r3, #11
+ 215 0006 01D0     		beq	.L33
+ 216 0008 0020     		movs	r0, #0
+ 217 000a 38BD     		pop	{r3, r4, r5, pc}
+ 218              	.L33:
+ 219 000c D0F8C825 		ldr	r2, [r0, #1480]
+ 220 0010 D569     		ldr	r5, [r2, #28]
+ 221 0012 0023     		movs	r3, #0
+ 222 0014 6978     		ldrb	r1, [r5, #1]	@ zero_extendqisi2
+ 223 0016 2B70     		strb	r3, [r5]
+ 224 0018 0446     		mov	r4, r0
+ 225 001a FFF7FEFF 		bl	USBH_ClosePipe
+ 226 001e A978     		ldrb	r1, [r5, #2]	@ zero_extendqisi2
+ 227 0020 2046     		mov	r0, r4
+ 228 0022 FFF7FEFF 		bl	USBH_ClosePipe
+ 229 0026 0020     		movs	r0, #0
+ 230 0028 38BD     		pop	{r3, r4, r5, pc}
+ 232 002a 00BF     		.section	.text.USBH_MIDI_GetLastReceivedDataSize,"ax",%progbits
+ 233              		.align	1
+ 234              		.p2align 2,,3
+ 235              		.global	USBH_MIDI_GetLastReceivedDataSize
+ 236              		.syntax unified
+ 237              		.thumb
+ 238              		.thumb_func
+ARM GAS  /var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccGTzUUR.s 			page 5
+
+
+ 240              	USBH_MIDI_GetLastReceivedDataSize:
+ 241              		@ args = 0, pretend = 0, frame = 0
+ 242              		@ frame_needed = 0, uses_anonymous_args = 0
+ 243 0000 0278     		ldrb	r2, [r0]	@ zero_extendqisi2
+ 244 0002 0B2A     		cmp	r2, #11
+ 245 0004 01D0     		beq	.L41
+ 246 0006 0020     		movs	r0, #0
+ 247 0008 7047     		bx	lr
+ 248              	.L41:
+ 249 000a 08B5     		push	{r3, lr}
+ 250 000c D0F8C835 		ldr	r3, [r0, #1480]
+ 251 0010 DB69     		ldr	r3, [r3, #28]
+ 252 0012 5978     		ldrb	r1, [r3, #1]	@ zero_extendqisi2
+ 253 0014 FFF7FEFF 		bl	USBH_LL_GetLastXferSize
+ 254 0018 80B2     		uxth	r0, r0
+ 255 001a 08BD     		pop	{r3, pc}
+ 257              		.section	.text.USBH_MIDI_Transmit,"ax",%progbits
+ 258              		.align	1
+ 259              		.p2align 2,,3
+ 260              		.global	USBH_MIDI_Transmit
+ 261              		.syntax unified
+ 262              		.thumb
+ 263              		.thumb_func
+ 265              	USBH_MIDI_Transmit:
+ 266              		@ args = 0, pretend = 0, frame = 0
+ 267              		@ frame_needed = 0, uses_anonymous_args = 0
+ 268              		@ link register save eliminated.
+ 269 0000 D0F8C835 		ldr	r3, [r0, #1480]
+ 270 0004 DB69     		ldr	r3, [r3, #28]
+ 271 0006 1878     		ldrb	r0, [r3]	@ zero_extendqisi2
+ 272 0008 0128     		cmp	r0, #1
+ 273 000a 4FF00100 		mov	r0, #1
+ 274 000e 00D9     		bls	.L45
+ 275 0010 7047     		bx	lr
+ 276              	.L45:
+ 277 0012 1870     		strb	r0, [r3]
+ 278 0014 1876     		strb	r0, [r3, #24]
+ 279 0016 D960     		str	r1, [r3, #12]
+ 280 0018 9A82     		strh	r2, [r3, #20]	@ movhi
+ 281 001a 0020     		movs	r0, #0
+ 282 001c 7047     		bx	lr
+ 284 001e 00BF     		.section	.text.USBH_MIDI_Receive,"ax",%progbits
+ 285              		.align	1
+ 286              		.p2align 2,,3
+ 287              		.global	USBH_MIDI_Receive
+ 288              		.syntax unified
+ 289              		.thumb
+ 290              		.thumb_func
+ 292              	USBH_MIDI_Receive:
+ 293              		@ args = 0, pretend = 0, frame = 0
+ 294              		@ frame_needed = 0, uses_anonymous_args = 0
+ 295              		@ link register save eliminated.
+ 296 0000 D0F8C835 		ldr	r3, [r0, #1480]
+ 297 0004 DB69     		ldr	r3, [r3, #28]
+ 298 0006 1878     		ldrb	r0, [r3]	@ zero_extendqisi2
+ 299 0008 0128     		cmp	r0, #1
+ 300 000a 01D9     		bls	.L49
+ARM GAS  /var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccGTzUUR.s 			page 6
+
+
+ 301 000c 0120     		movs	r0, #1
+ 302 000e 7047     		bx	lr
+ 303              	.L49:
+ 304 0010 4FF0010C 		mov	ip, #1
+ 305 0014 0320     		movs	r0, #3
+ 306 0016 5876     		strb	r0, [r3, #25]
+ 307 0018 1961     		str	r1, [r3, #16]
+ 308 001a DA82     		strh	r2, [r3, #22]	@ movhi
+ 309 001c 83F800C0 		strb	ip, [r3]
+ 310 0020 0020     		movs	r0, #0
+ 311 0022 7047     		bx	lr
+ 313              		.section	.text.USBH_MIDI_TransmitCallback,"ax",%progbits
+ 314              		.align	1
+ 315              		.p2align 2,,3
+ 316              		.weak	USBH_MIDI_TransmitCallback
+ 317              		.syntax unified
+ 318              		.thumb
+ 319              		.thumb_func
+ 321              	USBH_MIDI_TransmitCallback:
+ 322              		@ args = 0, pretend = 0, frame = 0
+ 323              		@ frame_needed = 0, uses_anonymous_args = 0
+ 324              		@ link register save eliminated.
+ 325 0000 7047     		bx	lr
+ 327 0002 00BF     		.section	.text.USBH_MIDI_ReceiveCallback,"ax",%progbits
+ 328              		.align	1
+ 329              		.p2align 2,,3
+ 330              		.weak	USBH_MIDI_ReceiveCallback
+ 331              		.syntax unified
+ 332              		.thumb
+ 333              		.thumb_func
+ 335              	USBH_MIDI_ReceiveCallback:
+ 336              		@ args = 0, pretend = 0, frame = 0
+ 337              		@ frame_needed = 0, uses_anonymous_args = 0
+ 338              		@ link register save eliminated.
+ 339 0000 7047     		bx	lr
+ 341 0002 00BF     		.section	.text.USBH_MIDI_Process,"ax",%progbits
+ 342              		.align	1
+ 343              		.p2align 2,,3
+ 344              		.syntax unified
+ 345              		.thumb
+ 346              		.thumb_func
+ 348              	USBH_MIDI_Process:
+ 349              		@ args = 0, pretend = 0, frame = 0
+ 350              		@ frame_needed = 0, uses_anonymous_args = 0
+ 351 0000 F0B5     		push	{r4, r5, r6, r7, lr}
+ 352 0002 D0F8C835 		ldr	r3, [r0, #1480]
+ 353 0006 DE69     		ldr	r6, [r3, #28]
+ 354 0008 3478     		ldrb	r4, [r6]	@ zero_extendqisi2
+ 355 000a 012C     		cmp	r4, #1
+ 356 000c 83B0     		sub	sp, sp, #12
+ 357 000e 0DD0     		beq	.L53
+ 358 0010 022C     		cmp	r4, #2
+ 359 0012 04D0     		beq	.L54
+ 360 0014 04B1     		cbz	r4, .L71
+ 361              	.L56:
+ 362 0016 0124     		movs	r4, #1
+ 363              	.L71:
+ARM GAS  /var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccGTzUUR.s 			page 7
+
+
+ 364 0018 2046     		mov	r0, r4
+ 365 001a 03B0     		add	sp, sp, #12
+ 366              		@ sp needed
+ 367 001c F0BD     		pop	{r4, r5, r6, r7, pc}
+ 368              	.L54:
+ 369 001e 0021     		movs	r1, #0
+ 370 0020 FFF7FEFF 		bl	USBH_ClrFeature
+ 371 0024 0028     		cmp	r0, #0
+ 372 0026 F6D1     		bne	.L56
+ 373 0028 3070     		strb	r0, [r6]
+ 374 002a F4E7     		b	.L56
+ 375              	.L53:
+ 376 002c 377E     		ldrb	r7, [r6, #24]	@ zero_extendqisi2
+ 377 002e 012F     		cmp	r7, #1
+ 378 0030 0546     		mov	r5, r0
+ 379 0032 2AD0     		beq	.L57
+ 380 0034 022F     		cmp	r7, #2
+ 381 0036 0AD1     		bne	.L59
+ 382 0038 B178     		ldrb	r1, [r6, #2]	@ zero_extendqisi2
+ 383 003a FFF7FEFF 		bl	USBH_LL_GetURBState
+ 384 003e 0128     		cmp	r0, #1
+ 385 0040 3CD0     		beq	.L77
+ 386 0042 0228     		cmp	r0, #2
+ 387 0044 08BF     		it	eq
+ 388 0046 3476     		strbeq	r4, [r6, #24]
+ 389 0048 D5F8C835 		ldr	r3, [r5, #1480]
+ 390 004c DE69     		ldr	r6, [r3, #28]
+ 391              	.L59:
+ 392 004e 737E     		ldrb	r3, [r6, #25]	@ zero_extendqisi2
+ 393 0050 032B     		cmp	r3, #3
+ 394 0052 2AD0     		beq	.L65
+ 395 0054 042B     		cmp	r3, #4
+ 396 0056 DED1     		bne	.L56
+ 397 0058 7178     		ldrb	r1, [r6, #1]	@ zero_extendqisi2
+ 398 005a 2846     		mov	r0, r5
+ 399 005c FFF7FEFF 		bl	USBH_LL_GetURBState
+ 400 0060 0128     		cmp	r0, #1
+ 401 0062 D8D1     		bne	.L56
+ 402 0064 7178     		ldrb	r1, [r6, #1]	@ zero_extendqisi2
+ 403 0066 2846     		mov	r0, r5
+ 404 0068 FFF7FEFF 		bl	USBH_LL_GetLastXferSize
+ 405 006c F38A     		ldrh	r3, [r6, #22]
+ 406 006e 82B2     		uxth	r2, r0
+ 407 0070 9342     		cmp	r3, r2
+ 408 0072 3BDD     		ble	.L69
+ 409 0074 3189     		ldrh	r1, [r6, #8]
+ 410 0076 9142     		cmp	r1, r2
+ 411 0078 38D2     		bcs	.L69
+ 412 007a 3169     		ldr	r1, [r6, #16]
+ 413 007c 9B1A     		subs	r3, r3, r2
+ 414 007e 1144     		add	r1, r1, r2
+ 415 0080 0322     		movs	r2, #3
+ 416 0082 F382     		strh	r3, [r6, #22]	@ movhi
+ 417 0084 3161     		str	r1, [r6, #16]
+ 418 0086 7276     		strb	r2, [r6, #25]
+ 419 0088 C5E7     		b	.L56
+ 420              	.L57:
+ARM GAS  /var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccGTzUUR.s 			page 8
+
+
+ 421 008a B28A     		ldrh	r2, [r6, #20]
+ 422 008c F488     		ldrh	r4, [r6, #6]
+ 423 008e B378     		ldrb	r3, [r6, #2]	@ zero_extendqisi2
+ 424 0090 F168     		ldr	r1, [r6, #12]
+ 425 0092 0097     		str	r7, [sp]
+ 426 0094 A242     		cmp	r2, r4
+ 427 0096 88BF     		it	hi
+ 428 0098 2246     		movhi	r2, r4
+ 429 009a FFF7FEFF 		bl	USBH_BulkSendData
+ 430 009e 0223     		movs	r3, #2
+ 431 00a0 3376     		strb	r3, [r6, #24]
+ 432 00a2 D5F8C835 		ldr	r3, [r5, #1480]
+ 433 00a6 DE69     		ldr	r6, [r3, #28]
+ 434 00a8 D1E7     		b	.L59
+ 435              	.L65:
+ 436 00aa 7378     		ldrb	r3, [r6, #1]	@ zero_extendqisi2
+ 437 00ac 3289     		ldrh	r2, [r6, #8]
+ 438 00ae 3169     		ldr	r1, [r6, #16]
+ 439 00b0 2846     		mov	r0, r5
+ 440 00b2 FFF7FEFF 		bl	USBH_BulkReceiveData
+ 441 00b6 0423     		movs	r3, #4
+ 442 00b8 7376     		strb	r3, [r6, #25]
+ 443 00ba ACE7     		b	.L56
+ 444              	.L77:
+ 445 00bc B38A     		ldrh	r3, [r6, #20]
+ 446 00be F288     		ldrh	r2, [r6, #6]
+ 447 00c0 9342     		cmp	r3, r2
+ 448 00c2 09D8     		bhi	.L78
+ 449 00c4 0023     		movs	r3, #0
+ 450 00c6 B382     		strh	r3, [r6, #20]	@ movhi
+ 451 00c8 3376     		strb	r3, [r6, #24]
+ 452 00ca 2846     		mov	r0, r5
+ 453 00cc FFF7FEFF 		bl	USBH_MIDI_TransmitCallback
+ 454 00d0 D5F8C835 		ldr	r3, [r5, #1480]
+ 455 00d4 DE69     		ldr	r6, [r3, #28]
+ 456 00d6 BAE7     		b	.L59
+ 457              	.L78:
+ 458 00d8 3076     		strb	r0, [r6, #24]
+ 459 00da 9B1A     		subs	r3, r3, r2
+ 460 00dc D5F8C815 		ldr	r1, [r5, #1480]
+ 461 00e0 B382     		strh	r3, [r6, #20]	@ movhi
+ 462 00e2 F368     		ldr	r3, [r6, #12]
+ 463 00e4 1344     		add	r3, r3, r2
+ 464 00e6 F360     		str	r3, [r6, #12]
+ 465 00e8 CE69     		ldr	r6, [r1, #28]
+ 466 00ea B0E7     		b	.L59
+ 467              	.L69:
+ 468 00ec 0023     		movs	r3, #0
+ 469 00ee 7376     		strb	r3, [r6, #25]
+ 470 00f0 2846     		mov	r0, r5
+ 471 00f2 FFF7FEFF 		bl	USBH_MIDI_ReceiveCallback
+ 472 00f6 8EE7     		b	.L56
+ 474              		.global	MIDI_Class
+ 475              		.section	.rodata.str1.4,"aMS",%progbits,1
+ 476              		.align	2
+ 477              	.LC0:
+ 478 0000 4D494449 		.ascii	"MIDI\000"
+ARM GAS  /var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccGTzUUR.s 			page 9
+
+
+ 478      00
+ 479              		.section	.data.MIDI_Class,"aw"
+ 480              		.align	2
+ 483              	MIDI_Class:
+ 484 0000 00000000 		.word	.LC0
+ 485 0004 01       		.byte	1
+ 486 0005 000000   		.space	3
+ 487 0008 00000000 		.word	USBH_MIDI_InterfaceInit
+ 488 000c 00000000 		.word	USBH_MIDI_InterfaceDeInit
+ 489 0010 00000000 		.word	USBH_MIDI_ClassRequest
+ 490 0014 00000000 		.word	USBH_MIDI_Process
+ 491 0018 00000000 		.word	USBH_MIDI_SOFProcess
+ 492 001c 00000000 		.word	0
+ 493              		.ident	"GCC: (xPack GNU Arm Embedded GCC arm64) 13.3.1 20240614"
+ARM GAS  /var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccGTzUUR.s 			page 10
+
+
+DEFINED SYMBOLS
+                            *ABS*:00000000 usbh_MIDI.c
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccGTzUUR.s:18     .text.USBH_MIDI_ClassRequest:00000000 $t
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccGTzUUR.s:24     .text.USBH_MIDI_ClassRequest:00000000 USBH_MIDI_ClassRequest
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccGTzUUR.s:35     .text.USBH_MIDI_SOFProcess:00000000 $t
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccGTzUUR.s:41     .text.USBH_MIDI_SOFProcess:00000000 USBH_MIDI_SOFProcess
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccGTzUUR.s:49     .text.USBH_MIDI_InterfaceDeInit:00000000 $t
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccGTzUUR.s:55     .text.USBH_MIDI_InterfaceDeInit:00000000 USBH_MIDI_InterfaceDeInit
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccGTzUUR.s:100    .text.USBH_MIDI_InterfaceInit:00000000 $t
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccGTzUUR.s:106    .text.USBH_MIDI_InterfaceInit:00000000 USBH_MIDI_InterfaceInit
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccGTzUUR.s:202    .text.USBH_MIDI_Stop:00000000 $t
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccGTzUUR.s:209    .text.USBH_MIDI_Stop:00000000 USBH_MIDI_Stop
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccGTzUUR.s:233    .text.USBH_MIDI_GetLastReceivedDataSize:00000000 $t
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccGTzUUR.s:240    .text.USBH_MIDI_GetLastReceivedDataSize:00000000 USBH_MIDI_GetLastReceivedDataSize
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccGTzUUR.s:258    .text.USBH_MIDI_Transmit:00000000 $t
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccGTzUUR.s:265    .text.USBH_MIDI_Transmit:00000000 USBH_MIDI_Transmit
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccGTzUUR.s:285    .text.USBH_MIDI_Receive:00000000 $t
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccGTzUUR.s:292    .text.USBH_MIDI_Receive:00000000 USBH_MIDI_Receive
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccGTzUUR.s:314    .text.USBH_MIDI_TransmitCallback:00000000 $t
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccGTzUUR.s:321    .text.USBH_MIDI_TransmitCallback:00000000 USBH_MIDI_TransmitCallback
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccGTzUUR.s:328    .text.USBH_MIDI_ReceiveCallback:00000000 $t
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccGTzUUR.s:335    .text.USBH_MIDI_ReceiveCallback:00000000 USBH_MIDI_ReceiveCallback
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccGTzUUR.s:342    .text.USBH_MIDI_Process:00000000 $t
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccGTzUUR.s:348    .text.USBH_MIDI_Process:00000000 USBH_MIDI_Process
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccGTzUUR.s:483    .data.MIDI_Class:00000000 MIDI_Class
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccGTzUUR.s:476    .rodata.str1.4:00000000 $d
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccGTzUUR.s:480    .data.MIDI_Class:00000000 $d
+
+UNDEFINED SYMBOLS
+free
+USBH_ClosePipe
+USBH_FreePipe
+USBH_FindInterface
+USBH_SelectInterface
+malloc
+USBH_AllocPipe
+USBH_OpenPipe
+USBH_LL_SetToggle
+USBH_LL_GetLastXferSize
+USBH_ClrFeature
+USBH_LL_GetURBState
+USBH_BulkSendData
+USBH_BulkReceiveData

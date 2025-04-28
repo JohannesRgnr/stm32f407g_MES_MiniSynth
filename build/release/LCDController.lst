@@ -1,0 +1,252 @@
+ARM GAS  /var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccT4kJFa.s 			page 1
+
+
+   1              		.cpu cortex-m4
+   2              		.arch armv7e-m
+   3              		.fpu fpv4-sp-d16
+   4              		.eabi_attribute 27, 1
+   5              		.eabi_attribute 28, 1
+   6              		.eabi_attribute 20, 1
+   7              		.eabi_attribute 21, 1
+   8              		.eabi_attribute 23, 3
+   9              		.eabi_attribute 24, 1
+  10              		.eabi_attribute 25, 1
+  11              		.eabi_attribute 26, 1
+  12              		.eabi_attribute 30, 2
+  13              		.eabi_attribute 34, 1
+  14              		.eabi_attribute 18, 4
+  15              		.file	"LCDController.c"
+  16              		.text
+  17              		.section	.text.disp_flush,"ax",%progbits
+  18              		.align	1
+  19              		.p2align 2,,3
+  20              		.syntax unified
+  21              		.thumb
+  22              		.thumb_func
+  24              	disp_flush:
+  25              		@ args = 0, pretend = 0, frame = 0
+  26              		@ frame_needed = 0, uses_anonymous_args = 0
+  27 0000 2DE9F041 		push	{r4, r5, r6, r7, r8, lr}
+  28 0004 B1F90440 		ldrsh	r4, [r1, #4]
+  29 0008 B1F90650 		ldrsh	r5, [r1, #6]
+  30 000c B1F90080 		ldrsh	r8, [r1]
+  31 0010 B1F90270 		ldrsh	r7, [r1, #2]
+  32 0014 ABB2     		uxth	r3, r5
+  33 0016 1646     		mov	r6, r2
+  34 0018 B9B2     		uxth	r1, r7
+  35 001a A2B2     		uxth	r2, r4
+  36 001c 1FFA88F0 		uxth	r0, r8
+  37 0020 FFF7FEFF 		bl	ST7789V_SetAddressWindow
+  38 0024 1148     		ldr	r0, .L6
+  39 0026 0022     		movs	r2, #0
+  40 0028 0421     		movs	r1, #4
+  41 002a FFF7FEFF 		bl	HAL_GPIO_WritePin
+  42 002e 0F48     		ldr	r0, .L6
+  43 0030 0122     		movs	r2, #1
+  44 0032 0221     		movs	r1, #2
+  45 0034 FFF7FEFF 		bl	HAL_GPIO_WritePin
+  46 0038 ED1B     		subs	r5, r5, r7
+  47 003a A4EB0803 		sub	r3, r4, r8
+  48 003e 0133     		adds	r3, r3, #1
+  49 0040 0135     		adds	r5, r5, #1
+  50 0042 0B4C     		ldr	r4, .L6+4
+  51 0044 13FB05F3 		smulbb	r3, r3, r5
+  52 0048 5B00     		lsls	r3, r3, #1
+  53 004a 3146     		mov	r1, r6
+  54 004c 9AB2     		uxth	r2, r3
+  55 004e 2046     		mov	r0, r4
+  56 0050 FFF7FEFF 		bl	HAL_SPI_Transmit_DMA
+  57 0054 A16C     		ldr	r1, [r4, #72]
+  58              	.L2:
+ARM GAS  /var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccT4kJFa.s 			page 2
+
+
+  59 0056 91F83530 		ldrb	r3, [r1, #53]	@ zero_extendqisi2
+  60 005a 012B     		cmp	r3, #1
+  61 005c DAB2     		uxtb	r2, r3
+  62 005e FAD1     		bne	.L2
+  63 0060 BDE8F041 		pop	{r4, r5, r6, r7, r8, lr}
+  64 0064 0148     		ldr	r0, .L6
+  65 0066 0421     		movs	r1, #4
+  66 0068 FFF7FEBF 		b	HAL_GPIO_WritePin
+  67              	.L7:
+  68              		.align	2
+  69              	.L6:
+  70 006c 00000240 		.word	1073872896
+  71 0070 00000000 		.word	hspi1
+  73              		.section	.text.lv_port_disp_init,"ax",%progbits
+  74              		.align	1
+  75              		.p2align 2,,3
+  76              		.global	lv_port_disp_init
+  77              		.syntax unified
+  78              		.thumb
+  79              		.thumb_func
+  81              	lv_port_disp_init:
+  82              		@ args = 0, pretend = 0, frame = 0
+  83              		@ frame_needed = 0, uses_anonymous_args = 0
+  84 0000 38B5     		push	{r3, r4, r5, lr}
+  85 0002 0C4D     		ldr	r5, .L10
+  86 0004 0C4C     		ldr	r4, .L10+4
+  87 0006 FFF7FEFF 		bl	ST7789V_Init
+  88 000a 0C4A     		ldr	r2, .L10+8
+  89 000c 0C49     		ldr	r1, .L10+12
+  90 000e 4FF44863 		mov	r3, #3200
+  91 0012 2846     		mov	r0, r5
+  92 0014 FFF7FEFF 		bl	lv_disp_draw_buf_init
+  93 0018 2046     		mov	r0, r4
+  94 001a FFF7FEFF 		bl	lv_disp_drv_init
+  95 001e 094B     		ldr	r3, .L10+16
+  96 0020 094A     		ldr	r2, .L10+20
+  97 0022 2260     		str	r2, [r4]
+  98 0024 2046     		mov	r0, r4
+  99 0026 6361     		str	r3, [r4, #20]
+ 100 0028 E560     		str	r5, [r4, #12]
+ 101 002a BDE83840 		pop	{r3, r4, r5, lr}
+ 102 002e FFF7FEBF 		b	lv_disp_drv_register
+ 103              	.L11:
+ 104 0032 00BF     		.align	2
+ 105              	.L10:
+ 106 0034 00000000 		.word	draw_buf_dsc_2.2
+ 107 0038 00000000 		.word	disp_drv
+ 108 003c 00000000 		.word	buf_2_2.0
+ 109 0040 00000000 		.word	buf_2_1.1
+ 110 0044 00000000 		.word	disp_flush
+ 111 0048 4001F000 		.word	15728960
+ 113              		.section	.text.disp_enable_update,"ax",%progbits
+ 114              		.align	1
+ 115              		.p2align 2,,3
+ 116              		.global	disp_enable_update
+ 117              		.syntax unified
+ 118              		.thumb
+ARM GAS  /var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccT4kJFa.s 			page 3
+
+
+ 119              		.thumb_func
+ 121              	disp_enable_update:
+ 122              		@ args = 0, pretend = 0, frame = 0
+ 123              		@ frame_needed = 0, uses_anonymous_args = 0
+ 124              		@ link register save eliminated.
+ 125 0000 014B     		ldr	r3, .L13
+ 126 0002 0122     		movs	r2, #1
+ 127 0004 1A70     		strb	r2, [r3]
+ 128 0006 7047     		bx	lr
+ 129              	.L14:
+ 130              		.align	2
+ 131              	.L13:
+ 132 0008 00000000 		.word	disp_flush_enabled
+ 134              		.section	.text.disp_disable_update,"ax",%progbits
+ 135              		.align	1
+ 136              		.p2align 2,,3
+ 137              		.global	disp_disable_update
+ 138              		.syntax unified
+ 139              		.thumb
+ 140              		.thumb_func
+ 142              	disp_disable_update:
+ 143              		@ args = 0, pretend = 0, frame = 0
+ 144              		@ frame_needed = 0, uses_anonymous_args = 0
+ 145              		@ link register save eliminated.
+ 146 0000 014B     		ldr	r3, .L16
+ 147 0002 0022     		movs	r2, #0
+ 148 0004 1A70     		strb	r2, [r3]
+ 149 0006 7047     		bx	lr
+ 150              	.L17:
+ 151              		.align	2
+ 152              	.L16:
+ 153 0008 00000000 		.word	disp_flush_enabled
+ 155              		.section	.text.HAL_SPI_TxCpltCallback,"ax",%progbits
+ 156              		.align	1
+ 157              		.p2align 2,,3
+ 158              		.global	HAL_SPI_TxCpltCallback
+ 159              		.syntax unified
+ 160              		.thumb
+ 161              		.thumb_func
+ 163              	HAL_SPI_TxCpltCallback:
+ 164              		@ args = 0, pretend = 0, frame = 0
+ 165              		@ frame_needed = 0, uses_anonymous_args = 0
+ 166              		@ link register save eliminated.
+ 167 0000 0148     		ldr	r0, .L19
+ 168 0002 FFF7FEBF 		b	lv_disp_flush_ready
+ 169              	.L20:
+ 170 0006 00BF     		.align	2
+ 171              	.L19:
+ 172 0008 00000000 		.word	disp_drv
+ 174              		.section	.bss.buf_2_2.0,"aw",%nobits
+ 175              		.align	2
+ 178              	buf_2_2.0:
+ 179 0000 00000000 		.space	6400
+ 179      00000000 
+ 179      00000000 
+ 179      00000000 
+ 179      00000000 
+ARM GAS  /var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccT4kJFa.s 			page 4
+
+
+ 180              		.section	.bss.buf_2_1.1,"aw",%nobits
+ 181              		.align	2
+ 184              	buf_2_1.1:
+ 185 0000 00000000 		.space	6400
+ 185      00000000 
+ 185      00000000 
+ 185      00000000 
+ 185      00000000 
+ 186              		.section	.bss.draw_buf_dsc_2.2,"aw",%nobits
+ 187              		.align	2
+ 190              	draw_buf_dsc_2.2:
+ 191 0000 00000000 		.space	28
+ 191      00000000 
+ 191      00000000 
+ 191      00000000 
+ 191      00000000 
+ 192              		.global	disp_flush_enabled
+ 193              		.section	.data.disp_flush_enabled,"aw"
+ 196              	disp_flush_enabled:
+ 197 0000 01       		.byte	1
+ 198              		.section	.bss.disp_drv,"aw",%nobits
+ 199              		.align	2
+ 202              	disp_drv:
+ 203 0000 00000000 		.space	80
+ 203      00000000 
+ 203      00000000 
+ 203      00000000 
+ 203      00000000 
+ 204              		.ident	"GCC: (xPack GNU Arm Embedded GCC arm64) 13.3.1 20240614"
+ARM GAS  /var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccT4kJFa.s 			page 5
+
+
+DEFINED SYMBOLS
+                            *ABS*:00000000 LCDController.c
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccT4kJFa.s:18     .text.disp_flush:00000000 $t
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccT4kJFa.s:24     .text.disp_flush:00000000 disp_flush
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccT4kJFa.s:70     .text.disp_flush:0000006c $d
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccT4kJFa.s:74     .text.lv_port_disp_init:00000000 $t
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccT4kJFa.s:81     .text.lv_port_disp_init:00000000 lv_port_disp_init
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccT4kJFa.s:106    .text.lv_port_disp_init:00000034 $d
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccT4kJFa.s:190    .bss.draw_buf_dsc_2.2:00000000 draw_buf_dsc_2.2
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccT4kJFa.s:202    .bss.disp_drv:00000000 disp_drv
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccT4kJFa.s:178    .bss.buf_2_2.0:00000000 buf_2_2.0
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccT4kJFa.s:184    .bss.buf_2_1.1:00000000 buf_2_1.1
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccT4kJFa.s:114    .text.disp_enable_update:00000000 $t
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccT4kJFa.s:121    .text.disp_enable_update:00000000 disp_enable_update
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccT4kJFa.s:132    .text.disp_enable_update:00000008 $d
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccT4kJFa.s:196    .data.disp_flush_enabled:00000000 disp_flush_enabled
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccT4kJFa.s:135    .text.disp_disable_update:00000000 $t
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccT4kJFa.s:142    .text.disp_disable_update:00000000 disp_disable_update
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccT4kJFa.s:153    .text.disp_disable_update:00000008 $d
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccT4kJFa.s:156    .text.HAL_SPI_TxCpltCallback:00000000 $t
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccT4kJFa.s:163    .text.HAL_SPI_TxCpltCallback:00000000 HAL_SPI_TxCpltCallback
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccT4kJFa.s:172    .text.HAL_SPI_TxCpltCallback:00000008 $d
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccT4kJFa.s:175    .bss.buf_2_2.0:00000000 $d
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccT4kJFa.s:181    .bss.buf_2_1.1:00000000 $d
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccT4kJFa.s:187    .bss.draw_buf_dsc_2.2:00000000 $d
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccT4kJFa.s:199    .bss.disp_drv:00000000 $d
+
+UNDEFINED SYMBOLS
+ST7789V_SetAddressWindow
+HAL_GPIO_WritePin
+HAL_SPI_Transmit_DMA
+hspi1
+ST7789V_Init
+lv_disp_draw_buf_init
+lv_disp_drv_init
+lv_disp_drv_register
+lv_disp_flush_ready

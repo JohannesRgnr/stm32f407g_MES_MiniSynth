@@ -1,0 +1,195 @@
+ARM GAS  /var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cc8uS0KS.s 			page 1
+
+
+   1              		.cpu cortex-m4
+   2              		.arch armv7e-m
+   3              		.fpu fpv4-sp-d16
+   4              		.eabi_attribute 27, 1
+   5              		.eabi_attribute 28, 1
+   6              		.eabi_attribute 20, 1
+   7              		.eabi_attribute 21, 1
+   8              		.eabi_attribute 23, 3
+   9              		.eabi_attribute 24, 1
+  10              		.eabi_attribute 25, 1
+  11              		.eabi_attribute 26, 1
+  12              		.eabi_attribute 30, 1
+  13              		.eabi_attribute 34, 1
+  14              		.eabi_attribute 18, 4
+  15              		.file	"helper_functions.c"
+  16              		.text
+  17              	.Ltext0:
+  18              		.cfi_sections	.debug_frame
+  19              		.file 1 "Core/Src/helper_functions.c"
+  20              		.section	.text.interp_lin_lut,"ax",%progbits
+  21              		.align	1
+  22              		.global	interp_lin_lut
+  23              		.syntax unified
+  24              		.thumb
+  25              		.thumb_func
+  27              	interp_lin_lut:
+  28              	.LVL0:
+  29              	.LFB3:
+   1:Core/Src/helper_functions.c **** /**
+   2:Core/Src/helper_functions.c ****  * @file helper_functions.c
+   3:Core/Src/helper_functions.c ****  * @author johannes regnier
+   4:Core/Src/helper_functions.c ****  * @brief Various math tools 
+   5:Core/Src/helper_functions.c ****  * @version 0.1
+   6:Core/Src/helper_functions.c ****  * @date 2023-12-30
+   7:Core/Src/helper_functions.c ****  * 
+   8:Core/Src/helper_functions.c ****  * @copyright Copyright (c) 2023
+   9:Core/Src/helper_functions.c ****  * 
+  10:Core/Src/helper_functions.c ****  */
+  11:Core/Src/helper_functions.c **** 
+  12:Core/Src/helper_functions.c **** #include "helper_functions.h"
+  13:Core/Src/helper_functions.c **** 
+  14:Core/Src/helper_functions.c **** 
+  15:Core/Src/helper_functions.c **** 
+  16:Core/Src/helper_functions.c **** /**
+  17:Core/Src/helper_functions.c ****  * @brief Linear interpolation within a given lookup table. Useful for wavetable oscillators.
+  18:Core/Src/helper_functions.c ****  * 
+  19:Core/Src/helper_functions.c ****  * @param index 
+  20:Core/Src/helper_functions.c ****  * @param table_size 
+  21:Core/Src/helper_functions.c ****  * @param table 
+  22:Core/Src/helper_functions.c ****  * @return float 
+  23:Core/Src/helper_functions.c ****  */
+  24:Core/Src/helper_functions.c **** float interp_lin_lut(float index, uint16_t table_size, const float *table){
+  30              		.loc 1 24 75 view -0
+  31              		.cfi_startproc
+  32              		@ args = 0, pretend = 0, frame = 0
+  33              		@ frame_needed = 0, uses_anonymous_args = 0
+  34              		@ link register save eliminated.
+ARM GAS  /var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cc8uS0KS.s 			page 2
+
+
+  25:Core/Src/helper_functions.c ****     float diff;
+  35              		.loc 1 25 5 view .LVU1
+  26:Core/Src/helper_functions.c ****     uint32_t trunc = (uint32_t)index; // truncate the index but don't overwrite
+  36              		.loc 1 26 5 view .LVU2
+  37              		.loc 1 26 14 is_stmt 0 view .LVU3
+  38 0000 FCEEC07A 		vcvt.u32.f32	s15, s0
+  39 0004 17EE903A 		vmov	r3, s15	@ int
+  40              	.LVL1:
+  27:Core/Src/helper_functions.c ****     float frac = index - trunc; // get the fractional part
+  41              		.loc 1 27 5 is_stmt 1 view .LVU4
+  42              		.loc 1 27 24 is_stmt 0 view .LVU5
+  43 0008 F8EE677A 		vcvt.f32.u32	s15, s15
+  44              		.loc 1 27 11 view .LVU6
+  45 000c 30EE670A 		vsub.f32	s0, s0, s15
+  46              	.LVL2:
+  28:Core/Src/helper_functions.c **** 
+  29:Core/Src/helper_functions.c ****     while (trunc > table_size)
+  47              		.loc 1 29 5 is_stmt 1 view .LVU7
+  48              		.loc 1 29 11 is_stmt 0 view .LVU8
+  49 0010 00E0     		b	.L2
+  50              	.L3:
+  30:Core/Src/helper_functions.c ****         trunc = trunc - table_size;
+  51              		.loc 1 30 9 is_stmt 1 view .LVU9
+  52              		.loc 1 30 15 is_stmt 0 view .LVU10
+  53 0012 1B1A     		subs	r3, r3, r0
+  54              	.LVL3:
+  55              	.L2:
+  29:Core/Src/helper_functions.c ****         trunc = trunc - table_size;
+  56              		.loc 1 29 18 is_stmt 1 view .LVU11
+  57 0014 9842     		cmp	r0, r3
+  58 0016 FCD3     		bcc	.L3
+  31:Core/Src/helper_functions.c **** 
+  32:Core/Src/helper_functions.c ****     // if (trunc == table_size-1) 
+  33:Core/Src/helper_functions.c ****     //     diff = table[0] - table[trunc]; // wrap
+  34:Core/Src/helper_functions.c ****     // else
+  35:Core/Src/helper_functions.c ****     diff = table[trunc+1] - table[trunc]; // no need to check and wrap, table size is 1025
+  59              		.loc 1 35 5 view .LVU12
+  60              		.loc 1 35 17 is_stmt 0 view .LVU13
+  61 0018 5A1C     		adds	r2, r3, #1
+  62 001a 01EB8202 		add	r2, r1, r2, lsl #2
+  63 001e D2ED007A 		vldr.32	s15, [r2]
+  64              		.loc 1 35 34 view .LVU14
+  65 0022 01EB8301 		add	r1, r1, r3, lsl #2
+  66              	.LVL4:
+  67              		.loc 1 35 34 view .LVU15
+  68 0026 91ED007A 		vldr.32	s14, [r1]
+  69              		.loc 1 35 10 view .LVU16
+  70 002a 77EEC77A 		vsub.f32	s15, s15, s14
+  71              	.LVL5:
+  36:Core/Src/helper_functions.c **** 
+  37:Core/Src/helper_functions.c ****     // get the interpolated output
+  38:Core/Src/helper_functions.c ****     return table[trunc] + (diff * frac);
+  72              		.loc 1 38 5 is_stmt 1 view .LVU17
+  73              		.loc 1 38 33 is_stmt 0 view .LVU18
+  74 002e 20EE270A 		vmul.f32	s0, s0, s15
+  75              	.LVL6:
+  39:Core/Src/helper_functions.c **** }
+ARM GAS  /var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cc8uS0KS.s 			page 3
+
+
+  76              		.loc 1 39 1 view .LVU19
+  77 0032 37EE000A 		vadd.f32	s0, s14, s0
+  78 0036 7047     		bx	lr
+  79              		.cfi_endproc
+  80              	.LFE3:
+  82              		.section	.text.clip,"ax",%progbits
+  83              		.align	1
+  84              		.global	clip
+  85              		.syntax unified
+  86              		.thumb
+  87              		.thumb_func
+  89              	clip:
+  90              	.LVL7:
+  91              	.LFB4:
+  40:Core/Src/helper_functions.c **** 
+  41:Core/Src/helper_functions.c **** /**
+  42:Core/Src/helper_functions.c ****  * @brief Constrain input value between lower and upper limits
+  43:Core/Src/helper_functions.c ****  * 
+  44:Core/Src/helper_functions.c ****  * @param input 
+  45:Core/Src/helper_functions.c ****  * @param lower 
+  46:Core/Src/helper_functions.c ****  * @param upper 
+  47:Core/Src/helper_functions.c ****  * @return float 
+  48:Core/Src/helper_functions.c ****  */
+  49:Core/Src/helper_functions.c **** float clip(float input, float lower, float upper) {
+  92              		.loc 1 49 51 is_stmt 1 view -0
+  93              		.cfi_startproc
+  94              		@ args = 0, pretend = 0, frame = 0
+  95              		@ frame_needed = 0, uses_anonymous_args = 0
+  96              		@ link register save eliminated.
+  97              		.loc 1 49 51 is_stmt 0 view .LVU21
+  98 0000 F0EE407A 		vmov.f32	s15, s0
+  99 0004 B0EE410A 		vmov.f32	s0, s2
+ 100              	.LVL8:
+  50:Core/Src/helper_functions.c ****         return max(lower, min(input, upper));
+ 101              		.loc 1 50 9 is_stmt 1 view .LVU22
+ 102              		.loc 1 50 16 is_stmt 0 view .LVU23
+ 103 0008 F4EEC17A 		vcmpe.f32	s15, s2
+ 104 000c F1EE10FA 		vmrs	APSR_nzcv, FPSCR
+ 105 0010 01D5     		bpl	.L5
+ 106              		.loc 1 50 16 discriminator 1 view .LVU24
+ 107 0012 B0EE670A 		vmov.f32	s0, s15
+ 108              	.L5:
+ 109              		.loc 1 50 16 discriminator 4 view .LVU25
+ 110 0016 B4EEE00A 		vcmpe.f32	s0, s1
+ 111 001a F1EE10FA 		vmrs	APSR_nzcv, FPSCR
+ 112 001e 01D5     		bpl	.L7
+ 113              		.loc 1 50 16 discriminator 5 view .LVU26
+ 114 0020 B0EE600A 		vmov.f32	s0, s1
+ 115              	.L7:
+  51:Core/Src/helper_functions.c **** }
+ 116              		.loc 1 51 1 view .LVU27
+ 117 0024 7047     		bx	lr
+ 118              		.cfi_endproc
+ 119              	.LFE4:
+ 121              		.text
+ 122              	.Letext0:
+ 123              		.file 2 "/Users/jr/Library/Application Support/Code/User/globalStorage/bmd.stm32-for-vscode/@xpack
+ARM GAS  /var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cc8uS0KS.s 			page 4
+
+
+ 124              		.file 3 "/Users/jr/Library/Application Support/Code/User/globalStorage/bmd.stm32-for-vscode/@xpack
+ARM GAS  /var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cc8uS0KS.s 			page 5
+
+
+DEFINED SYMBOLS
+                            *ABS*:00000000 helper_functions.c
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cc8uS0KS.s:21     .text.interp_lin_lut:00000000 $t
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cc8uS0KS.s:27     .text.interp_lin_lut:00000000 interp_lin_lut
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cc8uS0KS.s:83     .text.clip:00000000 $t
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cc8uS0KS.s:89     .text.clip:00000000 clip
+
+NO UNDEFINED SYMBOLS

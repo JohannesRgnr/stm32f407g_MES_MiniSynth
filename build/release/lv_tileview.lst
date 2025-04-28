@@ -1,0 +1,482 @@
+ARM GAS  /var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cc64OYWq.s 			page 1
+
+
+   1              		.cpu cortex-m4
+   2              		.arch armv7e-m
+   3              		.fpu fpv4-sp-d16
+   4              		.eabi_attribute 27, 1
+   5              		.eabi_attribute 28, 1
+   6              		.eabi_attribute 20, 1
+   7              		.eabi_attribute 21, 1
+   8              		.eabi_attribute 23, 3
+   9              		.eabi_attribute 24, 1
+  10              		.eabi_attribute 25, 1
+  11              		.eabi_attribute 26, 1
+  12              		.eabi_attribute 30, 2
+  13              		.eabi_attribute 34, 1
+  14              		.eabi_attribute 18, 4
+  15              		.file	"lv_tileview.c"
+  16              		.text
+  17              		.section	.text.lv_tileview_constructor,"ax",%progbits
+  18              		.align	1
+  19              		.p2align 2,,3
+  20              		.syntax unified
+  21              		.thumb
+  22              		.thumb_func
+  24              	lv_tileview_constructor:
+  25              		@ args = 0, pretend = 0, frame = 0
+  26              		@ frame_needed = 0, uses_anonymous_args = 0
+  27 0000 10B5     		push	{r4, lr}
+  28 0002 42F26402 		movw	r2, #8292
+  29 0006 0C46     		mov	r4, r1
+  30 0008 2046     		mov	r0, r4
+  31 000a 1146     		mov	r1, r2
+  32 000c FFF7FEFF 		bl	lv_obj_set_size
+  33 0010 0023     		movs	r3, #0
+  34 0012 1A46     		mov	r2, r3
+  35 0014 0849     		ldr	r1, .L4
+  36 0016 2046     		mov	r0, r4
+  37 0018 FFF7FEFF 		bl	lv_obj_add_event_cb
+  38 001c 2046     		mov	r0, r4
+  39 001e 8021     		movs	r1, #128
+  40 0020 FFF7FEFF 		bl	lv_obj_add_flag
+  41 0024 2046     		mov	r0, r4
+  42 0026 0321     		movs	r1, #3
+  43 0028 FFF7FEFF 		bl	lv_obj_set_scroll_snap_x
+  44 002c 2046     		mov	r0, r4
+  45 002e 0321     		movs	r1, #3
+  46 0030 BDE81040 		pop	{r4, lr}
+  47 0034 FFF7FEBF 		b	lv_obj_set_scroll_snap_y
+  48              	.L5:
+  49              		.align	2
+  50              	.L4:
+  51 0038 00000000 		.word	tileview_event_cb
+  53              		.section	.text.tileview_event_cb,"ax",%progbits
+  54              		.align	1
+  55              		.p2align 2,,3
+  56              		.syntax unified
+  57              		.thumb
+  58              		.thumb_func
+  60              	tileview_event_cb:
+ARM GAS  /var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cc64OYWq.s 			page 2
+
+
+  61              		@ args = 0, pretend = 0, frame = 8
+  62              		@ frame_needed = 0, uses_anonymous_args = 0
+  63 0000 2DE9F043 		push	{r4, r5, r6, r7, r8, r9, lr}
+  64 0004 83B0     		sub	sp, sp, #12
+  65 0006 0546     		mov	r5, r0
+  66 0008 FFF7FEFF 		bl	lv_event_get_code
+  67 000c 0446     		mov	r4, r0
+  68 000e 2846     		mov	r0, r5
+  69 0010 FFF7FEFF 		bl	lv_event_get_target
+  70 0014 0A2C     		cmp	r4, #10
+  71 0016 02D0     		beq	.L17
+  72              	.L6:
+  73 0018 03B0     		add	sp, sp, #12
+  74              		@ sp needed
+  75 001a BDE8F083 		pop	{r4, r5, r6, r7, r8, r9, pc}
+  76              	.L17:
+  77 001e 0746     		mov	r7, r0
+  78 0020 FFF7FEFF 		bl	lv_indev_get_act
+  79 0024 10B1     		cbz	r0, .L8
+  80 0026 0379     		ldrb	r3, [r0, #4]	@ zero_extendqisi2
+  81 0028 012B     		cmp	r3, #1
+  82 002a F5D0     		beq	.L6
+  83              	.L8:
+  84 002c 3846     		mov	r0, r7
+  85 002e FFF7FEFF 		bl	lv_obj_get_content_width
+  86 0032 0546     		mov	r5, r0
+  87 0034 3846     		mov	r0, r7
+  88 0036 FFF7FEFF 		bl	lv_obj_get_content_height
+  89 003a 01A9     		add	r1, sp, #4
+  90 003c 0446     		mov	r4, r0
+  91 003e 3846     		mov	r0, r7
+  92 0040 FFF7FEFF 		bl	lv_obj_get_scroll_end
+  93 0044 BDF90480 		ldrsh	r8, [sp, #4]
+  94 0048 BDF90690 		ldrsh	r9, [sp, #6]
+  95 004c 05EBD573 		add	r3, r5, r5, lsr #31
+  96 0050 43F34F03 		sbfx	r3, r3, #1, #16
+  97 0054 9844     		add	r8, r8, r3
+  98 0056 04EBD473 		add	r3, r4, r4, lsr #31
+  99 005a 43F34F03 		sbfx	r3, r3, #1, #16
+ 100 005e 9944     		add	r9, r9, r3
+ 101 0060 98FBF5F8 		sdiv	r8, r8, r5
+ 102 0064 99FBF4F9 		sdiv	r9, r9, r4
+ 103 0068 18FB05F8 		smulbb	r8, r8, r5
+ 104 006c 19FB04F9 		smulbb	r9, r9, r4
+ 105 0070 0FFA88F8 		sxth	r8, r8
+ 106 0074 0FFA89F9 		sxth	r9, r9
+ 107 0078 0024     		movs	r4, #0
+ 108 007a 00E0     		b	.L9
+ 109              	.L10:
+ 110 007c 0134     		adds	r4, r4, #1
+ 111              	.L9:
+ 112 007e 3846     		mov	r0, r7
+ 113 0080 FFF7FEFF 		bl	lv_obj_get_child_cnt
+ 114 0084 0346     		mov	r3, r0
+ 115 0086 A342     		cmp	r3, r4
+ 116 0088 2146     		mov	r1, r4
+ 117 008a 3846     		mov	r0, r7
+ARM GAS  /var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cc64OYWq.s 			page 3
+
+
+ 118 008c 15D9     		bls	.L18
+ 119 008e FFF7FEFF 		bl	lv_obj_get_child
+ 120 0092 0546     		mov	r5, r0
+ 121 0094 FFF7FEFF 		bl	lv_obj_get_x
+ 122 0098 0646     		mov	r6, r0
+ 123 009a 2846     		mov	r0, r5
+ 124 009c FFF7FEFF 		bl	lv_obj_get_y
+ 125 00a0 B045     		cmp	r8, r6
+ 126 00a2 EBD1     		bne	.L10
+ 127 00a4 8145     		cmp	r9, r0
+ 128 00a6 E9D1     		bne	.L10
+ 129 00a8 7D62     		str	r5, [r7, #36]
+ 130 00aa 0022     		movs	r2, #0
+ 131 00ac 1C21     		movs	r1, #28
+ 132 00ae 3846     		mov	r0, r7
+ 133 00b0 95F82440 		ldrb	r4, [r5, #36]	@ zero_extendqisi2
+ 134 00b4 FFF7FEFF 		bl	lv_event_send
+ 135 00b8 00E0     		b	.L11
+ 136              	.L18:
+ 137 00ba 0F24     		movs	r4, #15
+ 138              	.L11:
+ 139 00bc 2146     		mov	r1, r4
+ 140 00be 3846     		mov	r0, r7
+ 141 00c0 FFF7FEFF 		bl	lv_obj_set_scroll_dir
+ 142 00c4 03B0     		add	sp, sp, #12
+ 143              		@ sp needed
+ 144 00c6 BDE8F083 		pop	{r4, r5, r6, r7, r8, r9, pc}
+ 146 00ca 00BF     		.section	.text.lv_tileview_tile_constructor,"ax",%progbits
+ 147              		.align	1
+ 148              		.p2align 2,,3
+ 149              		.syntax unified
+ 150              		.thumb
+ 151              		.thumb_func
+ 153              	lv_tileview_tile_constructor:
+ 154              		@ args = 0, pretend = 0, frame = 0
+ 155              		@ frame_needed = 0, uses_anonymous_args = 0
+ 156 0000 F8B5     		push	{r3, r4, r5, r6, r7, lr}
+ 157 0002 0846     		mov	r0, r1
+ 158 0004 0C46     		mov	r4, r1
+ 159 0006 FFF7FEFF 		bl	lv_obj_get_parent
+ 160 000a 42F26402 		movw	r2, #8292
+ 161 000e 1146     		mov	r1, r2
+ 162 0010 0646     		mov	r6, r0
+ 163 0012 2046     		mov	r0, r4
+ 164 0014 FFF7FEFF 		bl	lv_obj_set_size
+ 165 0018 2046     		mov	r0, r4
+ 166 001a FFF7FEFF 		bl	lv_obj_update_layout
+ 167 001e 114F     		ldr	r7, .L23
+ 168 0020 3046     		mov	r0, r6
+ 169 0022 FFF7FEFF 		bl	lv_obj_get_content_width
+ 170 0026 3968     		ldr	r1, [r7]
+ 171 0028 11FB00F1 		smulbb	r1, r1, r0
+ 172 002c 0DB2     		sxth	r5, r1
+ 173 002e 3046     		mov	r0, r6
+ 174 0030 FFF7FEFF 		bl	lv_obj_get_content_height
+ 175 0034 2946     		mov	r1, r5
+ 176 0036 0C4D     		ldr	r5, .L23+4
+ARM GAS  /var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cc64OYWq.s 			page 4
+
+
+ 177 0038 2A68     		ldr	r2, [r5]
+ 178 003a 0346     		mov	r3, r0
+ 179 003c 12FB03F2 		smulbb	r2, r2, r3
+ 180 0040 12B2     		sxth	r2, r2
+ 181 0042 2046     		mov	r0, r4
+ 182 0044 FFF7FEFF 		bl	lv_obj_set_pos
+ 183 0048 0849     		ldr	r1, .L23+8
+ 184 004a 3B68     		ldr	r3, [r7]
+ 185 004c 2A68     		ldr	r2, [r5]
+ 186 004e 0978     		ldrb	r1, [r1]	@ zero_extendqisi2
+ 187 0050 84F82410 		strb	r1, [r4, #36]
+ 188 0054 1343     		orrs	r3, r3, r2
+ 189 0056 00D0     		beq	.L22
+ 190 0058 F8BD     		pop	{r3, r4, r5, r6, r7, pc}
+ 191              	.L22:
+ 192 005a 3046     		mov	r0, r6
+ 193 005c BDE8F840 		pop	{r3, r4, r5, r6, r7, lr}
+ 194 0060 FFF7FEBF 		b	lv_obj_set_scroll_dir
+ 195              	.L24:
+ 196              		.align	2
+ 197              	.L23:
+ 198 0064 00000000 		.word	create_col_id
+ 199 0068 00000000 		.word	create_row_id
+ 200 006c 00000000 		.word	create_dir
+ 202              		.section	.text.lv_tileview_create,"ax",%progbits
+ 203              		.align	1
+ 204              		.p2align 2,,3
+ 205              		.global	lv_tileview_create
+ 206              		.syntax unified
+ 207              		.thumb
+ 208              		.thumb_func
+ 210              	lv_tileview_create:
+ 211              		@ args = 0, pretend = 0, frame = 0
+ 212              		@ frame_needed = 0, uses_anonymous_args = 0
+ 213 0000 10B5     		push	{r4, lr}
+ 214 0002 0146     		mov	r1, r0
+ 215 0004 0348     		ldr	r0, .L27
+ 216 0006 FFF7FEFF 		bl	lv_obj_class_create_obj
+ 217 000a 0446     		mov	r4, r0
+ 218 000c FFF7FEFF 		bl	lv_obj_class_init_obj
+ 219 0010 2046     		mov	r0, r4
+ 220 0012 10BD     		pop	{r4, pc}
+ 221              	.L28:
+ 222              		.align	2
+ 223              	.L27:
+ 224 0014 00000000 		.word	lv_tileview_class
+ 226              		.section	.text.lv_tileview_add_tile,"ax",%progbits
+ 227              		.align	1
+ 228              		.p2align 2,,3
+ 229              		.global	lv_tileview_add_tile
+ 230              		.syntax unified
+ 231              		.thumb
+ 232              		.thumb_func
+ 234              	lv_tileview_add_tile:
+ 235              		@ args = 0, pretend = 0, frame = 0
+ 236              		@ frame_needed = 0, uses_anonymous_args = 0
+ 237 0000 38B5     		push	{r3, r4, r5, lr}
+ARM GAS  /var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cc64OYWq.s 			page 5
+
+
+ 238 0002 084D     		ldr	r5, .L31
+ 239 0004 0C46     		mov	r4, r1
+ 240 0006 0146     		mov	r1, r0
+ 241 0008 0748     		ldr	r0, .L31+4
+ 242 000a 2B70     		strb	r3, [r5]
+ 243 000c 074B     		ldr	r3, .L31+8
+ 244 000e 0460     		str	r4, [r0]
+ 245 0010 0748     		ldr	r0, .L31+12
+ 246 0012 1A60     		str	r2, [r3]
+ 247 0014 FFF7FEFF 		bl	lv_obj_class_create_obj
+ 248 0018 0446     		mov	r4, r0
+ 249 001a FFF7FEFF 		bl	lv_obj_class_init_obj
+ 250 001e 2046     		mov	r0, r4
+ 251 0020 38BD     		pop	{r3, r4, r5, pc}
+ 252              	.L32:
+ 253 0022 00BF     		.align	2
+ 254              	.L31:
+ 255 0024 00000000 		.word	create_dir
+ 256 0028 00000000 		.word	create_col_id
+ 257 002c 00000000 		.word	create_row_id
+ 258 0030 00000000 		.word	lv_tileview_tile_class
+ 260              		.section	.text.lv_obj_set_tile,"ax",%progbits
+ 261              		.align	1
+ 262              		.p2align 2,,3
+ 263              		.global	lv_obj_set_tile
+ 264              		.syntax unified
+ 265              		.thumb
+ 266              		.thumb_func
+ 268              	lv_obj_set_tile:
+ 269              		@ args = 0, pretend = 0, frame = 0
+ 270              		@ frame_needed = 0, uses_anonymous_args = 0
+ 271 0000 2DE9F041 		push	{r4, r5, r6, r7, r8, lr}
+ 272 0004 0546     		mov	r5, r0
+ 273 0006 0846     		mov	r0, r1
+ 274 0008 0C46     		mov	r4, r1
+ 275 000a 9046     		mov	r8, r2
+ 276 000c FFF7FEFF 		bl	lv_obj_get_x
+ 277 0010 0646     		mov	r6, r0
+ 278 0012 2046     		mov	r0, r4
+ 279 0014 FFF7FEFF 		bl	lv_obj_get_y
+ 280 0018 6C62     		str	r4, [r5, #36]
+ 281 001a 94F82410 		ldrb	r1, [r4, #36]	@ zero_extendqisi2
+ 282 001e 0746     		mov	r7, r0
+ 283 0020 2846     		mov	r0, r5
+ 284 0022 FFF7FEFF 		bl	lv_obj_set_scroll_dir
+ 285 0026 4346     		mov	r3, r8
+ 286 0028 3A46     		mov	r2, r7
+ 287 002a 3146     		mov	r1, r6
+ 288 002c 2846     		mov	r0, r5
+ 289 002e BDE8F041 		pop	{r4, r5, r6, r7, r8, lr}
+ 290 0032 FFF7FEBF 		b	lv_obj_scroll_to
+ 292 0036 00BF     		.section	.text.lv_obj_set_tile_id,"ax",%progbits
+ 293              		.align	1
+ 294              		.p2align 2,,3
+ 295              		.global	lv_obj_set_tile_id
+ 296              		.syntax unified
+ 297              		.thumb
+ARM GAS  /var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cc64OYWq.s 			page 6
+
+
+ 298              		.thumb_func
+ 300              	lv_obj_set_tile_id:
+ 301              		@ args = 0, pretend = 0, frame = 0
+ 302              		@ frame_needed = 0, uses_anonymous_args = 0
+ 303 0000 2DE9F047 		push	{r4, r5, r6, r7, r8, r9, r10, lr}
+ 304 0004 0746     		mov	r7, r0
+ 305 0006 0D46     		mov	r5, r1
+ 306 0008 9146     		mov	r9, r2
+ 307 000a 9A46     		mov	r10, r3
+ 308 000c FFF7FEFF 		bl	lv_obj_update_layout
+ 309 0010 3846     		mov	r0, r7
+ 310 0012 FFF7FEFF 		bl	lv_obj_get_content_width
+ 311 0016 8046     		mov	r8, r0
+ 312 0018 3846     		mov	r0, r7
+ 313 001a FFF7FEFF 		bl	lv_obj_get_content_height
+ 314 001e 18FB05F8 		smulbb	r8, r8, r5
+ 315 0022 10FB09F9 		smulbb	r9, r0, r9
+ 316 0026 0FFA88F8 		sxth	r8, r8
+ 317 002a 0FFA89F9 		sxth	r9, r9
+ 318 002e 0024     		movs	r4, #0
+ 319 0030 00E0     		b	.L36
+ 320              	.L37:
+ 321 0032 0134     		adds	r4, r4, #1
+ 322              	.L36:
+ 323 0034 3846     		mov	r0, r7
+ 324 0036 FFF7FEFF 		bl	lv_obj_get_child_cnt
+ 325 003a 0346     		mov	r3, r0
+ 326 003c A342     		cmp	r3, r4
+ 327 003e 2146     		mov	r1, r4
+ 328 0040 3846     		mov	r0, r7
+ 329 0042 22D9     		bls	.L40
+ 330 0044 FFF7FEFF 		bl	lv_obj_get_child
+ 331 0048 0546     		mov	r5, r0
+ 332 004a FFF7FEFF 		bl	lv_obj_get_x
+ 333 004e 0646     		mov	r6, r0
+ 334 0050 2846     		mov	r0, r5
+ 335 0052 FFF7FEFF 		bl	lv_obj_get_y
+ 336 0056 B045     		cmp	r8, r6
+ 337 0058 EBD1     		bne	.L37
+ 338 005a 8145     		cmp	r9, r0
+ 339 005c E9D1     		bne	.L37
+ 340 005e 2846     		mov	r0, r5
+ 341 0060 FFF7FEFF 		bl	lv_obj_get_x
+ 342 0064 0446     		mov	r4, r0
+ 343 0066 2846     		mov	r0, r5
+ 344 0068 FFF7FEFF 		bl	lv_obj_get_y
+ 345 006c 7D62     		str	r5, [r7, #36]
+ 346 006e 95F82410 		ldrb	r1, [r5, #36]	@ zero_extendqisi2
+ 347 0072 0646     		mov	r6, r0
+ 348 0074 3846     		mov	r0, r7
+ 349 0076 FFF7FEFF 		bl	lv_obj_set_scroll_dir
+ 350 007a 5346     		mov	r3, r10
+ 351 007c 3246     		mov	r2, r6
+ 352 007e 2146     		mov	r1, r4
+ 353 0080 3846     		mov	r0, r7
+ 354 0082 BDE8F047 		pop	{r4, r5, r6, r7, r8, r9, r10, lr}
+ 355 0086 FFF7FEBF 		b	lv_obj_scroll_to
+ARM GAS  /var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cc64OYWq.s 			page 7
+
+
+ 356              	.L40:
+ 357 008a BDE8F087 		pop	{r4, r5, r6, r7, r8, r9, r10, pc}
+ 359 008e 00BF     		.section	.text.lv_tileview_get_tile_act,"ax",%progbits
+ 360              		.align	1
+ 361              		.p2align 2,,3
+ 362              		.global	lv_tileview_get_tile_act
+ 363              		.syntax unified
+ 364              		.thumb
+ 365              		.thumb_func
+ 367              	lv_tileview_get_tile_act:
+ 368              		@ args = 0, pretend = 0, frame = 0
+ 369              		@ frame_needed = 0, uses_anonymous_args = 0
+ 370              		@ link register save eliminated.
+ 371 0000 406A     		ldr	r0, [r0, #36]
+ 372 0002 7047     		bx	lr
+ 374              		.section	.bss.create_row_id,"aw",%nobits
+ 375              		.align	2
+ 378              	create_row_id:
+ 379 0000 00000000 		.space	4
+ 380              		.section	.bss.create_col_id,"aw",%nobits
+ 381              		.align	2
+ 384              	create_col_id:
+ 385 0000 00000000 		.space	4
+ 386              		.section	.bss.create_dir,"aw",%nobits
+ 389              	create_dir:
+ 390 0000 00       		.space	1
+ 391              		.global	lv_tileview_tile_class
+ 392              		.section	.rodata.lv_tileview_tile_class,"a"
+ 393              		.align	2
+ 396              	lv_tileview_tile_class:
+ 397 0000 00000000 		.word	lv_obj_class
+ 398 0004 00000000 		.word	lv_tileview_tile_constructor
+ 399 0008 00000000 		.space	16
+ 399      00000000 
+ 399      00000000 
+ 399      00000000 
+ 400 0018 80       		.byte	128
+ 401 0019 02       		.byte	2
+ 402 001a 00       		.byte	0
+ 403 001b 00       		.space	1
+ 404              		.global	lv_tileview_class
+ 405              		.section	.rodata.lv_tileview_class,"a"
+ 406              		.align	2
+ 409              	lv_tileview_class:
+ 410 0000 00000000 		.word	lv_obj_class
+ 411 0004 00000000 		.word	lv_tileview_constructor
+ 412 0008 00000000 		.space	16
+ 412      00000000 
+ 412      00000000 
+ 412      00000000 
+ 413 0018 80       		.byte	128
+ 414 0019 02       		.byte	2
+ 415 001a 00       		.byte	0
+ 416 001b 00       		.space	1
+ 417              		.ident	"GCC: (xPack GNU Arm Embedded GCC arm64) 13.3.1 20240614"
+ARM GAS  /var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cc64OYWq.s 			page 8
+
+
+DEFINED SYMBOLS
+                            *ABS*:00000000 lv_tileview.c
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cc64OYWq.s:18     .text.lv_tileview_constructor:00000000 $t
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cc64OYWq.s:24     .text.lv_tileview_constructor:00000000 lv_tileview_constructor
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cc64OYWq.s:51     .text.lv_tileview_constructor:00000038 $d
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cc64OYWq.s:60     .text.tileview_event_cb:00000000 tileview_event_cb
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cc64OYWq.s:54     .text.tileview_event_cb:00000000 $t
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cc64OYWq.s:147    .text.lv_tileview_tile_constructor:00000000 $t
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cc64OYWq.s:153    .text.lv_tileview_tile_constructor:00000000 lv_tileview_tile_constructor
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cc64OYWq.s:198    .text.lv_tileview_tile_constructor:00000064 $d
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cc64OYWq.s:384    .bss.create_col_id:00000000 create_col_id
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cc64OYWq.s:378    .bss.create_row_id:00000000 create_row_id
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cc64OYWq.s:389    .bss.create_dir:00000000 create_dir
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cc64OYWq.s:203    .text.lv_tileview_create:00000000 $t
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cc64OYWq.s:210    .text.lv_tileview_create:00000000 lv_tileview_create
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cc64OYWq.s:224    .text.lv_tileview_create:00000014 $d
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cc64OYWq.s:409    .rodata.lv_tileview_class:00000000 lv_tileview_class
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cc64OYWq.s:227    .text.lv_tileview_add_tile:00000000 $t
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cc64OYWq.s:234    .text.lv_tileview_add_tile:00000000 lv_tileview_add_tile
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cc64OYWq.s:255    .text.lv_tileview_add_tile:00000024 $d
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cc64OYWq.s:396    .rodata.lv_tileview_tile_class:00000000 lv_tileview_tile_class
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cc64OYWq.s:261    .text.lv_obj_set_tile:00000000 $t
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cc64OYWq.s:268    .text.lv_obj_set_tile:00000000 lv_obj_set_tile
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cc64OYWq.s:293    .text.lv_obj_set_tile_id:00000000 $t
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cc64OYWq.s:300    .text.lv_obj_set_tile_id:00000000 lv_obj_set_tile_id
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cc64OYWq.s:360    .text.lv_tileview_get_tile_act:00000000 $t
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cc64OYWq.s:367    .text.lv_tileview_get_tile_act:00000000 lv_tileview_get_tile_act
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cc64OYWq.s:375    .bss.create_row_id:00000000 $d
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cc64OYWq.s:381    .bss.create_col_id:00000000 $d
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cc64OYWq.s:390    .bss.create_dir:00000000 $d
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cc64OYWq.s:393    .rodata.lv_tileview_tile_class:00000000 $d
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cc64OYWq.s:406    .rodata.lv_tileview_class:00000000 $d
+
+UNDEFINED SYMBOLS
+lv_obj_set_size
+lv_obj_add_event_cb
+lv_obj_add_flag
+lv_obj_set_scroll_snap_x
+lv_obj_set_scroll_snap_y
+lv_event_get_code
+lv_event_get_target
+lv_indev_get_act
+lv_obj_get_content_width
+lv_obj_get_content_height
+lv_obj_get_scroll_end
+lv_obj_get_child_cnt
+lv_obj_get_child
+lv_obj_get_x
+lv_obj_get_y
+lv_event_send
+lv_obj_set_scroll_dir
+lv_obj_get_parent
+lv_obj_update_layout
+lv_obj_set_pos
+lv_obj_class_create_obj
+lv_obj_class_init_obj
+lv_obj_scroll_to
+ARM GAS  /var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cc64OYWq.s 			page 9
+
+
+lv_obj_class

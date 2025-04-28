@@ -1,0 +1,287 @@
+ARM GAS  /var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cc3E6sRx.s 			page 1
+
+
+   1              		.cpu cortex-m4
+   2              		.arch armv7e-m
+   3              		.fpu fpv4-sp-d16
+   4              		.eabi_attribute 27, 1
+   5              		.eabi_attribute 28, 1
+   6              		.eabi_attribute 20, 1
+   7              		.eabi_attribute 21, 1
+   8              		.eabi_attribute 23, 3
+   9              		.eabi_attribute 24, 1
+  10              		.eabi_attribute 25, 1
+  11              		.eabi_attribute 26, 1
+  12              		.eabi_attribute 30, 2
+  13              		.eabi_attribute 34, 1
+  14              		.eabi_attribute 18, 4
+  15              		.file	"usbh_ioreq.c"
+  16              		.text
+  17              		.section	.text.USBH_CtlSendSetup,"ax",%progbits
+  18              		.align	1
+  19              		.p2align 2,,3
+  20              		.global	USBH_CtlSendSetup
+  21              		.syntax unified
+  22              		.thumb
+  23              		.thumb_func
+  25              	USBH_CtlSendSetup:
+  26              		@ args = 0, pretend = 0, frame = 0
+  27              		@ frame_needed = 0, uses_anonymous_args = 0
+  28 0000 10B5     		push	{r4, lr}
+  29 0002 0B46     		mov	r3, r1
+  30 0004 84B0     		sub	sp, sp, #16
+  31 0006 0024     		movs	r4, #0
+  32 0008 1146     		mov	r1, r2
+  33 000a 0822     		movs	r2, #8
+  34 000c CDE90224 		strd	r2, r4, [sp, #8]
+  35 0010 CDE90043 		strd	r4, r3, [sp]
+  36 0014 2246     		mov	r2, r4
+  37 0016 2346     		mov	r3, r4
+  38 0018 FFF7FEFF 		bl	USBH_LL_SubmitURB
+  39 001c 2046     		mov	r0, r4
+  40 001e 04B0     		add	sp, sp, #16
+  41              		@ sp needed
+  42 0020 10BD     		pop	{r4, pc}
+  44              		.section	.text.USBH_CtlSendData,"ax",%progbits
+  45              		.align	1
+  46              		.p2align 2,,3
+  47              		.global	USBH_CtlSendData
+  48              		.syntax unified
+  49              		.thumb
+  50              		.thumb_func
+  52              	USBH_CtlSendData:
+  53              		@ args = 4, pretend = 0, frame = 0
+  54              		@ frame_needed = 0, uses_anonymous_args = 0
+  55 0000 10B5     		push	{r4, lr}
+  56 0002 84B0     		sub	sp, sp, #16
+  57 0004 90F81D42 		ldrb	r4, [r0, #541]	@ zero_extendqisi2
+  58 0008 0191     		str	r1, [sp, #4]
+  59 000a 002C     		cmp	r4, #0
+  60 000c 1946     		mov	r1, r3
+ARM GAS  /var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cc3E6sRx.s 			page 2
+
+
+  61 000e 4FF00104 		mov	r4, #1
+  62 0012 4FF00003 		mov	r3, #0
+  63 0016 0094     		str	r4, [sp]
+  64 0018 9DF81840 		ldrb	r4, [sp, #24]	@ zero_extendqisi2
+  65 001c 0292     		str	r2, [sp, #8]
+  66 001e 18BF     		it	ne
+  67 0020 1C46     		movne	r4, r3
+  68 0022 1A46     		mov	r2, r3
+  69 0024 0394     		str	r4, [sp, #12]
+  70 0026 FFF7FEFF 		bl	USBH_LL_SubmitURB
+  71 002a 0020     		movs	r0, #0
+  72 002c 04B0     		add	sp, sp, #16
+  73              		@ sp needed
+  74 002e 10BD     		pop	{r4, pc}
+  76              		.section	.text.USBH_CtlReceiveData,"ax",%progbits
+  77              		.align	1
+  78              		.p2align 2,,3
+  79              		.global	USBH_CtlReceiveData
+  80              		.syntax unified
+  81              		.thumb
+  82              		.thumb_func
+  84              	USBH_CtlReceiveData:
+  85              		@ args = 0, pretend = 0, frame = 0
+  86              		@ frame_needed = 0, uses_anonymous_args = 0
+  87 0000 10B5     		push	{r4, lr}
+  88 0002 0024     		movs	r4, #0
+  89 0004 84B0     		sub	sp, sp, #16
+  90 0006 CDE90224 		strd	r2, r4, [sp, #8]
+  91 000a 0122     		movs	r2, #1
+  92 000c CDE90021 		strd	r2, r1, [sp]
+  93 0010 1946     		mov	r1, r3
+  94 0012 2346     		mov	r3, r4
+  95 0014 FFF7FEFF 		bl	USBH_LL_SubmitURB
+  96 0018 2046     		mov	r0, r4
+  97 001a 04B0     		add	sp, sp, #16
+  98              		@ sp needed
+  99 001c 10BD     		pop	{r4, pc}
+ 101 001e 00BF     		.section	.text.USBH_BulkSendData,"ax",%progbits
+ 102              		.align	1
+ 103              		.p2align 2,,3
+ 104              		.global	USBH_BulkSendData
+ 105              		.syntax unified
+ 106              		.thumb
+ 107              		.thumb_func
+ 109              	USBH_BulkSendData:
+ 110              		@ args = 4, pretend = 0, frame = 0
+ 111              		@ frame_needed = 0, uses_anonymous_args = 0
+ 112 0000 10B5     		push	{r4, lr}
+ 113 0002 84B0     		sub	sp, sp, #16
+ 114 0004 90F81D42 		ldrb	r4, [r0, #541]	@ zero_extendqisi2
+ 115 0008 0292     		str	r2, [sp, #8]
+ 116 000a 002C     		cmp	r4, #0
+ 117 000c 4FF00002 		mov	r2, #0
+ 118 0010 9DF81840 		ldrb	r4, [sp, #24]	@ zero_extendqisi2
+ 119 0014 0191     		str	r1, [sp, #4]
+ 120 0016 18BF     		it	ne
+ 121 0018 1446     		movne	r4, r2
+ARM GAS  /var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cc3E6sRx.s 			page 3
+
+
+ 122 001a 1946     		mov	r1, r3
+ 123 001c 0123     		movs	r3, #1
+ 124 001e 0093     		str	r3, [sp]
+ 125 0020 0394     		str	r4, [sp, #12]
+ 126 0022 0223     		movs	r3, #2
+ 127 0024 FFF7FEFF 		bl	USBH_LL_SubmitURB
+ 128 0028 0020     		movs	r0, #0
+ 129 002a 04B0     		add	sp, sp, #16
+ 130              		@ sp needed
+ 131 002c 10BD     		pop	{r4, pc}
+ 133 002e 00BF     		.section	.text.USBH_BulkReceiveData,"ax",%progbits
+ 134              		.align	1
+ 135              		.p2align 2,,3
+ 136              		.global	USBH_BulkReceiveData
+ 137              		.syntax unified
+ 138              		.thumb
+ 139              		.thumb_func
+ 141              	USBH_BulkReceiveData:
+ 142              		@ args = 0, pretend = 0, frame = 0
+ 143              		@ frame_needed = 0, uses_anonymous_args = 0
+ 144 0000 10B5     		push	{r4, lr}
+ 145 0002 0024     		movs	r4, #0
+ 146 0004 84B0     		sub	sp, sp, #16
+ 147 0006 CDE90224 		strd	r2, r4, [sp, #8]
+ 148 000a 0122     		movs	r2, #1
+ 149 000c CDE90021 		strd	r2, r1, [sp]
+ 150 0010 1946     		mov	r1, r3
+ 151 0012 0223     		movs	r3, #2
+ 152 0014 FFF7FEFF 		bl	USBH_LL_SubmitURB
+ 153 0018 2046     		mov	r0, r4
+ 154 001a 04B0     		add	sp, sp, #16
+ 155              		@ sp needed
+ 156 001c 10BD     		pop	{r4, pc}
+ 158 001e 00BF     		.section	.text.USBH_InterruptReceiveData,"ax",%progbits
+ 159              		.align	1
+ 160              		.p2align 2,,3
+ 161              		.global	USBH_InterruptReceiveData
+ 162              		.syntax unified
+ 163              		.thumb
+ 164              		.thumb_func
+ 166              	USBH_InterruptReceiveData:
+ 167              		@ args = 0, pretend = 0, frame = 0
+ 168              		@ frame_needed = 0, uses_anonymous_args = 0
+ 169 0000 10B5     		push	{r4, lr}
+ 170 0002 0024     		movs	r4, #0
+ 171 0004 84B0     		sub	sp, sp, #16
+ 172 0006 CDE90224 		strd	r2, r4, [sp, #8]
+ 173 000a 0122     		movs	r2, #1
+ 174 000c CDE90021 		strd	r2, r1, [sp]
+ 175 0010 1946     		mov	r1, r3
+ 176 0012 0323     		movs	r3, #3
+ 177 0014 FFF7FEFF 		bl	USBH_LL_SubmitURB
+ 178 0018 2046     		mov	r0, r4
+ 179 001a 04B0     		add	sp, sp, #16
+ 180              		@ sp needed
+ 181 001c 10BD     		pop	{r4, pc}
+ 183 001e 00BF     		.section	.text.USBH_InterruptSendData,"ax",%progbits
+ARM GAS  /var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cc3E6sRx.s 			page 4
+
+
+ 184              		.align	1
+ 185              		.p2align 2,,3
+ 186              		.global	USBH_InterruptSendData
+ 187              		.syntax unified
+ 188              		.thumb
+ 189              		.thumb_func
+ 191              	USBH_InterruptSendData:
+ 192              		@ args = 0, pretend = 0, frame = 0
+ 193              		@ frame_needed = 0, uses_anonymous_args = 0
+ 194 0000 30B5     		push	{r4, r5, lr}
+ 195 0002 0024     		movs	r4, #0
+ 196 0004 85B0     		sub	sp, sp, #20
+ 197 0006 0D46     		mov	r5, r1
+ 198 0008 1946     		mov	r1, r3
+ 199 000a 0123     		movs	r3, #1
+ 200 000c CDE90224 		strd	r2, r4, [sp, #8]
+ 201 0010 CDE90035 		strd	r3, r5, [sp]
+ 202 0014 2246     		mov	r2, r4
+ 203 0016 0323     		movs	r3, #3
+ 204 0018 FFF7FEFF 		bl	USBH_LL_SubmitURB
+ 205 001c 2046     		mov	r0, r4
+ 206 001e 05B0     		add	sp, sp, #20
+ 207              		@ sp needed
+ 208 0020 30BD     		pop	{r4, r5, pc}
+ 210 0022 00BF     		.section	.text.USBH_IsocReceiveData,"ax",%progbits
+ 211              		.align	1
+ 212              		.p2align 2,,3
+ 213              		.global	USBH_IsocReceiveData
+ 214              		.syntax unified
+ 215              		.thumb
+ 216              		.thumb_func
+ 218              	USBH_IsocReceiveData:
+ 219              		@ args = 0, pretend = 0, frame = 0
+ 220              		@ frame_needed = 0, uses_anonymous_args = 0
+ 221 0000 30B5     		push	{r4, r5, lr}
+ 222 0002 92B2     		uxth	r2, r2
+ 223 0004 85B0     		sub	sp, sp, #20
+ 224 0006 0D46     		mov	r5, r1
+ 225 0008 0024     		movs	r4, #0
+ 226 000a 1946     		mov	r1, r3
+ 227 000c 0123     		movs	r3, #1
+ 228 000e CDE90224 		strd	r2, r4, [sp, #8]
+ 229 0012 CDE90035 		strd	r3, r5, [sp]
+ 230 0016 1A46     		mov	r2, r3
+ 231 0018 FFF7FEFF 		bl	USBH_LL_SubmitURB
+ 232 001c 2046     		mov	r0, r4
+ 233 001e 05B0     		add	sp, sp, #20
+ 234              		@ sp needed
+ 235 0020 30BD     		pop	{r4, r5, pc}
+ 237              		.section	.text.USBH_IsocSendData,"ax",%progbits
+ 238              		.align	1
+ 239              		.p2align 2,,3
+ 240              		.global	USBH_IsocSendData
+ 241              		.syntax unified
+ 242              		.thumb
+ 243              		.thumb_func
+ 245              	USBH_IsocSendData:
+ARM GAS  /var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cc3E6sRx.s 			page 5
+
+
+ 246              		@ args = 0, pretend = 0, frame = 0
+ 247              		@ frame_needed = 0, uses_anonymous_args = 0
+ 248 0000 30B5     		push	{r4, r5, lr}
+ 249 0002 92B2     		uxth	r2, r2
+ 250 0004 85B0     		sub	sp, sp, #20
+ 251 0006 0024     		movs	r4, #0
+ 252 0008 0D46     		mov	r5, r1
+ 253 000a 1946     		mov	r1, r3
+ 254 000c 0123     		movs	r3, #1
+ 255 000e CDE90224 		strd	r2, r4, [sp, #8]
+ 256 0012 CDE90035 		strd	r3, r5, [sp]
+ 257 0016 2246     		mov	r2, r4
+ 258 0018 FFF7FEFF 		bl	USBH_LL_SubmitURB
+ 259 001c 2046     		mov	r0, r4
+ 260 001e 05B0     		add	sp, sp, #20
+ 261              		@ sp needed
+ 262 0020 30BD     		pop	{r4, r5, pc}
+ 264 0022 00BF     		.ident	"GCC: (xPack GNU Arm Embedded GCC arm64) 13.3.1 20240614"
+ARM GAS  /var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cc3E6sRx.s 			page 6
+
+
+DEFINED SYMBOLS
+                            *ABS*:00000000 usbh_ioreq.c
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cc3E6sRx.s:18     .text.USBH_CtlSendSetup:00000000 $t
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cc3E6sRx.s:25     .text.USBH_CtlSendSetup:00000000 USBH_CtlSendSetup
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cc3E6sRx.s:45     .text.USBH_CtlSendData:00000000 $t
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cc3E6sRx.s:52     .text.USBH_CtlSendData:00000000 USBH_CtlSendData
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cc3E6sRx.s:77     .text.USBH_CtlReceiveData:00000000 $t
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cc3E6sRx.s:84     .text.USBH_CtlReceiveData:00000000 USBH_CtlReceiveData
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cc3E6sRx.s:102    .text.USBH_BulkSendData:00000000 $t
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cc3E6sRx.s:109    .text.USBH_BulkSendData:00000000 USBH_BulkSendData
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cc3E6sRx.s:134    .text.USBH_BulkReceiveData:00000000 $t
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cc3E6sRx.s:141    .text.USBH_BulkReceiveData:00000000 USBH_BulkReceiveData
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cc3E6sRx.s:159    .text.USBH_InterruptReceiveData:00000000 $t
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cc3E6sRx.s:166    .text.USBH_InterruptReceiveData:00000000 USBH_InterruptReceiveData
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cc3E6sRx.s:184    .text.USBH_InterruptSendData:00000000 $t
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cc3E6sRx.s:191    .text.USBH_InterruptSendData:00000000 USBH_InterruptSendData
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cc3E6sRx.s:211    .text.USBH_IsocReceiveData:00000000 $t
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cc3E6sRx.s:218    .text.USBH_IsocReceiveData:00000000 USBH_IsocReceiveData
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cc3E6sRx.s:238    .text.USBH_IsocSendData:00000000 $t
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cc3E6sRx.s:245    .text.USBH_IsocSendData:00000000 USBH_IsocSendData
+
+UNDEFINED SYMBOLS
+USBH_LL_SubmitURB

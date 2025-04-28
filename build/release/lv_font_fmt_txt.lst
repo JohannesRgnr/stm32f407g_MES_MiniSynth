@@ -1,0 +1,437 @@
+ARM GAS  /var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccaVMMEC.s 			page 1
+
+
+   1              		.cpu cortex-m4
+   2              		.arch armv7e-m
+   3              		.fpu fpv4-sp-d16
+   4              		.eabi_attribute 27, 1
+   5              		.eabi_attribute 28, 1
+   6              		.eabi_attribute 20, 1
+   7              		.eabi_attribute 21, 1
+   8              		.eabi_attribute 23, 3
+   9              		.eabi_attribute 24, 1
+  10              		.eabi_attribute 25, 1
+  11              		.eabi_attribute 26, 1
+  12              		.eabi_attribute 30, 2
+  13              		.eabi_attribute 34, 1
+  14              		.eabi_attribute 18, 4
+  15              		.file	"lv_font_fmt_txt.c"
+  16              		.text
+  17              		.section	.text.kern_pair_8_compare,"ax",%progbits
+  18              		.align	1
+  19              		.p2align 2,,3
+  20              		.syntax unified
+  21              		.thumb
+  22              		.thumb_func
+  24              	kern_pair_8_compare:
+  25              		@ args = 0, pretend = 0, frame = 0
+  26              		@ frame_needed = 0, uses_anonymous_args = 0
+  27              		@ link register save eliminated.
+  28 0000 0378     		ldrb	r3, [r0]	@ zero_extendqisi2
+  29 0002 0A78     		ldrb	r2, [r1]	@ zero_extendqisi2
+  30 0004 9342     		cmp	r3, r2
+  31 0006 09BF     		itett	eq
+  32 0008 4B78     		ldrbeq	r3, [r1, #1]	@ zero_extendqisi2
+  33 000a 981A     		subne	r0, r3, r2
+  34 000c 4078     		ldrbeq	r0, [r0, #1]	@ zero_extendqisi2
+  35 000e C01A     		subeq	r0, r0, r3
+  36 0010 7047     		bx	lr
+  38 0012 00BF     		.section	.text.kern_pair_16_compare,"ax",%progbits
+  39              		.align	1
+  40              		.p2align 2,,3
+  41              		.syntax unified
+  42              		.thumb
+  43              		.thumb_func
+  45              	kern_pair_16_compare:
+  46              		@ args = 0, pretend = 0, frame = 0
+  47              		@ frame_needed = 0, uses_anonymous_args = 0
+  48              		@ link register save eliminated.
+  49 0000 0388     		ldrh	r3, [r0]
+  50 0002 0A88     		ldrh	r2, [r1]
+  51 0004 9342     		cmp	r3, r2
+  52 0006 09BF     		itett	eq
+  53 0008 4B88     		ldrheq	r3, [r1, #2]
+  54 000a 981A     		subne	r0, r3, r2
+  55 000c 4088     		ldrheq	r0, [r0, #2]
+  56 000e C01A     		subeq	r0, r0, r3
+  57 0010 7047     		bx	lr
+  59 0012 00BF     		.section	.text.unicode_list_compare,"ax",%progbits
+  60              		.align	1
+  61              		.p2align 2,,3
+ARM GAS  /var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccaVMMEC.s 			page 2
+
+
+  62              		.syntax unified
+  63              		.thumb
+  64              		.thumb_func
+  66              	unicode_list_compare:
+  67              		@ args = 0, pretend = 0, frame = 0
+  68              		@ frame_needed = 0, uses_anonymous_args = 0
+  69              		@ link register save eliminated.
+  70 0000 0088     		ldrh	r0, [r0]
+  71 0002 0B88     		ldrh	r3, [r1]
+  72 0004 C01A     		subs	r0, r0, r3
+  73 0006 7047     		bx	lr
+  75              		.section	.text.get_glyph_dsc_id,"ax",%progbits
+  76              		.align	1
+  77              		.p2align 2,,3
+  78              		.syntax unified
+  79              		.thumb
+  80              		.thumb_func
+  82              	get_glyph_dsc_id:
+  83              		@ args = 0, pretend = 0, frame = 8
+  84              		@ frame_needed = 0, uses_anonymous_args = 0
+  85 0000 0029     		cmp	r1, #0
+  86 0002 6FD0     		beq	.L41
+  87 0004 F0B5     		push	{r4, r5, r6, r7, lr}
+  88 0006 0569     		ldr	r5, [r0, #16]
+  89 0008 6B69     		ldr	r3, [r5, #20]
+  90 000a 85B0     		sub	sp, sp, #20
+  91 000c 0C46     		mov	r4, r1
+  92 000e 4BB3     		cbz	r3, .L45
+  93 0010 1A68     		ldr	r2, [r3]
+  94 0012 8A42     		cmp	r2, r1
+  95 0014 64D0     		beq	.L46
+  96 0016 B5F812E0 		ldrh	lr, [r5, #18]
+  97 001a CEF30802 		ubfx	r2, lr, #0, #9
+  98 001e E2B1     		cbz	r2, .L13
+  99              	.L12:
+ 100 0020 A868     		ldr	r0, [r5, #8]
+ 101 0022 0026     		movs	r6, #0
+ 102 0024 0146     		mov	r1, r0
+ 103 0026 3746     		mov	r7, r6
+ 104              	.L17:
+ 105 0028 8259     		ldr	r2, [r0, r6]
+ 106 002a B1F804C0 		ldrh	ip, [r1, #4]
+ 107 002e A21A     		subs	r2, r4, r2
+ 108 0030 9445     		cmp	ip, r2
+ 109 0032 06D3     		bcc	.L47
+ 110 0034 887C     		ldrb	r0, [r1, #18]	@ zero_extendqisi2
+ 111 0036 0328     		cmp	r0, #3
+ 112 0038 56D8     		bhi	.L29
+ 113 003a DFE800F0 		tbb	[pc, r0]
+ 114              	.L21:
+ 115 003e 4C       		.byte	(.L24-.L21)/2
+ 116 003f 36       		.byte	(.L23-.L21)/2
+ 117 0040 33       		.byte	(.L22-.L21)/2
+ 118 0041 1A       		.byte	(.L20-.L21)/2
+ 119              		.p2align 1
+ 120              	.L47:
+ 121 0042 0137     		adds	r7, r7, #1
+ARM GAS  /var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccaVMMEC.s 			page 3
+
+
+ 122 0044 CEF30802 		ubfx	r2, lr, #0, #9
+ 123 0048 1FFA87FC 		uxth	ip, r7
+ 124 004c 6245     		cmp	r2, ip
+ 125 004e 06F11406 		add	r6, r6, #20
+ 126 0052 01F11401 		add	r1, r1, #20
+ 127 0056 E7D8     		bhi	.L17
+ 128 0058 13B1     		cbz	r3, .L10
+ 129              	.L13:
+ 130 005a 0022     		movs	r2, #0
+ 131 005c C3E90042 		strd	r4, r2, [r3]
+ 132              	.L10:
+ 133 0060 0020     		movs	r0, #0
+ 134 0062 1DE0     		b	.L9
+ 135              	.L45:
+ 136 0064 B5F812E0 		ldrh	lr, [r5, #18]
+ 137 0068 CEF30802 		ubfx	r2, lr, #0, #9
+ 138 006c 002A     		cmp	r2, #0
+ 139 006e D7D1     		bne	.L12
+ 140 0070 F6E7     		b	.L10
+ 141              	.L20:
+ 142 0072 1E4B     		ldr	r3, .L48
+ 143 0074 ADF80E20 		strh	r2, [sp, #14]	@ movhi
+ 144 0078 0A8A     		ldrh	r2, [r1, #16]
+ 145 007a 8968     		ldr	r1, [r1, #8]
+ 146 007c 0093     		str	r3, [sp]
+ 147 007e 0DF10E00 		add	r0, sp, #14
+ 148 0082 0223     		movs	r3, #2
+ 149 0084 FFF7FEFF 		bl	_lv_utils_bsearch
+ 150 0088 30B1     		cbz	r0, .L26
+ 151 008a AB68     		ldr	r3, [r5, #8]
+ 152 008c 3344     		add	r3, r3, r6
+ 153 008e 9A68     		ldr	r2, [r3, #8]
+ 154 0090 DB88     		ldrh	r3, [r3, #6]
+ 155 0092 801A     		subs	r0, r0, r2
+ 156 0094 03EB6000 		add	r0, r3, r0, asr #1
+ 157              	.L26:
+ 158 0098 6B69     		ldr	r3, [r5, #20]
+ 159              	.L19:
+ 160 009a 0BB1     		cbz	r3, .L9
+ 161 009c C3E90040 		strd	r4, r0, [r3]
+ 162              	.L9:
+ 163 00a0 05B0     		add	sp, sp, #20
+ 164              		@ sp needed
+ 165 00a2 F0BD     		pop	{r4, r5, r6, r7, pc}
+ 166              	.L22:
+ 167 00a4 C888     		ldrh	r0, [r1, #6]
+ 168 00a6 1044     		add	r0, r0, r2
+ 169 00a8 F7E7     		b	.L19
+ 170              	.L23:
+ 171 00aa 104B     		ldr	r3, .L48
+ 172 00ac ADF80E20 		strh	r2, [sp, #14]	@ movhi
+ 173 00b0 0A8A     		ldrh	r2, [r1, #16]
+ 174 00b2 8968     		ldr	r1, [r1, #8]
+ 175 00b4 0093     		str	r3, [sp]
+ 176 00b6 0DF10E00 		add	r0, sp, #14
+ 177 00ba 0223     		movs	r3, #2
+ 178 00bc FFF7FEFF 		bl	_lv_utils_bsearch
+ARM GAS  /var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccaVMMEC.s 			page 4
+
+
+ 179 00c0 0028     		cmp	r0, #0
+ 180 00c2 E9D0     		beq	.L26
+ 181 00c4 AB68     		ldr	r3, [r5, #8]
+ 182 00c6 3344     		add	r3, r3, r6
+ 183 00c8 9A68     		ldr	r2, [r3, #8]
+ 184 00ca 801A     		subs	r0, r0, r2
+ 185 00cc DA68     		ldr	r2, [r3, #12]
+ 186 00ce DB88     		ldrh	r3, [r3, #6]
+ 187 00d0 105A     		ldrh	r0, [r2, r0]
+ 188 00d2 1844     		add	r0, r0, r3
+ 189 00d4 E0E7     		b	.L26
+ 190              	.L24:
+ 191 00d6 C868     		ldr	r0, [r1, #12]
+ 192 00d8 C988     		ldrh	r1, [r1, #6]
+ 193 00da 805C     		ldrb	r0, [r0, r2]	@ zero_extendqisi2
+ 194 00dc 0844     		add	r0, r0, r1
+ 195 00de DCE7     		b	.L19
+ 196              	.L46:
+ 197 00e0 5868     		ldr	r0, [r3, #4]
+ 198 00e2 DDE7     		b	.L9
+ 199              	.L41:
+ 200 00e4 0020     		movs	r0, #0
+ 201 00e6 7047     		bx	lr
+ 202              	.L29:
+ 203 00e8 0020     		movs	r0, #0
+ 204 00ea D6E7     		b	.L19
+ 205              	.L49:
+ 206              		.align	2
+ 207              	.L48:
+ 208 00ec 00000000 		.word	unicode_list_compare
+ 210              		.section	.text.lv_font_get_bitmap_fmt_txt,"ax",%progbits
+ 211              		.align	1
+ 212              		.p2align 2,,3
+ 213              		.global	lv_font_get_bitmap_fmt_txt
+ 214              		.syntax unified
+ 215              		.thumb
+ 216              		.thumb_func
+ 218              	lv_font_get_bitmap_fmt_txt:
+ 219              		@ args = 0, pretend = 0, frame = 0
+ 220              		@ frame_needed = 0, uses_anonymous_args = 0
+ 221 0000 0929     		cmp	r1, #9
+ 222 0002 10B5     		push	{r4, lr}
+ 223 0004 08BF     		it	eq
+ 224 0006 2021     		moveq	r1, #32
+ 225 0008 0469     		ldr	r4, [r0, #16]
+ 226 000a FFF7FEFF 		bl	get_glyph_dsc_id
+ 227 000e 48B1     		cbz	r0, .L50
+ 228 0010 E37C     		ldrb	r3, [r4, #19]	@ zero_extendqisi2
+ 229 0012 3F2B     		cmp	r3, #63
+ 230 0014 07D8     		bhi	.L55
+ 231 0016 D4E90032 		ldrd	r3, r2, [r4]
+ 232 001a 52F83000 		ldr	r0, [r2, r0, lsl #3]
+ 233 001e C0F31300 		ubfx	r0, r0, #0, #20
+ 234 0022 1844     		add	r0, r0, r3
+ 235              	.L50:
+ 236 0024 10BD     		pop	{r4, pc}
+ 237              	.L55:
+ARM GAS  /var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccaVMMEC.s 			page 5
+
+
+ 238 0026 0020     		movs	r0, #0
+ 239 0028 10BD     		pop	{r4, pc}
+ 241 002a 00BF     		.section	.text.lv_font_get_glyph_dsc_fmt_txt,"ax",%progbits
+ 242              		.align	1
+ 243              		.p2align 2,,3
+ 244              		.global	lv_font_get_glyph_dsc_fmt_txt
+ 245              		.syntax unified
+ 246              		.thumb
+ 247              		.thumb_func
+ 249              	lv_font_get_glyph_dsc_fmt_txt:
+ 250              		@ args = 0, pretend = 0, frame = 8
+ 251              		@ frame_needed = 0, uses_anonymous_args = 0
+ 252 0000 2DE9F043 		push	{r4, r5, r6, r7, r8, r9, lr}
+ 253 0004 092A     		cmp	r2, #9
+ 254 0006 0C46     		mov	r4, r1
+ 255 0008 85B0     		sub	sp, sp, #20
+ 256 000a 14BF     		ite	ne
+ 257 000c 1146     		movne	r1, r2
+ 258 000e 2021     		moveq	r1, #32
+ 259 0010 0669     		ldr	r6, [r0, #16]
+ 260 0012 1546     		mov	r5, r2
+ 261 0014 8146     		mov	r9, r0
+ 262 0016 9846     		mov	r8, r3
+ 263 0018 FFF7FEFF 		bl	get_glyph_dsc_id
+ 264 001c 0746     		mov	r7, r0
+ 265 001e 0028     		cmp	r0, #0
+ 266 0020 31D0     		beq	.L59
+ 267 0022 F368     		ldr	r3, [r6, #12]
+ 268 0024 2BB1     		cbz	r3, .L62
+ 269 0026 4146     		mov	r1, r8
+ 270 0028 4846     		mov	r0, r9
+ 271 002a FFF7FEFF 		bl	get_glyph_dsc_id
+ 272 002e 0028     		cmp	r0, #0
+ 273 0030 30D1     		bne	.L84
+ 274              	.L62:
+ 275 0032 0021     		movs	r1, #0
+ 276              	.L61:
+ 277 0034 7268     		ldr	r2, [r6, #4]
+ 278 0036 338A     		ldrh	r3, [r6, #16]
+ 279 0038 02EBC702 		add	r2, r2, r7, lsl #3
+ 280 003c 01FB03F3 		mul	r3, r1, r3
+ 281 0040 5188     		ldrh	r1, [r2, #2]
+ 282 0042 092D     		cmp	r5, #9
+ 283 0044 C1F30B10 		ubfx	r0, r1, #4, #12
+ 284 0048 0146     		mov	r1, r0
+ 285 004a 4FEA2313 		asr	r3, r3, #4
+ 286 004e 04BF     		itt	eq
+ 287 0050 00B2     		sxtheq	r0, r0
+ 288 0052 4100     		lsleq	r1, r0, #1
+ 289 0054 0833     		adds	r3, r3, #8
+ 290 0056 0B44     		add	r3, r3, r1
+ 291 0058 1B09     		lsrs	r3, r3, #4
+ 292 005a A380     		strh	r3, [r4, #4]	@ movhi
+ 293 005c 5379     		ldrb	r3, [r2, #5]	@ zero_extendqisi2
+ 294 005e F17C     		ldrb	r1, [r6, #19]	@ zero_extendqisi2
+ 295 0060 2381     		strh	r3, [r4, #8]	@ movhi
+ 296 0062 A37B     		ldrb	r3, [r4, #14]	@ zero_extendqisi2
+ARM GAS  /var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccaVMMEC.s 			page 6
+
+
+ 297 0064 1079     		ldrb	r0, [r2, #4]	@ zero_extendqisi2
+ 298 0066 E080     		strh	r0, [r4, #6]	@ movhi
+ 299 0068 C1F34301 		ubfx	r1, r1, #1, #4
+ 300 006c 23F01F03 		bic	r3, r3, #31
+ 301 0070 0B43     		orrs	r3, r3, r1
+ 302 0072 92F90610 		ldrsb	r1, [r2, #6]
+ 303 0076 6181     		strh	r1, [r4, #10]	@ movhi
+ 304 0078 92F90720 		ldrsb	r2, [r2, #7]
+ 305 007c A281     		strh	r2, [r4, #12]	@ movhi
+ 306 007e 092D     		cmp	r5, #9
+ 307 0080 A373     		strb	r3, [r4, #14]
+ 308 0082 03D0     		beq	.L68
+ 309 0084 0120     		movs	r0, #1
+ 310              	.L59:
+ 311 0086 05B0     		add	sp, sp, #20
+ 312              		@ sp needed
+ 313 0088 BDE8F083 		pop	{r4, r5, r6, r7, r8, r9, pc}
+ 314              	.L68:
+ 315 008c 4000     		lsls	r0, r0, #1
+ 316 008e E080     		strh	r0, [r4, #6]	@ movhi
+ 317 0090 0120     		movs	r0, #1
+ 318 0092 F8E7     		b	.L59
+ 319              	.L84:
+ 320 0094 D9F81030 		ldr	r3, [r9, #16]
+ 321 0098 DA7C     		ldrb	r2, [r3, #19]	@ zero_extendqisi2
+ 322 009a D3F80C80 		ldr	r8, [r3, #12]
+ 323 009e 9306     		lsls	r3, r2, #26
+ 324 00a0 20D4     		bmi	.L63
+ 325 00a2 98F80B30 		ldrb	r3, [r8, #11]	@ zero_extendqisi2
+ 326 00a6 3F2B     		cmp	r3, #63
+ 327 00a8 31D9     		bls	.L85
+ 328 00aa 03F0C003 		and	r3, r3, #192
+ 329 00ae 402B     		cmp	r3, #64
+ 330 00b0 BFD1     		bne	.L62
+ 331 00b2 D8F80090 		ldr	r9, [r8]
+ 332 00b6 D8F80820 		ldr	r2, [r8, #8]
+ 333 00ba 224B     		ldr	r3, .L86
+ 334 00bc 0093     		str	r3, [sp]
+ 335 00be 07EB0040 		add	r0, r7, r0, lsl #16
+ 336 00c2 0390     		str	r0, [sp, #12]
+ 337 00c4 22F04042 		bic	r2, r2, #-1073741824
+ 338 00c8 0423     		movs	r3, #4
+ 339 00ca 4946     		mov	r1, r9
+ 340 00cc 03A8     		add	r0, sp, #12
+ 341 00ce FFF7FEFF 		bl	_lv_utils_bsearch
+ 342 00d2 0028     		cmp	r0, #0
+ 343 00d4 ADD0     		beq	.L62
+ 344 00d6 A0EB0903 		sub	r3, r0, r9
+ 345 00da D8F80420 		ldr	r2, [r8, #4]
+ 346 00de 9B10     		asrs	r3, r3, #2
+ 347 00e0 D156     		ldrsb	r1, [r2, r3]
+ 348 00e2 A7E7     		b	.L61
+ 349              	.L63:
+ 350 00e4 D8F80430 		ldr	r3, [r8, #4]
+ 351 00e8 D8F80820 		ldr	r2, [r8, #8]
+ 352 00ec DB5D     		ldrb	r3, [r3, r7]	@ zero_extendqisi2
+ 353 00ee 125C     		ldrb	r2, [r2, r0]	@ zero_extendqisi2
+ARM GAS  /var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccaVMMEC.s 			page 7
+
+
+ 354 00f0 002B     		cmp	r3, #0
+ 355 00f2 9ED0     		beq	.L62
+ 356 00f4 002A     		cmp	r2, #0
+ 357 00f6 9CD0     		beq	.L62
+ 358 00f8 D8F80010 		ldr	r1, [r8]
+ 359 00fc 1144     		add	r1, r1, r2
+ 360 00fe 98F80D20 		ldrb	r2, [r8, #13]	@ zero_extendqisi2
+ 361 0102 013B     		subs	r3, r3, #1
+ 362 0104 02FB0313 		mla	r3, r2, r3, r1
+ 363 0108 13F9011C 		ldrsb	r1, [r3, #-1]
+ 364 010c 92E7     		b	.L61
+ 365              	.L85:
+ 366 010e D8F80090 		ldr	r9, [r8]
+ 367 0112 D8F80820 		ldr	r2, [r8, #8]
+ 368 0116 0C4B     		ldr	r3, .L86+4
+ 369 0118 0093     		str	r3, [sp]
+ 370 011a 07EB0020 		add	r0, r7, r0, lsl #8
+ 371 011e ADF80C00 		strh	r0, [sp, #12]	@ movhi
+ 372 0122 22F04042 		bic	r2, r2, #-1073741824
+ 373 0126 0223     		movs	r3, #2
+ 374 0128 4946     		mov	r1, r9
+ 375 012a 03A8     		add	r0, sp, #12
+ 376 012c FFF7FEFF 		bl	_lv_utils_bsearch
+ 377 0130 0028     		cmp	r0, #0
+ 378 0132 3FF47EAF 		beq	.L62
+ 379 0136 A0EB0903 		sub	r3, r0, r9
+ 380 013a D8F80420 		ldr	r2, [r8, #4]
+ 381 013e 5B10     		asrs	r3, r3, #1
+ 382 0140 D156     		ldrsb	r1, [r2, r3]
+ 383 0142 77E7     		b	.L61
+ 384              	.L87:
+ 385              		.align	2
+ 386              	.L86:
+ 387 0144 00000000 		.word	kern_pair_16_compare
+ 388 0148 00000000 		.word	kern_pair_8_compare
+ 390              		.section	.text._lv_font_clean_up_fmt_txt,"ax",%progbits
+ 391              		.align	1
+ 392              		.p2align 2,,3
+ 393              		.global	_lv_font_clean_up_fmt_txt
+ 394              		.syntax unified
+ 395              		.thumb
+ 396              		.thumb_func
+ 398              	_lv_font_clean_up_fmt_txt:
+ 399              		@ args = 0, pretend = 0, frame = 0
+ 400              		@ frame_needed = 0, uses_anonymous_args = 0
+ 401              		@ link register save eliminated.
+ 402 0000 7047     		bx	lr
+ 404 0002 00BF     		.ident	"GCC: (xPack GNU Arm Embedded GCC arm64) 13.3.1 20240614"
+ARM GAS  /var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccaVMMEC.s 			page 8
+
+
+DEFINED SYMBOLS
+                            *ABS*:00000000 lv_font_fmt_txt.c
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccaVMMEC.s:18     .text.kern_pair_8_compare:00000000 $t
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccaVMMEC.s:24     .text.kern_pair_8_compare:00000000 kern_pair_8_compare
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccaVMMEC.s:39     .text.kern_pair_16_compare:00000000 $t
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccaVMMEC.s:45     .text.kern_pair_16_compare:00000000 kern_pair_16_compare
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccaVMMEC.s:60     .text.unicode_list_compare:00000000 $t
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccaVMMEC.s:66     .text.unicode_list_compare:00000000 unicode_list_compare
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccaVMMEC.s:76     .text.get_glyph_dsc_id:00000000 $t
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccaVMMEC.s:82     .text.get_glyph_dsc_id:00000000 get_glyph_dsc_id
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccaVMMEC.s:115    .text.get_glyph_dsc_id:0000003e $d
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccaVMMEC.s:119    .text.get_glyph_dsc_id:00000042 $t
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccaVMMEC.s:208    .text.get_glyph_dsc_id:000000ec $d
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccaVMMEC.s:211    .text.lv_font_get_bitmap_fmt_txt:00000000 $t
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccaVMMEC.s:218    .text.lv_font_get_bitmap_fmt_txt:00000000 lv_font_get_bitmap_fmt_txt
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccaVMMEC.s:242    .text.lv_font_get_glyph_dsc_fmt_txt:00000000 $t
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccaVMMEC.s:249    .text.lv_font_get_glyph_dsc_fmt_txt:00000000 lv_font_get_glyph_dsc_fmt_txt
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccaVMMEC.s:387    .text.lv_font_get_glyph_dsc_fmt_txt:00000144 $d
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccaVMMEC.s:391    .text._lv_font_clean_up_fmt_txt:00000000 $t
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccaVMMEC.s:398    .text._lv_font_clean_up_fmt_txt:00000000 _lv_font_clean_up_fmt_txt
+
+UNDEFINED SYMBOLS
+_lv_utils_bsearch

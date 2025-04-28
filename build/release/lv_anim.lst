@@ -1,0 +1,1113 @@
+ARM GAS  /var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cc8TM3Td.s 			page 1
+
+
+   1              		.cpu cortex-m4
+   2              		.arch armv7e-m
+   3              		.fpu fpv4-sp-d16
+   4              		.eabi_attribute 27, 1
+   5              		.eabi_attribute 28, 1
+   6              		.eabi_attribute 20, 1
+   7              		.eabi_attribute 21, 1
+   8              		.eabi_attribute 23, 3
+   9              		.eabi_attribute 24, 1
+  10              		.eabi_attribute 25, 1
+  11              		.eabi_attribute 26, 1
+  12              		.eabi_attribute 30, 2
+  13              		.eabi_attribute 34, 1
+  14              		.eabi_attribute 18, 4
+  15              		.file	"lv_anim.c"
+  16              		.text
+  17              		.section	.text.lv_anim_path_linear,"ax",%progbits
+  18              		.align	1
+  19              		.p2align 2,,3
+  20              		.global	lv_anim_path_linear
+  21              		.syntax unified
+  22              		.thumb
+  23              		.thumb_func
+  25              	lv_anim_path_linear:
+  26              		@ args = 0, pretend = 0, frame = 0
+  27              		@ frame_needed = 0, uses_anonymous_args = 0
+  28 0000 10B5     		push	{r4, lr}
+  29 0002 82B0     		sub	sp, sp, #8
+  30 0004 4FF48061 		mov	r1, #1024
+  31 0008 C26A     		ldr	r2, [r0, #44]
+  32 000a 0091     		str	r1, [sp]
+  33 000c 0446     		mov	r4, r0
+  34 000e 0023     		movs	r3, #0
+  35 0010 1946     		mov	r1, r3
+  36 0012 006B     		ldr	r0, [r0, #48]
+  37 0014 FFF7FEFF 		bl	lv_map
+  38 0018 226A     		ldr	r2, [r4, #32]
+  39 001a A36A     		ldr	r3, [r4, #40]
+  40 001c 9B1A     		subs	r3, r3, r2
+  41 001e 03FB00F0 		mul	r0, r3, r0
+  42 0022 02EBA020 		add	r0, r2, r0, asr #10
+  43 0026 02B0     		add	sp, sp, #8
+  44              		@ sp needed
+  45 0028 10BD     		pop	{r4, pc}
+  47 002a 00BF     		.section	.text.anim_timer,"ax",%progbits
+  48              		.align	1
+  49              		.p2align 2,,3
+  50              		.syntax unified
+  51              		.thumb
+  52              		.thumb_func
+  54              	anim_timer:
+  55              		@ args = 0, pretend = 0, frame = 0
+  56              		@ frame_needed = 0, uses_anonymous_args = 0
+  57 0000 2DE9F047 		push	{r4, r5, r6, r7, r8, r9, r10, lr}
+  58 0004 DFF8ACA1 		ldr	r10, .L70+16
+  59 0008 664E     		ldr	r6, .L70
+  60 000a DAF80000 		ldr	r0, [r10]
+ARM GAS  /var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cc8TM3Td.s 			page 2
+
+
+  61 000e FFF7FEFF 		bl	lv_tick_elaps
+  62 0012 3378     		ldrb	r3, [r6]	@ zero_extendqisi2
+  63 0014 0746     		mov	r7, r0
+  64 0016 83F00103 		eor	r3, r3, #1
+  65 001a 6348     		ldr	r0, .L70+4
+  66 001c 3370     		strb	r3, [r6]
+  67 001e FFF7FEFF 		bl	_lv_ll_get_head
+  68 0022 0028     		cmp	r0, #0
+  69 0024 3AD0     		beq	.L30
+  70 0026 614D     		ldr	r5, .L70+8
+  71 0028 DFF87C91 		ldr	r9, .L70+4
+  72 002c 0446     		mov	r4, r0
+  73 002e 4FF00008 		mov	r8, #0
+  74              	.L5:
+  75 0032 94F84230 		ldrb	r3, [r4, #66]	@ zero_extendqisi2
+  76 0036 3278     		ldrb	r2, [r6]	@ zero_extendqisi2
+  77 0038 85F80080 		strb	r8, [r5]
+  78 003c C3F38001 		ubfx	r1, r3, #2, #1
+  79 0040 9142     		cmp	r1, r2
+  80 0042 32D0     		beq	.L6
+  81 0044 62F38203 		bfi	r3, r2, #2, #1
+  82 0048 216B     		ldr	r1, [r4, #48]
+  83 004a 84F84230 		strb	r3, [r4, #66]
+  84 004e D8B2     		uxtb	r0, r3
+  85 0050 1B07     		lsls	r3, r3, #28
+  86 0052 01EB0702 		add	r2, r1, r7
+  87 0056 01D4     		bmi	.L7
+  88 0058 0029     		cmp	r1, #0
+  89 005a 2EDD     		ble	.L67
+  90              	.L7:
+  91 005c 002A     		cmp	r2, #0
+  92 005e 2263     		str	r2, [r4, #48]
+  93 0060 14DB     		blt	.L66
+  94 0062 E16A     		ldr	r1, [r4, #44]
+  95 0064 E369     		ldr	r3, [r4, #28]
+  96 0066 9142     		cmp	r1, r2
+  97 0068 A8BF     		it	ge
+  98 006a 1146     		movge	r1, r2
+  99 006c 2163     		str	r1, [r4, #48]
+ 100 006e 2046     		mov	r0, r4
+ 101 0070 9847     		blx	r3
+ 102 0072 636A     		ldr	r3, [r4, #36]
+ 103 0074 8342     		cmp	r3, r0
+ 104 0076 05D0     		beq	.L14
+ 105 0078 6368     		ldr	r3, [r4, #4]
+ 106 007a 6062     		str	r0, [r4, #36]
+ 107 007c 13B1     		cbz	r3, .L14
+ 108 007e 0146     		mov	r1, r0
+ 109 0080 2068     		ldr	r0, [r4]
+ 110 0082 9847     		blx	r3
+ 111              	.L14:
+ 112 0084 D4E90B23 		ldrd	r2, r3, [r4, #44]
+ 113 0088 9342     		cmp	r3, r2
+ 114 008a 31DA     		bge	.L16
+ 115              	.L66:
+ 116 008c 2B78     		ldrb	r3, [r5]	@ zero_extendqisi2
+ 117              	.L12:
+ARM GAS  /var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cc8TM3Td.s 			page 3
+
+
+ 118 008e 63B1     		cbz	r3, .L6
+ 119 0090 4846     		mov	r0, r9
+ 120 0092 FFF7FEFF 		bl	_lv_ll_get_head
+ 121 0096 0446     		mov	r4, r0
+ 122 0098 002C     		cmp	r4, #0
+ 123 009a CAD1     		bne	.L5
+ 124              	.L30:
+ 125 009c FFF7FEFF 		bl	lv_tick_get
+ 126 00a0 CAF80000 		str	r0, [r10]
+ 127 00a4 BDE8F087 		pop	{r4, r5, r6, r7, r8, r9, r10, pc}
+ 128              	.L8:
+ 129 00a8 2263     		str	r2, [r4, #48]
+ 130              	.L6:
+ 131 00aa 2146     		mov	r1, r4
+ 132 00ac 4846     		mov	r0, r9
+ 133 00ae FFF7FEFF 		bl	_lv_ll_get_next
+ 134 00b2 0446     		mov	r4, r0
+ 135 00b4 002C     		cmp	r4, #0
+ 136 00b6 BCD1     		bne	.L5
+ 137 00b8 F0E7     		b	.L30
+ 138              	.L67:
+ 139 00ba 002A     		cmp	r2, #0
+ 140 00bc F4DB     		blt	.L8
+ 141 00be C307     		lsls	r3, r0, #31
+ 142 00c0 09D4     		bmi	.L9
+ 143 00c2 6369     		ldr	r3, [r4, #20]
+ 144 00c4 3BB1     		cbz	r3, .L9
+ 145 00c6 2046     		mov	r0, r4
+ 146 00c8 9847     		blx	r3
+ 147 00ca 236A     		ldr	r3, [r4, #32]
+ 148 00cc 0344     		add	r3, r3, r0
+ 149 00ce 2362     		str	r3, [r4, #32]
+ 150 00d0 A36A     		ldr	r3, [r4, #40]
+ 151 00d2 0344     		add	r3, r3, r0
+ 152 00d4 A362     		str	r3, [r4, #40]
+ 153              	.L9:
+ 154 00d6 A368     		ldr	r3, [r4, #8]
+ 155 00d8 0BB1     		cbz	r3, .L10
+ 156 00da 2046     		mov	r0, r4
+ 157 00dc 9847     		blx	r3
+ 158              	.L10:
+ 159 00de 94F84230 		ldrb	r3, [r4, #66]	@ zero_extendqisi2
+ 160 00e2 226B     		ldr	r2, [r4, #48]
+ 161 00e4 43F00803 		orr	r3, r3, #8
+ 162 00e8 84F84230 		strb	r3, [r4, #66]
+ 163 00ec 3A44     		add	r2, r2, r7
+ 164 00ee B5E7     		b	.L7
+ 165              	.L16:
+ 166 00f0 94F84210 		ldrb	r1, [r4, #66]	@ zero_extendqisi2
+ 167 00f4 B4F84030 		ldrh	r3, [r4, #64]
+ 168 00f8 11F00201 		ands	r1, r1, #2
+ 169 00fc 1DD0     		beq	.L17
+ 170 00fe 002B     		cmp	r3, #0
+ 171 0100 43D1     		bne	.L18
+ 172              	.L24:
+ 173 0102 2948     		ldr	r0, .L70+4
+ 174 0104 2146     		mov	r1, r4
+ARM GAS  /var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cc8TM3Td.s 			page 4
+
+
+ 175 0106 FFF7FEFF 		bl	_lv_ll_remove
+ 176 010a 0123     		movs	r3, #1
+ 177 010c 2648     		ldr	r0, .L70+4
+ 178 010e 2B70     		strb	r3, [r5]
+ 179 0110 FFF7FEFF 		bl	_lv_ll_get_head
+ 180 0114 0028     		cmp	r0, #0
+ 181 0116 40D0     		beq	.L68
+ 182 0118 254B     		ldr	r3, .L70+12
+ 183 011a 1868     		ldr	r0, [r3]
+ 184 011c FFF7FEFF 		bl	lv_timer_resume
+ 185              	.L26:
+ 186 0120 E368     		ldr	r3, [r4, #12]
+ 187 0122 0BB1     		cbz	r3, .L27
+ 188 0124 2046     		mov	r0, r4
+ 189 0126 9847     		blx	r3
+ 190              	.L27:
+ 191 0128 2369     		ldr	r3, [r4, #16]
+ 192 012a 0BB1     		cbz	r3, .L28
+ 193 012c 2046     		mov	r0, r4
+ 194 012e 9847     		blx	r3
+ 195              	.L28:
+ 196 0130 2046     		mov	r0, r4
+ 197 0132 FFF7FEFF 		bl	lv_mem_free
+ 198 0136 2B78     		ldrb	r3, [r5]	@ zero_extendqisi2
+ 199 0138 A9E7     		b	.L12
+ 200              	.L17:
+ 201 013a A06B     		ldr	r0, [r4, #56]
+ 202 013c A3B9     		cbnz	r3, .L69
+ 203              	.L21:
+ 204 013e 0028     		cmp	r0, #0
+ 205 0140 DFD0     		beq	.L24
+ 206              	.L25:
+ 207 0142 636B     		ldr	r3, [r4, #52]
+ 208 0144 5B42     		rsbs	r3, r3, #0
+ 209 0146 2363     		str	r3, [r4, #48]
+ 210              	.L31:
+ 211 0148 94F84230 		ldrb	r3, [r4, #66]	@ zero_extendqisi2
+ 212 014c A263     		str	r2, [r4, #56]
+ 213 014e B1FA81F1 		clz	r1, r1
+ 214 0152 4909     		lsrs	r1, r1, #5
+ 215 0154 61F34103 		bfi	r3, r1, #1, #1
+ 216 0158 A26A     		ldr	r2, [r4, #40]
+ 217 015a 84F84230 		strb	r3, [r4, #66]
+ 218 015e 236A     		ldr	r3, [r4, #32]
+ 219 0160 E062     		str	r0, [r4, #44]
+ 220 0162 2262     		str	r2, [r4, #32]
+ 221 0164 A362     		str	r3, [r4, #40]
+ 222 0166 91E7     		b	.L66
+ 223              	.L69:
+ 224 0168 4FF6FF7C 		movw	ip, #65535
+ 225 016c 6345     		cmp	r3, ip
+ 226 016e 05D0     		beq	.L23
+ 227 0170 013B     		subs	r3, r3, #1
+ 228 0172 9BB2     		uxth	r3, r3
+ 229 0174 A4F84030 		strh	r3, [r4, #64]	@ movhi
+ 230 0178 002B     		cmp	r3, #0
+ 231 017a E0D0     		beq	.L21
+ARM GAS  /var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cc8TM3Td.s 			page 5
+
+
+ 232              	.L23:
+ 233 017c E36B     		ldr	r3, [r4, #60]
+ 234 017e 5B42     		rsbs	r3, r3, #0
+ 235 0180 2363     		str	r3, [r4, #48]
+ 236 0182 2B78     		ldrb	r3, [r5]	@ zero_extendqisi2
+ 237 0184 0028     		cmp	r0, #0
+ 238 0186 82D0     		beq	.L12
+ 239 0188 DBE7     		b	.L25
+ 240              	.L18:
+ 241 018a E36B     		ldr	r3, [r4, #60]
+ 242 018c A06B     		ldr	r0, [r4, #56]
+ 243 018e 5B42     		rsbs	r3, r3, #0
+ 244 0190 2363     		str	r3, [r4, #48]
+ 245 0192 2B78     		ldrb	r3, [r5]	@ zero_extendqisi2
+ 246 0194 0028     		cmp	r0, #0
+ 247 0196 D7D1     		bne	.L31
+ 248 0198 79E7     		b	.L12
+ 249              	.L68:
+ 250 019a 054B     		ldr	r3, .L70+12
+ 251 019c 1868     		ldr	r0, [r3]
+ 252 019e FFF7FEFF 		bl	lv_timer_pause
+ 253 01a2 BDE7     		b	.L26
+ 254              	.L71:
+ 255              		.align	2
+ 256              	.L70:
+ 257 01a4 00000000 		.word	anim_run_round
+ 258 01a8 00000000 		.word	_lv_anim_ll
+ 259 01ac 00000000 		.word	anim_list_changed
+ 260 01b0 00000000 		.word	_lv_anim_tmr
+ 261 01b4 00000000 		.word	last_timer_run
+ 263              		.section	.text._lv_anim_core_init,"ax",%progbits
+ 264              		.align	1
+ 265              		.p2align 2,,3
+ 266              		.global	_lv_anim_core_init
+ 267              		.syntax unified
+ 268              		.thumb
+ 269              		.thumb_func
+ 271              	_lv_anim_core_init:
+ 272              		@ args = 0, pretend = 0, frame = 0
+ 273              		@ frame_needed = 0, uses_anonymous_args = 0
+ 274 0000 38B5     		push	{r3, r4, r5, lr}
+ 275 0002 0F48     		ldr	r0, .L77
+ 276 0004 0F4D     		ldr	r5, .L77+4
+ 277 0006 104C     		ldr	r4, .L77+8
+ 278 0008 4421     		movs	r1, #68
+ 279 000a FFF7FEFF 		bl	_lv_ll_init
+ 280 000e 0022     		movs	r2, #0
+ 281 0010 0E48     		ldr	r0, .L77+12
+ 282 0012 3221     		movs	r1, #50
+ 283 0014 FFF7FEFF 		bl	lv_timer_create
+ 284 0018 0123     		movs	r3, #1
+ 285 001a 0246     		mov	r2, r0
+ 286 001c 0848     		ldr	r0, .L77
+ 287 001e 2A60     		str	r2, [r5]
+ 288 0020 2370     		strb	r3, [r4]
+ 289 0022 FFF7FEFF 		bl	_lv_ll_get_head
+ 290 0026 28B1     		cbz	r0, .L76
+ARM GAS  /var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cc8TM3Td.s 			page 6
+
+
+ 291 0028 2868     		ldr	r0, [r5]
+ 292 002a FFF7FEFF 		bl	lv_timer_resume
+ 293 002e 0023     		movs	r3, #0
+ 294 0030 2370     		strb	r3, [r4]
+ 295 0032 38BD     		pop	{r3, r4, r5, pc}
+ 296              	.L76:
+ 297 0034 2868     		ldr	r0, [r5]
+ 298 0036 FFF7FEFF 		bl	lv_timer_pause
+ 299 003a 0023     		movs	r3, #0
+ 300 003c 2370     		strb	r3, [r4]
+ 301 003e 38BD     		pop	{r3, r4, r5, pc}
+ 302              	.L78:
+ 303              		.align	2
+ 304              	.L77:
+ 305 0040 00000000 		.word	_lv_anim_ll
+ 306 0044 00000000 		.word	_lv_anim_tmr
+ 307 0048 00000000 		.word	anim_list_changed
+ 308 004c 00000000 		.word	anim_timer
+ 310              		.section	.text.lv_anim_init,"ax",%progbits
+ 311              		.align	1
+ 312              		.p2align 2,,3
+ 313              		.global	lv_anim_init
+ 314              		.syntax unified
+ 315              		.thumb
+ 316              		.thumb_func
+ 318              	lv_anim_init:
+ 319              		@ args = 0, pretend = 0, frame = 0
+ 320              		@ frame_needed = 0, uses_anonymous_args = 0
+ 321 0000 10B5     		push	{r4, lr}
+ 322 0002 0446     		mov	r4, r0
+ 323 0004 4421     		movs	r1, #68
+ 324 0006 FFF7FEFF 		bl	lv_memset_00
+ 325 000a 94F84230 		ldrb	r3, [r4, #66]	@ zero_extendqisi2
+ 326 000e 084A     		ldr	r2, .L81
+ 327 0010 E261     		str	r2, [r4, #28]
+ 328 0012 0021     		movs	r1, #0
+ 329 0014 6420     		movs	r0, #100
+ 330 0016 2162     		str	r1, [r4, #32]
+ 331 0018 4FF4FA71 		mov	r1, #500
+ 332 001c C4E90A01 		strd	r0, r1, [r4, #40]
+ 333 0020 43F00103 		orr	r3, r3, #1
+ 334 0024 0121     		movs	r1, #1
+ 335 0026 A4F84010 		strh	r1, [r4, #64]	@ movhi
+ 336 002a 84F84230 		strb	r3, [r4, #66]
+ 337 002e 10BD     		pop	{r4, pc}
+ 338              	.L82:
+ 339              		.align	2
+ 340              	.L81:
+ 341 0030 00000000 		.word	lv_anim_path_linear
+ 343              		.section	.text.lv_anim_get_playtime,"ax",%progbits
+ 344              		.align	1
+ 345              		.p2align 2,,3
+ 346              		.global	lv_anim_get_playtime
+ 347              		.syntax unified
+ 348              		.thumb
+ 349              		.thumb_func
+ 351              	lv_anim_get_playtime:
+ARM GAS  /var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cc8TM3Td.s 			page 7
+
+
+ 352              		@ args = 0, pretend = 0, frame = 0
+ 353              		@ frame_needed = 0, uses_anonymous_args = 0
+ 354              		@ link register save eliminated.
+ 355 0000 B0F84010 		ldrh	r1, [r0, #64]
+ 356 0004 4FF6FF72 		movw	r2, #65535
+ 357 0008 9142     		cmp	r1, r2
+ 358 000a 1BD0     		beq	.L86
+ 359 000c 0346     		mov	r3, r0
+ 360 000e 30B4     		push	{r4, r5}
+ 361 0010 93F84220 		ldrb	r2, [r3, #66]	@ zero_extendqisi2
+ 362 0014 D0E90B40 		ldrd	r4, r0, [r0, #44]
+ 363 0018 9207     		lsls	r2, r2, #30
+ 364 001a A4EB0000 		sub	r0, r4, r0
+ 365 001e 0CD5     		bpl	.L91
+ 366              	.L85:
+ 367 0020 0129     		cmp	r1, #1
+ 368 0022 08D9     		bls	.L83
+ 369 0024 DA6B     		ldr	r2, [r3, #60]
+ 370 0026 5D6B     		ldr	r5, [r3, #52]
+ 371 0028 9B6B     		ldr	r3, [r3, #56]
+ 372 002a 2A44     		add	r2, r2, r5
+ 373 002c 1A44     		add	r2, r2, r3
+ 374 002e 0139     		subs	r1, r1, #1
+ 375 0030 2244     		add	r2, r2, r4
+ 376 0032 01FB0200 		mla	r0, r1, r2, r0
+ 377              	.L83:
+ 378 0036 30BC     		pop	{r4, r5}
+ 379 0038 7047     		bx	lr
+ 380              	.L91:
+ 381 003a D3E90D25 		ldrd	r2, r5, [r3, #52]
+ 382 003e 2A44     		add	r2, r2, r5
+ 383 0040 1044     		add	r0, r0, r2
+ 384 0042 EDE7     		b	.L85
+ 385              	.L86:
+ 386 0044 4FF0FF30 		mov	r0, #-1
+ 387 0048 7047     		bx	lr
+ 389 004a 00BF     		.section	.text.lv_anim_del,"ax",%progbits
+ 390              		.align	1
+ 391              		.p2align 2,,3
+ 392              		.global	lv_anim_del
+ 393              		.syntax unified
+ 394              		.thumb
+ 395              		.thumb_func
+ 397              	lv_anim_del:
+ 398              		@ args = 0, pretend = 0, frame = 0
+ 399              		@ frame_needed = 0, uses_anonymous_args = 0
+ 400 0000 2DE9F84F 		push	{r3, r4, r5, r6, r7, r8, r9, r10, fp, lr}
+ 401 0004 0546     		mov	r5, r0
+ 402 0006 2448     		ldr	r0, .L108
+ 403 0008 0F46     		mov	r7, r1
+ 404 000a FFF7FEFF 		bl	_lv_ll_get_head
+ 405 000e 0446     		mov	r4, r0
+ 406 0010 0028     		cmp	r0, #0
+ 407 0012 3DD0     		beq	.L101
+ 408 0014 204E     		ldr	r6, .L108
+ 409 0016 DFF88880 		ldr	r8, .L108+8
+ 410 001a DFF880A0 		ldr	r10, .L108+4
+ARM GAS  /var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cc8TM3Td.s 			page 8
+
+
+ 411 001e 4FF00009 		mov	r9, #0
+ 412              	.L100:
+ 413 0022 A346     		mov	fp, r4
+ 414 0024 2146     		mov	r1, r4
+ 415 0026 3046     		mov	r0, r6
+ 416 0028 FFF7FEFF 		bl	_lv_ll_get_next
+ 417 002c DBF80030 		ldr	r3, [fp]
+ 418 0030 AB42     		cmp	r3, r5
+ 419 0032 0446     		mov	r4, r0
+ 420 0034 05D0     		beq	.L94
+ 421 0036 25B1     		cbz	r5, .L94
+ 422              	.L95:
+ 423 0038 002C     		cmp	r4, #0
+ 424 003a F2D1     		bne	.L100
+ 425              	.L93:
+ 426 003c 4846     		mov	r0, r9
+ 427 003e BDE8F88F 		pop	{r3, r4, r5, r6, r7, r8, r9, r10, fp, pc}
+ 428              	.L94:
+ 429 0042 DBF80430 		ldr	r3, [fp, #4]
+ 430 0046 BB42     		cmp	r3, r7
+ 431 0048 01D0     		beq	.L96
+ 432 004a 002F     		cmp	r7, #0
+ 433 004c F4D1     		bne	.L95
+ 434              	.L96:
+ 435 004e 5946     		mov	r1, fp
+ 436 0050 3046     		mov	r0, r6
+ 437 0052 FFF7FEFF 		bl	_lv_ll_remove
+ 438 0056 DBF81030 		ldr	r3, [fp, #16]
+ 439 005a 0BB1     		cbz	r3, .L97
+ 440 005c 5846     		mov	r0, fp
+ 441 005e 9847     		blx	r3
+ 442              	.L97:
+ 443 0060 5846     		mov	r0, fp
+ 444 0062 FFF7FEFF 		bl	lv_mem_free
+ 445 0066 0123     		movs	r3, #1
+ 446 0068 3046     		mov	r0, r6
+ 447 006a 88F80030 		strb	r3, [r8]
+ 448 006e FFF7FEFF 		bl	_lv_ll_get_head
+ 449 0072 40B1     		cbz	r0, .L107
+ 450 0074 DAF80000 		ldr	r0, [r10]
+ 451 0078 FFF7FEFF 		bl	lv_timer_resume
+ 452              	.L99:
+ 453 007c 4FF00109 		mov	r9, #1
+ 454 0080 002C     		cmp	r4, #0
+ 455 0082 CED1     		bne	.L100
+ 456 0084 DAE7     		b	.L93
+ 457              	.L107:
+ 458 0086 054B     		ldr	r3, .L108+4
+ 459 0088 1868     		ldr	r0, [r3]
+ 460 008a FFF7FEFF 		bl	lv_timer_pause
+ 461 008e F5E7     		b	.L99
+ 462              	.L101:
+ 463 0090 8146     		mov	r9, r0
+ 464 0092 4846     		mov	r0, r9
+ 465 0094 BDE8F88F 		pop	{r3, r4, r5, r6, r7, r8, r9, r10, fp, pc}
+ 466              	.L109:
+ 467              		.align	2
+ARM GAS  /var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cc8TM3Td.s 			page 9
+
+
+ 468              	.L108:
+ 469 0098 00000000 		.word	_lv_anim_ll
+ 470 009c 00000000 		.word	_lv_anim_tmr
+ 471 00a0 00000000 		.word	anim_list_changed
+ 473              		.section	.text.lv_anim_start,"ax",%progbits
+ 474              		.align	1
+ 475              		.p2align 2,,3
+ 476              		.global	lv_anim_start
+ 477              		.syntax unified
+ 478              		.thumb
+ 479              		.thumb_func
+ 481              	lv_anim_start:
+ 482              		@ args = 0, pretend = 0, frame = 0
+ 483              		@ frame_needed = 0, uses_anonymous_args = 0
+ 484 0000 4168     		ldr	r1, [r0, #4]
+ 485 0002 38B5     		push	{r3, r4, r5, lr}
+ 486 0004 0546     		mov	r5, r0
+ 487 0006 11B1     		cbz	r1, .L111
+ 488 0008 0068     		ldr	r0, [r0]
+ 489 000a FFF7FEFF 		bl	lv_anim_del
+ 490              	.L111:
+ 491 000e 2248     		ldr	r0, .L140
+ 492 0010 FFF7FEFF 		bl	_lv_ll_is_empty
+ 493 0014 0028     		cmp	r0, #0
+ 494 0016 35D1     		bne	.L138
+ 495              	.L112:
+ 496 0018 1F48     		ldr	r0, .L140
+ 497 001a FFF7FEFF 		bl	_lv_ll_ins_head
+ 498 001e 0446     		mov	r4, r0
+ 499 0020 0028     		cmp	r0, #0
+ 500 0022 2ED0     		beq	.L114
+ 501 0024 4422     		movs	r2, #68
+ 502 0026 2946     		mov	r1, r5
+ 503 0028 FFF7FEFF 		bl	lv_memcpy
+ 504 002c 2B68     		ldr	r3, [r5]
+ 505 002e 1B4A     		ldr	r2, .L140+4
+ 506 0030 AB42     		cmp	r3, r5
+ 507 0032 1278     		ldrb	r2, [r2]	@ zero_extendqisi2
+ 508 0034 94F84230 		ldrb	r3, [r4, #66]	@ zero_extendqisi2
+ 509 0038 08BF     		it	eq
+ 510 003a 2460     		streq	r4, [r4]
+ 511 003c 62F38203 		bfi	r3, r2, #2, #1
+ 512 0040 84F84230 		strb	r3, [r4, #66]
+ 513 0044 DB07     		lsls	r3, r3, #31
+ 514 0046 0FD5     		bpl	.L117
+ 515 0048 6369     		ldr	r3, [r4, #20]
+ 516 004a 3BB1     		cbz	r3, .L118
+ 517 004c 2046     		mov	r0, r4
+ 518 004e 9847     		blx	r3
+ 519 0050 226A     		ldr	r2, [r4, #32]
+ 520 0052 A36A     		ldr	r3, [r4, #40]
+ 521 0054 0244     		add	r2, r2, r0
+ 522 0056 0344     		add	r3, r3, r0
+ 523 0058 2262     		str	r2, [r4, #32]
+ 524 005a A362     		str	r3, [r4, #40]
+ 525              	.L118:
+ 526 005c 6368     		ldr	r3, [r4, #4]
+ARM GAS  /var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cc8TM3Td.s 			page 10
+
+
+ 527 005e 1BB1     		cbz	r3, .L117
+ 528 0060 2068     		ldr	r0, [r4]
+ 529 0062 08B1     		cbz	r0, .L117
+ 530 0064 216A     		ldr	r1, [r4, #32]
+ 531 0066 9847     		blx	r3
+ 532              	.L117:
+ 533 0068 0D4B     		ldr	r3, .L140+8
+ 534 006a 0B48     		ldr	r0, .L140
+ 535 006c 0122     		movs	r2, #1
+ 536 006e 1A70     		strb	r2, [r3]
+ 537 0070 FFF7FEFF 		bl	_lv_ll_get_head
+ 538 0074 0B4B     		ldr	r3, .L140+12
+ 539 0076 50B1     		cbz	r0, .L139
+ 540 0078 1868     		ldr	r0, [r3]
+ 541 007a FFF7FEFF 		bl	lv_timer_resume
+ 542 007e 2046     		mov	r0, r4
+ 543 0080 38BD     		pop	{r3, r4, r5, pc}
+ 544              	.L114:
+ 545 0082 FEE7     		b	.L114
+ 546              	.L138:
+ 547 0084 FFF7FEFF 		bl	lv_tick_get
+ 548 0088 074B     		ldr	r3, .L140+16
+ 549 008a 1860     		str	r0, [r3]
+ 550 008c C4E7     		b	.L112
+ 551              	.L139:
+ 552 008e 1868     		ldr	r0, [r3]
+ 553 0090 FFF7FEFF 		bl	lv_timer_pause
+ 554 0094 2046     		mov	r0, r4
+ 555 0096 38BD     		pop	{r3, r4, r5, pc}
+ 556              	.L141:
+ 557              		.align	2
+ 558              	.L140:
+ 559 0098 00000000 		.word	_lv_anim_ll
+ 560 009c 00000000 		.word	anim_run_round
+ 561 00a0 00000000 		.word	anim_list_changed
+ 562 00a4 00000000 		.word	_lv_anim_tmr
+ 563 00a8 00000000 		.word	last_timer_run
+ 565              		.section	.text.lv_anim_del_all,"ax",%progbits
+ 566              		.align	1
+ 567              		.p2align 2,,3
+ 568              		.global	lv_anim_del_all
+ 569              		.syntax unified
+ 570              		.thumb
+ 571              		.thumb_func
+ 573              	lv_anim_del_all:
+ 574              		@ args = 0, pretend = 0, frame = 0
+ 575              		@ frame_needed = 0, uses_anonymous_args = 0
+ 576 0000 08B5     		push	{r3, lr}
+ 577 0002 0A48     		ldr	r0, .L146
+ 578 0004 FFF7FEFF 		bl	_lv_ll_clear
+ 579 0008 094B     		ldr	r3, .L146+4
+ 580 000a 0848     		ldr	r0, .L146
+ 581 000c 0122     		movs	r2, #1
+ 582 000e 1A70     		strb	r2, [r3]
+ 583 0010 FFF7FEFF 		bl	_lv_ll_get_head
+ 584 0014 074B     		ldr	r3, .L146+8
+ 585 0016 20B1     		cbz	r0, .L145
+ARM GAS  /var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cc8TM3Td.s 			page 11
+
+
+ 586 0018 1868     		ldr	r0, [r3]
+ 587 001a BDE80840 		pop	{r3, lr}
+ 588 001e FFF7FEBF 		b	lv_timer_resume
+ 589              	.L145:
+ 590 0022 1868     		ldr	r0, [r3]
+ 591 0024 BDE80840 		pop	{r3, lr}
+ 592 0028 FFF7FEBF 		b	lv_timer_pause
+ 593              	.L147:
+ 594              		.align	2
+ 595              	.L146:
+ 596 002c 00000000 		.word	_lv_anim_ll
+ 597 0030 00000000 		.word	anim_list_changed
+ 598 0034 00000000 		.word	_lv_anim_tmr
+ 600              		.section	.text.lv_anim_get,"ax",%progbits
+ 601              		.align	1
+ 602              		.p2align 2,,3
+ 603              		.global	lv_anim_get
+ 604              		.syntax unified
+ 605              		.thumb
+ 606              		.thumb_func
+ 608              	lv_anim_get:
+ 609              		@ args = 0, pretend = 0, frame = 0
+ 610              		@ frame_needed = 0, uses_anonymous_args = 0
+ 611 0000 70B5     		push	{r4, r5, r6, lr}
+ 612 0002 0446     		mov	r4, r0
+ 613 0004 0D48     		ldr	r0, .L161
+ 614 0006 0D46     		mov	r5, r1
+ 615 0008 FFF7FEFF 		bl	_lv_ll_get_head
+ 616 000c 90B1     		cbz	r0, .L149
+ 617 000e 0B4E     		ldr	r6, .L161
+ 618 0010 0346     		mov	r3, r0
+ 619 0012 03E0     		b	.L152
+ 620              	.L150:
+ 621 0014 FFF7FEFF 		bl	_lv_ll_get_next
+ 622 0018 0346     		mov	r3, r0
+ 623 001a 58B1     		cbz	r0, .L149
+ 624              	.L152:
+ 625 001c 1A68     		ldr	r2, [r3]
+ 626 001e A242     		cmp	r2, r4
+ 627 0020 1946     		mov	r1, r3
+ 628 0022 3046     		mov	r0, r6
+ 629 0024 F6D1     		bne	.L150
+ 630 0026 5A68     		ldr	r2, [r3, #4]
+ 631 0028 AA42     		cmp	r2, r5
+ 632 002a 01D0     		beq	.L148
+ 633 002c 002D     		cmp	r5, #0
+ 634 002e F1D1     		bne	.L150
+ 635              	.L148:
+ 636 0030 1846     		mov	r0, r3
+ 637 0032 70BD     		pop	{r4, r5, r6, pc}
+ 638              	.L149:
+ 639 0034 0023     		movs	r3, #0
+ 640 0036 1846     		mov	r0, r3
+ 641 0038 70BD     		pop	{r4, r5, r6, pc}
+ 642              	.L162:
+ 643 003a 00BF     		.align	2
+ 644              	.L161:
+ARM GAS  /var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cc8TM3Td.s 			page 12
+
+
+ 645 003c 00000000 		.word	_lv_anim_ll
+ 647              		.section	.text.lv_anim_get_timer,"ax",%progbits
+ 648              		.align	1
+ 649              		.p2align 2,,3
+ 650              		.global	lv_anim_get_timer
+ 651              		.syntax unified
+ 652              		.thumb
+ 653              		.thumb_func
+ 655              	lv_anim_get_timer:
+ 656              		@ args = 0, pretend = 0, frame = 0
+ 657              		@ frame_needed = 0, uses_anonymous_args = 0
+ 658              		@ link register save eliminated.
+ 659 0000 014B     		ldr	r3, .L164
+ 660 0002 1868     		ldr	r0, [r3]
+ 661 0004 7047     		bx	lr
+ 662              	.L165:
+ 663 0006 00BF     		.align	2
+ 664              	.L164:
+ 665 0008 00000000 		.word	_lv_anim_tmr
+ 667              		.section	.text.lv_anim_count_running,"ax",%progbits
+ 668              		.align	1
+ 669              		.p2align 2,,3
+ 670              		.global	lv_anim_count_running
+ 671              		.syntax unified
+ 672              		.thumb
+ 673              		.thumb_func
+ 675              	lv_anim_count_running:
+ 676              		@ args = 0, pretend = 0, frame = 0
+ 677              		@ frame_needed = 0, uses_anonymous_args = 0
+ 678 0000 38B5     		push	{r3, r4, r5, lr}
+ 679 0002 0A48     		ldr	r0, .L172
+ 680 0004 FFF7FEFF 		bl	_lv_ll_get_head
+ 681 0008 0146     		mov	r1, r0
+ 682 000a 58B1     		cbz	r0, .L169
+ 683 000c 074D     		ldr	r5, .L172
+ 684 000e 0024     		movs	r4, #0
+ 685              	.L168:
+ 686 0010 2846     		mov	r0, r5
+ 687 0012 FFF7FEFF 		bl	_lv_ll_get_next
+ 688 0016 0134     		adds	r4, r4, #1
+ 689 0018 A4B2     		uxth	r4, r4
+ 690 001a 0146     		mov	r1, r0
+ 691 001c 0028     		cmp	r0, #0
+ 692 001e F7D1     		bne	.L168
+ 693 0020 2046     		mov	r0, r4
+ 694 0022 38BD     		pop	{r3, r4, r5, pc}
+ 695              	.L169:
+ 696 0024 0446     		mov	r4, r0
+ 697 0026 2046     		mov	r0, r4
+ 698 0028 38BD     		pop	{r3, r4, r5, pc}
+ 699              	.L173:
+ 700 002a 00BF     		.align	2
+ 701              	.L172:
+ 702 002c 00000000 		.word	_lv_anim_ll
+ 704              		.section	.text.lv_anim_speed_to_time,"ax",%progbits
+ 705              		.align	1
+ 706              		.p2align 2,,3
+ARM GAS  /var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cc8TM3Td.s 			page 13
+
+
+ 707              		.global	lv_anim_speed_to_time
+ 708              		.syntax unified
+ 709              		.thumb
+ 710              		.thumb_func
+ 712              	lv_anim_speed_to_time:
+ 713              		@ args = 0, pretend = 0, frame = 0
+ 714              		@ frame_needed = 0, uses_anonymous_args = 0
+ 715              		@ link register save eliminated.
+ 716 0000 891A     		subs	r1, r1, r2
+ 717 0002 0029     		cmp	r1, #0
+ 718 0004 B8BF     		it	lt
+ 719 0006 4942     		rsblt	r1, r1, #0
+ 720 0008 4FF47A72 		mov	r2, #1000
+ 721 000c 0346     		mov	r3, r0
+ 722 000e 02FB01F1 		mul	r1, r2, r1
+ 723 0012 9942     		cmp	r1, r3
+ 724 0014 B1FBF0F0 		udiv	r0, r1, r0
+ 725 0018 38BF     		it	cc
+ 726 001a 0130     		addcc	r0, r0, #1
+ 727 001c 7047     		bx	lr
+ 729 001e 00BF     		.section	.text.lv_anim_refr_now,"ax",%progbits
+ 730              		.align	1
+ 731              		.p2align 2,,3
+ 732              		.global	lv_anim_refr_now
+ 733              		.syntax unified
+ 734              		.thumb
+ 735              		.thumb_func
+ 737              	lv_anim_refr_now:
+ 738              		@ args = 0, pretend = 0, frame = 0
+ 739              		@ frame_needed = 0, uses_anonymous_args = 0
+ 740              		@ link register save eliminated.
+ 741 0000 0020     		movs	r0, #0
+ 742 0002 FFF7FEBF 		b	anim_timer
+ 744 0006 00BF     		.section	.text.lv_anim_path_ease_in,"ax",%progbits
+ 745              		.align	1
+ 746              		.p2align 2,,3
+ 747              		.global	lv_anim_path_ease_in
+ 748              		.syntax unified
+ 749              		.thumb
+ 750              		.thumb_func
+ 752              	lv_anim_path_ease_in:
+ 753              		@ args = 0, pretend = 0, frame = 0
+ 754              		@ frame_needed = 0, uses_anonymous_args = 0
+ 755 0000 30B5     		push	{r4, r5, lr}
+ 756 0002 83B0     		sub	sp, sp, #12
+ 757 0004 4FF48065 		mov	r5, #1024
+ 758 0008 C26A     		ldr	r2, [r0, #44]
+ 759 000a 0095     		str	r5, [sp]
+ 760 000c 0023     		movs	r3, #0
+ 761 000e 0446     		mov	r4, r0
+ 762 0010 1946     		mov	r1, r3
+ 763 0012 006B     		ldr	r0, [r0, #48]
+ 764 0014 FFF7FEFF 		bl	lv_map
+ 765 0018 6423     		movs	r3, #100
+ 766 001a 3222     		movs	r2, #50
+ 767 001c 0095     		str	r5, [sp]
+ 768 001e 0021     		movs	r1, #0
+ARM GAS  /var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cc8TM3Td.s 			page 14
+
+
+ 769 0020 FFF7FEFF 		bl	lv_bezier3
+ 770 0024 226A     		ldr	r2, [r4, #32]
+ 771 0026 A36A     		ldr	r3, [r4, #40]
+ 772 0028 9B1A     		subs	r3, r3, r2
+ 773 002a 03FB00F0 		mul	r0, r3, r0
+ 774 002e 02EBA020 		add	r0, r2, r0, asr #10
+ 775 0032 03B0     		add	sp, sp, #12
+ 776              		@ sp needed
+ 777 0034 30BD     		pop	{r4, r5, pc}
+ 779 0036 00BF     		.section	.text.lv_anim_path_ease_out,"ax",%progbits
+ 780              		.align	1
+ 781              		.p2align 2,,3
+ 782              		.global	lv_anim_path_ease_out
+ 783              		.syntax unified
+ 784              		.thumb
+ 785              		.thumb_func
+ 787              	lv_anim_path_ease_out:
+ 788              		@ args = 0, pretend = 0, frame = 0
+ 789              		@ frame_needed = 0, uses_anonymous_args = 0
+ 790 0000 30B5     		push	{r4, r5, lr}
+ 791 0002 83B0     		sub	sp, sp, #12
+ 792 0004 4FF48065 		mov	r5, #1024
+ 793 0008 C26A     		ldr	r2, [r0, #44]
+ 794 000a 0095     		str	r5, [sp]
+ 795 000c 0023     		movs	r3, #0
+ 796 000e 0446     		mov	r4, r0
+ 797 0010 1946     		mov	r1, r3
+ 798 0012 006B     		ldr	r0, [r0, #48]
+ 799 0014 FFF7FEFF 		bl	lv_map
+ 800 0018 40F2B633 		movw	r3, #950
+ 801 001c 4FF46172 		mov	r2, #900
+ 802 0020 0095     		str	r5, [sp]
+ 803 0022 0021     		movs	r1, #0
+ 804 0024 FFF7FEFF 		bl	lv_bezier3
+ 805 0028 226A     		ldr	r2, [r4, #32]
+ 806 002a A36A     		ldr	r3, [r4, #40]
+ 807 002c 9B1A     		subs	r3, r3, r2
+ 808 002e 03FB00F0 		mul	r0, r3, r0
+ 809 0032 02EBA020 		add	r0, r2, r0, asr #10
+ 810 0036 03B0     		add	sp, sp, #12
+ 811              		@ sp needed
+ 812 0038 30BD     		pop	{r4, r5, pc}
+ 814 003a 00BF     		.section	.text.lv_anim_path_ease_in_out,"ax",%progbits
+ 815              		.align	1
+ 816              		.p2align 2,,3
+ 817              		.global	lv_anim_path_ease_in_out
+ 818              		.syntax unified
+ 819              		.thumb
+ 820              		.thumb_func
+ 822              	lv_anim_path_ease_in_out:
+ 823              		@ args = 0, pretend = 0, frame = 0
+ 824              		@ frame_needed = 0, uses_anonymous_args = 0
+ 825 0000 30B5     		push	{r4, r5, lr}
+ 826 0002 83B0     		sub	sp, sp, #12
+ 827 0004 4FF48065 		mov	r5, #1024
+ 828 0008 C26A     		ldr	r2, [r0, #44]
+ 829 000a 0095     		str	r5, [sp]
+ARM GAS  /var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cc8TM3Td.s 			page 15
+
+
+ 830 000c 0023     		movs	r3, #0
+ 831 000e 0446     		mov	r4, r0
+ 832 0010 1946     		mov	r1, r3
+ 833 0012 006B     		ldr	r0, [r0, #48]
+ 834 0014 FFF7FEFF 		bl	lv_map
+ 835 0018 4FF46E73 		mov	r3, #952
+ 836 001c 3222     		movs	r2, #50
+ 837 001e 0095     		str	r5, [sp]
+ 838 0020 0021     		movs	r1, #0
+ 839 0022 FFF7FEFF 		bl	lv_bezier3
+ 840 0026 226A     		ldr	r2, [r4, #32]
+ 841 0028 A36A     		ldr	r3, [r4, #40]
+ 842 002a 9B1A     		subs	r3, r3, r2
+ 843 002c 03FB00F0 		mul	r0, r3, r0
+ 844 0030 02EBA020 		add	r0, r2, r0, asr #10
+ 845 0034 03B0     		add	sp, sp, #12
+ 846              		@ sp needed
+ 847 0036 30BD     		pop	{r4, r5, pc}
+ 849              		.section	.text.lv_anim_path_overshoot,"ax",%progbits
+ 850              		.align	1
+ 851              		.p2align 2,,3
+ 852              		.global	lv_anim_path_overshoot
+ 853              		.syntax unified
+ 854              		.thumb
+ 855              		.thumb_func
+ 857              	lv_anim_path_overshoot:
+ 858              		@ args = 0, pretend = 0, frame = 0
+ 859              		@ frame_needed = 0, uses_anonymous_args = 0
+ 860 0000 30B5     		push	{r4, r5, lr}
+ 861 0002 83B0     		sub	sp, sp, #12
+ 862 0004 4FF48065 		mov	r5, #1024
+ 863 0008 C26A     		ldr	r2, [r0, #44]
+ 864 000a 0095     		str	r5, [sp]
+ 865 000c 0023     		movs	r3, #0
+ 866 000e 0446     		mov	r4, r0
+ 867 0010 1946     		mov	r1, r3
+ 868 0012 006B     		ldr	r0, [r0, #48]
+ 869 0014 FFF7FEFF 		bl	lv_map
+ 870 0018 40F21453 		movw	r3, #1300
+ 871 001c 4FF47A72 		mov	r2, #1000
+ 872 0020 0095     		str	r5, [sp]
+ 873 0022 0021     		movs	r1, #0
+ 874 0024 FFF7FEFF 		bl	lv_bezier3
+ 875 0028 226A     		ldr	r2, [r4, #32]
+ 876 002a A36A     		ldr	r3, [r4, #40]
+ 877 002c 9B1A     		subs	r3, r3, r2
+ 878 002e 03FB00F0 		mul	r0, r3, r0
+ 879 0032 02EBA020 		add	r0, r2, r0, asr #10
+ 880 0036 03B0     		add	sp, sp, #12
+ 881              		@ sp needed
+ 882 0038 30BD     		pop	{r4, r5, pc}
+ 884 003a 00BF     		.section	.text.lv_anim_path_bounce,"ax",%progbits
+ 885              		.align	1
+ 886              		.p2align 2,,3
+ 887              		.global	lv_anim_path_bounce
+ 888              		.syntax unified
+ 889              		.thumb
+ARM GAS  /var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cc8TM3Td.s 			page 16
+
+
+ 890              		.thumb_func
+ 892              	lv_anim_path_bounce:
+ 893              		@ args = 0, pretend = 0, frame = 0
+ 894              		@ frame_needed = 0, uses_anonymous_args = 0
+ 895 0000 30B5     		push	{r4, r5, lr}
+ 896 0002 83B0     		sub	sp, sp, #12
+ 897 0004 4FF48061 		mov	r1, #1024
+ 898 0008 C26A     		ldr	r2, [r0, #44]
+ 899 000a 0091     		str	r1, [sp]
+ 900 000c 0023     		movs	r3, #0
+ 901 000e 0446     		mov	r4, r0
+ 902 0010 1946     		mov	r1, r3
+ 903 0012 006B     		ldr	r0, [r0, #48]
+ 904 0014 FFF7FEFF 		bl	lv_map
+ 905 0018 A56A     		ldr	r5, [r4, #40]
+ 906 001a 236A     		ldr	r3, [r4, #32]
+ 907 001c B0F5CC7F 		cmp	r0, #408
+ 908 0020 A5EB0305 		sub	r5, r5, r3
+ 909 0024 1DDA     		bge	.L186
+ 910 0026 40F6C413 		movw	r3, #2500
+ 911 002a 00FB03F3 		mul	r3, r0, r3
+ 912 002e 9812     		asrs	r0, r3, #10
+ 913              	.L187:
+ 914 0030 20EAE070 		bic	r0, r0, r0, asr #31
+ 915 0034 B0F5806F 		cmp	r0, #1024
+ 916 0038 4FF00003 		mov	r3, #0
+ 917 003c 0093     		str	r3, [sp]
+ 918 003e 4FF44872 		mov	r2, #800
+ 919 0042 4FF4FA73 		mov	r3, #500
+ 920 0046 A8BF     		it	ge
+ 921 0048 4FF48060 		movge	r0, #1024
+ 922 004c 4FF48061 		mov	r1, #1024
+ 923 0050 FFF7FEFF 		bl	lv_bezier3
+ 924 0054 A36A     		ldr	r3, [r4, #40]
+ 925 0056 05FB00F0 		mul	r0, r5, r0
+ 926 005a A3EBA020 		sub	r0, r3, r0, asr #10
+ 927 005e 03B0     		add	sp, sp, #12
+ 928              		@ sp needed
+ 929 0060 30BD     		pop	{r4, r5, pc}
+ 930              	.L186:
+ 931 0062 A0F5CC73 		sub	r3, r0, #408
+ 932 0066 CD2B     		cmp	r3, #205
+ 933 0068 0AD8     		bhi	.L188
+ 934 006a 1B4A     		ldr	r2, .L193
+ 935 006c 03EB8303 		add	r3, r3, r3, lsl #2
+ 936 0070 82FB0512 		smull	r1, r2, r2, r5
+ 937 0074 ED17     		asrs	r5, r5, #31
+ 938 0076 C3F58060 		rsb	r0, r3, #1024
+ 939 007a C5EBE205 		rsb	r5, r5, r2, asr #3
+ 940 007e D7E7     		b	.L187
+ 941              	.L188:
+ 942 0080 A0F26623 		subw	r3, r0, #614
+ 943 0084 CC2B     		cmp	r3, #204
+ 944 0086 0FD9     		bls	.L192
+ 945 0088 A0F23333 		subw	r3, r0, #819
+ 946 008c 652B     		cmp	r3, #101
+ 947 008e 14D8     		bhi	.L190
+ARM GAS  /var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cc8TM3Td.s 			page 17
+
+
+ 948 0090 114A     		ldr	r2, .L193
+ 949 0092 03EB8303 		add	r3, r3, r3, lsl #2
+ 950 0096 82FB0512 		smull	r1, r2, r2, r5
+ 951 009a 5B00     		lsls	r3, r3, #1
+ 952 009c ED17     		asrs	r5, r5, #31
+ 953 009e C3F58060 		rsb	r0, r3, #1024
+ 954 00a2 C5EB2215 		rsb	r5, r5, r2, asr #4
+ 955 00a6 C3E7     		b	.L187
+ 956              	.L192:
+ 957 00a8 0B4A     		ldr	r2, .L193
+ 958 00aa E917     		asrs	r1, r5, #31
+ 959 00ac 82FB0552 		smull	r5, r2, r2, r5
+ 960 00b0 03EB8300 		add	r0, r3, r3, lsl #2
+ 961 00b4 C1EBE205 		rsb	r5, r1, r2, asr #3
+ 962 00b8 BAE7     		b	.L187
+ 963              	.L190:
+ 964 00ba 6FF46673 		mvn	r3, #920
+ 965 00be C318     		adds	r3, r0, r3
+ 966 00c0 672B     		cmp	r3, #103
+ 967 00c2 B5D8     		bhi	.L187
+ 968 00c4 044A     		ldr	r2, .L193
+ 969 00c6 03EB8303 		add	r3, r3, r3, lsl #2
+ 970 00ca 82FB0512 		smull	r1, r2, r2, r5
+ 971 00ce ED17     		asrs	r5, r5, #31
+ 972 00d0 5800     		lsls	r0, r3, #1
+ 973 00d2 C5EB2215 		rsb	r5, r5, r2, asr #4
+ 974 00d6 ABE7     		b	.L187
+ 975              	.L194:
+ 976              		.align	2
+ 977              	.L193:
+ 978 00d8 67666666 		.word	1717986919
+ 980              		.section	.text.lv_anim_path_step,"ax",%progbits
+ 981              		.align	1
+ 982              		.p2align 2,,3
+ 983              		.global	lv_anim_path_step
+ 984              		.syntax unified
+ 985              		.thumb
+ 986              		.thumb_func
+ 988              	lv_anim_path_step:
+ 989              		@ args = 0, pretend = 0, frame = 0
+ 990              		@ frame_needed = 0, uses_anonymous_args = 0
+ 991              		@ link register save eliminated.
+ 992 0000 D0E90B32 		ldrd	r3, r2, [r0, #44]
+ 993 0004 9A42     		cmp	r2, r3
+ 994 0006 ACBF     		ite	ge
+ 995 0008 806A     		ldrge	r0, [r0, #40]
+ 996 000a 006A     		ldrlt	r0, [r0, #32]
+ 997 000c 7047     		bx	lr
+ 999 000e 00BF     		.section	.bss._lv_anim_tmr,"aw",%nobits
+ 1000              		.align	2
+ 1003              	_lv_anim_tmr:
+ 1004 0000 00000000 		.space	4
+ 1005              		.section	.bss.anim_run_round,"aw",%nobits
+ 1008              	anim_run_round:
+ 1009 0000 00       		.space	1
+ 1010              		.section	.bss.anim_list_changed,"aw",%nobits
+ 1013              	anim_list_changed:
+ARM GAS  /var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cc8TM3Td.s 			page 18
+
+
+ 1014 0000 00       		.space	1
+ 1015              		.section	.bss.last_timer_run,"aw",%nobits
+ 1016              		.align	2
+ 1019              	last_timer_run:
+ 1020 0000 00000000 		.space	4
+ 1021              		.ident	"GCC: (xPack GNU Arm Embedded GCC arm64) 13.3.1 20240614"
+ARM GAS  /var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cc8TM3Td.s 			page 19
+
+
+DEFINED SYMBOLS
+                            *ABS*:00000000 lv_anim.c
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cc8TM3Td.s:18     .text.lv_anim_path_linear:00000000 $t
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cc8TM3Td.s:25     .text.lv_anim_path_linear:00000000 lv_anim_path_linear
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cc8TM3Td.s:48     .text.anim_timer:00000000 $t
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cc8TM3Td.s:54     .text.anim_timer:00000000 anim_timer
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cc8TM3Td.s:257    .text.anim_timer:000001a4 $d
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cc8TM3Td.s:1008   .bss.anim_run_round:00000000 anim_run_round
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cc8TM3Td.s:1013   .bss.anim_list_changed:00000000 anim_list_changed
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cc8TM3Td.s:1003   .bss._lv_anim_tmr:00000000 _lv_anim_tmr
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cc8TM3Td.s:1019   .bss.last_timer_run:00000000 last_timer_run
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cc8TM3Td.s:264    .text._lv_anim_core_init:00000000 $t
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cc8TM3Td.s:271    .text._lv_anim_core_init:00000000 _lv_anim_core_init
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cc8TM3Td.s:305    .text._lv_anim_core_init:00000040 $d
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cc8TM3Td.s:311    .text.lv_anim_init:00000000 $t
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cc8TM3Td.s:318    .text.lv_anim_init:00000000 lv_anim_init
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cc8TM3Td.s:341    .text.lv_anim_init:00000030 $d
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cc8TM3Td.s:344    .text.lv_anim_get_playtime:00000000 $t
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cc8TM3Td.s:351    .text.lv_anim_get_playtime:00000000 lv_anim_get_playtime
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cc8TM3Td.s:390    .text.lv_anim_del:00000000 $t
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cc8TM3Td.s:397    .text.lv_anim_del:00000000 lv_anim_del
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cc8TM3Td.s:469    .text.lv_anim_del:00000098 $d
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cc8TM3Td.s:474    .text.lv_anim_start:00000000 $t
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cc8TM3Td.s:481    .text.lv_anim_start:00000000 lv_anim_start
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cc8TM3Td.s:559    .text.lv_anim_start:00000098 $d
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cc8TM3Td.s:566    .text.lv_anim_del_all:00000000 $t
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cc8TM3Td.s:573    .text.lv_anim_del_all:00000000 lv_anim_del_all
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cc8TM3Td.s:596    .text.lv_anim_del_all:0000002c $d
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cc8TM3Td.s:601    .text.lv_anim_get:00000000 $t
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cc8TM3Td.s:608    .text.lv_anim_get:00000000 lv_anim_get
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cc8TM3Td.s:645    .text.lv_anim_get:0000003c $d
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cc8TM3Td.s:648    .text.lv_anim_get_timer:00000000 $t
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cc8TM3Td.s:655    .text.lv_anim_get_timer:00000000 lv_anim_get_timer
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cc8TM3Td.s:665    .text.lv_anim_get_timer:00000008 $d
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cc8TM3Td.s:668    .text.lv_anim_count_running:00000000 $t
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cc8TM3Td.s:675    .text.lv_anim_count_running:00000000 lv_anim_count_running
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cc8TM3Td.s:702    .text.lv_anim_count_running:0000002c $d
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cc8TM3Td.s:705    .text.lv_anim_speed_to_time:00000000 $t
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cc8TM3Td.s:712    .text.lv_anim_speed_to_time:00000000 lv_anim_speed_to_time
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cc8TM3Td.s:730    .text.lv_anim_refr_now:00000000 $t
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cc8TM3Td.s:737    .text.lv_anim_refr_now:00000000 lv_anim_refr_now
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cc8TM3Td.s:745    .text.lv_anim_path_ease_in:00000000 $t
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cc8TM3Td.s:752    .text.lv_anim_path_ease_in:00000000 lv_anim_path_ease_in
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cc8TM3Td.s:780    .text.lv_anim_path_ease_out:00000000 $t
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cc8TM3Td.s:787    .text.lv_anim_path_ease_out:00000000 lv_anim_path_ease_out
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cc8TM3Td.s:815    .text.lv_anim_path_ease_in_out:00000000 $t
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cc8TM3Td.s:822    .text.lv_anim_path_ease_in_out:00000000 lv_anim_path_ease_in_out
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cc8TM3Td.s:850    .text.lv_anim_path_overshoot:00000000 $t
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cc8TM3Td.s:857    .text.lv_anim_path_overshoot:00000000 lv_anim_path_overshoot
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cc8TM3Td.s:885    .text.lv_anim_path_bounce:00000000 $t
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cc8TM3Td.s:892    .text.lv_anim_path_bounce:00000000 lv_anim_path_bounce
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cc8TM3Td.s:978    .text.lv_anim_path_bounce:000000d8 $d
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cc8TM3Td.s:981    .text.lv_anim_path_step:00000000 $t
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cc8TM3Td.s:988    .text.lv_anim_path_step:00000000 lv_anim_path_step
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cc8TM3Td.s:1000   .bss._lv_anim_tmr:00000000 $d
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cc8TM3Td.s:1009   .bss.anim_run_round:00000000 $d
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cc8TM3Td.s:1014   .bss.anim_list_changed:00000000 $d
+ARM GAS  /var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cc8TM3Td.s 			page 20
+
+
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cc8TM3Td.s:1016   .bss.last_timer_run:00000000 $d
+
+UNDEFINED SYMBOLS
+lv_map
+lv_tick_elaps
+_lv_ll_get_head
+lv_tick_get
+_lv_ll_get_next
+_lv_ll_remove
+lv_timer_resume
+lv_mem_free
+lv_timer_pause
+_lv_anim_ll
+_lv_ll_init
+lv_timer_create
+lv_memset_00
+_lv_ll_is_empty
+_lv_ll_ins_head
+lv_memcpy
+_lv_ll_clear
+lv_bezier3

@@ -1,0 +1,587 @@
+ARM GAS  /var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cc0njAw8.s 			page 1
+
+
+   1              		.cpu cortex-m4
+   2              		.arch armv7e-m
+   3              		.fpu fpv4-sp-d16
+   4              		.eabi_attribute 27, 1
+   5              		.eabi_attribute 28, 1
+   6              		.eabi_attribute 20, 1
+   7              		.eabi_attribute 21, 1
+   8              		.eabi_attribute 23, 3
+   9              		.eabi_attribute 24, 1
+  10              		.eabi_attribute 25, 1
+  11              		.eabi_attribute 26, 1
+  12              		.eabi_attribute 30, 2
+  13              		.eabi_attribute 34, 1
+  14              		.eabi_attribute 18, 4
+  15              		.file	"lv_draw_sw_gradient.c"
+  16              		.text
+  17              		.section	.text.lv_gradient_free_cache,"ax",%progbits
+  18              		.align	1
+  19              		.p2align 2,,3
+  20              		.global	lv_gradient_free_cache
+  21              		.syntax unified
+  22              		.thumb
+  23              		.thumb_func
+  25              	lv_gradient_free_cache:
+  26              		@ args = 0, pretend = 0, frame = 0
+  27              		@ frame_needed = 0, uses_anonymous_args = 0
+  28 0000 10B5     		push	{r4, lr}
+  29 0002 054C     		ldr	r4, .L4
+  30 0004 2068     		ldr	r0, [r4]
+  31 0006 FFF7FEFF 		bl	lv_mem_free
+  32 000a 0449     		ldr	r1, .L4+4
+  33 000c 044A     		ldr	r2, .L4+8
+  34 000e 0023     		movs	r3, #0
+  35 0010 0B60     		str	r3, [r1]
+  36 0012 2360     		str	r3, [r4]
+  37 0014 1360     		str	r3, [r2]
+  38 0016 10BD     		pop	{r4, pc}
+  39              	.L5:
+  40              		.align	2
+  41              	.L4:
+  42 0018 00000000 		.word	_lv_grad_cache_mem
+  43 001c 00000000 		.word	grad_cache_end
+  44 0020 00000000 		.word	grad_cache_size
+  46              		.section	.text.lv_gradient_set_cache_size,"ax",%progbits
+  47              		.align	1
+  48              		.p2align 2,,3
+  49              		.global	lv_gradient_set_cache_size
+  50              		.syntax unified
+  51              		.thumb
+  52              		.thumb_func
+  54              	lv_gradient_set_cache_size:
+  55              		@ args = 0, pretend = 0, frame = 0
+  56              		@ frame_needed = 0, uses_anonymous_args = 0
+  57 0000 38B5     		push	{r3, r4, r5, lr}
+  58 0002 094D     		ldr	r5, .L10
+  59 0004 0446     		mov	r4, r0
+  60 0006 2868     		ldr	r0, [r5]
+ARM GAS  /var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cc0njAw8.s 			page 2
+
+
+  61 0008 FFF7FEFF 		bl	lv_mem_free
+  62 000c 2046     		mov	r0, r4
+  63 000e FFF7FEFF 		bl	lv_mem_alloc
+  64 0012 064A     		ldr	r2, .L10+4
+  65 0014 2860     		str	r0, [r5]
+  66 0016 1060     		str	r0, [r2]
+  67 0018 28B1     		cbz	r0, .L8
+  68 001a 2146     		mov	r1, r4
+  69 001c FFF7FEFF 		bl	lv_memset_00
+  70 0020 034B     		ldr	r3, .L10+8
+  71 0022 1C60     		str	r4, [r3]
+  72 0024 38BD     		pop	{r3, r4, r5, pc}
+  73              	.L8:
+  74 0026 FEE7     		b	.L8
+  75              	.L11:
+  76              		.align	2
+  77              	.L10:
+  78 0028 00000000 		.word	_lv_grad_cache_mem
+  79 002c 00000000 		.word	grad_cache_end
+  80 0030 00000000 		.word	grad_cache_size
+  82              		.section	.text.lv_gradient_calculate,"ax",%progbits
+  83              		.align	1
+  84              		.p2align 2,,3
+  85              		.global	lv_gradient_calculate
+  86              		.syntax unified
+  87              		.thumb
+  88              		.thumb_func
+  90              	lv_gradient_calculate:
+  91              		@ args = 0, pretend = 0, frame = 0
+  92              		@ frame_needed = 0, uses_anonymous_args = 0
+  93 0000 8378     		ldrb	r3, [r0, #2]	@ zero_extendqisi2
+  94 0002 13FB01F3 		smulbb	r3, r3, r1
+  95 0006 B2EB232F 		cmp	r2, r3, asr #8
+  96 000a 40F3A780 		ble	.L22
+  97 000e 70B5     		push	{r4, r5, r6, lr}
+  98 0010 047A     		ldrb	r4, [r0, #8]	@ zero_extendqisi2
+  99 0012 651E     		subs	r5, r4, #1
+ 100 0014 4FEA232C 		asr	ip, r3, #8
+ 101 0018 00EB8503 		add	r3, r0, r5, lsl #2
+ 102 001c 9B78     		ldrb	r3, [r3, #2]	@ zero_extendqisi2
+ 103 001e 13FB01F3 		smulbb	r3, r3, r1
+ 104 0022 B2EB232F 		cmp	r2, r3, asr #8
+ 105 0026 0ADA     		bge	.L15
+ 106 0028 012C     		cmp	r4, #1
+ 107 002a 07D9     		bls	.L16
+ 108 002c 8379     		ldrb	r3, [r0, #6]	@ zero_extendqisi2
+ 109 002e 13FB01F3 		smulbb	r3, r3, r1
+ 110 0032 B2EB232F 		cmp	r2, r3, asr #8
+ 111 0036 4FEA2321 		asr	r1, r3, #8
+ 112 003a 03DD     		ble	.L17
+ 113              	.L16:
+ 114              	.L18:
+ 115 003c FEE7     		b	.L18
+ 116              	.L15:
+ 117 003e 30F82500 		ldrh	r0, [r0, r5, lsl #2]
+ 118 0042 70BD     		pop	{r4, r5, r6, pc}
+ 119              	.L17:
+ARM GAS  /var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cc0njAw8.s 			page 3
+
+
+ 120 0044 0678     		ldrb	r6, [r0]	@ zero_extendqisi2
+ 121 0046 0479     		ldrb	r4, [r0, #4]	@ zero_extendqisi2
+ 122 0048 4579     		ldrb	r5, [r0, #5]	@ zero_extendqisi2
+ 123 004a A2EB0C02 		sub	r2, r2, ip
+ 124 004e 13B2     		sxth	r3, r2
+ 125 0050 A1EB0C01 		sub	r1, r1, ip
+ 126 0054 C3EB0323 		rsb	r3, r3, r3, lsl #8
+ 127 0058 93FBF1F3 		sdiv	r3, r3, r1
+ 128 005c 4178     		ldrb	r1, [r0, #1]	@ zero_extendqisi2
+ 129 005e 06F00700 		and	r0, r6, #7
+ 130 0062 C000     		lsls	r0, r0, #3
+ 131 0064 F608     		lsrs	r6, r6, #3
+ 132 0066 00EB5110 		add	r0, r0, r1, lsr #5
+ 133 006a 06EB461C 		add	ip, r6, r6, lsl #5
+ 134 006e 04F00702 		and	r2, r4, #7
+ 135 0072 C6EBCC06 		rsb	r6, r6, ip, lsl #3
+ 136 0076 E408     		lsrs	r4, r4, #3
+ 137 0078 00EBC01C 		add	ip, r0, r0, lsl #7
+ 138 007c 01F01F01 		and	r1, r1, #31
+ 139 0080 00EB4C0C 		add	ip, r0, ip, lsl #1
+ 140 0084 D200     		lsls	r2, r2, #3
+ 141 0086 04EB4410 		add	r0, r4, r4, lsl #5
+ 142 008a 02EB5512 		add	r2, r2, r5, lsr #5
+ 143 008e C4EBC004 		rsb	r4, r4, r0, lsl #3
+ 144 0092 01EB4110 		add	r0, r1, r1, lsl #5
+ 145 0096 C1EBC001 		rsb	r1, r1, r0, lsl #3
+ 146 009a 0736     		adds	r6, r6, #7
+ 147 009c 02EBC210 		add	r0, r2, r2, lsl #7
+ 148 00a0 7611     		asrs	r6, r6, #5
+ 149 00a2 02EB4000 		add	r0, r2, r0, lsl #1
+ 150 00a6 0CF1030C 		add	ip, ip, #3
+ 151 00aa 0022     		movs	r2, #0
+ 152 00ac 4FEAAC1C 		asr	ip, ip, #6
+ 153 00b0 66F31742 		bfi	r2, r6, #16, #8
+ 154 00b4 0731     		adds	r1, r1, #7
+ 155 00b6 05F01F05 		and	r5, r5, #31
+ 156 00ba 4911     		asrs	r1, r1, #5
+ 157 00bc 6CF30F22 		bfi	r2, ip, #8, #8
+ 158 00c0 61F30702 		bfi	r2, r1, #0, #8
+ 159 00c4 0734     		adds	r4, r4, #7
+ 160 00c6 05EB4511 		add	r1, r5, r5, lsl #5
+ 161 00ca 6411     		asrs	r4, r4, #5
+ 162 00cc C5EBC101 		rsb	r1, r5, r1, lsl #3
+ 163 00d0 0330     		adds	r0, r0, #3
+ 164 00d2 4FF0000C 		mov	ip, #0
+ 165 00d6 8011     		asrs	r0, r0, #6
+ 166 00d8 64F3174C 		bfi	ip, r4, #16, #8
+ 167 00dc 0731     		adds	r1, r1, #7
+ 168 00de 4911     		asrs	r1, r1, #5
+ 169 00e0 60F30F2C 		bfi	ip, r0, #8, #8
+ 170 00e4 42F07F42 		orr	r2, r2, #-16777216
+ 171 00e8 6FEA030E 		mvn	lr, r3
+ 172 00ec 61F3070C 		bfi	ip, r1, #0, #8
+ 173 00f0 5FFA8EFE 		uxtb	lr, lr
+ 174 00f4 4CF07F4C 		orr	ip, ip, #-16777216
+ 175 00f8 C2F30721 		ubfx	r1, r2, #8, #8
+ 176 00fc DBB2     		uxtb	r3, r3
+ARM GAS  /var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cc0njAw8.s 			page 4
+
+
+ 177 00fe CCF30724 		ubfx	r4, ip, #8, #8
+ 178 0102 11FB0EF1 		smulbb	r1, r1, lr
+ 179 0106 C2F30740 		ubfx	r0, r2, #16, #8
+ 180 010a D2B2     		uxtb	r2, r2
+ 181 010c 03FB0411 		mla	r1, r3, r4, r1
+ 182 0110 0EFB02F2 		mul	r2, lr, r2
+ 183 0114 CCF30744 		ubfx	r4, ip, #16, #8
+ 184 0118 10FB0EF0 		smulbb	r0, r0, lr
+ 185 011c 5FFA8CFC 		uxtb	ip, ip
+ 186 0120 03FB0400 		mla	r0, r3, r4, r0
+ 187 0124 03FB0C23 		mla	r3, r3, ip, r2
+ 188 0128 03EB0322 		add	r2, r3, r3, lsl #8
+ 189 012c 03EBC213 		add	r3, r3, r2, lsl #7
+ 190 0130 01EB0122 		add	r2, r1, r1, lsl #8
+ 191 0134 01EBC211 		add	r1, r1, r2, lsl #7
+ 192 0138 00EB0022 		add	r2, r0, r0, lsl #8
+ 193 013c 00EBC210 		add	r0, r0, r2, lsl #7
+ 194 0140 C0F38460 		ubfx	r0, r0, #26, #5
+ 195 0144 C1F30272 		ubfx	r2, r1, #28, #3
+ 196 0148 C3F38463 		ubfx	r3, r3, #26, #5
+ 197 014c 42EAC000 		orr	r0, r2, r0, lsl #3
+ 198 0150 40EA0320 		orr	r0, r0, r3, lsl #8
+ 199 0154 490E     		lsrs	r1, r1, #25
+ 200 0156 40EA4130 		orr	r0, r0, r1, lsl #13
+ 201 015a 70BD     		pop	{r4, r5, r6, pc}
+ 202              	.L22:
+ 203 015c 0088     		ldrh	r0, [r0]
+ 204 015e 7047     		bx	lr
+ 206              		.section	.text.lv_gradient_get,"ax",%progbits
+ 207              		.align	1
+ 208              		.p2align 2,,3
+ 209              		.global	lv_gradient_get
+ 210              		.syntax unified
+ 211              		.thumb
+ 212              		.thumb_func
+ 214              	lv_gradient_get:
+ 215              		@ args = 0, pretend = 0, frame = 32
+ 216              		@ frame_needed = 0, uses_anonymous_args = 0
+ 217 0000 437A     		ldrb	r3, [r0, #9]	@ zero_extendqisi2
+ 218 0002 13F00703 		ands	r3, r3, #7
+ 219 0006 00F03A81 		beq	.L56
+ 220 000a 2DE9F04F 		push	{r4, r5, r6, r7, r8, r9, r10, fp, lr}
+ 221 000e A24C     		ldr	r4, .L94
+ 222 0010 2778     		ldrb	r7, [r4]	@ zero_extendqisi2
+ 223 0012 89B0     		sub	sp, sp, #36
+ 224 0014 8146     		mov	r9, r0
+ 225 0016 0D46     		mov	r5, r1
+ 226 0018 9246     		mov	r10, r2
+ 227 001a 002F     		cmp	r7, #0
+ 228 001c 67D0     		beq	.L89
+ 229 001e DFF884E2 		ldr	lr, .L94+12
+ 230 0022 DEF80070 		ldr	r7, [lr]
+ 231 0026 022B     		cmp	r3, #2
+ 232 0028 0CBF     		ite	eq
+ 233 002a 0C46     		moveq	r4, r1
+ 234 002c 1446     		movne	r4, r2
+ 235 002e 80EA6108 		eor	r8, r0, r1, asr #1
+ARM GAS  /var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cc0njAw8.s 			page 5
+
+
+ 236 0032 88EA0408 		eor	r8, r8, r4
+ 237 0036 002F     		cmp	r7, #0
+ 238 0038 00F02A81 		beq	.L58
+ 239 003c 974B     		ldr	r3, .L94+4
+ 240 003e 1968     		ldr	r1, [r3]
+ 241 0040 974B     		ldr	r3, .L94+8
+ 242              	.L29:
+ 243 0042 1E68     		ldr	r6, [r3]
+ 244 0044 4FF0020B 		mov	fp, #2
+ 245 0048 4FF0030C 		mov	ip, #3
+ 246              	.L33:
+ 247 004c 81B1     		cbz	r1, .L32
+ 248 004e 4A68     		ldr	r2, [r1, #4]
+ 249 0050 32F04040 		bics	r0, r2, #-1073741824
+ 250 0054 0CD0     		beq	.L32
+ 251 0056 0868     		ldr	r0, [r1]
+ 252 0058 4045     		cmp	r0, r8
+ 253 005a 6DD0     		beq	.L31
+ 254 005c 47B1     		cbz	r7, .L32
+ 255 005e 8A89     		ldrh	r2, [r1, #12]
+ 256 0060 12FB0BC2 		smlabb	r2, r2, fp, ip
+ 257 0064 22F00302 		bic	r2, r2, #3
+ 258 0068 1032     		adds	r2, r2, #16
+ 259 006a 1144     		add	r1, r1, r2
+ 260 006c B142     		cmp	r1, r6
+ 261 006e EDD3     		bcc	.L33
+ 262              	.L32:
+ 263 0070 AA45     		cmp	r10, r5
+ 264 0072 B8BF     		it	lt
+ 265 0074 AA46     		movlt	r10, r5
+ 266 0076 D346     		mov	fp, r10
+ 267 0078 DFF820A2 		ldr	r10, .L94+4
+ 268 007c 0325     		movs	r5, #3
+ 269 007e DAF80020 		ldr	r2, [r10]
+ 270 0082 05EB4B01 		add	r1, r5, fp, lsl #1
+ 271 0086 21F00301 		bic	r1, r1, #3
+ 272 008a 1031     		adds	r1, r1, #16
+ 273 008c B21A     		subs	r2, r6, r2
+ 274 008e 0A44     		add	r2, r2, r1
+ 275 0090 BA42     		cmp	r2, r7
+ 276 0092 0191     		str	r1, [sp, #4]
+ 277 0094 58D2     		bcs	.L90
+ 278 0096 F279     		ldrb	r2, [r6, #7]	@ zero_extendqisi2
+ 279 0098 22F08002 		bic	r2, r2, #128
+ 280 009c F271     		strb	r2, [r6, #7]
+ 281 009e 3146     		mov	r1, r6
+ 282              	.L35:
+ 283 00a0 4A68     		ldr	r2, [r1, #4]
+ 284 00a2 C1F80080 		str	r8, [r1]
+ 285 00a6 02F00042 		and	r2, r2, #-2147483648
+ 286 00aa 42F00100 		orr	r0, r2, #1
+ 287 00ae 002A     		cmp	r2, #0
+ 288 00b0 A1F80CB0 		strh	fp, [r1, #12]	@ movhi
+ 289 00b4 CC81     		strh	r4, [r1, #14]	@ movhi
+ 290 00b6 4860     		str	r0, [r1, #4]
+ 291 00b8 C0F2DE80 		blt	.L91
+ 292 00bc 1E68     		ldr	r6, [r3]
+ARM GAS  /var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cc0njAw8.s 			page 6
+
+
+ 293 00be 019A     		ldr	r2, [sp, #4]
+ 294 00c0 3244     		add	r2, r2, r6
+ 295 00c2 1A60     		str	r2, [r3]
+ 296 00c4 1036     		adds	r6, r6, #16
+ 297              	.L51:
+ 298 00c6 002C     		cmp	r4, #0
+ 299 00c8 8E60     		str	r6, [r1, #8]
+ 300 00ca 0CDD     		ble	.L23
+ 301 00cc 0025     		movs	r5, #0
+ 302 00ce 0F46     		mov	r7, r1
+ 303              	.L53:
+ 304 00d0 2AB2     		sxth	r2, r5
+ 305 00d2 2146     		mov	r1, r4
+ 306 00d4 4846     		mov	r0, r9
+ 307 00d6 FFF7FEFF 		bl	lv_gradient_calculate
+ 308 00da 0135     		adds	r5, r5, #1
+ 309 00dc A542     		cmp	r5, r4
+ 310 00de 26F8020B 		strh	r0, [r6], #2	@ movhi
+ 311 00e2 F5D1     		bne	.L53
+ 312 00e4 3946     		mov	r1, r7
+ 313              	.L23:
+ 314 00e6 0846     		mov	r0, r1
+ 315 00e8 09B0     		add	sp, sp, #36
+ 316              		@ sp needed
+ 317 00ea BDE8F08F 		pop	{r4, r5, r6, r7, r8, r9, r10, fp, pc}
+ 318              	.L89:
+ 319 00ee 6B4E     		ldr	r6, .L94+4
+ 320 00f0 3068     		ldr	r0, [r6]
+ 321 00f2 FFF7FEFF 		bl	lv_mem_free
+ 322 00f6 3846     		mov	r0, r7
+ 323 00f8 FFF7FEFF 		bl	lv_mem_alloc
+ 324 00fc 684B     		ldr	r3, .L94+8
+ 325 00fe 3060     		str	r0, [r6]
+ 326 0100 1860     		str	r0, [r3]
+ 327 0102 C0B1     		cbz	r0, .L27
+ 328 0104 3946     		mov	r1, r7
+ 329 0106 0193     		str	r3, [sp, #4]
+ 330 0108 FFF7FEFF 		bl	lv_memset_00
+ 331 010c 99F80920 		ldrb	r2, [r9, #9]	@ zero_extendqisi2
+ 332 0110 DFF890E1 		ldr	lr, .L94+12
+ 333 0114 019B     		ldr	r3, [sp, #4]
+ 334 0116 CEF80070 		str	r7, [lr]
+ 335 011a 02F00702 		and	r2, r2, #7
+ 336 011e 0121     		movs	r1, #1
+ 337 0120 022A     		cmp	r2, #2
+ 338 0122 2170     		strb	r1, [r4]
+ 339 0124 00F0AD80 		beq	.L28
+ 340 0128 89EA6508 		eor	r8, r9, r5, asr #1
+ 341 012c 88EA0A08 		eor	r8, r8, r10
+ 342 0130 5446     		mov	r4, r10
+ 343 0132 3946     		mov	r1, r7
+ 344 0134 85E7     		b	.L29
+ 345              	.L27:
+ 346 0136 FEE7     		b	.L27
+ 347              	.L31:
+ 348 0138 531C     		adds	r3, r2, #1
+ 349 013a 63F31D02 		bfi	r2, r3, #0, #30
+ARM GAS  /var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cc0njAw8.s 			page 7
+
+
+ 350 013e 0846     		mov	r0, r1
+ 351 0140 4A60     		str	r2, [r1, #4]
+ 352 0142 09B0     		add	sp, sp, #36
+ 353              		@ sp needed
+ 354 0144 BDE8F08F 		pop	{r4, r5, r6, r7, r8, r9, r10, fp, pc}
+ 355              	.L90:
+ 356 0148 0199     		ldr	r1, [sp, #4]
+ 357 014a B942     		cmp	r1, r7
+ 358 014c 42D8     		bhi	.L36
+ 359 014e BA42     		cmp	r2, r7
+ 360 0150 3146     		mov	r1, r6
+ 361 0152 40F28C80 		bls	.L37
+ 362 0156 CDE90448 		strd	r4, r8, [sp, #16]
+ 363 015a CDE906B9 		strd	fp, r9, [sp, #24]
+ 364 015e DEF80000 		ldr	r0, [lr]
+ 365 0162 DDF80490 		ldr	r9, [sp, #4]
+ 366 0166 CDF80CE0 		str	lr, [sp, #12]
+ 367 016a 0226     		movs	r6, #2
+ 368 016c 9B46     		mov	fp, r3
+ 369              	.L47:
+ 370 016e 4FB3     		cbz	r7, .L38
+ 371 0170 DAF80040 		ldr	r4, [r10]
+ 372 0174 34B3     		cbz	r4, .L38
+ 373 0176 2746     		mov	r7, r4
+ 374 0178 4FF0FF3C 		mov	ip, #-1
+ 375              	.L39:
+ 376 017c 7B68     		ldr	r3, [r7, #4]
+ 377 017e C3F31D02 		ubfx	r2, r3, #0, #30
+ 378 0182 33F04043 		bics	r3, r3, #-1073741824
+ 379 0186 0BD0     		beq	.L45
+ 380 0188 BB89     		ldrh	r3, [r7, #12]
+ 381 018a 13FB0653 		smlabb	r3, r3, r6, r5
+ 382 018e 23F00303 		bic	r3, r3, #3
+ 383 0192 1033     		adds	r3, r3, #16
+ 384 0194 9445     		cmp	ip, r2
+ 385 0196 1F44     		add	r7, r7, r3
+ 386 0198 28BF     		it	cs
+ 387 019a 9446     		movcs	ip, r2
+ 388 019c 8F42     		cmp	r7, r1
+ 389 019e EDD3     		bcc	.L39
+ 390              	.L45:
+ 391 01a0 6368     		ldr	r3, [r4, #4]
+ 392 01a2 C3F31D02 		ubfx	r2, r3, #0, #30
+ 393 01a6 33F04043 		bics	r3, r3, #-1073741824
+ 394 01aa 0BD0     		beq	.L38
+ 395 01ac 9445     		cmp	ip, r2
+ 396 01ae 1ED0     		beq	.L92
+ 397 01b0 40B1     		cbz	r0, .L38
+ 398 01b2 A389     		ldrh	r3, [r4, #12]
+ 399 01b4 13FB0653 		smlabb	r3, r3, r6, r5
+ 400 01b8 23F00303 		bic	r3, r3, #3
+ 401 01bc 1033     		adds	r3, r3, #16
+ 402 01be 1C44     		add	r4, r4, r3
+ 403 01c0 8C42     		cmp	r4, r1
+ 404 01c2 EDD3     		bcc	.L45
+ 405              	.L38:
+ 406 01c4 DAF80020 		ldr	r2, [r10]
+ARM GAS  /var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cc0njAw8.s 			page 8
+
+
+ 407 01c8 8A1A     		subs	r2, r1, r2
+ 408 01ca 4A44     		add	r2, r2, r9
+ 409 01cc 8242     		cmp	r2, r0
+ 410 01ce 47D9     		bls	.L93
+ 411              	.L62:
+ 412 01d0 0746     		mov	r7, r0
+ 413 01d2 CCE7     		b	.L47
+ 414              	.L36:
+ 415 01d4 0198     		ldr	r0, [sp, #4]
+ 416 01d6 0293     		str	r3, [sp, #8]
+ 417 01d8 FFF7FEFF 		bl	lv_mem_alloc
+ 418 01dc 029B     		ldr	r3, [sp, #8]
+ 419 01de 0146     		mov	r1, r0
+ 420 01e0 20B1     		cbz	r0, .L49
+ 421 01e2 C279     		ldrb	r2, [r0, #7]	@ zero_extendqisi2
+ 422 01e4 42F08002 		orr	r2, r2, #128
+ 423 01e8 C271     		strb	r2, [r0, #7]
+ 424 01ea 59E7     		b	.L35
+ 425              	.L49:
+ 426 01ec FEE7     		b	.L49
+ 427              	.L92:
+ 428 01ee A789     		ldrh	r7, [r4, #12]
+ 429 01f0 17FB0657 		smlabb	r7, r7, r6, r5
+ 430 01f4 27F00307 		bic	r7, r7, #3
+ 431 01f8 6FF00F08 		mvn	r8, #15
+ 432 01fc A8EB0708 		sub	r8, r8, r7
+ 433 0200 0A1B     		subs	r2, r1, r4
+ 434 0202 1037     		adds	r7, r7, #16
+ 435 0204 4144     		add	r1, r1, r8
+ 436 0206 D21B     		subs	r2, r2, r7
+ 437 0208 CBF80010 		str	r1, [fp]
+ 438 020c DAD0     		beq	.L38
+ 439 020e E119     		adds	r1, r4, r7
+ 440 0210 2046     		mov	r0, r4
+ 441 0212 0292     		str	r2, [sp, #8]
+ 442 0214 FFF7FEFF 		bl	lv_memcpy
+ 443 0218 DBF80030 		ldr	r3, [fp]
+ 444 021c 029A     		ldr	r2, [sp, #8]
+ 445 021e A342     		cmp	r3, r4
+ 446 0220 18BF     		it	ne
+ 447 0222 A446     		movne	ip, r4
+ 448 0224 0ED0     		beq	.L44
+ 449              	.L43:
+ 450 0226 BCF80C10 		ldrh	r1, [ip, #12]
+ 451 022a DCF80800 		ldr	r0, [ip, #8]
+ 452 022e 11FB0651 		smlabb	r1, r1, r6, r5
+ 453 0232 21F00301 		bic	r1, r1, #3
+ 454 0236 1031     		adds	r1, r1, #16
+ 455 0238 4044     		add	r0, r0, r8
+ 456 023a CCF80800 		str	r0, [ip, #8]
+ 457 023e 8C44     		add	ip, ip, r1
+ 458 0240 6345     		cmp	r3, ip
+ 459 0242 F0D1     		bne	.L43
+ 460              	.L44:
+ 461 0244 A018     		adds	r0, r4, r2
+ 462 0246 3946     		mov	r1, r7
+ 463 0248 FFF7FEFF 		bl	lv_memset_00
+ARM GAS  /var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cc0njAw8.s 			page 9
+
+
+ 464 024c DBF80010 		ldr	r1, [fp]
+ 465 0250 039B     		ldr	r3, [sp, #12]
+ 466 0252 DAF80020 		ldr	r2, [r10]
+ 467 0256 1868     		ldr	r0, [r3]
+ 468 0258 8A1A     		subs	r2, r1, r2
+ 469 025a 4A44     		add	r2, r2, r9
+ 470 025c 8242     		cmp	r2, r0
+ 471 025e B7D8     		bhi	.L62
+ 472              	.L93:
+ 473 0260 DDE90448 		ldrd	r4, r8, [sp, #16]
+ 474 0264 5B46     		mov	r3, fp
+ 475 0266 DDF81C90 		ldr	r9, [sp, #28]
+ 476 026a DDF818B0 		ldr	fp, [sp, #24]
+ 477              	.L37:
+ 478 026e CA79     		ldrb	r2, [r1, #7]	@ zero_extendqisi2
+ 479 0270 22F08002 		bic	r2, r2, #128
+ 480 0274 CA71     		strb	r2, [r1, #7]
+ 481 0276 13E7     		b	.L35
+ 482              	.L91:
+ 483 0278 01F11006 		add	r6, r1, #16
+ 484 027c 23E7     		b	.L51
+ 485              	.L56:
+ 486 027e 1846     		mov	r0, r3
+ 487 0280 7047     		bx	lr
+ 488              	.L28:
+ 489 0282 85EA6508 		eor	r8, r5, r5, asr #1
+ 490 0286 89EA0808 		eor	r8, r9, r8
+ 491 028a 2C46     		mov	r4, r5
+ 492 028c 3946     		mov	r1, r7
+ 493 028e D8E6     		b	.L29
+ 494              	.L58:
+ 495 0290 034B     		ldr	r3, .L94+8
+ 496 0292 3946     		mov	r1, r7
+ 497 0294 D5E6     		b	.L29
+ 498              	.L95:
+ 499 0296 00BF     		.align	2
+ 500              	.L94:
+ 501 0298 00000000 		.word	inited.0
+ 502 029c 00000000 		.word	_lv_grad_cache_mem
+ 503 02a0 00000000 		.word	grad_cache_end
+ 504 02a4 00000000 		.word	grad_cache_size
+ 506              		.section	.text.lv_gradient_cleanup,"ax",%progbits
+ 507              		.align	1
+ 508              		.p2align 2,,3
+ 509              		.global	lv_gradient_cleanup
+ 510              		.syntax unified
+ 511              		.thumb
+ 512              		.thumb_func
+ 514              	lv_gradient_cleanup:
+ 515              		@ args = 0, pretend = 0, frame = 0
+ 516              		@ frame_needed = 0, uses_anonymous_args = 0
+ 517              		@ link register save eliminated.
+ 518 0000 90F90730 		ldrsb	r3, [r0, #7]
+ 519 0004 002B     		cmp	r3, #0
+ 520 0006 00DB     		blt	.L98
+ 521 0008 7047     		bx	lr
+ 522              	.L98:
+ARM GAS  /var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cc0njAw8.s 			page 10
+
+
+ 523 000a FFF7FEBF 		b	lv_mem_free
+ 525 000e 00BF     		.section	.bss.inited.0,"aw",%nobits
+ 528              	inited.0:
+ 529 0000 00       		.space	1
+ 530              		.section	.bss.grad_cache_end,"aw",%nobits
+ 531              		.align	2
+ 534              	grad_cache_end:
+ 535 0000 00000000 		.space	4
+ 536              		.section	.bss.grad_cache_size,"aw",%nobits
+ 537              		.align	2
+ 540              	grad_cache_size:
+ 541 0000 00000000 		.space	4
+ 542              		.ident	"GCC: (xPack GNU Arm Embedded GCC arm64) 13.3.1 20240614"
+ARM GAS  /var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cc0njAw8.s 			page 11
+
+
+DEFINED SYMBOLS
+                            *ABS*:00000000 lv_draw_sw_gradient.c
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cc0njAw8.s:18     .text.lv_gradient_free_cache:00000000 $t
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cc0njAw8.s:25     .text.lv_gradient_free_cache:00000000 lv_gradient_free_cache
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cc0njAw8.s:42     .text.lv_gradient_free_cache:00000018 $d
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cc0njAw8.s:534    .bss.grad_cache_end:00000000 grad_cache_end
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cc0njAw8.s:540    .bss.grad_cache_size:00000000 grad_cache_size
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cc0njAw8.s:47     .text.lv_gradient_set_cache_size:00000000 $t
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cc0njAw8.s:54     .text.lv_gradient_set_cache_size:00000000 lv_gradient_set_cache_size
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cc0njAw8.s:78     .text.lv_gradient_set_cache_size:00000028 $d
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cc0njAw8.s:83     .text.lv_gradient_calculate:00000000 $t
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cc0njAw8.s:90     .text.lv_gradient_calculate:00000000 lv_gradient_calculate
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cc0njAw8.s:207    .text.lv_gradient_get:00000000 $t
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cc0njAw8.s:214    .text.lv_gradient_get:00000000 lv_gradient_get
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cc0njAw8.s:501    .text.lv_gradient_get:00000298 $d
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cc0njAw8.s:528    .bss.inited.0:00000000 inited.0
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cc0njAw8.s:507    .text.lv_gradient_cleanup:00000000 $t
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cc0njAw8.s:514    .text.lv_gradient_cleanup:00000000 lv_gradient_cleanup
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cc0njAw8.s:529    .bss.inited.0:00000000 $d
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cc0njAw8.s:531    .bss.grad_cache_end:00000000 $d
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cc0njAw8.s:537    .bss.grad_cache_size:00000000 $d
+
+UNDEFINED SYMBOLS
+lv_mem_free
+_lv_grad_cache_mem
+lv_mem_alloc
+lv_memset_00
+lv_memcpy

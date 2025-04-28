@@ -1,0 +1,2031 @@
+ARM GAS  /var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cceevdVR.s 			page 1
+
+
+   1              		.cpu cortex-m4
+   2              		.arch armv7e-m
+   3              		.fpu fpv4-sp-d16
+   4              		.eabi_attribute 27, 1
+   5              		.eabi_attribute 28, 1
+   6              		.eabi_attribute 20, 1
+   7              		.eabi_attribute 21, 1
+   8              		.eabi_attribute 23, 3
+   9              		.eabi_attribute 24, 1
+  10              		.eabi_attribute 25, 1
+  11              		.eabi_attribute 26, 1
+  12              		.eabi_attribute 30, 2
+  13              		.eabi_attribute 34, 1
+  14              		.eabi_attribute 18, 4
+  15              		.file	"lv_grid.c"
+  16              		.text
+  17              		.section	.text.grid_align,"ax",%progbits
+  18              		.align	1
+  19              		.p2align 2,,3
+  20              		.syntax unified
+  21              		.thumb
+  22              		.thumb_func
+  24              	grid_align:
+  25              		@ args = 16, pretend = 0, frame = 0
+  26              		@ frame_needed = 0, uses_anonymous_args = 0
+  27 0000 2DE9F043 		push	{r4, r5, r6, r7, r8, r9, lr}
+  28 0004 079D     		ldr	r5, [sp, #28]
+  29 0006 9E46     		mov	lr, r3
+  30 0008 DDE90864 		ldrd	r6, r4, [sp, #32]
+  31 000c 9DF82830 		ldrb	r3, [sp, #40]	@ zero_extendqisi2
+  32 0010 0746     		mov	r7, r0
+  33 0012 09BB     		cbnz	r1, .L16
+  34 0014 101F     		subs	r0, r2, #4
+  35 0016 0228     		cmp	r0, #2
+  36 0018 52D8     		bhi	.L34
+  37 001a 012D     		cmp	r5, #1
+  38 001c 8E46     		mov	lr, r1
+  39 001e 52D0     		beq	.L21
+  40              	.L5:
+  41 0020 002D     		cmp	r5, #0
+  42 0022 00F08A80 		beq	.L35
+  43              	.L6:
+  44 0026 4FF00008 		mov	r8, #0
+  45 002a A6F10209 		sub	r9, r6, #2
+  46 002e C446     		mov	ip, r8
+  47              	.L8:
+  48 0030 39F8020F 		ldrh	r0, [r9, #2]!
+  49 0034 08F10108 		add	r8, r8, #1
+  50 0038 0844     		add	r0, r0, r1
+  51 003a 8444     		add	ip, ip, r0
+  52 003c 4545     		cmp	r5, r8
+  53 003e 1FFA8CF0 		uxth	r0, ip
+  54 0042 0FFA8CFC 		sxth	ip, ip
+  55 0046 F3D8     		bhi	.L8
+  56              	.L7:
+  57 0048 062A     		cmp	r2, #6
+  58 004a 74D8     		bhi	.L9
+ARM GAS  /var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cceevdVR.s 			page 2
+
+
+  59 004c DFE802F0 		tbb	[pc, r2]
+  60              	.L11:
+  61 0050 04       		.byte	(.L16-.L11)/2
+  62 0051 6A       		.byte	(.L15-.L11)/2
+  63 0052 65       		.byte	(.L14-.L11)/2
+  64 0053 73       		.byte	(.L9-.L11)/2
+  65 0054 58       		.byte	(.L13-.L11)/2
+  66 0055 49       		.byte	(.L12-.L11)/2
+  67 0056 3D       		.byte	(.L10-.L11)/2
+  68 0057 00       		.p2align 1
+  69              	.L16:
+  70 0058 0022     		movs	r2, #0
+  71 005a 2280     		strh	r2, [r4]	@ movhi
+  72              	.L3:
+  73 005c 012D     		cmp	r5, #1
+  74 005e 14D0     		beq	.L17
+  75 0060 A6F10408 		sub	r8, r6, #4
+  76 0064 B4F90020 		ldrsh	r2, [r4]
+  77 0068 1FFA8EF0 		uxth	r0, lr
+  78 006c 08EB4508 		add	r8, r8, r5, lsl #1
+  79 0070 A6F1020C 		sub	ip, r6, #2
+  80 0074 A646     		mov	lr, r4
+  81              	.L18:
+  82 0076 3CF8021F 		ldrh	r1, [ip, #2]!
+  83 007a 0144     		add	r1, r1, r0
+  84 007c 0A44     		add	r2, r2, r1
+  85 007e 12B2     		sxth	r2, r2
+  86 0080 E045     		cmp	r8, ip
+  87 0082 2EF8022F 		strh	r2, [lr, #2]!	@ movhi
+  88 0086 F6D1     		bne	.L18
+  89 0088 2288     		ldrh	r2, [r4]
+  90              	.L17:
+  91 008a 05F10041 		add	r1, r5, #-2147483648
+  92 008e 0139     		subs	r1, r1, #1
+  93 0090 34F81100 		ldrh	r0, [r4, r1, lsl #1]
+  94 0094 36F81110 		ldrh	r1, [r6, r1, lsl #1]
+  95 0098 0844     		add	r0, r0, r1
+  96 009a 801A     		subs	r0, r0, r2
+  97 009c 00B2     		sxth	r0, r0
+  98 009e 6BB1     		cbz	r3, .L19
+  99 00a0 BFB2     		uxth	r7, r7
+ 100 00a2 A21E     		subs	r2, r4, #2
+ 101 00a4 023E     		subs	r6, r6, #2
+ 102 00a6 0021     		movs	r1, #0
+ 103              	.L20:
+ 104 00a8 32F8023F 		ldrh	r3, [r2, #2]!
+ 105 00ac 36F8024F 		ldrh	r4, [r6, #2]!
+ 106 00b0 0131     		adds	r1, r1, #1
+ 107 00b2 2344     		add	r3, r3, r4
+ 108 00b4 FB1A     		subs	r3, r7, r3
+ 109 00b6 8D42     		cmp	r5, r1
+ 110 00b8 1380     		strh	r3, [r2]	@ movhi
+ 111 00ba F5D8     		bhi	.L20
+ 112              	.L19:
+ 113 00bc BDE8F083 		pop	{r4, r5, r6, r7, r8, r9, pc}
+ 114              	.L34:
+ 115 00c0 1FFA8EF1 		uxth	r1, lr
+ARM GAS  /var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cceevdVR.s 			page 3
+
+
+ 116 00c4 ACE7     		b	.L5
+ 117              	.L21:
+ 118 00c6 2A46     		mov	r2, r5
+ 119 00c8 ADE7     		b	.L6
+ 120              	.L10:
+ 121 00ca CA19     		adds	r2, r1, r7
+ 122 00cc 101A     		subs	r0, r2, r0
+ 123 00ce 691E     		subs	r1, r5, #1
+ 124 00d0 0022     		movs	r2, #0
+ 125 00d2 00B2     		sxth	r0, r0
+ 126 00d4 09B2     		sxth	r1, r1
+ 127 00d6 2280     		strh	r2, [r4]	@ movhi
+ 128 00d8 90FBF1F0 		sdiv	r0, r0, r1
+ 129 00dc 0FFA80FE 		sxth	lr, r0
+ 130 00e0 BCE7     		b	.L3
+ 131              	.L12:
+ 132 00e2 CA19     		adds	r2, r1, r7
+ 133 00e4 121A     		subs	r2, r2, r0
+ 134 00e6 12B2     		sxth	r2, r2
+ 135 00e8 29B2     		sxth	r1, r5
+ 136 00ea 92FBF1F2 		sdiv	r2, r2, r1
+ 137 00ee 0FFA82FE 		sxth	lr, r2
+ 138 00f2 C2F3C032 		ubfx	r2, r2, #15, #1
+ 139 00f6 7244     		add	r2, r2, lr
+ 140 00f8 5210     		asrs	r2, r2, #1
+ 141 00fa 2280     		strh	r2, [r4]	@ movhi
+ 142 00fc 92B2     		uxth	r2, r2
+ 143 00fe ADE7     		b	.L3
+ 144              	.L13:
+ 145 0100 CA19     		adds	r2, r1, r7
+ 146 0102 121A     		subs	r2, r2, r0
+ 147 0104 691C     		adds	r1, r5, #1
+ 148 0106 12B2     		sxth	r2, r2
+ 149 0108 09B2     		sxth	r1, r1
+ 150 010a 92FBF1F2 		sdiv	r2, r2, r1
+ 151 010e 0FFA82FE 		sxth	lr, r2
+ 152 0112 A4F800E0 		strh	lr, [r4]	@ movhi
+ 153 0116 92B2     		uxth	r2, r2
+ 154 0118 A0E7     		b	.L3
+ 155              	.L14:
+ 156 011a CA19     		adds	r2, r1, r7
+ 157 011c 121A     		subs	r2, r2, r0
+ 158 011e 92B2     		uxth	r2, r2
+ 159 0120 2280     		strh	r2, [r4]	@ movhi
+ 160 0122 9BE7     		b	.L3
+ 161              	.L15:
+ 162 0124 421A     		subs	r2, r0, r1
+ 163 0126 12B2     		sxth	r2, r2
+ 164 0128 BA1A     		subs	r2, r7, r2
+ 165 012a 02EBD272 		add	r2, r2, r2, lsr #31
+ 166 012e 5210     		asrs	r2, r2, #1
+ 167 0130 2280     		strh	r2, [r4]	@ movhi
+ 168 0132 92B2     		uxth	r2, r2
+ 169 0134 92E7     		b	.L3
+ 170              	.L9:
+ 171 0136 2288     		ldrh	r2, [r4]
+ 172 0138 90E7     		b	.L3
+ARM GAS  /var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cceevdVR.s 			page 4
+
+
+ 173              	.L35:
+ 174 013a 2846     		mov	r0, r5
+ 175 013c 84E7     		b	.L7
+ 177 013e 00BF     		.section	.text.grid_update,"ax",%progbits
+ 178              		.align	1
+ 179              		.p2align 2,,3
+ 180              		.syntax unified
+ 181              		.thumb
+ 182              		.thumb_func
+ 184              	grid_update:
+ 185              		@ args = 0, pretend = 0, frame = 72
+ 186              		@ frame_needed = 0, uses_anonymous_args = 0
+ 187 0000 2DE9F04F 		push	{r4, r5, r6, r7, r8, r9, r10, fp, lr}
+ 188 0004 DFF82491 		ldr	r9, .L166+20
+ 189 0008 434D     		ldr	r5, .L166
+ 190 000a B9F80020 		ldrh	r2, [r9]
+ 191 000e 97B0     		sub	sp, sp, #92
+ 192 0010 0021     		movs	r1, #0
+ 193 0012 8246     		mov	r10, r0
+ 194 0014 FFF7FEFF 		bl	lv_obj_get_style_prop
+ 195 0018 2A88     		ldrh	r2, [r5]
+ 196 001a 0446     		mov	r4, r0
+ 197 001c 0021     		movs	r1, #0
+ 198 001e 5046     		mov	r0, r10
+ 199 0020 FFF7FEFF 		bl	lv_obj_get_style_prop
+ 200 0024 002C     		cmp	r4, #0
+ 201 0026 00F0C682 		beq	.L36
+ 202 002a 0028     		cmp	r0, #0
+ 203 002c 00F0C382 		beq	.L36
+ 204 0030 0021     		movs	r1, #0
+ 205 0032 5046     		mov	r0, r10
+ 206 0034 FFF7FEFF 		bl	lv_obj_get_child
+ 207 0038 0028     		cmp	r0, #0
+ 208 003a 00F0FE83 		beq	.L157
+ 209 003e 2A88     		ldrh	r2, [r5]
+ 210 0040 0021     		movs	r1, #0
+ 211 0042 5046     		mov	r0, r10
+ 212 0044 FFF7FEFF 		bl	lv_obj_get_style_prop
+ 213 0048 0646     		mov	r6, r0
+ 214 004a 41F6FF70 		movw	r0, #8191
+ 215 004e B6F90030 		ldrsh	r3, [r6]
+ 216 0052 8342     		cmp	r3, r0
+ 217 0054 00F04284 		beq	.L108
+ 218 0058 3246     		mov	r2, r6
+ 219 005a 0023     		movs	r3, #0
+ 220              	.L41:
+ 221 005c 32F9021F 		ldrsh	r1, [r2, #2]!
+ 222 0060 8142     		cmp	r1, r0
+ 223 0062 03F10103 		add	r3, r3, #1
+ 224 0066 F9D1     		bne	.L41
+ 225 0068 5800     		lsls	r0, r3, #1
+ 226              	.L40:
+ 227 006a 1493     		str	r3, [sp, #80]
+ 228 006c FFF7FEFF 		bl	lv_mem_buf_get
+ 229 0070 149B     		ldr	r3, [sp, #80]
+ 230 0072 1090     		str	r0, [sp, #64]
+ 231 0074 5800     		lsls	r0, r3, #1
+ARM GAS  /var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cceevdVR.s 			page 5
+
+
+ 232 0076 FFF7FEFF 		bl	lv_mem_buf_get
+ 233 007a 1290     		str	r0, [sp, #72]
+ 234 007c 1498     		ldr	r0, [sp, #80]
+ 235 007e 0028     		cmp	r0, #0
+ 236 0080 00F02484 		beq	.L52
+ 237 0084 B11E     		subs	r1, r6, #2
+ 238 0086 CDE90661 		strd	r6, r1, [sp, #24]
+ 239 008a 244F     		ldr	r7, .L166+4
+ 240 008c DFF89880 		ldr	r8, .L166+16
+ 241 0090 0D46     		mov	r5, r1
+ 242 0092 4FF0000B 		mov	fp, #0
+ 243 0096 04E0     		b	.L51
+ 244              	.L45:
+ 245 0098 0BF1010B 		add	fp, fp, #1
+ 246 009c 8345     		cmp	fp, r0
+ 247 009e 80F09B82 		bcs	.L158
+ 248              	.L51:
+ 249 00a2 35F9021F 		ldrsh	r1, [r5, #2]!
+ 250 00a6 41F69A72 		movw	r2, #8090
+ 251 00aa 9142     		cmp	r1, r2
+ 252 00ac F4D1     		bne	.L45
+ 253 00ae 1C49     		ldr	r1, .L166+8
+ 254 00b0 0024     		movs	r4, #0
+ 255 00b2 CDE90415 		strd	r1, r5, [sp, #16]
+ 256 00b6 00E0     		b	.L44
+ 257              	.L48:
+ 258 00b8 0134     		adds	r4, r4, #1
+ 259              	.L44:
+ 260 00ba 5046     		mov	r0, r10
+ 261 00bc FFF7FEFF 		bl	lv_obj_get_child_cnt
+ 262 00c0 0346     		mov	r3, r0
+ 263 00c2 9C42     		cmp	r4, r3
+ 264 00c4 2146     		mov	r1, r4
+ 265 00c6 5046     		mov	r0, r10
+ 266 00c8 80F07882 		bcs	.L159
+ 267 00cc FFF7FEFF 		bl	lv_obj_get_child
+ 268 00d0 3946     		mov	r1, r7
+ 269 00d2 0546     		mov	r5, r0
+ 270 00d4 FFF7FEFF 		bl	lv_obj_has_flag_any
+ 271 00d8 0646     		mov	r6, r0
+ 272 00da 0146     		mov	r1, r0
+ 273 00dc 2846     		mov	r0, r5
+ 274 00de 002E     		cmp	r6, #0
+ 275 00e0 EAD1     		bne	.L48
+ 276 00e2 B8F80020 		ldrh	r2, [r8]
+ 277 00e6 FFF7FEFF 		bl	lv_obj_get_style_prop
+ 278 00ea C0B2     		uxtb	r0, r0
+ 279 00ec 0128     		cmp	r0, #1
+ 280 00ee E3D1     		bne	.L48
+ 281 00f0 0C4B     		ldr	r3, .L166+12
+ 282 00f2 3146     		mov	r1, r6
+ 283 00f4 1A88     		ldrh	r2, [r3]
+ 284 00f6 2846     		mov	r0, r5
+ 285 00f8 FFF7FEFF 		bl	lv_obj_get_style_prop
+ 286 00fc C0B2     		uxtb	r0, r0
+ 287 00fe 5845     		cmp	r0, fp
+ 288 0100 DAD1     		bne	.L48
+ARM GAS  /var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cceevdVR.s 			page 6
+
+
+ 289 0102 2846     		mov	r0, r5
+ 290 0104 FFF7FEFF 		bl	lv_obj_get_height
+ 291 0108 049B     		ldr	r3, [sp, #16]
+ 292 010a 9842     		cmp	r0, r3
+ 293 010c D4DB     		blt	.L48
+ 294 010e 2846     		mov	r0, r5
+ 295 0110 FFF7FEFF 		bl	lv_obj_get_height
+ 296 0114 0490     		str	r0, [sp, #16]
+ 297 0116 CFE7     		b	.L48
+ 298              	.L167:
+ 299              		.align	2
+ 300              	.L166:
+ 301 0118 00000000 		.word	LV_STYLE_GRID_ROW_DSC_ARRAY
+ 302 011c 01000600 		.word	393217
+ 303 0120 01E0FFFF 		.word	-8191
+ 304 0124 00000000 		.word	LV_STYLE_GRID_CELL_ROW_POS
+ 305 0128 00000000 		.word	LV_STYLE_GRID_CELL_ROW_SPAN
+ 306 012c 00000000 		.word	LV_STYLE_GRID_COLUMN_DSC_ARRAY
+ 307              	.L74:
+ 308 0130 0025     		movs	r5, #0
+ 309 0132 2C46     		mov	r4, r5
+ 310              	.L65:
+ 311 0134 1522     		movs	r2, #21
+ 312 0136 0021     		movs	r1, #0
+ 313 0138 5046     		mov	r0, r10
+ 314 013a FFF7FEFF 		bl	lv_obj_get_style_prop
+ 315 013e 139F     		ldr	r7, [sp, #76]
+ 316 0140 7B1E     		subs	r3, r7, #1
+ 317 0142 13FB00F3 		smulbb	r3, r3, r0
+ 318 0146 ABEB0300 		sub	r0, fp, r3
+ 319 014a 401B     		subs	r0, r0, r5
+ 320 014c 00B2     		sxth	r0, r0
+ 321 014e 20EAE070 		bic	r0, r0, r0, asr #31
+ 322 0152 37B3     		cbz	r7, .L80
+ 323 0154 0025     		movs	r5, #0
+ 324 0156 DDF844C0 		ldr	ip, [sp, #68]
+ 325 015a 023E     		subs	r6, r6, #2
+ 326 015c 4FF0FF3E 		mov	lr, #-1
+ 327 0160 2B46     		mov	r3, r5
+ 328 0162 41F69A78 		movw	r8, #8090
+ 329              	.L82:
+ 330 0166 36F9021F 		ldrsh	r1, [r6, #2]!
+ 331 016a A1F5FC52 		sub	r2, r1, #8064
+ 332 016e 4145     		cmp	r1, r8
+ 333 0170 A2F11B02 		sub	r2, r2, #27
+ 334 0174 07DD     		ble	.L81
+ 335 0176 95B2     		uxth	r5, r2
+ 336 0178 05FB00F2 		mul	r2, r5, r0
+ 337 017c B2FBF4F2 		udiv	r2, r2, r4
+ 338 0180 2CF81320 		strh	r2, [ip, r3, lsl #1]	@ movhi
+ 339 0184 9E46     		mov	lr, r3
+ 340              	.L81:
+ 341 0186 0133     		adds	r3, r3, #1
+ 342 0188 9F42     		cmp	r7, r3
+ 343 018a ECD1     		bne	.L82
+ 344 018c BEF1000F 		cmp	lr, #0
+ 345 0190 07DB     		blt	.L80
+ARM GAS  /var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cceevdVR.s 			page 7
+
+
+ 346 0192 631B     		subs	r3, r4, r5
+ 347 0194 00FB03F3 		mul	r3, r0, r3
+ 348 0198 B3FBF4F3 		udiv	r3, r3, r4
+ 349 019c C01A     		subs	r0, r0, r3
+ 350 019e 2CF81E00 		strh	r0, [ip, lr, lsl #1]	@ movhi
+ 351              	.L80:
+ 352 01a2 1522     		movs	r2, #21
+ 353 01a4 0021     		movs	r1, #0
+ 354 01a6 5046     		mov	r0, r10
+ 355 01a8 FFF7FEFF 		bl	lv_obj_get_style_prop
+ 356 01ac 1422     		movs	r2, #20
+ 357 01ae 0746     		mov	r7, r0
+ 358 01b0 0021     		movs	r1, #0
+ 359 01b2 5046     		mov	r0, r10
+ 360 01b4 FFF7FEFF 		bl	lv_obj_get_style_prop
+ 361 01b8 1622     		movs	r2, #22
+ 362 01ba 0021     		movs	r1, #0
+ 363 01bc 06B2     		sxth	r6, r0
+ 364 01be 5046     		mov	r0, r10
+ 365 01c0 FFF7FEFF 		bl	lv_obj_get_style_prop
+ 366 01c4 0122     		movs	r2, #1
+ 367 01c6 C4B2     		uxtb	r4, r0
+ 368 01c8 0021     		movs	r1, #0
+ 369 01ca 5046     		mov	r0, r10
+ 370 01cc A41A     		subs	r4, r4, r2
+ 371 01ce FFF7FEFF 		bl	lv_obj_get_style_prop
+ 372 01d2 0422     		movs	r2, #4
+ 373 01d4 05B2     		sxth	r5, r0
+ 374 01d6 0021     		movs	r1, #0
+ 375 01d8 5046     		mov	r0, r10
+ 376 01da FFF7FEFF 		bl	lv_obj_get_style_prop
+ 377 01de 42F2D173 		movw	r3, #10193
+ 378 01e2 9D42     		cmp	r5, r3
+ 379 01e4 08BF     		it	eq
+ 380 01e6 9AF82390 		ldrbeq	r9, [r10, #35]	@ zero_extendqisi2
+ 381 01ea 0FFA80F8 		sxth	r8, r0
+ 382 01ee 08BF     		it	eq
+ 383 01f0 89F00809 		eoreq	r9, r9, #8
+ 384 01f4 5046     		mov	r0, r10
+ 385 01f6 0CBF     		ite	eq
+ 386 01f8 C9F3C009 		ubfxeq	r9, r9, #3, #1
+ 387 01fc 4FF00009 		movne	r9, #0
+ 388 0200 FFF7FEFF 		bl	lv_obj_get_content_width
+ 389 0204 B74B     		ldr	r3, .L168
+ 390 0206 B4FA84F4 		clz	r4, r4
+ 391 020a 0546     		mov	r5, r0
+ 392 020c 1A88     		ldrh	r2, [r3]
+ 393 020e 6409     		lsrs	r4, r4, #5
+ 394 0210 0021     		movs	r1, #0
+ 395 0212 5046     		mov	r0, r10
+ 396 0214 FFF7FEFF 		bl	lv_obj_get_style_prop
+ 397 0218 0394     		str	r4, [sp, #12]
+ 398 021a 0F9C     		ldr	r4, [sp, #60]
+ 399 021c 0294     		str	r4, [sp, #8]
+ 400 021e 119C     		ldr	r4, [sp, #68]
+ 401 0220 0194     		str	r4, [sp, #4]
+ 402 0222 3FB2     		sxth	r7, r7
+ARM GAS  /var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cceevdVR.s 			page 8
+
+
+ 403 0224 139C     		ldr	r4, [sp, #76]
+ 404 0226 0094     		str	r4, [sp]
+ 405 0228 C2B2     		uxtb	r2, r0
+ 406 022a 4946     		mov	r1, r9
+ 407 022c 2846     		mov	r0, r5
+ 408 022e 3B46     		mov	r3, r7
+ 409 0230 FFF7FEFF 		bl	grid_align
+ 410 0234 42F2D173 		movw	r3, #10193
+ 411 0238 9845     		cmp	r8, r3
+ 412 023a 08BF     		it	eq
+ 413 023c 9AF82350 		ldrbeq	r5, [r10, #35]	@ zero_extendqisi2
+ 414 0240 ADF85400 		strh	r0, [sp, #84]	@ movhi
+ 415 0244 08BF     		it	eq
+ 416 0246 85F00405 		eoreq	r5, r5, #4
+ 417 024a 5046     		mov	r0, r10
+ 418 024c 0CBF     		ite	eq
+ 419 024e C5F38005 		ubfxeq	r5, r5, #2, #1
+ 420 0252 0025     		movne	r5, #0
+ 421 0254 FFF7FEFF 		bl	lv_obj_get_content_height
+ 422 0258 A34B     		ldr	r3, .L168+4
+ 423 025a 0446     		mov	r4, r0
+ 424 025c 1A88     		ldrh	r2, [r3]
+ 425 025e 0021     		movs	r1, #0
+ 426 0260 5046     		mov	r0, r10
+ 427 0262 FFF7FEFF 		bl	lv_obj_get_style_prop
+ 428 0266 C2B2     		uxtb	r2, r0
+ 429 0268 2046     		mov	r0, r4
+ 430 026a 109C     		ldr	r4, [sp, #64]
+ 431 026c 0294     		str	r4, [sp, #8]
+ 432 026e 129C     		ldr	r4, [sp, #72]
+ 433 0270 0194     		str	r4, [sp, #4]
+ 434 0272 149C     		ldr	r4, [sp, #80]
+ 435 0274 0094     		str	r4, [sp]
+ 436 0276 0024     		movs	r4, #0
+ 437 0278 3346     		mov	r3, r6
+ 438 027a 2946     		mov	r1, r5
+ 439 027c 0394     		str	r4, [sp, #12]
+ 440 027e FFF7FEFF 		bl	grid_align
+ 441 0282 ADF85600 		strh	r0, [sp, #86]	@ movhi
+ 442              	.L39:
+ 443 0286 0C21     		movs	r1, #12
+ 444 0288 0CA8     		add	r0, sp, #48
+ 445 028a FFF7FEFF 		bl	lv_memset_00
+ 446 028e 3222     		movs	r2, #50
+ 447 0290 0021     		movs	r1, #0
+ 448 0292 5046     		mov	r0, r10
+ 449 0294 FFF7FEFF 		bl	lv_obj_get_style_prop
+ 450 0298 1222     		movs	r2, #18
+ 451 029a 0446     		mov	r4, r0
+ 452 029c 0021     		movs	r1, #0
+ 453 029e 5046     		mov	r0, r10
+ 454 02a0 FFF7FEFF 		bl	lv_obj_get_style_prop
+ 455 02a4 A4B2     		uxth	r4, r4
+ 456 02a6 1022     		movs	r2, #16
+ 457 02a8 2518     		adds	r5, r4, r0
+ 458 02aa 0021     		movs	r1, #0
+ 459 02ac 5046     		mov	r0, r10
+ARM GAS  /var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cceevdVR.s 			page 9
+
+
+ 460 02ae FFF7FEFF 		bl	lv_obj_get_style_prop
+ 461 02b2 BAF81430 		ldrh	r3, [r10, #20]
+ 462 02b6 0444     		add	r4, r4, r0
+ 463 02b8 ADB2     		uxth	r5, r5
+ 464 02ba 5046     		mov	r0, r10
+ 465 02bc 1D44     		add	r5, r5, r3
+ 466 02be FFF7FEFF 		bl	lv_obj_get_scroll_x
+ 467 02c2 ADB2     		uxth	r5, r5
+ 468 02c4 BAF81630 		ldrh	r3, [r10, #22]
+ 469 02c8 2D1A     		subs	r5, r5, r0
+ 470 02ca A4B2     		uxth	r4, r4
+ 471 02cc 5046     		mov	r0, r10
+ 472 02ce 1C44     		add	r4, r4, r3
+ 473 02d0 ADF83850 		strh	r5, [sp, #56]	@ movhi
+ 474 02d4 FFF7FEFF 		bl	lv_obj_get_scroll_y
+ 475 02d8 DAF80830 		ldr	r3, [r10, #8]
+ 476 02dc A4B2     		uxth	r4, r4
+ 477 02de 5A68     		ldr	r2, [r3, #4]
+ 478 02e0 241A     		subs	r4, r4, r0
+ 479 02e2 ADF83A40 		strh	r4, [sp, #58]	@ movhi
+ 480 02e6 4FF00009 		mov	r9, #0
+ 481 02ea 002A     		cmp	r2, #0
+ 482 02ec 00F03D81 		beq	.L106
+ 483              	.L86:
+ 484 02f0 1B68     		ldr	r3, [r3]
+ 485 02f2 7E49     		ldr	r1, .L168+8
+ 486 02f4 53F82940 		ldr	r4, [r3, r9, lsl #2]
+ 487 02f8 2046     		mov	r0, r4
+ 488 02fa FFF7FEFF 		bl	lv_obj_has_flag_any
+ 489 02fe 8046     		mov	r8, r0
+ 490 0300 0028     		cmp	r0, #0
+ 491 0302 40F02A81 		bne	.L90
+ 492 0306 7A4B     		ldr	r3, .L168+12
+ 493 0308 0146     		mov	r1, r0
+ 494 030a 1A88     		ldrh	r2, [r3]
+ 495 030c 2046     		mov	r0, r4
+ 496 030e FFF7FEFF 		bl	lv_obj_get_style_prop
+ 497 0312 784B     		ldr	r3, .L168+16
+ 498 0314 0546     		mov	r5, r0
+ 499 0316 1A88     		ldrh	r2, [r3]
+ 500 0318 4146     		mov	r1, r8
+ 501 031a 2046     		mov	r0, r4
+ 502 031c FFF7FEFF 		bl	lv_obj_get_style_prop
+ 503 0320 10F0FF06 		ands	r6, r0, #255
+ 504 0324 00F01981 		beq	.L90
+ 505 0328 15F0FF05 		ands	r5, r5, #255
+ 506 032c 00F01581 		beq	.L90
+ 507 0330 714B     		ldr	r3, .L168+20
+ 508 0332 4146     		mov	r1, r8
+ 509 0334 1A88     		ldrh	r2, [r3]
+ 510 0336 2046     		mov	r0, r4
+ 511 0338 FFF7FEFF 		bl	lv_obj_get_style_prop
+ 512 033c 6F4B     		ldr	r3, .L168+24
+ 513 033e C7B2     		uxtb	r7, r0
+ 514 0340 1A88     		ldrh	r2, [r3]
+ 515 0342 4146     		mov	r1, r8
+ 516 0344 2046     		mov	r0, r4
+ARM GAS  /var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cceevdVR.s 			page 10
+
+
+ 517 0346 FFF7FEFF 		bl	lv_obj_get_style_prop
+ 518 034a C3B2     		uxtb	r3, r0
+ 519 034c 0493     		str	r3, [sp, #16]
+ 520 034e 6C4B     		ldr	r3, .L168+28
+ 521 0350 4146     		mov	r1, r8
+ 522 0352 1A88     		ldrh	r2, [r3]
+ 523 0354 2046     		mov	r0, r4
+ 524 0356 FFF7FEFF 		bl	lv_obj_get_style_prop
+ 525 035a 6A4A     		ldr	r2, .L168+32
+ 526 035c C3B2     		uxtb	r3, r0
+ 527 035e 1288     		ldrh	r2, [r2]
+ 528 0360 0693     		str	r3, [sp, #24]
+ 529 0362 4146     		mov	r1, r8
+ 530 0364 2046     		mov	r0, r4
+ 531 0366 FFF7FEFF 		bl	lv_obj_get_style_prop
+ 532 036a 049B     		ldr	r3, [sp, #16]
+ 533 036c C2B2     		uxtb	r2, r0
+ 534 036e 0592     		str	r2, [sp, #20]
+ 535 0370 1E44     		add	r6, r6, r3
+ 536 0372 6FF00042 		mvn	r2, #-2147483648
+ 537 0376 3D44     		add	r5, r5, r7
+ 538 0378 1544     		add	r5, r5, r2
+ 539 037a 1644     		add	r6, r6, r2
+ 540 037c DDE90F12 		ldrd	r1, r2, [sp, #60]
+ 541 0380 1198     		ldr	r0, [sp, #68]
+ 542 0382 30F81500 		ldrh	r0, [r0, r5, lsl #1]
+ 543 0386 31F81550 		ldrh	r5, [r1, r5, lsl #1]
+ 544 038a 2844     		add	r0, r0, r5
+ 545 038c 31F81750 		ldrh	r5, [r1, r7, lsl #1]
+ 546 0390 401B     		subs	r0, r0, r5
+ 547 0392 81B2     		uxth	r1, r0
+ 548 0394 1298     		ldr	r0, [sp, #72]
+ 549 0396 0791     		str	r1, [sp, #28]
+ 550 0398 30F81650 		ldrh	r5, [r0, r6, lsl #1]
+ 551 039c 32F81600 		ldrh	r0, [r2, r6, lsl #1]
+ 552 03a0 32F81320 		ldrh	r2, [r2, r3, lsl #1]
+ 553 03a4 0544     		add	r5, r5, r0
+ 554 03a6 AD1A     		subs	r5, r5, r2
+ 555 03a8 ABB2     		uxth	r3, r5
+ 556 03aa 1622     		movs	r2, #22
+ 557 03ac 0993     		str	r3, [sp, #36]
+ 558 03ae 4146     		mov	r1, r8
+ 559 03b0 2BB2     		sxth	r3, r5
+ 560 03b2 2046     		mov	r0, r4
+ 561 03b4 0893     		str	r3, [sp, #32]
+ 562 03b6 FFF7FEFF 		bl	lv_obj_get_style_prop
+ 563 03ba C0B2     		uxtb	r0, r0
+ 564 03bc 0128     		cmp	r0, #1
+ 565 03be 228B     		ldrh	r2, [r4, #24]
+ 566 03c0 069B     		ldr	r3, [sp, #24]
+ 567 03c2 00F01482 		beq	.L153
+ 568 03c6 B4F814C0 		ldrh	ip, [r4, #20]
+ 569 03ca 608B     		ldrh	r0, [r4, #26]
+ 570 03cc E58A     		ldrh	r5, [r4, #22]
+ 571              	.L92:
+ 572 03ce 0130     		adds	r0, r0, #1
+ 573 03d0 401B     		subs	r0, r0, r5
+ARM GAS  /var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cceevdVR.s 			page 11
+
+
+ 574 03d2 0132     		adds	r2, r2, #1
+ 575 03d4 0FFA80FB 		sxth	fp, r0
+ 576 03d8 0F98     		ldr	r0, [sp, #60]
+ 577 03da A2EB0C02 		sub	r2, r2, ip
+ 578 03de 022B     		cmp	r3, #2
+ 579 03e0 30F81750 		ldrh	r5, [r0, r7, lsl #1]
+ 580 03e4 12B2     		sxth	r2, r2
+ 581 03e6 00F07482 		beq	.L116
+ 582 03ea 032B     		cmp	r3, #3
+ 583 03ec BDF91C60 		ldrsh	r6, [sp, #28]
+ 584 03f0 00F06A82 		beq	.L117
+ 585 03f4 012B     		cmp	r3, #1
+ 586 03f6 40F01B82 		bne	.L94
+ 587 03fa B61A     		subs	r6, r6, r2
+ 588 03fc 06EBD676 		add	r6, r6, r6, lsr #31
+ 589 0400 05EB6606 		add	r6, r5, r6, asr #1
+ 590 0404 B5B2     		uxth	r5, r6
+ 591 0406 1646     		mov	r6, r2
+ 592 0408 0022     		movs	r2, #0
+ 593              	.L95:
+ 594 040a 94F82330 		ldrb	r3, [r4, #35]	@ zero_extendqisi2
+ 595 040e 62F3C303 		bfi	r3, r2, #3, #1
+ 596 0412 84F82330 		strb	r3, [r4, #35]
+ 597 0416 109B     		ldr	r3, [sp, #64]
+ 598 0418 049A     		ldr	r2, [sp, #16]
+ 599 041a 33F81270 		ldrh	r7, [r3, r2, lsl #1]
+ 600 041e 059B     		ldr	r3, [sp, #20]
+ 601 0420 022B     		cmp	r3, #2
+ 602 0422 00F04882 		beq	.L97
+ 603 0426 032B     		cmp	r3, #3
+ 604 0428 00F04082 		beq	.L118
+ 605 042c 012B     		cmp	r3, #1
+ 606 042e 07D1     		bne	.L98
+ 607 0430 089B     		ldr	r3, [sp, #32]
+ 608 0432 A3EB0B03 		sub	r3, r3, fp
+ 609 0436 03EBD373 		add	r3, r3, r3, lsr #31
+ 610 043a 07EB6303 		add	r3, r7, r3, asr #1
+ 611 043e 9FB2     		uxth	r7, r3
+ 612              	.L98:
+ 613 0440 94F82330 		ldrb	r3, [r4, #35]	@ zero_extendqisi2
+ 614 0444 68F38203 		bfi	r3, r8, #2, #1
+ 615 0448 84F82330 		strb	r3, [r4, #35]
+ 616 044c 2046     		mov	r0, r4
+ 617 044e FFF7FEFF 		bl	lv_obj_get_width
+ 618 0452 B042     		cmp	r0, r6
+ 619 0454 00F02382 		beq	.L99
+ 620              	.L101:
+ 621 0458 A369     		ldr	r3, [r4, #24]	@ unaligned
+ 622 045a 0B93     		str	r3, [sp, #44]
+ 623 045c 2046     		mov	r0, r4
+ 624 045e 6369     		ldr	r3, [r4, #20]	@ unaligned
+ 625 0460 0A93     		str	r3, [sp, #40]
+ 626 0462 04F11408 		add	r8, r4, #20
+ 627 0466 FFF7FEFF 		bl	lv_obj_invalidate
+ 628 046a 3146     		mov	r1, r6
+ 629 046c 4046     		mov	r0, r8
+ 630 046e FFF7FEFF 		bl	lv_area_set_width
+ARM GAS  /var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cceevdVR.s 			page 12
+
+
+ 631 0472 5946     		mov	r1, fp
+ 632 0474 4046     		mov	r0, r8
+ 633 0476 FFF7FEFF 		bl	lv_area_set_height
+ 634 047a 2046     		mov	r0, r4
+ 635 047c FFF7FEFF 		bl	lv_obj_invalidate
+ 636 0480 2921     		movs	r1, #41
+ 637 0482 0AAA     		add	r2, sp, #40
+ 638 0484 2046     		mov	r0, r4
+ 639 0486 FFF7FEFF 		bl	lv_event_send
+ 640 048a 2046     		mov	r0, r4
+ 641 048c FFF7FEFF 		bl	lv_obj_get_parent
+ 642 0490 2246     		mov	r2, r4
+ 643 0492 2221     		movs	r1, #34
+ 644 0494 FFF7FEFF 		bl	lv_event_send
+ 645              	.L100:
+ 646 0498 6B22     		movs	r2, #107
+ 647 049a 0021     		movs	r1, #0
+ 648 049c 2046     		mov	r0, r4
+ 649 049e FFF7FEFF 		bl	lv_obj_get_style_prop
+ 650 04a2 0021     		movs	r1, #0
+ 651 04a4 0646     		mov	r6, r0
+ 652 04a6 6C22     		movs	r2, #108
+ 653 04a8 2046     		mov	r0, r4
+ 654 04aa FFF7FEFF 		bl	lv_obj_get_style_prop
+ 655 04ae 0246     		mov	r2, r0
+ 656 04b0 2046     		mov	r0, r4
+ 657 04b2 0FFA82F8 		sxth	r8, r2
+ 658 04b6 0492     		str	r2, [sp, #16]
+ 659 04b8 FFF7FEFF 		bl	lv_obj_get_width
+ 660 04bc 0590     		str	r0, [sp, #20]
+ 661 04be 2046     		mov	r0, r4
+ 662 04c0 FFF7FEFF 		bl	lv_obj_get_height
+ 663 04c4 06F4C043 		and	r3, r6, #24576
+ 664 04c8 B3F5005F 		cmp	r3, #8192
+ 665 04cc 049A     		ldr	r2, [sp, #16]
+ 666 04ce 0FFA86FB 		sxth	fp, r6
+ 667 04d2 00F0CD81 		beq	.L160
+ 668              	.L102:
+ 669 04d6 02F4C042 		and	r2, r2, #24576
+ 670 04da B2F5005F 		cmp	r2, #8192
+ 671 04de 00F0B181 		beq	.L161
+ 672 04e2 11E0     		b	.L169
+ 673              	.L170:
+ 674              		.align	2
+ 675              	.L168:
+ 676 04e4 00000000 		.word	LV_STYLE_GRID_COLUMN_ALIGN
+ 677 04e8 00000000 		.word	LV_STYLE_GRID_ROW_ALIGN
+ 678 04ec 01000600 		.word	393217
+ 679 04f0 00000000 		.word	LV_STYLE_GRID_CELL_COLUMN_SPAN
+ 680 04f4 00000000 		.word	LV_STYLE_GRID_CELL_ROW_SPAN
+ 681 04f8 00000000 		.word	LV_STYLE_GRID_CELL_COLUMN_POS
+ 682 04fc 00000000 		.word	LV_STYLE_GRID_CELL_ROW_POS
+ 683 0500 00000000 		.word	LV_STYLE_GRID_CELL_X_ALIGN
+ 684 0504 00000000 		.word	LV_STYLE_GRID_CELL_Y_ALIGN
+ 685              	.L169:
+ 686              	.L104:
+ 687 0508 A28A     		ldrh	r2, [r4, #20]
+ARM GAS  /var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cceevdVR.s 			page 13
+
+
+ 688 050a BDF83830 		ldrh	r3, [sp, #56]
+ 689 050e 9B1A     		subs	r3, r3, r2
+ 690 0510 1D44     		add	r5, r5, r3
+ 691 0512 E28A     		ldrh	r2, [r4, #22]
+ 692 0514 BDF83A30 		ldrh	r3, [sp, #58]
+ 693 0518 9B1A     		subs	r3, r3, r2
+ 694 051a 1F44     		add	r7, r7, r3
+ 695 051c 5D44     		add	r5, r5, fp
+ 696 051e 4744     		add	r7, r7, r8
+ 697 0520 ADB2     		uxth	r5, r5
+ 698 0522 BFB2     		uxth	r7, r7
+ 699 0524 55EA0703 		orrs	r3, r5, r7
+ 700 0528 17D0     		beq	.L90
+ 701 052a 2046     		mov	r0, r4
+ 702 052c FFF7FEFF 		bl	lv_obj_invalidate
+ 703 0530 A38A     		ldrh	r3, [r4, #20]
+ 704 0532 2B44     		add	r3, r3, r5
+ 705 0534 A382     		strh	r3, [r4, #20]	@ movhi
+ 706 0536 238B     		ldrh	r3, [r4, #24]
+ 707 0538 2B44     		add	r3, r3, r5
+ 708 053a 2383     		strh	r3, [r4, #24]	@ movhi
+ 709 053c E38A     		ldrh	r3, [r4, #22]
+ 710 053e 3B44     		add	r3, r3, r7
+ 711 0540 E382     		strh	r3, [r4, #22]	@ movhi
+ 712 0542 638B     		ldrh	r3, [r4, #26]
+ 713 0544 3B44     		add	r3, r3, r7
+ 714 0546 6383     		strh	r3, [r4, #26]	@ movhi
+ 715 0548 2046     		mov	r0, r4
+ 716 054a FFF7FEFF 		bl	lv_obj_invalidate
+ 717 054e 3AB2     		sxth	r2, r7
+ 718 0550 29B2     		sxth	r1, r5
+ 719 0552 2046     		mov	r0, r4
+ 720 0554 0023     		movs	r3, #0
+ 721 0556 FFF7FEFF 		bl	lv_obj_move_children_by
+ 722              	.L90:
+ 723 055a DAF80830 		ldr	r3, [r10, #8]
+ 724 055e 5A68     		ldr	r2, [r3, #4]
+ 725 0560 09F10109 		add	r9, r9, #1
+ 726 0564 9145     		cmp	r9, r2
+ 727 0566 FFF4C3AE 		bcc	.L86
+ 728              	.L106:
+ 729 056a 0F98     		ldr	r0, [sp, #60]
+ 730 056c FFF7FEFF 		bl	lv_mem_buf_release
+ 731 0570 1098     		ldr	r0, [sp, #64]
+ 732 0572 FFF7FEFF 		bl	lv_mem_buf_release
+ 733 0576 1198     		ldr	r0, [sp, #68]
+ 734 0578 FFF7FEFF 		bl	lv_mem_buf_release
+ 735 057c 1298     		ldr	r0, [sp, #72]
+ 736 057e FFF7FEFF 		bl	lv_mem_buf_release
+ 737 0582 0122     		movs	r2, #1
+ 738 0584 0021     		movs	r1, #0
+ 739 0586 5046     		mov	r0, r10
+ 740 0588 FFF7FEFF 		bl	lv_obj_get_style_prop
+ 741 058c 0422     		movs	r2, #4
+ 742 058e 0446     		mov	r4, r0
+ 743 0590 0021     		movs	r1, #0
+ 744 0592 5046     		mov	r0, r10
+ARM GAS  /var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cceevdVR.s 			page 14
+
+
+ 745 0594 FFF7FEFF 		bl	lv_obj_get_style_prop
+ 746 0598 24B2     		sxth	r4, r4
+ 747 059a 42F2D173 		movw	r3, #10193
+ 748 059e 9C42     		cmp	r4, r3
+ 749 05a0 00B2     		sxth	r0, r0
+ 750 05a2 00F02081 		beq	.L87
+ 751 05a6 9842     		cmp	r0, r3
+ 752 05a8 00F01D81 		beq	.L87
+ 753              	.L107:
+ 754 05ac 0022     		movs	r2, #0
+ 755 05ae 2B21     		movs	r1, #43
+ 756 05b0 5046     		mov	r0, r10
+ 757 05b2 FFF7FEFF 		bl	lv_event_send
+ 758              	.L36:
+ 759 05b6 17B0     		add	sp, sp, #92
+ 760              		@ sp needed
+ 761 05b8 BDE8F08F 		pop	{r4, r5, r6, r7, r8, r9, r10, fp, pc}
+ 762              	.L159:
+ 763 05bc DDE90415 		ldrd	r1, r5, [sp, #16]
+ 764 05c0 129A     		ldr	r2, [sp, #72]
+ 765 05c2 1498     		ldr	r0, [sp, #80]
+ 766 05c4 0029     		cmp	r1, #0
+ 767 05c6 B8BF     		it	lt
+ 768 05c8 0021     		movlt	r1, #0
+ 769 05ca 22F81B10 		strh	r1, [r2, fp, lsl #1]	@ movhi
+ 770 05ce 0BF1010B 		add	fp, fp, #1
+ 771 05d2 8345     		cmp	fp, r0
+ 772 05d4 FFF465AD 		bcc	.L51
+ 773              	.L158:
+ 774 05d8 DDE90661 		ldrd	r6, r1, [sp, #24]
+ 775 05dc 0028     		cmp	r0, #0
+ 776 05de 00F07581 		beq	.L52
+ 777 05e2 06EB4000 		add	r0, r6, r0, lsl #1
+ 778 05e6 0022     		movs	r2, #0
+ 779 05e8 129F     		ldr	r7, [sp, #72]
+ 780 05ea 0238     		subs	r0, r0, #2
+ 781 05ec 1446     		mov	r4, r2
+ 782 05ee 41F69A7C 		movw	ip, #8090
+ 783 05f2 04E0     		b	.L56
+ 784              	.L162:
+ 785 05f4 8842     		cmp	r0, r1
+ 786 05f6 7444     		add	r4, r4, lr
+ 787 05f8 07F10207 		add	r7, r7, #2
+ 788 05fc 13D0     		beq	.L43
+ 789              	.L56:
+ 790 05fe 31F9023F 		ldrsh	r3, [r1, #2]!
+ 791 0602 A3F5FC5E 		sub	lr, r3, #8064
+ 792 0606 6345     		cmp	r3, ip
+ 793 0608 95B2     		uxth	r5, r2
+ 794 060a AEF11B0E 		sub	lr, lr, #27
+ 795 060e F1DC     		bgt	.L162
+ 796 0610 0BBF     		itete	eq
+ 797 0612 3A88     		ldrheq	r2, [r7]
+ 798 0614 3B80     		strhne	r3, [r7]	@ movhi
+ 799 0616 5219     		addeq	r2, r2, r5
+ 800 0618 EA18     		addne	r2, r5, r3
+ 801 061a 8842     		cmp	r0, r1
+ARM GAS  /var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cceevdVR.s 			page 15
+
+
+ 802 061c 95B2     		uxth	r5, r2
+ 803 061e 07F10207 		add	r7, r7, #2
+ 804 0622 12B2     		sxth	r2, r2
+ 805 0624 EBD1     		bne	.L56
+ 806              	.L43:
+ 807 0626 1422     		movs	r2, #20
+ 808 0628 0021     		movs	r1, #0
+ 809 062a 5046     		mov	r0, r10
+ 810 062c FFF7FEFF 		bl	lv_obj_get_style_prop
+ 811 0630 0FFA80F8 		sxth	r8, r0
+ 812 0634 5046     		mov	r0, r10
+ 813 0636 FFF7FEFF 		bl	lv_obj_get_content_height
+ 814 063a 149F     		ldr	r7, [sp, #80]
+ 815 063c 7B1E     		subs	r3, r7, #1
+ 816 063e 401B     		subs	r0, r0, r5
+ 817 0640 13FB08F3 		smulbb	r3, r3, r8
+ 818 0644 C01A     		subs	r0, r0, r3
+ 819 0646 00B2     		sxth	r0, r0
+ 820 0648 20EAE070 		bic	r0, r0, r0, asr #31
+ 821 064c 37B3     		cbz	r7, .L58
+ 822 064e 0025     		movs	r5, #0
+ 823 0650 DDF848C0 		ldr	ip, [sp, #72]
+ 824 0654 023E     		subs	r6, r6, #2
+ 825 0656 4FF0FF38 		mov	r8, #-1
+ 826 065a 2B46     		mov	r3, r5
+ 827 065c 41F69A7E 		movw	lr, #8090
+ 828              	.L60:
+ 829 0660 36F9021F 		ldrsh	r1, [r6, #2]!
+ 830 0664 A1F5FC52 		sub	r2, r1, #8064
+ 831 0668 7145     		cmp	r1, lr
+ 832 066a A2F11B02 		sub	r2, r2, #27
+ 833 066e 07DD     		ble	.L59
+ 834 0670 95B2     		uxth	r5, r2
+ 835 0672 05FB00F2 		mul	r2, r5, r0
+ 836 0676 B2FBF4F2 		udiv	r2, r2, r4
+ 837 067a 2CF81320 		strh	r2, [ip, r3, lsl #1]	@ movhi
+ 838 067e 9846     		mov	r8, r3
+ 839              	.L59:
+ 840 0680 0133     		adds	r3, r3, #1
+ 841 0682 9F42     		cmp	r7, r3
+ 842 0684 ECD1     		bne	.L60
+ 843 0686 B8F1000F 		cmp	r8, #0
+ 844 068a 07DB     		blt	.L58
+ 845 068c 631B     		subs	r3, r4, r5
+ 846 068e 00FB03F3 		mul	r3, r0, r3
+ 847 0692 B3FBF4F3 		udiv	r3, r3, r4
+ 848 0696 C01A     		subs	r0, r0, r3
+ 849 0698 2CF81800 		strh	r0, [ip, r8, lsl #1]	@ movhi
+ 850              	.L58:
+ 851 069c B9F80020 		ldrh	r2, [r9]
+ 852 06a0 0021     		movs	r1, #0
+ 853 06a2 5046     		mov	r0, r10
+ 854 06a4 FFF7FEFF 		bl	lv_obj_get_style_prop
+ 855 06a8 0646     		mov	r6, r0
+ 856 06aa 5046     		mov	r0, r10
+ 857 06ac FFF7FEFF 		bl	lv_obj_get_content_width
+ 858 06b0 B6F90030 		ldrsh	r3, [r6]
+ARM GAS  /var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cceevdVR.s 			page 16
+
+
+ 859 06b4 41F6FF74 		movw	r4, #8191
+ 860 06b8 A342     		cmp	r3, r4
+ 861 06ba 8346     		mov	fp, r0
+ 862 06bc 00F00B81 		beq	.L110
+ 863 06c0 3246     		mov	r2, r6
+ 864 06c2 0023     		movs	r3, #0
+ 865              	.L63:
+ 866 06c4 32F9021F 		ldrsh	r1, [r2, #2]!
+ 867 06c8 A142     		cmp	r1, r4
+ 868 06ca 03F10103 		add	r3, r3, #1
+ 869 06ce F9D1     		bne	.L63
+ 870 06d0 5800     		lsls	r0, r3, #1
+ 871              	.L62:
+ 872 06d2 1393     		str	r3, [sp, #76]
+ 873 06d4 FFF7FEFF 		bl	lv_mem_buf_get
+ 874 06d8 139B     		ldr	r3, [sp, #76]
+ 875 06da 0F90     		str	r0, [sp, #60]
+ 876 06dc 5800     		lsls	r0, r3, #1
+ 877 06de FFF7FEFF 		bl	lv_mem_buf_get
+ 878 06e2 1190     		str	r0, [sp, #68]
+ 879 06e4 1398     		ldr	r0, [sp, #76]
+ 880 06e6 0028     		cmp	r0, #0
+ 881 06e8 3FF422AD 		beq	.L74
+ 882 06ec B11E     		subs	r1, r6, #2
+ 883 06ee CDE905B6 		strd	fp, r6, [sp, #20]
+ 884 06f2 7C4F     		ldr	r7, .L171
+ 885 06f4 DFF8F881 		ldr	r8, .L171+12
+ 886 06f8 0791     		str	r1, [sp, #28]
+ 887 06fa 0D46     		mov	r5, r1
+ 888 06fc 4FF00009 		mov	r9, #0
+ 889 0700 03E0     		b	.L73
+ 890              	.L67:
+ 891 0702 09F10109 		add	r9, r9, #1
+ 892 0706 8145     		cmp	r9, r0
+ 893 0708 47D2     		bcs	.L163
+ 894              	.L73:
+ 895 070a 35F9021F 		ldrsh	r1, [r5, #2]!
+ 896 070e 41F69A72 		movw	r2, #8090
+ 897 0712 9142     		cmp	r1, r2
+ 898 0714 F5D1     		bne	.L67
+ 899 0716 DFF8DCB1 		ldr	fp, .L171+16
+ 900 071a 0495     		str	r5, [sp, #16]
+ 901 071c 0024     		movs	r4, #0
+ 902 071e 00E0     		b	.L66
+ 903              	.L70:
+ 904 0720 0134     		adds	r4, r4, #1
+ 905              	.L66:
+ 906 0722 5046     		mov	r0, r10
+ 907 0724 FFF7FEFF 		bl	lv_obj_get_child_cnt
+ 908 0728 0346     		mov	r3, r0
+ 909 072a 9C42     		cmp	r4, r3
+ 910 072c 2146     		mov	r1, r4
+ 911 072e 5046     		mov	r0, r10
+ 912 0730 24D2     		bcs	.L164
+ 913 0732 FFF7FEFF 		bl	lv_obj_get_child
+ 914 0736 3946     		mov	r1, r7
+ 915 0738 0646     		mov	r6, r0
+ARM GAS  /var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cceevdVR.s 			page 17
+
+
+ 916 073a FFF7FEFF 		bl	lv_obj_has_flag_any
+ 917 073e 0546     		mov	r5, r0
+ 918 0740 0146     		mov	r1, r0
+ 919 0742 3046     		mov	r0, r6
+ 920 0744 002D     		cmp	r5, #0
+ 921 0746 EBD1     		bne	.L70
+ 922 0748 B8F80020 		ldrh	r2, [r8]
+ 923 074c FFF7FEFF 		bl	lv_obj_get_style_prop
+ 924 0750 C0B2     		uxtb	r0, r0
+ 925 0752 0128     		cmp	r0, #1
+ 926 0754 E4D1     		bne	.L70
+ 927 0756 644B     		ldr	r3, .L171+4
+ 928 0758 2946     		mov	r1, r5
+ 929 075a 1A88     		ldrh	r2, [r3]
+ 930 075c 3046     		mov	r0, r6
+ 931 075e FFF7FEFF 		bl	lv_obj_get_style_prop
+ 932 0762 C0B2     		uxtb	r0, r0
+ 933 0764 4845     		cmp	r0, r9
+ 934 0766 DBD1     		bne	.L70
+ 935 0768 3046     		mov	r0, r6
+ 936 076a FFF7FEFF 		bl	lv_obj_get_width
+ 937 076e 5845     		cmp	r0, fp
+ 938 0770 D6DB     		blt	.L70
+ 939 0772 3046     		mov	r0, r6
+ 940 0774 FFF7FEFF 		bl	lv_obj_get_width
+ 941 0778 8346     		mov	fp, r0
+ 942 077a D1E7     		b	.L70
+ 943              	.L164:
+ 944 077c BBF1000F 		cmp	fp, #0
+ 945 0780 119A     		ldr	r2, [sp, #68]
+ 946 0782 1398     		ldr	r0, [sp, #76]
+ 947 0784 AEBF     		itee	ge
+ 948 0786 22F819B0 		strhge	fp, [r2, r9, lsl #1]	@ movhi
+ 949 078a 0021     		movlt	r1, #0
+ 950 078c 22F81910 		strhlt	r1, [r2, r9, lsl #1]	@ movhi
+ 951 0790 09F10109 		add	r9, r9, #1
+ 952 0794 8145     		cmp	r9, r0
+ 953 0796 049D     		ldr	r5, [sp, #16]
+ 954 0798 B7D3     		bcc	.L73
+ 955              	.L163:
+ 956 079a DDE905B6 		ldrd	fp, r6, [sp, #20]
+ 957 079e 0799     		ldr	r1, [sp, #28]
+ 958 07a0 0028     		cmp	r0, #0
+ 959 07a2 3FF4C5AC 		beq	.L74
+ 960 07a6 06EB4000 		add	r0, r6, r0, lsl #1
+ 961 07aa 0022     		movs	r2, #0
+ 962 07ac 119F     		ldr	r7, [sp, #68]
+ 963 07ae 0238     		subs	r0, r0, #2
+ 964 07b0 1446     		mov	r4, r2
+ 965 07b2 41F69A7C 		movw	ip, #8090
+ 966 07b6 05E0     		b	.L78
+ 967              	.L165:
+ 968 07b8 7444     		add	r4, r4, lr
+ 969              	.L76:
+ 970 07ba 8842     		cmp	r0, r1
+ 971 07bc 07F10207 		add	r7, r7, #2
+ 972 07c0 3FF4B8AC 		beq	.L65
+ARM GAS  /var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cceevdVR.s 			page 18
+
+
+ 973              	.L78:
+ 974 07c4 31F9023F 		ldrsh	r3, [r1, #2]!
+ 975 07c8 A3F5FC5E 		sub	lr, r3, #8064
+ 976 07cc 6345     		cmp	r3, ip
+ 977 07ce 95B2     		uxth	r5, r2
+ 978 07d0 AEF11B0E 		sub	lr, lr, #27
+ 979 07d4 F0DC     		bgt	.L165
+ 980 07d6 0BBF     		itete	eq
+ 981 07d8 3A88     		ldrheq	r2, [r7]
+ 982 07da 3B80     		strhne	r3, [r7]	@ movhi
+ 983 07dc 5219     		addeq	r2, r2, r5
+ 984 07de EA18     		addne	r2, r5, r3
+ 985 07e0 95B2     		uxth	r5, r2
+ 986 07e2 12B2     		sxth	r2, r2
+ 987 07e4 E9E7     		b	.L76
+ 988              	.L87:
+ 989 07e6 5046     		mov	r0, r10
+ 990 07e8 FFF7FEFF 		bl	lv_obj_refr_size
+ 991 07ec DEE6     		b	.L107
+ 992              	.L153:
+ 993 07ee 608B     		ldrh	r0, [r4, #26]
+ 994 07f0 B4F814C0 		ldrh	ip, [r4, #20]
+ 995 07f4 E58A     		ldrh	r5, [r4, #22]
+ 996 07f6 561C     		adds	r6, r2, #1
+ 997 07f8 00F1010B 		add	fp, r0, #1
+ 998 07fc A6EB0C06 		sub	r6, r6, ip
+ 999 0800 ABEB050B 		sub	fp, fp, r5
+ 1000 0804 36B2     		sxth	r6, r6
+ 1001 0806 0FFA8BFB 		sxth	fp, fp
+ 1002 080a 63B9     		cbnz	r3, .L154
+ 1003 080c 0F98     		ldr	r0, [sp, #60]
+ 1004              	.L93:
+ 1005 080e 30F81730 		ldrh	r3, [r0, r7, lsl #1]
+ 1006 0812 079D     		ldr	r5, [sp, #28]
+ 1007 0814 2046     		mov	r0, r4
+ 1008 0816 1D44     		add	r5, r5, r3
+ 1009 0818 FFF7FEFF 		bl	lv_obj_get_width
+ 1010 081c ADB2     		uxth	r5, r5
+ 1011 081e 2D1A     		subs	r5, r5, r0
+ 1012 0820 ADB2     		uxth	r5, r5
+ 1013 0822 0022     		movs	r2, #0
+ 1014 0824 F1E5     		b	.L95
+ 1015              	.L154:
+ 1016 0826 022B     		cmp	r3, #2
+ 1017 0828 7FF4D1AD 		bne	.L92
+ 1018 082c 0F98     		ldr	r0, [sp, #60]
+ 1019 082e 3246     		mov	r2, r6
+ 1020              	.L94:
+ 1021 0830 1646     		mov	r6, r2
+ 1022 0832 30F81750 		ldrh	r5, [r0, r7, lsl #1]
+ 1023 0836 0022     		movs	r2, #0
+ 1024 0838 E7E5     		b	.L95
+ 1025              	.L157:
+ 1026 083a 1C21     		movs	r1, #28
+ 1027 083c 0FA8     		add	r0, sp, #60
+ 1028 083e FFF7FEFF 		bl	lv_memset_00
+ 1029 0842 20E5     		b	.L39
+ARM GAS  /var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cceevdVR.s 			page 19
+
+
+ 1030              	.L161:
+ 1031 0844 28F4C043 		bic	r3, r8, #24576
+ 1032 0848 B3F5FA6F 		cmp	r3, #2000
+ 1033 084c 3FF75CAE 		bgt	.L104
+ 1034 0850 B3F57A7F 		cmp	r3, #1000
+ 1035 0854 C8BF     		it	gt
+ 1036 0856 C3F57A73 		rsbgt	r3, r3, #1000
+ 1037 085a 03FB00F0 		mul	r0, r3, r0
+ 1038 085e 234B     		ldr	r3, .L171+8
+ 1039 0860 83FB0023 		smull	r2, r3, r3, r0
+ 1040 0864 C017     		asrs	r0, r0, #31
+ 1041 0866 C0EB6310 		rsb	r0, r0, r3, asr #5
+ 1042 086a 0FFA80F8 		sxth	r8, r0
+ 1043 086e 4BE6     		b	.L104
+ 1044              	.L160:
+ 1045 0870 2BF4C043 		bic	r3, fp, #24576
+ 1046 0874 B3F5FA6F 		cmp	r3, #2000
+ 1047 0878 3FF72DAE 		bgt	.L102
+ 1048 087c B3F57A7F 		cmp	r3, #1000
+ 1049 0880 059E     		ldr	r6, [sp, #20]
+ 1050 0882 C8BF     		it	gt
+ 1051 0884 C3F57A73 		rsbgt	r3, r3, #1000
+ 1052 0888 03FB06F6 		mul	r6, r3, r6
+ 1053 088c 174B     		ldr	r3, .L171+8
+ 1054 088e 83FB0613 		smull	r1, r3, r3, r6
+ 1055 0892 F617     		asrs	r6, r6, #31
+ 1056 0894 C6EB6316 		rsb	r6, r6, r3, asr #5
+ 1057 0898 0FFA86FB 		sxth	fp, r6
+ 1058 089c 1BE6     		b	.L102
+ 1059              	.L99:
+ 1060 089e 2046     		mov	r0, r4
+ 1061 08a0 FFF7FEFF 		bl	lv_obj_get_height
+ 1062 08a4 5845     		cmp	r0, fp
+ 1063 08a6 7FF4D7AD 		bne	.L101
+ 1064 08aa F5E5     		b	.L100
+ 1065              	.L118:
+ 1066 08ac DDF820B0 		ldr	fp, [sp, #32]
+ 1067 08b0 4FF00108 		mov	r8, #1
+ 1068 08b4 C4E5     		b	.L98
+ 1069              	.L97:
+ 1070 08b6 099B     		ldr	r3, [sp, #36]
+ 1071 08b8 2046     		mov	r0, r4
+ 1072 08ba 3B44     		add	r3, r3, r7
+ 1073 08bc 9FB2     		uxth	r7, r3
+ 1074 08be FFF7FEFF 		bl	lv_obj_get_height
+ 1075 08c2 3F1A     		subs	r7, r7, r0
+ 1076 08c4 BFB2     		uxth	r7, r7
+ 1077 08c6 BBE5     		b	.L98
+ 1078              	.L117:
+ 1079 08c8 0122     		movs	r2, #1
+ 1080 08ca 9EE5     		b	.L95
+ 1081              	.L52:
+ 1082 08cc 0025     		movs	r5, #0
+ 1083 08ce 2C46     		mov	r4, r5
+ 1084 08d0 A9E6     		b	.L43
+ 1085              	.L116:
+ 1086 08d2 1646     		mov	r6, r2
+ARM GAS  /var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cceevdVR.s 			page 20
+
+
+ 1087 08d4 9BE7     		b	.L93
+ 1088              	.L110:
+ 1089 08d6 0020     		movs	r0, #0
+ 1090 08d8 0346     		mov	r3, r0
+ 1091 08da FAE6     		b	.L62
+ 1092              	.L108:
+ 1093 08dc 0020     		movs	r0, #0
+ 1094 08de 0346     		mov	r3, r0
+ 1095 08e0 FFF7C3BB 		b	.L40
+ 1096              	.L172:
+ 1097              		.align	2
+ 1098              	.L171:
+ 1099 08e4 01000600 		.word	393217
+ 1100 08e8 00000000 		.word	LV_STYLE_GRID_CELL_COLUMN_POS
+ 1101 08ec 1F85EB51 		.word	1374389535
+ 1102 08f0 00000000 		.word	LV_STYLE_GRID_CELL_COLUMN_SPAN
+ 1103 08f4 01E0FFFF 		.word	-8191
+ 1105              		.section	.text.lv_grid_init,"ax",%progbits
+ 1106              		.align	1
+ 1107              		.p2align 2,,3
+ 1108              		.global	lv_grid_init
+ 1109              		.syntax unified
+ 1110              		.thumb
+ 1111              		.thumb_func
+ 1113              	lv_grid_init:
+ 1114              		@ args = 0, pretend = 0, frame = 0
+ 1115              		@ frame_needed = 0, uses_anonymous_args = 0
+ 1116 0000 08B5     		push	{r3, lr}
+ 1117 0002 0021     		movs	r1, #0
+ 1118 0004 2048     		ldr	r0, .L175
+ 1119 0006 FFF7FEFF 		bl	lv_layout_register
+ 1120 000a 204B     		ldr	r3, .L175+4
+ 1121 000c 0246     		mov	r2, r0
+ 1122 000e 0420     		movs	r0, #4
+ 1123 0010 1A80     		strh	r2, [r3]	@ movhi
+ 1124 0012 FFF7FEFF 		bl	lv_style_register_prop
+ 1125 0016 1E4B     		ldr	r3, .L175+8
+ 1126 0018 0246     		mov	r2, r0
+ 1127 001a 0420     		movs	r0, #4
+ 1128 001c 1A80     		strh	r2, [r3]	@ movhi
+ 1129 001e FFF7FEFF 		bl	lv_style_register_prop
+ 1130 0022 1C4B     		ldr	r3, .L175+12
+ 1131 0024 0246     		mov	r2, r0
+ 1132 0026 0420     		movs	r0, #4
+ 1133 0028 1A80     		strh	r2, [r3]	@ movhi
+ 1134 002a FFF7FEFF 		bl	lv_style_register_prop
+ 1135 002e 1A4B     		ldr	r3, .L175+16
+ 1136 0030 0246     		mov	r2, r0
+ 1137 0032 0420     		movs	r0, #4
+ 1138 0034 1A80     		strh	r2, [r3]	@ movhi
+ 1139 0036 FFF7FEFF 		bl	lv_style_register_prop
+ 1140 003a 184B     		ldr	r3, .L175+20
+ 1141 003c 0246     		mov	r2, r0
+ 1142 003e 0420     		movs	r0, #4
+ 1143 0040 1A80     		strh	r2, [r3]	@ movhi
+ 1144 0042 FFF7FEFF 		bl	lv_style_register_prop
+ 1145 0046 164B     		ldr	r3, .L175+24
+ARM GAS  /var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cceevdVR.s 			page 21
+
+
+ 1146 0048 0246     		mov	r2, r0
+ 1147 004a 0420     		movs	r0, #4
+ 1148 004c 1A80     		strh	r2, [r3]	@ movhi
+ 1149 004e FFF7FEFF 		bl	lv_style_register_prop
+ 1150 0052 144B     		ldr	r3, .L175+28
+ 1151 0054 0246     		mov	r2, r0
+ 1152 0056 0420     		movs	r0, #4
+ 1153 0058 1A80     		strh	r2, [r3]	@ movhi
+ 1154 005a FFF7FEFF 		bl	lv_style_register_prop
+ 1155 005e 124B     		ldr	r3, .L175+32
+ 1156 0060 0246     		mov	r2, r0
+ 1157 0062 0420     		movs	r0, #4
+ 1158 0064 1A80     		strh	r2, [r3]	@ movhi
+ 1159 0066 FFF7FEFF 		bl	lv_style_register_prop
+ 1160 006a 104B     		ldr	r3, .L175+36
+ 1161 006c 0246     		mov	r2, r0
+ 1162 006e 0420     		movs	r0, #4
+ 1163 0070 1A80     		strh	r2, [r3]	@ movhi
+ 1164 0072 FFF7FEFF 		bl	lv_style_register_prop
+ 1165 0076 0E4B     		ldr	r3, .L175+40
+ 1166 0078 0246     		mov	r2, r0
+ 1167 007a 0420     		movs	r0, #4
+ 1168 007c 1A80     		strh	r2, [r3]	@ movhi
+ 1169 007e FFF7FEFF 		bl	lv_style_register_prop
+ 1170 0082 0C4B     		ldr	r3, .L175+44
+ 1171 0084 1880     		strh	r0, [r3]	@ movhi
+ 1172 0086 08BD     		pop	{r3, pc}
+ 1173              	.L176:
+ 1174              		.align	2
+ 1175              	.L175:
+ 1176 0088 00000000 		.word	grid_update
+ 1177 008c 00000000 		.word	LV_LAYOUT_GRID
+ 1178 0090 00000000 		.word	LV_STYLE_GRID_COLUMN_DSC_ARRAY
+ 1179 0094 00000000 		.word	LV_STYLE_GRID_ROW_DSC_ARRAY
+ 1180 0098 00000000 		.word	LV_STYLE_GRID_COLUMN_ALIGN
+ 1181 009c 00000000 		.word	LV_STYLE_GRID_ROW_ALIGN
+ 1182 00a0 00000000 		.word	LV_STYLE_GRID_CELL_ROW_SPAN
+ 1183 00a4 00000000 		.word	LV_STYLE_GRID_CELL_ROW_POS
+ 1184 00a8 00000000 		.word	LV_STYLE_GRID_CELL_COLUMN_SPAN
+ 1185 00ac 00000000 		.word	LV_STYLE_GRID_CELL_COLUMN_POS
+ 1186 00b0 00000000 		.word	LV_STYLE_GRID_CELL_X_ALIGN
+ 1187 00b4 00000000 		.word	LV_STYLE_GRID_CELL_Y_ALIGN
+ 1189              		.section	.text.lv_obj_set_grid_dsc_array,"ax",%progbits
+ 1190              		.align	1
+ 1191              		.p2align 2,,3
+ 1192              		.global	lv_obj_set_grid_dsc_array
+ 1193              		.syntax unified
+ 1194              		.thumb
+ 1195              		.thumb_func
+ 1197              	lv_obj_set_grid_dsc_array:
+ 1198              		@ args = 0, pretend = 0, frame = 0
+ 1199              		@ frame_needed = 0, uses_anonymous_args = 0
+ 1200 0000 38B5     		push	{r3, r4, r5, lr}
+ 1201 0002 0C4C     		ldr	r4, .L179
+ 1202 0004 0B46     		mov	r3, r1
+ 1203 0006 1546     		mov	r5, r2
+ 1204 0008 2188     		ldrh	r1, [r4]
+ARM GAS  /var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cceevdVR.s 			page 22
+
+
+ 1205 000a 1A46     		mov	r2, r3
+ 1206 000c 0023     		movs	r3, #0
+ 1207 000e 0446     		mov	r4, r0
+ 1208 0010 FFF7FEFF 		bl	lv_obj_set_local_style_prop
+ 1209 0014 084A     		ldr	r2, .L179+4
+ 1210 0016 2046     		mov	r0, r4
+ 1211 0018 1188     		ldrh	r1, [r2]
+ 1212 001a 0023     		movs	r3, #0
+ 1213 001c 2A46     		mov	r2, r5
+ 1214 001e FFF7FEFF 		bl	lv_obj_set_local_style_prop
+ 1215 0022 064B     		ldr	r3, .L179+8
+ 1216 0024 2046     		mov	r0, r4
+ 1217 0026 1988     		ldrh	r1, [r3]
+ 1218 0028 0022     		movs	r2, #0
+ 1219 002a BDE83840 		pop	{r3, r4, r5, lr}
+ 1220 002e FFF7FEBF 		b	lv_obj_set_style_layout
+ 1221              	.L180:
+ 1222 0032 00BF     		.align	2
+ 1223              	.L179:
+ 1224 0034 00000000 		.word	LV_STYLE_GRID_COLUMN_DSC_ARRAY
+ 1225 0038 00000000 		.word	LV_STYLE_GRID_ROW_DSC_ARRAY
+ 1226 003c 00000000 		.word	LV_LAYOUT_GRID
+ 1228              		.section	.text.lv_obj_set_grid_align,"ax",%progbits
+ 1229              		.align	1
+ 1230              		.p2align 2,,3
+ 1231              		.global	lv_obj_set_grid_align
+ 1232              		.syntax unified
+ 1233              		.thumb
+ 1234              		.thumb_func
+ 1236              	lv_obj_set_grid_align:
+ 1237              		@ args = 0, pretend = 0, frame = 0
+ 1238              		@ frame_needed = 0, uses_anonymous_args = 0
+ 1239 0000 70B5     		push	{r4, r5, r6, lr}
+ 1240 0002 094C     		ldr	r4, .L183
+ 1241 0004 0B46     		mov	r3, r1
+ 1242 0006 1546     		mov	r5, r2
+ 1243 0008 2188     		ldrh	r1, [r4]
+ 1244 000a 1A46     		mov	r2, r3
+ 1245 000c 0023     		movs	r3, #0
+ 1246 000e 0446     		mov	r4, r0
+ 1247 0010 FFF7FEFF 		bl	lv_obj_set_local_style_prop
+ 1248 0014 054A     		ldr	r2, .L183+4
+ 1249 0016 2046     		mov	r0, r4
+ 1250 0018 1188     		ldrh	r1, [r2]
+ 1251 001a 0023     		movs	r3, #0
+ 1252 001c 2A46     		mov	r2, r5
+ 1253 001e BDE87040 		pop	{r4, r5, r6, lr}
+ 1254 0022 FFF7FEBF 		b	lv_obj_set_local_style_prop
+ 1255              	.L184:
+ 1256 0026 00BF     		.align	2
+ 1257              	.L183:
+ 1258 0028 00000000 		.word	LV_STYLE_GRID_COLUMN_ALIGN
+ 1259 002c 00000000 		.word	LV_STYLE_GRID_ROW_ALIGN
+ 1261              		.section	.text.lv_obj_set_grid_cell,"ax",%progbits
+ 1262              		.align	1
+ 1263              		.p2align 2,,3
+ 1264              		.global	lv_obj_set_grid_cell
+ARM GAS  /var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cceevdVR.s 			page 23
+
+
+ 1265              		.syntax unified
+ 1266              		.thumb
+ 1267              		.thumb_func
+ 1269              	lv_obj_set_grid_cell:
+ 1270              		@ args = 12, pretend = 0, frame = 0
+ 1271              		@ frame_needed = 0, uses_anonymous_args = 0
+ 1272 0000 2DE9F843 		push	{r3, r4, r5, r6, r7, r8, r9, lr}
+ 1273 0004 1D46     		mov	r5, r3
+ 1274 0006 1B4B     		ldr	r3, .L187
+ 1275 0008 9DF82070 		ldrb	r7, [sp, #32]	@ zero_extendqisi2
+ 1276 000c 9DF82490 		ldrb	r9, [sp, #36]	@ zero_extendqisi2
+ 1277 0010 9DF82880 		ldrb	r8, [sp, #40]	@ zero_extendqisi2
+ 1278 0014 0E46     		mov	r6, r1
+ 1279 0016 1988     		ldrh	r1, [r3]
+ 1280 0018 0023     		movs	r3, #0
+ 1281 001a 0446     		mov	r4, r0
+ 1282 001c FFF7FEFF 		bl	lv_obj_set_local_style_prop
+ 1283 0020 154B     		ldr	r3, .L187+4
+ 1284 0022 4A46     		mov	r2, r9
+ 1285 0024 1988     		ldrh	r1, [r3]
+ 1286 0026 2046     		mov	r0, r4
+ 1287 0028 0023     		movs	r3, #0
+ 1288 002a FFF7FEFF 		bl	lv_obj_set_local_style_prop
+ 1289 002e 134B     		ldr	r3, .L187+8
+ 1290 0030 3246     		mov	r2, r6
+ 1291 0032 1988     		ldrh	r1, [r3]
+ 1292 0034 2046     		mov	r0, r4
+ 1293 0036 0023     		movs	r3, #0
+ 1294 0038 FFF7FEFF 		bl	lv_obj_set_local_style_prop
+ 1295 003c 104B     		ldr	r3, .L187+12
+ 1296 003e 2A46     		mov	r2, r5
+ 1297 0040 1988     		ldrh	r1, [r3]
+ 1298 0042 2046     		mov	r0, r4
+ 1299 0044 0023     		movs	r3, #0
+ 1300 0046 FFF7FEFF 		bl	lv_obj_set_local_style_prop
+ 1301 004a 0E4A     		ldr	r2, .L187+16
+ 1302 004c 2046     		mov	r0, r4
+ 1303 004e 1188     		ldrh	r1, [r2]
+ 1304 0050 0023     		movs	r3, #0
+ 1305 0052 4246     		mov	r2, r8
+ 1306 0054 FFF7FEFF 		bl	lv_obj_set_local_style_prop
+ 1307 0058 0B4A     		ldr	r2, .L187+20
+ 1308 005a 0023     		movs	r3, #0
+ 1309 005c 1188     		ldrh	r1, [r2]
+ 1310 005e 2046     		mov	r0, r4
+ 1311 0060 3A46     		mov	r2, r7
+ 1312 0062 FFF7FEFF 		bl	lv_obj_set_local_style_prop
+ 1313 0066 2046     		mov	r0, r4
+ 1314 0068 FFF7FEFF 		bl	lv_obj_get_parent
+ 1315 006c BDE8F843 		pop	{r3, r4, r5, r6, r7, r8, r9, lr}
+ 1316 0070 FFF7FEBF 		b	lv_obj_mark_layout_as_dirty
+ 1317              	.L188:
+ 1318              		.align	2
+ 1319              	.L187:
+ 1320 0074 00000000 		.word	LV_STYLE_GRID_CELL_COLUMN_POS
+ 1321 0078 00000000 		.word	LV_STYLE_GRID_CELL_ROW_POS
+ 1322 007c 00000000 		.word	LV_STYLE_GRID_CELL_X_ALIGN
+ARM GAS  /var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cceevdVR.s 			page 24
+
+
+ 1323 0080 00000000 		.word	LV_STYLE_GRID_CELL_COLUMN_SPAN
+ 1324 0084 00000000 		.word	LV_STYLE_GRID_CELL_ROW_SPAN
+ 1325 0088 00000000 		.word	LV_STYLE_GRID_CELL_Y_ALIGN
+ 1327              		.section	.text.lv_style_set_grid_row_dsc_array,"ax",%progbits
+ 1328              		.align	1
+ 1329              		.p2align 2,,3
+ 1330              		.global	lv_style_set_grid_row_dsc_array
+ 1331              		.syntax unified
+ 1332              		.thumb
+ 1333              		.thumb_func
+ 1335              	lv_style_set_grid_row_dsc_array:
+ 1336              		@ args = 0, pretend = 0, frame = 0
+ 1337              		@ frame_needed = 0, uses_anonymous_args = 0
+ 1338              		@ link register save eliminated.
+ 1339 0000 024B     		ldr	r3, .L190
+ 1340 0002 0A46     		mov	r2, r1
+ 1341 0004 1988     		ldrh	r1, [r3]
+ 1342 0006 FFF7FEBF 		b	lv_style_set_prop
+ 1343              	.L191:
+ 1344 000a 00BF     		.align	2
+ 1345              	.L190:
+ 1346 000c 00000000 		.word	LV_STYLE_GRID_ROW_DSC_ARRAY
+ 1348              		.section	.text.lv_style_set_grid_column_dsc_array,"ax",%progbits
+ 1349              		.align	1
+ 1350              		.p2align 2,,3
+ 1351              		.global	lv_style_set_grid_column_dsc_array
+ 1352              		.syntax unified
+ 1353              		.thumb
+ 1354              		.thumb_func
+ 1356              	lv_style_set_grid_column_dsc_array:
+ 1357              		@ args = 0, pretend = 0, frame = 0
+ 1358              		@ frame_needed = 0, uses_anonymous_args = 0
+ 1359              		@ link register save eliminated.
+ 1360 0000 024B     		ldr	r3, .L193
+ 1361 0002 0A46     		mov	r2, r1
+ 1362 0004 1988     		ldrh	r1, [r3]
+ 1363 0006 FFF7FEBF 		b	lv_style_set_prop
+ 1364              	.L194:
+ 1365 000a 00BF     		.align	2
+ 1366              	.L193:
+ 1367 000c 00000000 		.word	LV_STYLE_GRID_COLUMN_DSC_ARRAY
+ 1369              		.section	.text.lv_style_set_grid_row_align,"ax",%progbits
+ 1370              		.align	1
+ 1371              		.p2align 2,,3
+ 1372              		.global	lv_style_set_grid_row_align
+ 1373              		.syntax unified
+ 1374              		.thumb
+ 1375              		.thumb_func
+ 1377              	lv_style_set_grid_row_align:
+ 1378              		@ args = 0, pretend = 0, frame = 0
+ 1379              		@ frame_needed = 0, uses_anonymous_args = 0
+ 1380              		@ link register save eliminated.
+ 1381 0000 024B     		ldr	r3, .L196
+ 1382 0002 0A46     		mov	r2, r1
+ 1383 0004 1988     		ldrh	r1, [r3]
+ 1384 0006 FFF7FEBF 		b	lv_style_set_prop
+ 1385              	.L197:
+ARM GAS  /var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cceevdVR.s 			page 25
+
+
+ 1386 000a 00BF     		.align	2
+ 1387              	.L196:
+ 1388 000c 00000000 		.word	LV_STYLE_GRID_ROW_ALIGN
+ 1390              		.section	.text.lv_style_set_grid_column_align,"ax",%progbits
+ 1391              		.align	1
+ 1392              		.p2align 2,,3
+ 1393              		.global	lv_style_set_grid_column_align
+ 1394              		.syntax unified
+ 1395              		.thumb
+ 1396              		.thumb_func
+ 1398              	lv_style_set_grid_column_align:
+ 1399              		@ args = 0, pretend = 0, frame = 0
+ 1400              		@ frame_needed = 0, uses_anonymous_args = 0
+ 1401              		@ link register save eliminated.
+ 1402 0000 024B     		ldr	r3, .L199
+ 1403 0002 0A46     		mov	r2, r1
+ 1404 0004 1988     		ldrh	r1, [r3]
+ 1405 0006 FFF7FEBF 		b	lv_style_set_prop
+ 1406              	.L200:
+ 1407 000a 00BF     		.align	2
+ 1408              	.L199:
+ 1409 000c 00000000 		.word	LV_STYLE_GRID_COLUMN_ALIGN
+ 1411              		.section	.text.lv_style_set_grid_cell_column_pos,"ax",%progbits
+ 1412              		.align	1
+ 1413              		.p2align 2,,3
+ 1414              		.global	lv_style_set_grid_cell_column_pos
+ 1415              		.syntax unified
+ 1416              		.thumb
+ 1417              		.thumb_func
+ 1419              	lv_style_set_grid_cell_column_pos:
+ 1420              		@ args = 0, pretend = 0, frame = 0
+ 1421              		@ frame_needed = 0, uses_anonymous_args = 0
+ 1422              		@ link register save eliminated.
+ 1423 0000 024B     		ldr	r3, .L202
+ 1424 0002 0A46     		mov	r2, r1
+ 1425 0004 1988     		ldrh	r1, [r3]
+ 1426 0006 FFF7FEBF 		b	lv_style_set_prop
+ 1427              	.L203:
+ 1428 000a 00BF     		.align	2
+ 1429              	.L202:
+ 1430 000c 00000000 		.word	LV_STYLE_GRID_CELL_COLUMN_POS
+ 1432              		.section	.text.lv_style_set_grid_cell_column_span,"ax",%progbits
+ 1433              		.align	1
+ 1434              		.p2align 2,,3
+ 1435              		.global	lv_style_set_grid_cell_column_span
+ 1436              		.syntax unified
+ 1437              		.thumb
+ 1438              		.thumb_func
+ 1440              	lv_style_set_grid_cell_column_span:
+ 1441              		@ args = 0, pretend = 0, frame = 0
+ 1442              		@ frame_needed = 0, uses_anonymous_args = 0
+ 1443              		@ link register save eliminated.
+ 1444 0000 024B     		ldr	r3, .L205
+ 1445 0002 0A46     		mov	r2, r1
+ 1446 0004 1988     		ldrh	r1, [r3]
+ 1447 0006 FFF7FEBF 		b	lv_style_set_prop
+ 1448              	.L206:
+ARM GAS  /var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cceevdVR.s 			page 26
+
+
+ 1449 000a 00BF     		.align	2
+ 1450              	.L205:
+ 1451 000c 00000000 		.word	LV_STYLE_GRID_CELL_COLUMN_SPAN
+ 1453              		.section	.text.lv_style_set_grid_cell_row_pos,"ax",%progbits
+ 1454              		.align	1
+ 1455              		.p2align 2,,3
+ 1456              		.global	lv_style_set_grid_cell_row_pos
+ 1457              		.syntax unified
+ 1458              		.thumb
+ 1459              		.thumb_func
+ 1461              	lv_style_set_grid_cell_row_pos:
+ 1462              		@ args = 0, pretend = 0, frame = 0
+ 1463              		@ frame_needed = 0, uses_anonymous_args = 0
+ 1464              		@ link register save eliminated.
+ 1465 0000 024B     		ldr	r3, .L208
+ 1466 0002 0A46     		mov	r2, r1
+ 1467 0004 1988     		ldrh	r1, [r3]
+ 1468 0006 FFF7FEBF 		b	lv_style_set_prop
+ 1469              	.L209:
+ 1470 000a 00BF     		.align	2
+ 1471              	.L208:
+ 1472 000c 00000000 		.word	LV_STYLE_GRID_CELL_ROW_POS
+ 1474              		.section	.text.lv_style_set_grid_cell_row_span,"ax",%progbits
+ 1475              		.align	1
+ 1476              		.p2align 2,,3
+ 1477              		.global	lv_style_set_grid_cell_row_span
+ 1478              		.syntax unified
+ 1479              		.thumb
+ 1480              		.thumb_func
+ 1482              	lv_style_set_grid_cell_row_span:
+ 1483              		@ args = 0, pretend = 0, frame = 0
+ 1484              		@ frame_needed = 0, uses_anonymous_args = 0
+ 1485              		@ link register save eliminated.
+ 1486 0000 024B     		ldr	r3, .L211
+ 1487 0002 0A46     		mov	r2, r1
+ 1488 0004 1988     		ldrh	r1, [r3]
+ 1489 0006 FFF7FEBF 		b	lv_style_set_prop
+ 1490              	.L212:
+ 1491 000a 00BF     		.align	2
+ 1492              	.L211:
+ 1493 000c 00000000 		.word	LV_STYLE_GRID_CELL_ROW_SPAN
+ 1495              		.section	.text.lv_style_set_grid_cell_x_align,"ax",%progbits
+ 1496              		.align	1
+ 1497              		.p2align 2,,3
+ 1498              		.global	lv_style_set_grid_cell_x_align
+ 1499              		.syntax unified
+ 1500              		.thumb
+ 1501              		.thumb_func
+ 1503              	lv_style_set_grid_cell_x_align:
+ 1504              		@ args = 0, pretend = 0, frame = 0
+ 1505              		@ frame_needed = 0, uses_anonymous_args = 0
+ 1506              		@ link register save eliminated.
+ 1507 0000 024B     		ldr	r3, .L214
+ 1508 0002 0A46     		mov	r2, r1
+ 1509 0004 1988     		ldrh	r1, [r3]
+ 1510 0006 FFF7FEBF 		b	lv_style_set_prop
+ 1511              	.L215:
+ARM GAS  /var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cceevdVR.s 			page 27
+
+
+ 1512 000a 00BF     		.align	2
+ 1513              	.L214:
+ 1514 000c 00000000 		.word	LV_STYLE_GRID_CELL_X_ALIGN
+ 1516              		.section	.text.lv_style_set_grid_cell_y_align,"ax",%progbits
+ 1517              		.align	1
+ 1518              		.p2align 2,,3
+ 1519              		.global	lv_style_set_grid_cell_y_align
+ 1520              		.syntax unified
+ 1521              		.thumb
+ 1522              		.thumb_func
+ 1524              	lv_style_set_grid_cell_y_align:
+ 1525              		@ args = 0, pretend = 0, frame = 0
+ 1526              		@ frame_needed = 0, uses_anonymous_args = 0
+ 1527              		@ link register save eliminated.
+ 1528 0000 024B     		ldr	r3, .L217
+ 1529 0002 0A46     		mov	r2, r1
+ 1530 0004 1988     		ldrh	r1, [r3]
+ 1531 0006 FFF7FEBF 		b	lv_style_set_prop
+ 1532              	.L218:
+ 1533 000a 00BF     		.align	2
+ 1534              	.L217:
+ 1535 000c 00000000 		.word	LV_STYLE_GRID_CELL_Y_ALIGN
+ 1537              		.section	.text.lv_obj_set_style_grid_row_dsc_array,"ax",%progbits
+ 1538              		.align	1
+ 1539              		.p2align 2,,3
+ 1540              		.global	lv_obj_set_style_grid_row_dsc_array
+ 1541              		.syntax unified
+ 1542              		.thumb
+ 1543              		.thumb_func
+ 1545              	lv_obj_set_style_grid_row_dsc_array:
+ 1546              		@ args = 0, pretend = 0, frame = 0
+ 1547              		@ frame_needed = 0, uses_anonymous_args = 0
+ 1548              		@ link register save eliminated.
+ 1549 0000 10B4     		push	{r4}
+ 1550 0002 044C     		ldr	r4, .L221
+ 1551 0004 8C46     		mov	ip, r1
+ 1552 0006 1346     		mov	r3, r2
+ 1553 0008 2188     		ldrh	r1, [r4]
+ 1554 000a 5DF8044B 		ldr	r4, [sp], #4
+ 1555 000e 6246     		mov	r2, ip
+ 1556 0010 FFF7FEBF 		b	lv_obj_set_local_style_prop
+ 1557              	.L222:
+ 1558              		.align	2
+ 1559              	.L221:
+ 1560 0014 00000000 		.word	LV_STYLE_GRID_ROW_DSC_ARRAY
+ 1562              		.section	.text.lv_obj_set_style_grid_column_dsc_array,"ax",%progbits
+ 1563              		.align	1
+ 1564              		.p2align 2,,3
+ 1565              		.global	lv_obj_set_style_grid_column_dsc_array
+ 1566              		.syntax unified
+ 1567              		.thumb
+ 1568              		.thumb_func
+ 1570              	lv_obj_set_style_grid_column_dsc_array:
+ 1571              		@ args = 0, pretend = 0, frame = 0
+ 1572              		@ frame_needed = 0, uses_anonymous_args = 0
+ 1573              		@ link register save eliminated.
+ 1574 0000 10B4     		push	{r4}
+ARM GAS  /var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cceevdVR.s 			page 28
+
+
+ 1575 0002 044C     		ldr	r4, .L225
+ 1576 0004 8C46     		mov	ip, r1
+ 1577 0006 1346     		mov	r3, r2
+ 1578 0008 2188     		ldrh	r1, [r4]
+ 1579 000a 5DF8044B 		ldr	r4, [sp], #4
+ 1580 000e 6246     		mov	r2, ip
+ 1581 0010 FFF7FEBF 		b	lv_obj_set_local_style_prop
+ 1582              	.L226:
+ 1583              		.align	2
+ 1584              	.L225:
+ 1585 0014 00000000 		.word	LV_STYLE_GRID_COLUMN_DSC_ARRAY
+ 1587              		.section	.text.lv_obj_set_style_grid_row_align,"ax",%progbits
+ 1588              		.align	1
+ 1589              		.p2align 2,,3
+ 1590              		.global	lv_obj_set_style_grid_row_align
+ 1591              		.syntax unified
+ 1592              		.thumb
+ 1593              		.thumb_func
+ 1595              	lv_obj_set_style_grid_row_align:
+ 1596              		@ args = 0, pretend = 0, frame = 0
+ 1597              		@ frame_needed = 0, uses_anonymous_args = 0
+ 1598              		@ link register save eliminated.
+ 1599 0000 10B4     		push	{r4}
+ 1600 0002 044C     		ldr	r4, .L229
+ 1601 0004 8C46     		mov	ip, r1
+ 1602 0006 1346     		mov	r3, r2
+ 1603 0008 2188     		ldrh	r1, [r4]
+ 1604 000a 5DF8044B 		ldr	r4, [sp], #4
+ 1605 000e 6246     		mov	r2, ip
+ 1606 0010 FFF7FEBF 		b	lv_obj_set_local_style_prop
+ 1607              	.L230:
+ 1608              		.align	2
+ 1609              	.L229:
+ 1610 0014 00000000 		.word	LV_STYLE_GRID_ROW_ALIGN
+ 1612              		.section	.text.lv_obj_set_style_grid_column_align,"ax",%progbits
+ 1613              		.align	1
+ 1614              		.p2align 2,,3
+ 1615              		.global	lv_obj_set_style_grid_column_align
+ 1616              		.syntax unified
+ 1617              		.thumb
+ 1618              		.thumb_func
+ 1620              	lv_obj_set_style_grid_column_align:
+ 1621              		@ args = 0, pretend = 0, frame = 0
+ 1622              		@ frame_needed = 0, uses_anonymous_args = 0
+ 1623              		@ link register save eliminated.
+ 1624 0000 10B4     		push	{r4}
+ 1625 0002 044C     		ldr	r4, .L233
+ 1626 0004 8C46     		mov	ip, r1
+ 1627 0006 1346     		mov	r3, r2
+ 1628 0008 2188     		ldrh	r1, [r4]
+ 1629 000a 5DF8044B 		ldr	r4, [sp], #4
+ 1630 000e 6246     		mov	r2, ip
+ 1631 0010 FFF7FEBF 		b	lv_obj_set_local_style_prop
+ 1632              	.L234:
+ 1633              		.align	2
+ 1634              	.L233:
+ 1635 0014 00000000 		.word	LV_STYLE_GRID_COLUMN_ALIGN
+ARM GAS  /var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cceevdVR.s 			page 29
+
+
+ 1637              		.section	.text.lv_obj_set_style_grid_cell_column_pos,"ax",%progbits
+ 1638              		.align	1
+ 1639              		.p2align 2,,3
+ 1640              		.global	lv_obj_set_style_grid_cell_column_pos
+ 1641              		.syntax unified
+ 1642              		.thumb
+ 1643              		.thumb_func
+ 1645              	lv_obj_set_style_grid_cell_column_pos:
+ 1646              		@ args = 0, pretend = 0, frame = 0
+ 1647              		@ frame_needed = 0, uses_anonymous_args = 0
+ 1648              		@ link register save eliminated.
+ 1649 0000 10B4     		push	{r4}
+ 1650 0002 044C     		ldr	r4, .L237
+ 1651 0004 8C46     		mov	ip, r1
+ 1652 0006 1346     		mov	r3, r2
+ 1653 0008 2188     		ldrh	r1, [r4]
+ 1654 000a 5DF8044B 		ldr	r4, [sp], #4
+ 1655 000e 6246     		mov	r2, ip
+ 1656 0010 FFF7FEBF 		b	lv_obj_set_local_style_prop
+ 1657              	.L238:
+ 1658              		.align	2
+ 1659              	.L237:
+ 1660 0014 00000000 		.word	LV_STYLE_GRID_CELL_COLUMN_POS
+ 1662              		.section	.text.lv_obj_set_style_grid_cell_column_span,"ax",%progbits
+ 1663              		.align	1
+ 1664              		.p2align 2,,3
+ 1665              		.global	lv_obj_set_style_grid_cell_column_span
+ 1666              		.syntax unified
+ 1667              		.thumb
+ 1668              		.thumb_func
+ 1670              	lv_obj_set_style_grid_cell_column_span:
+ 1671              		@ args = 0, pretend = 0, frame = 0
+ 1672              		@ frame_needed = 0, uses_anonymous_args = 0
+ 1673              		@ link register save eliminated.
+ 1674 0000 10B4     		push	{r4}
+ 1675 0002 044C     		ldr	r4, .L241
+ 1676 0004 8C46     		mov	ip, r1
+ 1677 0006 1346     		mov	r3, r2
+ 1678 0008 2188     		ldrh	r1, [r4]
+ 1679 000a 5DF8044B 		ldr	r4, [sp], #4
+ 1680 000e 6246     		mov	r2, ip
+ 1681 0010 FFF7FEBF 		b	lv_obj_set_local_style_prop
+ 1682              	.L242:
+ 1683              		.align	2
+ 1684              	.L241:
+ 1685 0014 00000000 		.word	LV_STYLE_GRID_CELL_COLUMN_SPAN
+ 1687              		.section	.text.lv_obj_set_style_grid_cell_row_pos,"ax",%progbits
+ 1688              		.align	1
+ 1689              		.p2align 2,,3
+ 1690              		.global	lv_obj_set_style_grid_cell_row_pos
+ 1691              		.syntax unified
+ 1692              		.thumb
+ 1693              		.thumb_func
+ 1695              	lv_obj_set_style_grid_cell_row_pos:
+ 1696              		@ args = 0, pretend = 0, frame = 0
+ 1697              		@ frame_needed = 0, uses_anonymous_args = 0
+ 1698              		@ link register save eliminated.
+ARM GAS  /var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cceevdVR.s 			page 30
+
+
+ 1699 0000 10B4     		push	{r4}
+ 1700 0002 044C     		ldr	r4, .L245
+ 1701 0004 8C46     		mov	ip, r1
+ 1702 0006 1346     		mov	r3, r2
+ 1703 0008 2188     		ldrh	r1, [r4]
+ 1704 000a 5DF8044B 		ldr	r4, [sp], #4
+ 1705 000e 6246     		mov	r2, ip
+ 1706 0010 FFF7FEBF 		b	lv_obj_set_local_style_prop
+ 1707              	.L246:
+ 1708              		.align	2
+ 1709              	.L245:
+ 1710 0014 00000000 		.word	LV_STYLE_GRID_CELL_ROW_POS
+ 1712              		.section	.text.lv_obj_set_style_grid_cell_row_span,"ax",%progbits
+ 1713              		.align	1
+ 1714              		.p2align 2,,3
+ 1715              		.global	lv_obj_set_style_grid_cell_row_span
+ 1716              		.syntax unified
+ 1717              		.thumb
+ 1718              		.thumb_func
+ 1720              	lv_obj_set_style_grid_cell_row_span:
+ 1721              		@ args = 0, pretend = 0, frame = 0
+ 1722              		@ frame_needed = 0, uses_anonymous_args = 0
+ 1723              		@ link register save eliminated.
+ 1724 0000 10B4     		push	{r4}
+ 1725 0002 044C     		ldr	r4, .L249
+ 1726 0004 8C46     		mov	ip, r1
+ 1727 0006 1346     		mov	r3, r2
+ 1728 0008 2188     		ldrh	r1, [r4]
+ 1729 000a 5DF8044B 		ldr	r4, [sp], #4
+ 1730 000e 6246     		mov	r2, ip
+ 1731 0010 FFF7FEBF 		b	lv_obj_set_local_style_prop
+ 1732              	.L250:
+ 1733              		.align	2
+ 1734              	.L249:
+ 1735 0014 00000000 		.word	LV_STYLE_GRID_CELL_ROW_SPAN
+ 1737              		.section	.text.lv_obj_set_style_grid_cell_x_align,"ax",%progbits
+ 1738              		.align	1
+ 1739              		.p2align 2,,3
+ 1740              		.global	lv_obj_set_style_grid_cell_x_align
+ 1741              		.syntax unified
+ 1742              		.thumb
+ 1743              		.thumb_func
+ 1745              	lv_obj_set_style_grid_cell_x_align:
+ 1746              		@ args = 0, pretend = 0, frame = 0
+ 1747              		@ frame_needed = 0, uses_anonymous_args = 0
+ 1748              		@ link register save eliminated.
+ 1749 0000 10B4     		push	{r4}
+ 1750 0002 044C     		ldr	r4, .L253
+ 1751 0004 8C46     		mov	ip, r1
+ 1752 0006 1346     		mov	r3, r2
+ 1753 0008 2188     		ldrh	r1, [r4]
+ 1754 000a 5DF8044B 		ldr	r4, [sp], #4
+ 1755 000e 6246     		mov	r2, ip
+ 1756 0010 FFF7FEBF 		b	lv_obj_set_local_style_prop
+ 1757              	.L254:
+ 1758              		.align	2
+ 1759              	.L253:
+ARM GAS  /var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cceevdVR.s 			page 31
+
+
+ 1760 0014 00000000 		.word	LV_STYLE_GRID_CELL_X_ALIGN
+ 1762              		.section	.text.lv_obj_set_style_grid_cell_y_align,"ax",%progbits
+ 1763              		.align	1
+ 1764              		.p2align 2,,3
+ 1765              		.global	lv_obj_set_style_grid_cell_y_align
+ 1766              		.syntax unified
+ 1767              		.thumb
+ 1768              		.thumb_func
+ 1770              	lv_obj_set_style_grid_cell_y_align:
+ 1771              		@ args = 0, pretend = 0, frame = 0
+ 1772              		@ frame_needed = 0, uses_anonymous_args = 0
+ 1773              		@ link register save eliminated.
+ 1774 0000 10B4     		push	{r4}
+ 1775 0002 044C     		ldr	r4, .L257
+ 1776 0004 8C46     		mov	ip, r1
+ 1777 0006 1346     		mov	r3, r2
+ 1778 0008 2188     		ldrh	r1, [r4]
+ 1779 000a 5DF8044B 		ldr	r4, [sp], #4
+ 1780 000e 6246     		mov	r2, ip
+ 1781 0010 FFF7FEBF 		b	lv_obj_set_local_style_prop
+ 1782              	.L258:
+ 1783              		.align	2
+ 1784              	.L257:
+ 1785 0014 00000000 		.word	LV_STYLE_GRID_CELL_Y_ALIGN
+ 1787              		.global	LV_STYLE_GRID_CELL_Y_ALIGN
+ 1788              		.section	.bss.LV_STYLE_GRID_CELL_Y_ALIGN,"aw",%nobits
+ 1789              		.align	1
+ 1792              	LV_STYLE_GRID_CELL_Y_ALIGN:
+ 1793 0000 0000     		.space	2
+ 1794              		.global	LV_STYLE_GRID_CELL_ROW_SPAN
+ 1795              		.section	.bss.LV_STYLE_GRID_CELL_ROW_SPAN,"aw",%nobits
+ 1796              		.align	1
+ 1799              	LV_STYLE_GRID_CELL_ROW_SPAN:
+ 1800 0000 0000     		.space	2
+ 1801              		.global	LV_STYLE_GRID_CELL_ROW_POS
+ 1802              		.section	.bss.LV_STYLE_GRID_CELL_ROW_POS,"aw",%nobits
+ 1803              		.align	1
+ 1806              	LV_STYLE_GRID_CELL_ROW_POS:
+ 1807 0000 0000     		.space	2
+ 1808              		.global	LV_STYLE_GRID_CELL_X_ALIGN
+ 1809              		.section	.bss.LV_STYLE_GRID_CELL_X_ALIGN,"aw",%nobits
+ 1810              		.align	1
+ 1813              	LV_STYLE_GRID_CELL_X_ALIGN:
+ 1814 0000 0000     		.space	2
+ 1815              		.global	LV_STYLE_GRID_CELL_COLUMN_SPAN
+ 1816              		.section	.bss.LV_STYLE_GRID_CELL_COLUMN_SPAN,"aw",%nobits
+ 1817              		.align	1
+ 1820              	LV_STYLE_GRID_CELL_COLUMN_SPAN:
+ 1821 0000 0000     		.space	2
+ 1822              		.global	LV_STYLE_GRID_CELL_COLUMN_POS
+ 1823              		.section	.bss.LV_STYLE_GRID_CELL_COLUMN_POS,"aw",%nobits
+ 1824              		.align	1
+ 1827              	LV_STYLE_GRID_CELL_COLUMN_POS:
+ 1828 0000 0000     		.space	2
+ 1829              		.global	LV_STYLE_GRID_ROW_ALIGN
+ 1830              		.section	.bss.LV_STYLE_GRID_ROW_ALIGN,"aw",%nobits
+ 1831              		.align	1
+ARM GAS  /var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cceevdVR.s 			page 32
+
+
+ 1834              	LV_STYLE_GRID_ROW_ALIGN:
+ 1835 0000 0000     		.space	2
+ 1836              		.global	LV_STYLE_GRID_ROW_DSC_ARRAY
+ 1837              		.section	.bss.LV_STYLE_GRID_ROW_DSC_ARRAY,"aw",%nobits
+ 1838              		.align	1
+ 1841              	LV_STYLE_GRID_ROW_DSC_ARRAY:
+ 1842 0000 0000     		.space	2
+ 1843              		.global	LV_STYLE_GRID_COLUMN_ALIGN
+ 1844              		.section	.bss.LV_STYLE_GRID_COLUMN_ALIGN,"aw",%nobits
+ 1845              		.align	1
+ 1848              	LV_STYLE_GRID_COLUMN_ALIGN:
+ 1849 0000 0000     		.space	2
+ 1850              		.global	LV_STYLE_GRID_COLUMN_DSC_ARRAY
+ 1851              		.section	.bss.LV_STYLE_GRID_COLUMN_DSC_ARRAY,"aw",%nobits
+ 1852              		.align	1
+ 1855              	LV_STYLE_GRID_COLUMN_DSC_ARRAY:
+ 1856 0000 0000     		.space	2
+ 1857              		.global	LV_LAYOUT_GRID
+ 1858              		.section	.bss.LV_LAYOUT_GRID,"aw",%nobits
+ 1859              		.align	1
+ 1862              	LV_LAYOUT_GRID:
+ 1863 0000 0000     		.space	2
+ 1864              		.ident	"GCC: (xPack GNU Arm Embedded GCC arm64) 13.3.1 20240614"
+ARM GAS  /var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cceevdVR.s 			page 33
+
+
+DEFINED SYMBOLS
+                            *ABS*:00000000 lv_grid.c
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cceevdVR.s:18     .text.grid_align:00000000 $t
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cceevdVR.s:24     .text.grid_align:00000000 grid_align
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cceevdVR.s:61     .text.grid_align:00000050 $d
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cceevdVR.s:178    .text.grid_update:00000000 $t
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cceevdVR.s:184    .text.grid_update:00000000 grid_update
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cceevdVR.s:301    .text.grid_update:00000118 $d
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cceevdVR.s:1841   .bss.LV_STYLE_GRID_ROW_DSC_ARRAY:00000000 LV_STYLE_GRID_ROW_DSC_ARRAY
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cceevdVR.s:1806   .bss.LV_STYLE_GRID_CELL_ROW_POS:00000000 LV_STYLE_GRID_CELL_ROW_POS
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cceevdVR.s:1799   .bss.LV_STYLE_GRID_CELL_ROW_SPAN:00000000 LV_STYLE_GRID_CELL_ROW_SPAN
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cceevdVR.s:1855   .bss.LV_STYLE_GRID_COLUMN_DSC_ARRAY:00000000 LV_STYLE_GRID_COLUMN_DSC_ARRAY
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cceevdVR.s:308    .text.grid_update:00000130 $t
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cceevdVR.s:676    .text.grid_update:000004e4 $d
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cceevdVR.s:1848   .bss.LV_STYLE_GRID_COLUMN_ALIGN:00000000 LV_STYLE_GRID_COLUMN_ALIGN
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cceevdVR.s:1834   .bss.LV_STYLE_GRID_ROW_ALIGN:00000000 LV_STYLE_GRID_ROW_ALIGN
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cceevdVR.s:1820   .bss.LV_STYLE_GRID_CELL_COLUMN_SPAN:00000000 LV_STYLE_GRID_CELL_COLUMN_SPAN
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cceevdVR.s:1827   .bss.LV_STYLE_GRID_CELL_COLUMN_POS:00000000 LV_STYLE_GRID_CELL_COLUMN_POS
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cceevdVR.s:1813   .bss.LV_STYLE_GRID_CELL_X_ALIGN:00000000 LV_STYLE_GRID_CELL_X_ALIGN
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cceevdVR.s:1792   .bss.LV_STYLE_GRID_CELL_Y_ALIGN:00000000 LV_STYLE_GRID_CELL_Y_ALIGN
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cceevdVR.s:687    .text.grid_update:00000508 $t
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cceevdVR.s:1099   .text.grid_update:000008e4 $d
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cceevdVR.s:1106   .text.lv_grid_init:00000000 $t
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cceevdVR.s:1113   .text.lv_grid_init:00000000 lv_grid_init
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cceevdVR.s:1176   .text.lv_grid_init:00000088 $d
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cceevdVR.s:1862   .bss.LV_LAYOUT_GRID:00000000 LV_LAYOUT_GRID
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cceevdVR.s:1190   .text.lv_obj_set_grid_dsc_array:00000000 $t
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cceevdVR.s:1197   .text.lv_obj_set_grid_dsc_array:00000000 lv_obj_set_grid_dsc_array
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cceevdVR.s:1224   .text.lv_obj_set_grid_dsc_array:00000034 $d
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cceevdVR.s:1229   .text.lv_obj_set_grid_align:00000000 $t
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cceevdVR.s:1236   .text.lv_obj_set_grid_align:00000000 lv_obj_set_grid_align
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cceevdVR.s:1258   .text.lv_obj_set_grid_align:00000028 $d
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cceevdVR.s:1262   .text.lv_obj_set_grid_cell:00000000 $t
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cceevdVR.s:1269   .text.lv_obj_set_grid_cell:00000000 lv_obj_set_grid_cell
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cceevdVR.s:1320   .text.lv_obj_set_grid_cell:00000074 $d
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cceevdVR.s:1328   .text.lv_style_set_grid_row_dsc_array:00000000 $t
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cceevdVR.s:1335   .text.lv_style_set_grid_row_dsc_array:00000000 lv_style_set_grid_row_dsc_array
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cceevdVR.s:1346   .text.lv_style_set_grid_row_dsc_array:0000000c $d
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cceevdVR.s:1349   .text.lv_style_set_grid_column_dsc_array:00000000 $t
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cceevdVR.s:1356   .text.lv_style_set_grid_column_dsc_array:00000000 lv_style_set_grid_column_dsc_array
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cceevdVR.s:1367   .text.lv_style_set_grid_column_dsc_array:0000000c $d
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cceevdVR.s:1370   .text.lv_style_set_grid_row_align:00000000 $t
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cceevdVR.s:1377   .text.lv_style_set_grid_row_align:00000000 lv_style_set_grid_row_align
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cceevdVR.s:1388   .text.lv_style_set_grid_row_align:0000000c $d
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cceevdVR.s:1391   .text.lv_style_set_grid_column_align:00000000 $t
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cceevdVR.s:1398   .text.lv_style_set_grid_column_align:00000000 lv_style_set_grid_column_align
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cceevdVR.s:1409   .text.lv_style_set_grid_column_align:0000000c $d
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cceevdVR.s:1412   .text.lv_style_set_grid_cell_column_pos:00000000 $t
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cceevdVR.s:1419   .text.lv_style_set_grid_cell_column_pos:00000000 lv_style_set_grid_cell_column_pos
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cceevdVR.s:1430   .text.lv_style_set_grid_cell_column_pos:0000000c $d
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cceevdVR.s:1433   .text.lv_style_set_grid_cell_column_span:00000000 $t
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cceevdVR.s:1440   .text.lv_style_set_grid_cell_column_span:00000000 lv_style_set_grid_cell_column_span
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cceevdVR.s:1451   .text.lv_style_set_grid_cell_column_span:0000000c $d
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cceevdVR.s:1454   .text.lv_style_set_grid_cell_row_pos:00000000 $t
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cceevdVR.s:1461   .text.lv_style_set_grid_cell_row_pos:00000000 lv_style_set_grid_cell_row_pos
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cceevdVR.s:1472   .text.lv_style_set_grid_cell_row_pos:0000000c $d
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cceevdVR.s:1475   .text.lv_style_set_grid_cell_row_span:00000000 $t
+ARM GAS  /var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cceevdVR.s 			page 34
+
+
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cceevdVR.s:1482   .text.lv_style_set_grid_cell_row_span:00000000 lv_style_set_grid_cell_row_span
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cceevdVR.s:1493   .text.lv_style_set_grid_cell_row_span:0000000c $d
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cceevdVR.s:1496   .text.lv_style_set_grid_cell_x_align:00000000 $t
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cceevdVR.s:1503   .text.lv_style_set_grid_cell_x_align:00000000 lv_style_set_grid_cell_x_align
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cceevdVR.s:1514   .text.lv_style_set_grid_cell_x_align:0000000c $d
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cceevdVR.s:1517   .text.lv_style_set_grid_cell_y_align:00000000 $t
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cceevdVR.s:1524   .text.lv_style_set_grid_cell_y_align:00000000 lv_style_set_grid_cell_y_align
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cceevdVR.s:1535   .text.lv_style_set_grid_cell_y_align:0000000c $d
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cceevdVR.s:1538   .text.lv_obj_set_style_grid_row_dsc_array:00000000 $t
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cceevdVR.s:1545   .text.lv_obj_set_style_grid_row_dsc_array:00000000 lv_obj_set_style_grid_row_dsc_array
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cceevdVR.s:1560   .text.lv_obj_set_style_grid_row_dsc_array:00000014 $d
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cceevdVR.s:1563   .text.lv_obj_set_style_grid_column_dsc_array:00000000 $t
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cceevdVR.s:1570   .text.lv_obj_set_style_grid_column_dsc_array:00000000 lv_obj_set_style_grid_column_dsc_array
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cceevdVR.s:1585   .text.lv_obj_set_style_grid_column_dsc_array:00000014 $d
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cceevdVR.s:1588   .text.lv_obj_set_style_grid_row_align:00000000 $t
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cceevdVR.s:1595   .text.lv_obj_set_style_grid_row_align:00000000 lv_obj_set_style_grid_row_align
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cceevdVR.s:1610   .text.lv_obj_set_style_grid_row_align:00000014 $d
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cceevdVR.s:1613   .text.lv_obj_set_style_grid_column_align:00000000 $t
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cceevdVR.s:1620   .text.lv_obj_set_style_grid_column_align:00000000 lv_obj_set_style_grid_column_align
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cceevdVR.s:1635   .text.lv_obj_set_style_grid_column_align:00000014 $d
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cceevdVR.s:1638   .text.lv_obj_set_style_grid_cell_column_pos:00000000 $t
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cceevdVR.s:1645   .text.lv_obj_set_style_grid_cell_column_pos:00000000 lv_obj_set_style_grid_cell_column_pos
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cceevdVR.s:1660   .text.lv_obj_set_style_grid_cell_column_pos:00000014 $d
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cceevdVR.s:1663   .text.lv_obj_set_style_grid_cell_column_span:00000000 $t
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cceevdVR.s:1670   .text.lv_obj_set_style_grid_cell_column_span:00000000 lv_obj_set_style_grid_cell_column_span
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cceevdVR.s:1685   .text.lv_obj_set_style_grid_cell_column_span:00000014 $d
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cceevdVR.s:1688   .text.lv_obj_set_style_grid_cell_row_pos:00000000 $t
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cceevdVR.s:1695   .text.lv_obj_set_style_grid_cell_row_pos:00000000 lv_obj_set_style_grid_cell_row_pos
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cceevdVR.s:1710   .text.lv_obj_set_style_grid_cell_row_pos:00000014 $d
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cceevdVR.s:1713   .text.lv_obj_set_style_grid_cell_row_span:00000000 $t
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cceevdVR.s:1720   .text.lv_obj_set_style_grid_cell_row_span:00000000 lv_obj_set_style_grid_cell_row_span
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cceevdVR.s:1735   .text.lv_obj_set_style_grid_cell_row_span:00000014 $d
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cceevdVR.s:1738   .text.lv_obj_set_style_grid_cell_x_align:00000000 $t
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cceevdVR.s:1745   .text.lv_obj_set_style_grid_cell_x_align:00000000 lv_obj_set_style_grid_cell_x_align
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cceevdVR.s:1760   .text.lv_obj_set_style_grid_cell_x_align:00000014 $d
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cceevdVR.s:1763   .text.lv_obj_set_style_grid_cell_y_align:00000000 $t
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cceevdVR.s:1770   .text.lv_obj_set_style_grid_cell_y_align:00000000 lv_obj_set_style_grid_cell_y_align
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cceevdVR.s:1785   .text.lv_obj_set_style_grid_cell_y_align:00000014 $d
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cceevdVR.s:1789   .bss.LV_STYLE_GRID_CELL_Y_ALIGN:00000000 $d
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cceevdVR.s:1796   .bss.LV_STYLE_GRID_CELL_ROW_SPAN:00000000 $d
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cceevdVR.s:1803   .bss.LV_STYLE_GRID_CELL_ROW_POS:00000000 $d
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cceevdVR.s:1810   .bss.LV_STYLE_GRID_CELL_X_ALIGN:00000000 $d
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cceevdVR.s:1817   .bss.LV_STYLE_GRID_CELL_COLUMN_SPAN:00000000 $d
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cceevdVR.s:1824   .bss.LV_STYLE_GRID_CELL_COLUMN_POS:00000000 $d
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cceevdVR.s:1831   .bss.LV_STYLE_GRID_ROW_ALIGN:00000000 $d
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cceevdVR.s:1838   .bss.LV_STYLE_GRID_ROW_DSC_ARRAY:00000000 $d
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cceevdVR.s:1845   .bss.LV_STYLE_GRID_COLUMN_ALIGN:00000000 $d
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cceevdVR.s:1852   .bss.LV_STYLE_GRID_COLUMN_DSC_ARRAY:00000000 $d
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cceevdVR.s:1859   .bss.LV_LAYOUT_GRID:00000000 $d
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cceevdVR.s:68     .text.grid_align:00000057 $d
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cceevdVR.s:68     .text.grid_align:00000058 $t
+
+UNDEFINED SYMBOLS
+lv_obj_get_style_prop
+lv_obj_get_child
+lv_mem_buf_get
+lv_obj_get_child_cnt
+ARM GAS  /var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cceevdVR.s 			page 35
+
+
+lv_obj_has_flag_any
+lv_obj_get_height
+lv_obj_get_content_width
+lv_obj_get_content_height
+lv_memset_00
+lv_obj_get_scroll_x
+lv_obj_get_scroll_y
+lv_obj_get_width
+lv_obj_invalidate
+lv_area_set_width
+lv_area_set_height
+lv_event_send
+lv_obj_get_parent
+lv_obj_move_children_by
+lv_mem_buf_release
+lv_obj_refr_size
+lv_layout_register
+lv_style_register_prop
+lv_obj_set_local_style_prop
+lv_obj_set_style_layout
+lv_obj_mark_layout_as_dirty
+lv_style_set_prop

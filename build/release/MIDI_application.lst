@@ -1,0 +1,171 @@
+ARM GAS  /var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccf4bU3O.s 			page 1
+
+
+   1              		.cpu cortex-m4
+   2              		.arch armv7e-m
+   3              		.fpu fpv4-sp-d16
+   4              		.eabi_attribute 27, 1
+   5              		.eabi_attribute 28, 1
+   6              		.eabi_attribute 20, 1
+   7              		.eabi_attribute 21, 1
+   8              		.eabi_attribute 23, 3
+   9              		.eabi_attribute 24, 1
+  10              		.eabi_attribute 25, 1
+  11              		.eabi_attribute 26, 1
+  12              		.eabi_attribute 30, 2
+  13              		.eabi_attribute 34, 1
+  14              		.eabi_attribute 18, 4
+  15              		.file	"MIDI_application.c"
+  16              		.text
+  17              		.section	.text.MIDI_Application,"ax",%progbits
+  18              		.align	1
+  19              		.p2align 2,,3
+  20              		.global	MIDI_Application
+  21              		.syntax unified
+  22              		.thumb
+  23              		.thumb_func
+  25              	MIDI_Application:
+  26              		@ args = 0, pretend = 0, frame = 0
+  27              		@ frame_needed = 0, uses_anonymous_args = 0
+  28 0000 10B5     		push	{r4, lr}
+  29 0002 0B4C     		ldr	r4, .L8
+  30 0004 2378     		ldrb	r3, [r4]	@ zero_extendqisi2
+  31 0006 022B     		cmp	r3, #2
+  32 0008 09D0     		beq	.L6
+  33 000a 042B     		cmp	r3, #4
+  34 000c 00D0     		beq	.L7
+  35 000e 10BD     		pop	{r4, pc}
+  36              	.L7:
+  37 0010 0023     		movs	r3, #0
+  38 0012 2370     		strb	r3, [r4]
+  39 0014 BDE81040 		pop	{r4, lr}
+  40 0018 0648     		ldr	r0, .L8+4
+  41 001a FFF7FEBF 		b	USBH_MIDI_Stop
+  42              	.L6:
+  43 001e 0649     		ldr	r1, .L8+8
+  44 0020 0448     		ldr	r0, .L8+4
+  45 0022 4022     		movs	r2, #64
+  46 0024 FFF7FEFF 		bl	USBH_MIDI_Receive
+  47 0028 0323     		movs	r3, #3
+  48 002a 2370     		strb	r3, [r4]
+  49 002c 10BD     		pop	{r4, pc}
+  50              	.L9:
+  51 002e 00BF     		.align	2
+  52              	.L8:
+  53 0030 00000000 		.word	Appli_state
+  54 0034 00000000 		.word	hUSBHost
+  55 0038 00000000 		.word	MIDI_RX_Buffer
+  57              		.section	.text.ProcessReceivedMidiDatas,"ax",%progbits
+  58              		.align	1
+  59              		.p2align 2,,3
+ARM GAS  /var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccf4bU3O.s 			page 2
+
+
+  60              		.global	ProcessReceivedMidiDatas
+  61              		.syntax unified
+  62              		.thumb
+  63              		.thumb_func
+  65              	ProcessReceivedMidiDatas:
+  66              		@ args = 0, pretend = 0, frame = 0
+  67              		@ frame_needed = 0, uses_anonymous_args = 0
+  68 0000 2DE9F041 		push	{r4, r5, r6, r7, r8, lr}
+  69 0004 1548     		ldr	r0, .L19
+  70 0006 FFF7FEFF 		bl	USBH_MIDI_GetLastReceivedDataSize
+  71 000a 0328     		cmp	r0, #3
+  72 000c 23D9     		bls	.L10
+  73 000e 144C     		ldr	r4, .L19+4
+  74 0010 DFF85080 		ldr	r8, .L19+8
+  75 0014 C0F38F00 		ubfx	r0, r0, #2, #16
+  76 0018 0138     		subs	r0, r0, #1
+  77 001a 80B2     		uxth	r0, r0
+  78 001c 271D     		adds	r7, r4, #4
+  79 001e 07EB8007 		add	r7, r7, r0, lsl #2
+  80 0022 07E0     		b	.L13
+  81              	.L12:
+  82 0024 66F30705 		bfi	r5, r6, #0, #8
+  83 0028 2846     		mov	r0, r5
+  84 002a 0434     		adds	r4, r4, #4
+  85 002c FFF7FEFF 		bl	ProcessMIDI
+  86 0030 BC42     		cmp	r4, r7
+  87 0032 10D0     		beq	.L10
+  88              	.L13:
+  89 0034 2288     		ldrh	r2, [r4]	@ unaligned
+  90 0036 A378     		ldrb	r3, [r4, #2]	@ zero_extendqisi2
+  91 0038 14F8016C 		ldrb	r6, [r4, #-1]	@ zero_extendqisi2
+  92 003c 62F31725 		bfi	r5, r2, #8, #16
+  93 0040 63F31F65 		bfi	r5, r3, #24, #8
+  94 0044 002E     		cmp	r6, #0
+  95 0046 EDD0     		beq	.L12
+  96 0048 0122     		movs	r2, #1
+  97 004a 4FF40041 		mov	r1, #32768
+  98 004e 4046     		mov	r0, r8
+  99 0050 FFF7FEFF 		bl	HAL_GPIO_WritePin
+ 100 0054 E6E7     		b	.L12
+ 101              	.L10:
+ 102 0056 BDE8F081 		pop	{r4, r5, r6, r7, r8, pc}
+ 103              	.L20:
+ 104 005a 00BF     		.align	2
+ 105              	.L19:
+ 106 005c 00000000 		.word	hUSBHost
+ 107 0060 01000000 		.word	MIDI_RX_Buffer+1
+ 108 0064 000C0240 		.word	1073875968
+ 110              		.section	.text.USBH_MIDI_ReceiveCallback,"ax",%progbits
+ 111              		.align	1
+ 112              		.p2align 2,,3
+ 113              		.global	USBH_MIDI_ReceiveCallback
+ 114              		.syntax unified
+ 115              		.thumb
+ 116              		.thumb_func
+ 118              	USBH_MIDI_ReceiveCallback:
+ 119              		@ args = 0, pretend = 0, frame = 0
+ARM GAS  /var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccf4bU3O.s 			page 3
+
+
+ 120              		@ frame_needed = 0, uses_anonymous_args = 0
+ 121 0000 08B5     		push	{r3, lr}
+ 122 0002 FFF7FEFF 		bl	ProcessReceivedMidiDatas
+ 123 0006 BDE80840 		pop	{r3, lr}
+ 124 000a 0249     		ldr	r1, .L23
+ 125 000c 0248     		ldr	r0, .L23+4
+ 126 000e 4022     		movs	r2, #64
+ 127 0010 FFF7FEBF 		b	USBH_MIDI_Receive
+ 128              	.L24:
+ 129              		.align	2
+ 130              	.L23:
+ 131 0014 00000000 		.word	MIDI_RX_Buffer
+ 132 0018 00000000 		.word	hUSBHost
+ 134              		.global	MIDI_RX_Buffer
+ 135              		.section	.bss.MIDI_RX_Buffer,"aw",%nobits
+ 136              		.align	2
+ 139              	MIDI_RX_Buffer:
+ 140 0000 00000000 		.space	64
+ 140      00000000 
+ 140      00000000 
+ 140      00000000 
+ 140      00000000 
+ 141              		.ident	"GCC: (xPack GNU Arm Embedded GCC arm64) 13.3.1 20240614"
+ARM GAS  /var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccf4bU3O.s 			page 4
+
+
+DEFINED SYMBOLS
+                            *ABS*:00000000 MIDI_application.c
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccf4bU3O.s:18     .text.MIDI_Application:00000000 $t
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccf4bU3O.s:25     .text.MIDI_Application:00000000 MIDI_Application
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccf4bU3O.s:53     .text.MIDI_Application:00000030 $d
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccf4bU3O.s:139    .bss.MIDI_RX_Buffer:00000000 MIDI_RX_Buffer
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccf4bU3O.s:58     .text.ProcessReceivedMidiDatas:00000000 $t
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccf4bU3O.s:65     .text.ProcessReceivedMidiDatas:00000000 ProcessReceivedMidiDatas
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccf4bU3O.s:106    .text.ProcessReceivedMidiDatas:0000005c $d
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccf4bU3O.s:111    .text.USBH_MIDI_ReceiveCallback:00000000 $t
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccf4bU3O.s:118    .text.USBH_MIDI_ReceiveCallback:00000000 USBH_MIDI_ReceiveCallback
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccf4bU3O.s:131    .text.USBH_MIDI_ReceiveCallback:00000014 $d
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccf4bU3O.s:136    .bss.MIDI_RX_Buffer:00000000 $d
+
+UNDEFINED SYMBOLS
+USBH_MIDI_Stop
+USBH_MIDI_Receive
+Appli_state
+hUSBHost
+USBH_MIDI_GetLastReceivedDataSize
+ProcessMIDI
+HAL_GPIO_WritePin

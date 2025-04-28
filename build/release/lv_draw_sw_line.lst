@@ -1,0 +1,950 @@
+ARM GAS  /var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cc9qpSYM.s 			page 1
+
+
+   1              		.cpu cortex-m4
+   2              		.arch armv7e-m
+   3              		.fpu fpv4-sp-d16
+   4              		.eabi_attribute 27, 1
+   5              		.eabi_attribute 28, 1
+   6              		.eabi_attribute 20, 1
+   7              		.eabi_attribute 21, 1
+   8              		.eabi_attribute 23, 3
+   9              		.eabi_attribute 24, 1
+  10              		.eabi_attribute 25, 1
+  11              		.eabi_attribute 26, 1
+  12              		.eabi_attribute 30, 2
+  13              		.eabi_attribute 34, 1
+  14              		.eabi_attribute 18, 4
+  15              		.file	"lv_draw_sw_line.c"
+  16              		.text
+  17              		.section	.text.lv_draw_sw_line,"ax",%progbits
+  18              		.align	1
+  19              		.p2align 2,,3
+  20              		.global	lv_draw_sw_line
+  21              		.syntax unified
+  22              		.thumb
+  23              		.thumb_func
+  25              	lv_draw_sw_line:
+  26              		@ args = 0, pretend = 0, frame = 280
+  27              		@ frame_needed = 0, uses_anonymous_args = 0
+  28 0000 2DE9F04F 		push	{r4, r5, r6, r7, r8, r9, r10, fp, lr}
+  29 0004 0C46     		mov	r4, r1
+  30 0006 C9B0     		sub	sp, sp, #292
+  31 0008 B1F90210 		ldrsh	r1, [r1, #2]
+  32 000c 0292     		str	r2, [sp, #8]
+  33 000e 0029     		cmp	r1, #0
+  34 0010 00F0A681 		beq	.L1
+  35 0014 9846     		mov	r8, r3
+  36 0016 237A     		ldrb	r3, [r4, #8]	@ zero_extendqisi2
+  37 0018 022B     		cmp	r3, #2
+  38 001a 40F2A181 		bls	.L1
+  39 001e 1346     		mov	r3, r2
+  40 0020 8346     		mov	fp, r0
+  41 0022 B2F90000 		ldrsh	r0, [r2]
+  42 0026 B8F90020 		ldrsh	r2, [r8]
+  43 002a B3F90270 		ldrsh	r7, [r3, #2]
+  44 002e B8F90260 		ldrsh	r6, [r8, #2]
+  45 0032 9042     		cmp	r0, r2
+  46 0034 02D1     		bne	.L3
+  47 0036 B742     		cmp	r7, r6
+  48 0038 00F09281 		beq	.L1
+  49              	.L3:
+  50 003c 01EBD171 		add	r1, r1, r1, lsr #31
+  51 0040 C1F34F01 		ubfx	r1, r1, #1, #16
+  52 0044 0023     		movs	r3, #0
+  53 0046 9042     		cmp	r0, r2
+  54 0048 ACBF     		ite	ge
+  55 004a 01EB000C 		addge	ip, r1, r0
+  56 004e 01EB020C 		addlt	ip, r1, r2
+  57 0052 1D46     		mov	r5, r3
+  58 0054 9042     		cmp	r0, r2
+ARM GAS  /var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cc9qpSYM.s 			page 2
+
+
+  59 0056 D4BF     		ite	le
+  60 0058 C1EB000E 		rsble	lr, r1, r0
+  61 005c C1EB020E 		rsbgt	lr, r1, r2
+  62 0060 6CF30F05 		bfi	r5, ip, #0, #16
+  63 0064 B742     		cmp	r7, r6
+  64 0066 D4BF     		ite	le
+  65 0068 C1EB0702 		rsble	r2, r1, r7
+  66 006c C1EB0602 		rsbgt	r2, r1, r6
+  67 0070 B742     		cmp	r7, r6
+  68 0072 ACBF     		ite	ge
+  69 0074 C919     		addge	r1, r1, r7
+  70 0076 8919     		addlt	r1, r1, r6
+  71 0078 61F31F45 		bfi	r5, r1, #16, #16
+  72 007c 6EF30F03 		bfi	r3, lr, #0, #16
+  73 0080 0CA9     		add	r1, sp, #48
+  74 0082 62F31F43 		bfi	r3, r2, #16, #16
+  75 0086 0846     		mov	r0, r1
+  76 0088 DBF80820 		ldr	r2, [fp, #8]
+  77 008c CDE90C35 		strd	r3, r5, [sp, #48]
+  78 0090 FFF7FEFF 		bl	_lv_area_intersect
+  79 0094 0028     		cmp	r0, #0
+  80 0096 00F06381 		beq	.L1
+  81 009a 029B     		ldr	r3, [sp, #8]
+  82 009c B8F90270 		ldrsh	r7, [r8, #2]
+  83 00a0 B3F90260 		ldrsh	r6, [r3, #2]
+  84 00a4 DBF80830 		ldr	r3, [fp, #8]
+  85 00a8 0393     		str	r3, [sp, #12]
+  86 00aa BE42     		cmp	r6, r7
+  87 00ac 0CAB     		add	r3, sp, #48
+  88 00ae B4F90250 		ldrsh	r5, [r4, #2]
+  89 00b2 CBF80830 		str	r3, [fp, #8]
+  90 00b6 00F03882 		beq	.L108
+  91 00ba 029B     		ldr	r3, [sp, #8]
+  92 00bc B8F90090 		ldrsh	r9, [r8]
+  93 00c0 B3F900A0 		ldrsh	r10, [r3]
+  94 00c4 CA45     		cmp	r10, r9
+  95 00c6 00F05181 		beq	.L109
+  96 00ca BE42     		cmp	r6, r7
+  97 00cc 05DA     		bge	.L33
+  98 00ce 3A46     		mov	r2, r7
+  99 00d0 4B46     		mov	r3, r9
+ 100 00d2 3746     		mov	r7, r6
+ 101 00d4 D146     		mov	r9, r10
+ 102 00d6 1646     		mov	r6, r2
+ 103 00d8 9A46     		mov	r10, r3
+ 104              	.L33:
+ 105 00da AAEB0903 		sub	r3, r10, r9
+ 106 00de F11B     		subs	r1, r6, r7
+ 107 00e0 83EAE372 		eor	r2, r3, r3, asr #31
+ 108 00e4 A2EBE372 		sub	r2, r2, r3, asr #31
+ 109 00e8 0893     		str	r3, [sp, #32]
+ 110 00ea 81EAE173 		eor	r3, r1, r1, asr #31
+ 111 00ee A3EBE173 		sub	r3, r3, r1, asr #31
+ 112 00f2 9A42     		cmp	r2, r3
+ 113 00f4 0492     		str	r2, [sp, #16]
+ 114 00f6 0593     		str	r3, [sp, #20]
+ 115 00f8 0B91     		str	r1, [sp, #44]
+ARM GAS  /var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cc9qpSYM.s 			page 3
+
+
+ 116 00fa D8BF     		it	le
+ 117 00fc 049B     		ldrle	r3, [sp, #16]
+ 118 00fe 9A49     		ldr	r1, .L121
+ 119 0100 D6BF     		itet	le
+ 120 0102 059A     		ldrle	r2, [sp, #20]
+ 121 0104 5B01     		lslgt	r3, r3, #5
+ 122 0106 5B01     		lslle	r3, r3, #5
+ 123 0108 B3FBF2F3 		udiv	r3, r3, r2
+ 124 010c C95C     		ldrb	r1, [r1, r3]	@ zero_extendqisi2
+ 125 010e 3F23     		movs	r3, #63
+ 126 0110 15FB0135 		smlabb	r5, r5, r1, r3
+ 127 0114 C5F3CF13 		ubfx	r3, r5, #7, #16
+ 128 0118 CA45     		cmp	r10, r9
+ 129 011a D4BF     		ite	le
+ 130 011c C3EB0A0C 		rsble	ip, r3, r10
+ 131 0120 C3EB090C 		rsbgt	ip, r3, r9
+ 132 0124 0021     		movs	r1, #0
+ 133 0126 0846     		mov	r0, r1
+ 134 0128 6CF30F01 		bfi	r1, ip, #0, #16
+ 135 012c CA45     		cmp	r10, r9
+ 136 012e ACBF     		ite	ge
+ 137 0130 03EB0A0C 		addge	ip, r3, r10
+ 138 0134 03EB090C 		addlt	ip, r3, r9
+ 139 0138 6CF30F00 		bfi	r0, ip, #0, #16
+ 140 013c BE42     		cmp	r6, r7
+ 141 013e D4BF     		ite	le
+ 142 0140 C3EB060C 		rsble	ip, r3, r6
+ 143 0144 C3EB070C 		rsbgt	ip, r3, r7
+ 144 0148 6CF31F41 		bfi	r1, ip, #16, #16
+ 145 014c BE42     		cmp	r6, r7
+ 146 014e ACBF     		ite	ge
+ 147 0150 9B19     		addge	r3, r3, r6
+ 148 0152 DB19     		addlt	r3, r3, r7
+ 149 0154 63F31F40 		bfi	r0, r3, #16, #16
+ 150 0158 0E91     		str	r1, [sp, #56]
+ 151 015a 0EA9     		add	r1, sp, #56
+ 152 015c 0F90     		str	r0, [sp, #60]
+ 153 015e EB11     		asrs	r3, r5, #7
+ 154 0160 0CAA     		add	r2, sp, #48
+ 155 0162 0846     		mov	r0, r1
+ 156 0164 0693     		str	r3, [sp, #24]
+ 157 0166 FFF7FEFF 		bl	_lv_area_intersect
+ 158 016a 0028     		cmp	r0, #0
+ 159 016c 00F0F080 		beq	.L6
+ 160 0170 EB11     		asrs	r3, r5, #7
+ 161 0172 03F00101 		and	r1, r3, #1
+ 162 0176 DDE90432 		ldrd	r3, r2, [sp, #16]
+ 163 017a 01EB2521 		add	r1, r1, r5, asr #8
+ 164 017e 9342     		cmp	r3, r2
+ 165 0180 89B2     		uxth	r1, r1
+ 166 0182 C5F30F25 		ubfx	r5, r5, #8, #16
+ 167 0186 40F3C182 		ble	.L37
+ 168 018a BBB2     		uxth	r3, r7
+ 169 018c B0B2     		uxth	r0, r6
+ 170 018e 5A18     		adds	r2, r3, r1
+ 171 0190 0144     		add	r1, r1, r0
+ 172 0192 401B     		subs	r0, r0, r5
+ARM GAS  /var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cc9qpSYM.s 			page 4
+
+
+ 173 0194 5B1B     		subs	r3, r3, r5
+ 174 0196 05B2     		sxth	r5, r0
+ 175 0198 0898     		ldr	r0, [sp, #32]
+ 176 019a 12B2     		sxth	r2, r2
+ 177 019c 09B2     		sxth	r1, r1
+ 178 019e 1BB2     		sxth	r3, r3
+ 179 01a0 0028     		cmp	r0, #0
+ 180 01a2 0492     		str	r2, [sp, #16]
+ 181 01a4 0591     		str	r1, [sp, #20]
+ 182 01a6 0793     		str	r3, [sp, #28]
+ 183 01a8 40F37E82 		ble	.L38
+ 184 01ac 1A46     		mov	r2, r3
+ 185 01ae 18AB     		add	r3, sp, #96
+ 186 01b0 1846     		mov	r0, r3
+ 187 01b2 0693     		str	r3, [sp, #24]
+ 188 01b4 0023     		movs	r3, #0
+ 189 01b6 0193     		str	r3, [sp, #4]
+ 190 01b8 4946     		mov	r1, r9
+ 191 01ba 0095     		str	r5, [sp]
+ 192 01bc 5346     		mov	r3, r10
+ 193 01be FFF7FEFF 		bl	lv_draw_mask_line_points_init
+ 194 01c2 0599     		ldr	r1, [sp, #20]
+ 195 01c4 049A     		ldr	r2, [sp, #16]
+ 196 01c6 0091     		str	r1, [sp]
+ 197              	.L106:
+ 198 01c8 23AB     		add	r3, sp, #140
+ 199 01ca 1846     		mov	r0, r3
+ 200 01cc 0793     		str	r3, [sp, #28]
+ 201 01ce 0123     		movs	r3, #1
+ 202 01d0 0193     		str	r3, [sp, #4]
+ 203 01d2 4946     		mov	r1, r9
+ 204 01d4 5346     		mov	r3, r10
+ 205 01d6 FFF7FEFF 		bl	lv_draw_mask_line_points_init
+ 206              	.L39:
+ 207 01da 0021     		movs	r1, #0
+ 208 01dc 0698     		ldr	r0, [sp, #24]
+ 209 01de FFF7FEFF 		bl	lv_draw_mask_add
+ 210 01e2 0021     		movs	r1, #0
+ 211 01e4 0990     		str	r0, [sp, #36]
+ 212 01e6 0798     		ldr	r0, [sp, #28]
+ 213 01e8 FFF7FEFF 		bl	lv_draw_mask_add
+ 214 01ec 637A     		ldrb	r3, [r4, #9]	@ zero_extendqisi2
+ 215 01ee 0A90     		str	r0, [sp, #40]
+ 216 01f0 13F01005 		ands	r5, r3, #16
+ 217 01f4 00F0AC82 		beq	.L110
+ 218 01f8 4FF0FF33 		mov	r3, #-1
+ 219 01fc CDE90433 		strd	r3, r3, [sp, #16]
+ 220              	.L40:
+ 221 0200 BDF83C70 		ldrh	r7, [sp, #60]
+ 222 0204 BDF83830 		ldrh	r3, [sp, #56]
+ 223 0208 0137     		adds	r7, r7, #1
+ 224 020a FF1A     		subs	r7, r7, r3
+ 225 020c FFF7FEFF 		bl	_lv_refr_get_disp_refreshing
+ 226 0210 FFF7FEFF 		bl	lv_disp_get_hor_res
+ 227 0214 8146     		mov	r9, r0
+ 228 0216 0EA8     		add	r0, sp, #56
+ 229 0218 FFF7FEFF 		bl	lv_area_get_size
+ARM GAS  /var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cc9qpSYM.s 			page 5
+
+
+ 230 021c 8145     		cmp	r9, r0
+ 231 021e 3FB2     		sxth	r7, r7
+ 232 0220 00F26F82 		bhi	.L111
+ 233              	.L41:
+ 234 0224 4846     		mov	r0, r9
+ 235 0226 FFF7FEFF 		bl	lv_mem_buf_get
+ 236 022a BDF83A30 		ldrh	r3, [sp, #58]
+ 237 022e BDF93E50 		ldrsh	r5, [sp, #62]
+ 238 0232 ADF83E30 		strh	r3, [sp, #62]	@ movhi
+ 239 0236 4946     		mov	r1, r9
+ 240 0238 8246     		mov	r10, r0
+ 241 023a FFF7FEFF 		bl	lv_memset_ff
+ 242 023e 1C21     		movs	r1, #28
+ 243 0240 11A8     		add	r0, sp, #68
+ 244 0242 FFF7FEFF 		bl	lv_memset_00
+ 245 0246 0EAB     		add	r3, sp, #56
+ 246 0248 BDF93A60 		ldrsh	r6, [sp, #58]
+ 247 024c 1193     		str	r3, [sp, #68]
+ 248 024e 1693     		str	r3, [sp, #88]
+ 249 0250 2388     		ldrh	r3, [r4]
+ 250 0252 ADF84C30 		strh	r3, [sp, #76]	@ movhi
+ 251 0256 B542     		cmp	r5, r6
+ 252 0258 237A     		ldrb	r3, [r4, #8]	@ zero_extendqisi2
+ 253 025a 8DF85C30 		strb	r3, [sp, #92]
+ 254 025e CDF850A0 		str	r10, [sp, #80]
+ 255 0262 3246     		mov	r2, r6
+ 256 0264 2B46     		mov	r3, r5
+ 257 0266 44DB     		blt	.L42
+ 258 0268 CDF82C80 		str	r8, [sp, #44]
+ 259 026c 0025     		movs	r5, #0
+ 260 026e B846     		mov	r8, r7
+ 261 0270 0894     		str	r4, [sp, #32]
+ 262 0272 1F46     		mov	r7, r3
+ 263 0274 0CE0     		b	.L46
+ 264              	.L43:
+ 265 0276 4544     		add	r5, r5, r8
+ 266 0278 05EB0802 		add	r2, r5, r8
+ 267 027c 9145     		cmp	r9, r2
+ 268 027e 1DD9     		bls	.L44
+ 269              	.L113:
+ 270 0280 BDF83E20 		ldrh	r2, [sp, #62]
+ 271 0284 0132     		adds	r2, r2, #1
+ 272 0286 ADF83E20 		strh	r2, [sp, #62]	@ movhi
+ 273              	.L45:
+ 274 028a 0136     		adds	r6, r6, #1
+ 275 028c B742     		cmp	r7, r6
+ 276 028e 2BDB     		blt	.L112
+ 277              	.L46:
+ 278 0290 0AEB0504 		add	r4, r10, r5
+ 279 0294 BDF93810 		ldrsh	r1, [sp, #56]
+ 280 0298 4346     		mov	r3, r8
+ 281 029a 32B2     		sxth	r2, r6
+ 282 029c 2046     		mov	r0, r4
+ 283 029e FFF7FEFF 		bl	lv_draw_mask_apply
+ 284 02a2 8DF85400 		strb	r0, [sp, #84]
+ 285 02a6 0028     		cmp	r0, #0
+ 286 02a8 E5D1     		bne	.L43
+ARM GAS  /var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cc9qpSYM.s 			page 6
+
+
+ 287 02aa 4146     		mov	r1, r8
+ 288 02ac 2046     		mov	r0, r4
+ 289 02ae 4544     		add	r5, r5, r8
+ 290 02b0 FFF7FEFF 		bl	lv_memset_00
+ 291 02b4 05EB0802 		add	r2, r5, r8
+ 292 02b8 9145     		cmp	r9, r2
+ 293 02ba E1D8     		bhi	.L113
+ 294              	.L44:
+ 295 02bc 4FF00203 		mov	r3, #2
+ 296 02c0 11A9     		add	r1, sp, #68
+ 297 02c2 5846     		mov	r0, fp
+ 298 02c4 8DF85430 		strb	r3, [sp, #84]
+ 299 02c8 FFF7FEFF 		bl	lv_draw_sw_blend
+ 300 02cc BDF83E20 		ldrh	r2, [sp, #62]
+ 301 02d0 0132     		adds	r2, r2, #1
+ 302 02d2 12B2     		sxth	r2, r2
+ 303 02d4 4946     		mov	r1, r9
+ 304 02d6 5046     		mov	r0, r10
+ 305 02d8 ADF83A20 		strh	r2, [sp, #58]	@ movhi
+ 306 02dc ADF83E20 		strh	r2, [sp, #62]	@ movhi
+ 307 02e0 0025     		movs	r5, #0
+ 308 02e2 FFF7FEFF 		bl	lv_memset_ff
+ 309 02e6 D0E7     		b	.L45
+ 310              	.L112:
+ 311 02e8 089C     		ldr	r4, [sp, #32]
+ 312 02ea DDF82C80 		ldr	r8, [sp, #44]
+ 313 02ee BDF93A20 		ldrsh	r2, [sp, #58]
+ 314              	.L42:
+ 315 02f2 BDF93E30 		ldrsh	r3, [sp, #62]
+ 316 02f6 9342     		cmp	r3, r2
+ 317 02f8 09D0     		beq	.L47
+ 318 02fa 013B     		subs	r3, r3, #1
+ 319 02fc ADF83E30 		strh	r3, [sp, #62]	@ movhi
+ 320 0300 11A9     		add	r1, sp, #68
+ 321 0302 0223     		movs	r3, #2
+ 322 0304 5846     		mov	r0, fp
+ 323 0306 8DF85430 		strb	r3, [sp, #84]
+ 324 030a FFF7FEFF 		bl	lv_draw_sw_blend
+ 325              	.L47:
+ 326 030e 5046     		mov	r0, r10
+ 327 0310 FFF7FEFF 		bl	lv_mem_buf_release
+ 328 0314 0698     		ldr	r0, [sp, #24]
+ 329 0316 FFF7FEFF 		bl	lv_draw_mask_free_param
+ 330 031a 0798     		ldr	r0, [sp, #28]
+ 331 031c FFF7FEFF 		bl	lv_draw_mask_free_param
+ 332 0320 049B     		ldr	r3, [sp, #16]
+ 333 0322 0133     		adds	r3, r3, #1
+ 334 0324 02D0     		beq	.L48
+ 335 0326 2EA8     		add	r0, sp, #184
+ 336 0328 FFF7FEFF 		bl	lv_draw_mask_free_param
+ 337              	.L48:
+ 338 032c 059B     		ldr	r3, [sp, #20]
+ 339 032e 0133     		adds	r3, r3, #1
+ 340 0330 02D0     		beq	.L49
+ 341 0332 3AA8     		add	r0, sp, #232
+ 342 0334 FFF7FEFF 		bl	lv_draw_mask_free_param
+ 343              	.L49:
+ARM GAS  /var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cc9qpSYM.s 			page 7
+
+
+ 344 0338 0998     		ldr	r0, [sp, #36]
+ 345 033a FFF7FEFF 		bl	lv_draw_mask_remove_id
+ 346 033e 0A98     		ldr	r0, [sp, #40]
+ 347 0340 FFF7FEFF 		bl	lv_draw_mask_remove_id
+ 348 0344 0498     		ldr	r0, [sp, #16]
+ 349 0346 FFF7FEFF 		bl	lv_draw_mask_remove_id
+ 350 034a 0598     		ldr	r0, [sp, #20]
+ 351 034c FFF7FEFF 		bl	lv_draw_mask_remove_id
+ 352              	.L6:
+ 353 0350 637A     		ldrb	r3, [r4, #9]	@ zero_extendqisi2
+ 354 0352 13F00C0F 		tst	r3, #12
+ 355 0356 40F0B080 		bne	.L114
+ 356              	.L50:
+ 357 035a 039B     		ldr	r3, [sp, #12]
+ 358 035c CBF80830 		str	r3, [fp, #8]
+ 359              	.L1:
+ 360 0360 49B0     		add	sp, sp, #292
+ 361              		@ sp needed
+ 362 0362 BDE8F08F 		pop	{r4, r5, r6, r7, r8, r9, r10, fp, pc}
+ 363              	.L122:
+ 364 0366 00BF     		.align	2
+ 365              	.L121:
+ 366 0368 00000000 		.word	wcorr.0
+ 367              	.L109:
+ 368 036c 013D     		subs	r5, r5, #1
+ 369 036e 05F00103 		and	r3, r5, #1
+ 370 0372 1FFA8AF1 		uxth	r1, r10
+ 371 0376 03EB6503 		add	r3, r3, r5, asr #1
+ 372 037a 01EB6500 		add	r0, r1, r5, asr #1
+ 373 037e CB1A     		subs	r3, r1, r3
+ 374 0380 BE42     		cmp	r6, r7
+ 375 0382 4FF00001 		mov	r1, #0
+ 376 0386 0D46     		mov	r5, r1
+ 377 0388 63F30F01 		bfi	r1, r3, #0, #16
+ 378 038c 3346     		mov	r3, r6
+ 379 038e B8BF     		it	lt
+ 380 0390 3B46     		movlt	r3, r7
+ 381 0392 B742     		cmp	r7, r6
+ 382 0394 A8BF     		it	ge
+ 383 0396 3746     		movge	r7, r6
+ 384 0398 60F30F05 		bfi	r5, r0, #0, #16
+ 385 039c 67F31F41 		bfi	r1, r7, #16, #16
+ 386 03a0 0DF1B809 		add	r9, sp, #184
+ 387 03a4 013B     		subs	r3, r3, #1
+ 388 03a6 2E91     		str	r1, [sp, #184]
+ 389 03a8 63F31F45 		bfi	r5, r3, #16, #16
+ 390 03ac 0CAA     		add	r2, sp, #48
+ 391 03ae 4946     		mov	r1, r9
+ 392 03b0 4846     		mov	r0, r9
+ 393 03b2 2F95     		str	r5, [sp, #188]
+ 394 03b4 FFF7FEFF 		bl	_lv_area_intersect
+ 395 03b8 0028     		cmp	r0, #0
+ 396 03ba C9D0     		beq	.L6
+ 397 03bc B4F90630 		ldrsh	r3, [r4, #6]
+ 398 03c0 4846     		mov	r0, r9
+ 399 03c2 002B     		cmp	r3, #0
+ 400 03c4 00F08581 		beq	.L20
+ARM GAS  /var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cc9qpSYM.s 			page 8
+
+
+ 401 03c8 B4F90430 		ldrsh	r3, [r4, #4]
+ 402 03cc 002B     		cmp	r3, #0
+ 403 03ce 00F08081 		beq	.L20
+ 404 03d2 3AAD     		add	r5, sp, #232
+ 405 03d4 FFF7FEFF 		bl	lv_draw_mask_is_any
+ 406 03d8 1C21     		movs	r1, #28
+ 407 03da 2846     		mov	r0, r5
+ 408 03dc FFF7FEFF 		bl	lv_memset_00
+ 409 03e0 BDF8BC60 		ldrh	r6, [sp, #188]
+ 410 03e4 BDF8B830 		ldrh	r3, [sp, #184]
+ 411 03e8 BDF9BE70 		ldrsh	r7, [sp, #190]
+ 412 03ec CDF8E890 		str	r9, [sp, #232]
+ 413 03f0 0136     		adds	r6, r6, #1
+ 414 03f2 F61A     		subs	r6, r6, r3
+ 415 03f4 2388     		ldrh	r3, [r4]
+ 416 03f6 ADF8F030 		strh	r3, [sp, #240]	@ movhi
+ 417 03fa 36B2     		sxth	r6, r6
+ 418 03fc 237A     		ldrb	r3, [r4, #8]	@ zero_extendqisi2
+ 419 03fe 8DF80031 		strb	r3, [sp, #256]
+ 420 0402 3046     		mov	r0, r6
+ 421 0404 BDF8BA30 		ldrh	r3, [sp, #186]
+ 422 0408 ADF8BE30 		strh	r3, [sp, #190]	@ movhi
+ 423 040c FFF7FEFF 		bl	lv_mem_buf_get
+ 424 0410 B4F90420 		ldrsh	r2, [r4, #4]
+ 425 0414 B4F90630 		ldrsh	r3, [r4, #6]
+ 426 0418 CDF8FC90 		str	r9, [sp, #252]
+ 427 041c BDF9BA90 		ldrsh	r9, [sp, #186]
+ 428 0420 3D90     		str	r0, [sp, #244]
+ 429 0422 1344     		add	r3, r3, r2
+ 430 0424 99FBF3F2 		sdiv	r2, r9, r3
+ 431 0428 03FB1293 		mls	r3, r3, r2, r9
+ 432 042c 8246     		mov	r10, r0
+ 433 042e 0FFA83FC 		sxth	ip, r3
+ 434 0432 0122     		movs	r2, #1
+ 435              	.L24:
+ 436 0434 4F45     		cmp	r7, r9
+ 437 0436 C0F24881 		blt	.L32
+ 438 043a 0494     		str	r4, [sp, #16]
+ 439 043c CDF81480 		str	r8, [sp, #20]
+ 440 0440 6446     		mov	r4, ip
+ 441 0442 A846     		mov	r8, r5
+ 442 0444 1546     		mov	r5, r2
+ 443 0446 13E0     		b	.L26
+ 444              	.L116:
+ 445 0448 1CB2     		sxth	r4, r3
+ 446              	.L27:
+ 447 044a 4146     		mov	r1, r8
+ 448 044c 5846     		mov	r0, fp
+ 449 044e FFF7FEFF 		bl	lv_draw_sw_blend
+ 450 0452 BDF8BA30 		ldrh	r3, [sp, #186]
+ 451 0456 0133     		adds	r3, r3, #1
+ 452 0458 ADF8BA30 		strh	r3, [sp, #186]	@ movhi
+ 453 045c BDF8BE30 		ldrh	r3, [sp, #190]
+ 454 0460 09F10109 		add	r9, r9, #1
+ 455 0464 0133     		adds	r3, r3, #1
+ 456 0466 B945     		cmp	r9, r7
+ 457 0468 ADF8BE30 		strh	r3, [sp, #190]	@ movhi
+ARM GAS  /var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cc9qpSYM.s 			page 9
+
+
+ 458 046c 00F3E681 		bgt	.L115
+ 459              	.L26:
+ 460 0470 3146     		mov	r1, r6
+ 461 0472 5046     		mov	r0, r10
+ 462 0474 FFF7FEFF 		bl	lv_memset_ff
+ 463 0478 BDF9B810 		ldrsh	r1, [sp, #184]
+ 464 047c 3346     		mov	r3, r6
+ 465 047e 0FFA89F2 		sxth	r2, r9
+ 466 0482 5046     		mov	r0, r10
+ 467 0484 FFF7FEFF 		bl	lv_draw_mask_apply
+ 468 0488 8DF8F800 		strb	r0, [sp, #248]
+ 469 048c 002D     		cmp	r5, #0
+ 470 048e DCD0     		beq	.L27
+ 471 0490 631C     		adds	r3, r4, #1
+ 472 0492 0028     		cmp	r0, #0
+ 473 0494 D8D0     		beq	.L116
+ 474 0496 049B     		ldr	r3, [sp, #16]
+ 475 0498 B3F90420 		ldrsh	r2, [r3, #4]
+ 476 049c B3F90630 		ldrsh	r3, [r3, #6]
+ 477 04a0 1344     		add	r3, r3, r2
+ 478 04a2 9442     		cmp	r4, r2
+ 479 04a4 C8BF     		it	gt
+ 480 04a6 0020     		movgt	r0, #0
+ 481 04a8 9C42     		cmp	r4, r3
+ 482 04aa 8DF8F800 		strb	r0, [sp, #248]
+ 483 04ae 04F10104 		add	r4, r4, #1
+ 484 04b2 C0F2C181 		blt	.L31
+ 485 04b6 0124     		movs	r4, #1
+ 486 04b8 C7E7     		b	.L27
+ 487              	.L114:
+ 488 04ba 3AAD     		add	r5, sp, #232
+ 489 04bc 2846     		mov	r0, r5
+ 490 04be FFF7FEFF 		bl	lv_draw_rect_dsc_init
+ 491 04c2 47F6FF73 		movw	r3, #32767
+ 492 04c6 B4F90220 		ldrsh	r2, [r4, #2]
+ 493 04ca ADF8E830 		strh	r3, [sp, #232]	@ movhi
+ 494 04ce 637A     		ldrb	r3, [r4, #9]	@ zero_extendqisi2
+ 495 04d0 2188     		ldrh	r1, [r4]
+ 496 04d2 ADF8EC10 		strh	r1, [sp, #236]	@ movhi
+ 497 04d6 D643     		mvns	r6, r2
+ 498 04d8 217A     		ldrb	r1, [r4, #8]	@ zero_extendqisi2
+ 499 04da 8DF8EB10 		strb	r1, [sp, #235]
+ 500 04de 5710     		asrs	r7, r2, #1
+ 501 04e0 5A07     		lsls	r2, r3, #29
+ 502 04e2 06F00106 		and	r6, r6, #1
+ 503 04e6 00F15F81 		bmi	.L117
+ 504              	.L51:
+ 505 04ea 1B07     		lsls	r3, r3, #28
+ 506 04ec 7FF535AF 		bpl	.L50
+ 507 04f0 B8F80040 		ldrh	r4, [r8]
+ 508 04f4 B8F80200 		ldrh	r0, [r8, #2]
+ 509 04f8 BAB2     		uxth	r2, r7
+ 510 04fa A718     		adds	r7, r4, r2
+ 511 04fc 0023     		movs	r3, #0
+ 512 04fe A41A     		subs	r4, r4, r2
+ 513 0500 2946     		mov	r1, r5
+ 514 0502 BF1B     		subs	r7, r7, r6
+ARM GAS  /var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cc9qpSYM.s 			page 10
+
+
+ 515 0504 1D46     		mov	r5, r3
+ 516 0506 64F30F03 		bfi	r3, r4, #0, #16
+ 517 050a 1418     		adds	r4, r2, r0
+ 518 050c 67F30F05 		bfi	r5, r7, #0, #16
+ 519 0510 801A     		subs	r0, r0, r2
+ 520 0512 A21B     		subs	r2, r4, r6
+ 521 0514 60F31F43 		bfi	r3, r0, #16, #16
+ 522 0518 62F31F45 		bfi	r5, r2, #16, #16
+ 523 051c 5846     		mov	r0, fp
+ 524 051e 2EAA     		add	r2, sp, #184
+ 525 0520 2E93     		str	r3, [sp, #184]
+ 526 0522 2F95     		str	r5, [sp, #188]
+ 527 0524 FFF7FEFF 		bl	lv_draw_rect
+ 528 0528 17E7     		b	.L50
+ 529              	.L108:
+ 530 052a 1A46     		mov	r2, r3
+ 531 052c 029B     		ldr	r3, [sp, #8]
+ 532 052e B8F900C0 		ldrsh	ip, [r8]
+ 533 0532 B3F90030 		ldrsh	r3, [r3]
+ 534 0536 013D     		subs	r5, r5, #1
+ 535 0538 6345     		cmp	r3, ip
+ 536 053a 05F00101 		and	r1, r5, #1
+ 537 053e 1F46     		mov	r7, r3
+ 538 0540 B6B2     		uxth	r6, r6
+ 539 0542 B8BF     		it	lt
+ 540 0544 6746     		movlt	r7, ip
+ 541 0546 0020     		movs	r0, #0
+ 542 0548 01EB6501 		add	r1, r1, r5, asr #1
+ 543 054c 6345     		cmp	r3, ip
+ 544 054e A6EB0101 		sub	r1, r6, r1
+ 545 0552 A8BF     		it	ge
+ 546 0554 6346     		movge	r3, ip
+ 547 0556 06EB6506 		add	r6, r6, r5, asr #1
+ 548 055a 013F     		subs	r7, r7, #1
+ 549 055c 0546     		mov	r5, r0
+ 550 055e 67F30F05 		bfi	r5, r7, #0, #16
+ 551 0562 63F30F00 		bfi	r0, r3, #0, #16
+ 552 0566 61F31F40 		bfi	r0, r1, #16, #16
+ 553 056a 0DF1B809 		add	r9, sp, #184
+ 554 056e 66F31F45 		bfi	r5, r6, #16, #16
+ 555 0572 CDE92E05 		strd	r0, r5, [sp, #184]
+ 556 0576 4946     		mov	r1, r9
+ 557 0578 4846     		mov	r0, r9
+ 558 057a FFF7FEFF 		bl	_lv_area_intersect
+ 559 057e 0028     		cmp	r0, #0
+ 560 0580 3FF4E6AE 		beq	.L6
+ 561 0584 B4F90630 		ldrsh	r3, [r4, #6]
+ 562 0588 4846     		mov	r0, r9
+ 563 058a 002B     		cmp	r3, #0
+ 564 058c 00F02C81 		beq	.L7
+ 565 0590 B4F90430 		ldrsh	r3, [r4, #4]
+ 566 0594 002B     		cmp	r3, #0
+ 567 0596 00F02781 		beq	.L7
+ 568 059a 3AAD     		add	r5, sp, #232
+ 569 059c FFF7FEFF 		bl	lv_draw_mask_is_any
+ 570 05a0 1C21     		movs	r1, #28
+ 571 05a2 2846     		mov	r0, r5
+ARM GAS  /var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cc9qpSYM.s 			page 11
+
+
+ 572 05a4 FFF7FEFF 		bl	lv_memset_00
+ 573 05a8 B4F90430 		ldrsh	r3, [r4, #4]
+ 574 05ac B4F90620 		ldrsh	r2, [r4, #6]
+ 575 05b0 BDF8BC60 		ldrh	r6, [sp, #188]
+ 576 05b4 2188     		ldrh	r1, [r4]
+ 577 05b6 ADF8F010 		strh	r1, [sp, #240]	@ movhi
+ 578 05ba 1A44     		add	r2, r2, r3
+ 579 05bc BDF9B830 		ldrsh	r3, [sp, #184]
+ 580 05c0 93FBF2F0 		sdiv	r0, r3, r2
+ 581 05c4 0136     		adds	r6, r6, #1
+ 582 05c6 F61A     		subs	r6, r6, r3
+ 583 05c8 02FB1033 		mls	r3, r2, r0, r3
+ 584 05cc 217A     		ldrb	r1, [r4, #8]	@ zero_extendqisi2
+ 585 05ce 8DF80011 		strb	r1, [sp, #256]
+ 586 05d2 1BB2     		sxth	r3, r3
+ 587 05d4 BDF8BA10 		ldrh	r1, [sp, #186]
+ 588 05d8 0593     		str	r3, [sp, #20]
+ 589 05da BDF9BE30 		ldrsh	r3, [sp, #190]
+ 590 05de CDF8E890 		str	r9, [sp, #232]
+ 591 05e2 36B2     		sxth	r6, r6
+ 592 05e4 0493     		str	r3, [sp, #16]
+ 593 05e6 ADF8BE10 		strh	r1, [sp, #190]	@ movhi
+ 594 05ea 0127     		movs	r7, #1
+ 595              	.L8:
+ 596 05ec 3046     		mov	r0, r6
+ 597 05ee FFF7FEFF 		bl	lv_mem_buf_get
+ 598 05f2 049B     		ldr	r3, [sp, #16]
+ 599 05f4 CDF8FC90 		str	r9, [sp, #252]
+ 600 05f8 BDF9BA90 		ldrsh	r9, [sp, #186]
+ 601 05fc 3D90     		str	r0, [sp, #244]
+ 602 05fe 9945     		cmp	r9, r3
+ 603 0600 8246     		mov	r10, r0
+ 604 0602 62DC     		bgt	.L32
+ 605 0604 CDF81880 		str	r8, [sp, #24]
+ 606 0608 DDF81080 		ldr	r8, [sp, #16]
+ 607 060c 11E0     		b	.L11
+ 608              	.L12:
+ 609 060e 2946     		mov	r1, r5
+ 610 0610 5846     		mov	r0, fp
+ 611 0612 FFF7FEFF 		bl	lv_draw_sw_blend
+ 612 0616 BDF8BA30 		ldrh	r3, [sp, #186]
+ 613 061a 0133     		adds	r3, r3, #1
+ 614 061c ADF8BA30 		strh	r3, [sp, #186]	@ movhi
+ 615 0620 BDF8BE30 		ldrh	r3, [sp, #190]
+ 616 0624 09F10109 		add	r9, r9, #1
+ 617 0628 0133     		adds	r3, r3, #1
+ 618 062a C145     		cmp	r9, r8
+ 619 062c ADF8BE30 		strh	r3, [sp, #190]	@ movhi
+ 620 0630 49DC     		bgt	.L118
+ 621              	.L11:
+ 622 0632 3146     		mov	r1, r6
+ 623 0634 5046     		mov	r0, r10
+ 624 0636 FFF7FEFF 		bl	lv_memset_ff
+ 625 063a BDF9B810 		ldrsh	r1, [sp, #184]
+ 626 063e 3346     		mov	r3, r6
+ 627 0640 0FFA89F2 		sxth	r2, r9
+ 628 0644 5046     		mov	r0, r10
+ARM GAS  /var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cc9qpSYM.s 			page 12
+
+
+ 629 0646 FFF7FEFF 		bl	lv_draw_mask_apply
+ 630 064a 8DF8F800 		strb	r0, [sp, #248]
+ 631 064e 002F     		cmp	r7, #0
+ 632 0650 DDD0     		beq	.L12
+ 633 0652 0028     		cmp	r0, #0
+ 634 0654 DBD0     		beq	.L12
+ 635 0656 002E     		cmp	r6, #0
+ 636 0658 40F3EA80 		ble	.L16
+ 637 065c 0599     		ldr	r1, [sp, #20]
+ 638 065e 0022     		movs	r2, #0
+ 639 0660 07E0     		b	.L13
+ 640              	.L119:
+ 641 0662 1FFA8EF3 		uxth	r3, lr
+ 642 0666 01B2     		sxth	r1, r0
+ 643              	.L15:
+ 644 0668 0133     		adds	r3, r3, #1
+ 645 066a 1AB2     		sxth	r2, r3
+ 646 066c B242     		cmp	r2, r6
+ 647 066e 80F2DF80 		bge	.L16
+ 648              	.L13:
+ 649 0672 B4F904C0 		ldrsh	ip, [r4, #4]
+ 650 0676 93B2     		uxth	r3, r2
+ 651 0678 1FFA8CF0 		uxth	r0, ip
+ 652 067c 00EB030E 		add	lr, r0, r3
+ 653 0680 8C45     		cmp	ip, r1
+ 654 0682 AEEB010E 		sub	lr, lr, r1
+ 655 0686 00F10100 		add	r0, r0, #1
+ 656 068a EADA     		bge	.L119
+ 657 068c B4F90600 		ldrsh	r0, [r4, #6]
+ 658 0690 6044     		add	r0, r0, ip
+ 659 0692 8142     		cmp	r1, r0
+ 660 0694 B8BF     		it	lt
+ 661 0696 0020     		movlt	r0, #0
+ 662 0698 01F10101 		add	r1, r1, #1
+ 663 069c BABF     		itte	lt
+ 664 069e 0AF80200 		strblt	r0, [r10, r2]
+ 665 06a2 09B2     		sxthlt	r1, r1
+ 666 06a4 0121     		movge	r1, #1
+ 667 06a6 DFE7     		b	.L15
+ 668              	.L38:
+ 669 06a8 059B     		ldr	r3, [sp, #20]
+ 670 06aa 0093     		str	r3, [sp]
+ 671 06ac 18AB     		add	r3, sp, #96
+ 672 06ae 1846     		mov	r0, r3
+ 673 06b0 0693     		str	r3, [sp, #24]
+ 674 06b2 0023     		movs	r3, #0
+ 675 06b4 049A     		ldr	r2, [sp, #16]
+ 676 06b6 0193     		str	r3, [sp, #4]
+ 677 06b8 4946     		mov	r1, r9
+ 678 06ba 5346     		mov	r3, r10
+ 679 06bc FFF7FEFF 		bl	lv_draw_mask_line_points_init
+ 680 06c0 079A     		ldr	r2, [sp, #28]
+ 681 06c2 0095     		str	r5, [sp]
+ 682 06c4 80E5     		b	.L106
+ 683              	.L118:
+ 684 06c6 DDF81880 		ldr	r8, [sp, #24]
+ 685              	.L32:
+ARM GAS  /var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cc9qpSYM.s 			page 13
+
+
+ 686 06ca 5046     		mov	r0, r10
+ 687 06cc FFF7FEFF 		bl	lv_mem_buf_release
+ 688 06d0 3EE6     		b	.L6
+ 689              	.L20:
+ 690 06d2 FFF7FEFF 		bl	lv_draw_mask_is_any
+ 691 06d6 3AAD     		add	r5, sp, #232
+ 692 06d8 0646     		mov	r6, r0
+ 693 06da 1C21     		movs	r1, #28
+ 694 06dc 2846     		mov	r0, r5
+ 695 06de FFF7FEFF 		bl	lv_memset_00
+ 696 06e2 2388     		ldrh	r3, [r4]
+ 697 06e4 ADF8F030 		strh	r3, [sp, #240]	@ movhi
+ 698 06e8 237A     		ldrb	r3, [r4, #8]	@ zero_extendqisi2
+ 699 06ea CDF8E890 		str	r9, [sp, #232]
+ 700 06ee 8DF80031 		strb	r3, [sp, #256]
+ 701 06f2 002E     		cmp	r6, #0
+ 702 06f4 40F0A580 		bne	.L120
+ 703              	.L102:
+ 704 06f8 2946     		mov	r1, r5
+ 705 06fa 5846     		mov	r0, fp
+ 706 06fc FFF7FEFF 		bl	lv_draw_sw_blend
+ 707 0700 26E6     		b	.L6
+ 708              	.L111:
+ 709 0702 0EA8     		add	r0, sp, #56
+ 710 0704 FFF7FEFF 		bl	lv_area_get_size
+ 711 0708 8146     		mov	r9, r0
+ 712 070a 8BE5     		b	.L41
+ 713              	.L37:
+ 714 070c 1FFA89F2 		uxth	r2, r9
+ 715 0710 1FFA8AF3 		uxth	r3, r10
+ 716 0714 0593     		str	r3, [sp, #20]
+ 717 0716 0492     		str	r2, [sp, #16]
+ 718 0718 0B44     		add	r3, r3, r1
+ 719 071a 1144     		add	r1, r1, r2
+ 720 071c 0022     		movs	r2, #0
+ 721 071e 18A8     		add	r0, sp, #96
+ 722 0720 0192     		str	r2, [sp, #4]
+ 723 0722 0096     		str	r6, [sp]
+ 724 0724 3A46     		mov	r2, r7
+ 725 0726 1BB2     		sxth	r3, r3
+ 726 0728 09B2     		sxth	r1, r1
+ 727 072a 0690     		str	r0, [sp, #24]
+ 728 072c FFF7FEFF 		bl	lv_draw_mask_line_points_init
+ 729 0730 049A     		ldr	r2, [sp, #16]
+ 730 0732 059B     		ldr	r3, [sp, #20]
+ 731 0734 0096     		str	r6, [sp]
+ 732 0736 511B     		subs	r1, r2, r5
+ 733 0738 23AA     		add	r2, sp, #140
+ 734 073a 5B1B     		subs	r3, r3, r5
+ 735 073c 1046     		mov	r0, r2
+ 736 073e 0792     		str	r2, [sp, #28]
+ 737 0740 0122     		movs	r2, #1
+ 738 0742 0192     		str	r2, [sp, #4]
+ 739 0744 1BB2     		sxth	r3, r3
+ 740 0746 09B2     		sxth	r1, r1
+ 741 0748 3A46     		mov	r2, r7
+ 742 074a FFF7FEFF 		bl	lv_draw_mask_line_points_init
+ARM GAS  /var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cc9qpSYM.s 			page 14
+
+
+ 743 074e 44E5     		b	.L39
+ 744              	.L110:
+ 745 0750 BDF82030 		ldrh	r3, [sp, #32]
+ 746 0754 BDF82C10 		ldrh	r1, [sp, #44]
+ 747 0758 0493     		str	r3, [sp, #16]
+ 748 075a 3B44     		add	r3, r3, r7
+ 749 075c 1BB2     		sxth	r3, r3
+ 750 075e 0093     		str	r3, [sp]
+ 751 0760 0320     		movs	r0, #3
+ 752 0762 A9EB0103 		sub	r3, r9, r1
+ 753 0766 3A46     		mov	r2, r7
+ 754 0768 1BB2     		sxth	r3, r3
+ 755 076a 0F46     		mov	r7, r1
+ 756 076c 0190     		str	r0, [sp, #4]
+ 757 076e 4946     		mov	r1, r9
+ 758 0770 2EA8     		add	r0, sp, #184
+ 759 0772 FFF7FEFF 		bl	lv_draw_mask_line_points_init
+ 760 0776 049B     		ldr	r3, [sp, #16]
+ 761 0778 9A19     		adds	r2, r3, r6
+ 762 077a 12B2     		sxth	r2, r2
+ 763 077c 0220     		movs	r0, #2
+ 764 077e AAEB0703 		sub	r3, r10, r7
+ 765 0782 1BB2     		sxth	r3, r3
+ 766 0784 0092     		str	r2, [sp]
+ 767 0786 5146     		mov	r1, r10
+ 768 0788 3246     		mov	r2, r6
+ 769 078a 0190     		str	r0, [sp, #4]
+ 770 078c 3AA8     		add	r0, sp, #232
+ 771 078e FFF7FEFF 		bl	lv_draw_mask_line_points_init
+ 772 0792 2946     		mov	r1, r5
+ 773 0794 2EA8     		add	r0, sp, #184
+ 774 0796 FFF7FEFF 		bl	lv_draw_mask_add
+ 775 079a 2946     		mov	r1, r5
+ 776 079c 0490     		str	r0, [sp, #16]
+ 777 079e 3AA8     		add	r0, sp, #232
+ 778 07a0 FFF7FEFF 		bl	lv_draw_mask_add
+ 779 07a4 0590     		str	r0, [sp, #20]
+ 780 07a6 2BE5     		b	.L40
+ 781              	.L117:
+ 782 07a8 029B     		ldr	r3, [sp, #8]
+ 783 07aa 1888     		ldrh	r0, [r3]
+ 784 07ac 5988     		ldrh	r1, [r3, #2]
+ 785 07ae BBB2     		uxth	r3, r7
+ 786 07b0 00EB030E 		add	lr, r0, r3
+ 787 07b4 0022     		movs	r2, #0
+ 788 07b6 C01A     		subs	r0, r0, r3
+ 789 07b8 AEEB060E 		sub	lr, lr, r6
+ 790 07bc 9446     		mov	ip, r2
+ 791 07be 60F30F02 		bfi	r2, r0, #0, #16
+ 792 07c2 5818     		adds	r0, r3, r1
+ 793 07c4 C91A     		subs	r1, r1, r3
+ 794 07c6 61F31F42 		bfi	r2, r1, #16, #16
+ 795 07ca 831B     		subs	r3, r0, r6
+ 796 07cc 6EF30F0C 		bfi	ip, lr, #0, #16
+ 797 07d0 63F31F4C 		bfi	ip, r3, #16, #16
+ 798 07d4 2E92     		str	r2, [sp, #184]
+ 799 07d6 2946     		mov	r1, r5
+ARM GAS  /var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cc9qpSYM.s 			page 15
+
+
+ 800 07d8 2EAA     		add	r2, sp, #184
+ 801 07da 5846     		mov	r0, fp
+ 802 07dc CDF8BCC0 		str	ip, [sp, #188]
+ 803 07e0 FFF7FEFF 		bl	lv_draw_rect
+ 804 07e4 637A     		ldrb	r3, [r4, #9]	@ zero_extendqisi2
+ 805 07e6 80E6     		b	.L51
+ 806              	.L7:
+ 807 07e8 FFF7FEFF 		bl	lv_draw_mask_is_any
+ 808 07ec 3AAD     		add	r5, sp, #232
+ 809 07ee 0646     		mov	r6, r0
+ 810 07f0 1C21     		movs	r1, #28
+ 811 07f2 2846     		mov	r0, r5
+ 812 07f4 FFF7FEFF 		bl	lv_memset_00
+ 813 07f8 2388     		ldrh	r3, [r4]
+ 814 07fa ADF8F030 		strh	r3, [sp, #240]	@ movhi
+ 815 07fe 237A     		ldrb	r3, [r4, #8]	@ zero_extendqisi2
+ 816 0800 CDF8E890 		str	r9, [sp, #232]
+ 817 0804 8DF80031 		strb	r3, [sp, #256]
+ 818 0808 002E     		cmp	r6, #0
+ 819 080a 3FF475AF 		beq	.L102
+ 820 080e BDF8BC60 		ldrh	r6, [sp, #188]
+ 821 0812 BDF8B830 		ldrh	r3, [sp, #184]
+ 822 0816 BDF9BE20 		ldrsh	r2, [sp, #190]
+ 823 081a 0492     		str	r2, [sp, #16]
+ 824 081c 0136     		adds	r6, r6, #1
+ 825 081e F61A     		subs	r6, r6, r3
+ 826 0820 0027     		movs	r7, #0
+ 827 0822 BDF8BA30 		ldrh	r3, [sp, #186]
+ 828 0826 ADF8BE30 		strh	r3, [sp, #190]	@ movhi
+ 829 082a 36B2     		sxth	r6, r6
+ 830 082c 0597     		str	r7, [sp, #20]
+ 831 082e DDE6     		b	.L8
+ 832              	.L16:
+ 833 0830 0223     		movs	r3, #2
+ 834 0832 8DF8F830 		strb	r3, [sp, #248]
+ 835 0836 EAE6     		b	.L12
+ 836              	.L31:
+ 837 0838 24B2     		sxth	r4, r4
+ 838 083a 06E6     		b	.L27
+ 839              	.L115:
+ 840 083c DDE90448 		ldrd	r4, r8, [sp, #16]
+ 841 0840 43E7     		b	.L32
+ 842              	.L120:
+ 843 0842 BDF8BC60 		ldrh	r6, [sp, #188]
+ 844 0846 BDF8B830 		ldrh	r3, [sp, #184]
+ 845 084a BDF9BE70 		ldrsh	r7, [sp, #190]
+ 846 084e 0136     		adds	r6, r6, #1
+ 847 0850 F61A     		subs	r6, r6, r3
+ 848 0852 36B2     		sxth	r6, r6
+ 849 0854 BDF8BA30 		ldrh	r3, [sp, #186]
+ 850 0858 ADF8BE30 		strh	r3, [sp, #190]	@ movhi
+ 851 085c 3046     		mov	r0, r6
+ 852 085e FFF7FEFF 		bl	lv_mem_buf_get
+ 853 0862 0022     		movs	r2, #0
+ 854 0864 CDF8FC90 		str	r9, [sp, #252]
+ 855 0868 8246     		mov	r10, r0
+ 856 086a BDF9BA90 		ldrsh	r9, [sp, #186]
+ARM GAS  /var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cc9qpSYM.s 			page 16
+
+
+ 857 086e 3D90     		str	r0, [sp, #244]
+ 858 0870 9446     		mov	ip, r2
+ 859 0872 DFE5     		b	.L24
+ 861              		.section	.rodata.wcorr.0,"a"
+ 862              		.align	2
+ 865              	wcorr.0:
+ 866 0000 80808081 		.ascii	"\200\200\200\201\201\202\202\203\204\205\206\207\211"
+ 866      81828283 
+ 866      84858687 
+ 866      89
+ 867 000d 8A8C8D8F 		.ascii	"\212\214\215\217\221\223\225\227\231\233\236\240\242"
+ 867      91939597 
+ 867      999B9EA0 
+ 867      A2
+ 868 001a A5A7AAAD 		.ascii	"\245\247\252\255\257\262\265"
+ 868      AFB2B5
+ 869              		.ident	"GCC: (xPack GNU Arm Embedded GCC arm64) 13.3.1 20240614"
+ARM GAS  /var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cc9qpSYM.s 			page 17
+
+
+DEFINED SYMBOLS
+                            *ABS*:00000000 lv_draw_sw_line.c
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cc9qpSYM.s:18     .text.lv_draw_sw_line:00000000 $t
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cc9qpSYM.s:25     .text.lv_draw_sw_line:00000000 lv_draw_sw_line
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cc9qpSYM.s:366    .text.lv_draw_sw_line:00000368 $d
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cc9qpSYM.s:865    .rodata.wcorr.0:00000000 wcorr.0
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cc9qpSYM.s:368    .text.lv_draw_sw_line:0000036c $t
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cc9qpSYM.s:862    .rodata.wcorr.0:00000000 $d
+
+UNDEFINED SYMBOLS
+_lv_area_intersect
+lv_draw_mask_line_points_init
+lv_draw_mask_add
+_lv_refr_get_disp_refreshing
+lv_disp_get_hor_res
+lv_area_get_size
+lv_mem_buf_get
+lv_memset_ff
+lv_memset_00
+lv_draw_mask_apply
+lv_draw_sw_blend
+lv_mem_buf_release
+lv_draw_mask_free_param
+lv_draw_mask_remove_id
+lv_draw_mask_is_any
+lv_draw_rect_dsc_init
+lv_draw_rect

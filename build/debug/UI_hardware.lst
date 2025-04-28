@@ -1,0 +1,612 @@
+ARM GAS  /var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccorh1wO.s 			page 1
+
+
+   1              		.cpu cortex-m4
+   2              		.arch armv7e-m
+   3              		.fpu fpv4-sp-d16
+   4              		.eabi_attribute 27, 1
+   5              		.eabi_attribute 28, 1
+   6              		.eabi_attribute 20, 1
+   7              		.eabi_attribute 21, 1
+   8              		.eabi_attribute 23, 3
+   9              		.eabi_attribute 24, 1
+  10              		.eabi_attribute 25, 1
+  11              		.eabi_attribute 26, 1
+  12              		.eabi_attribute 30, 1
+  13              		.eabi_attribute 34, 1
+  14              		.eabi_attribute 18, 4
+  15              		.file	"UI_hardware.c"
+  16              		.text
+  17              	.Ltext0:
+  18              		.cfi_sections	.debug_frame
+  19              		.file 1 "Core/Src/UI_hardware.c"
+  20              		.global	__aeabi_i2d
+  21              		.global	__aeabi_dmul
+  22              		.global	__aeabi_d2f
+  23              		.section	.text.poll_ADCs,"ax",%progbits
+  24              		.align	1
+  25              		.global	poll_ADCs
+  26              		.syntax unified
+  27              		.thumb
+  28              		.thumb_func
+  30              	poll_ADCs:
+  31              	.LFB446:
+   1:Core/Src/UI_hardware.c **** /**
+   2:Core/Src/UI_hardware.c ****  * @file UI_hardware.c
+   3:Core/Src/UI_hardware.c ****  * @author johannes regnier
+   4:Core/Src/UI_hardware.c ****  * @brief hardware user interface
+   5:Core/Src/UI_hardware.c ****  * *****  UI is for the moment:
+   6:Core/Src/UI_hardware.c ****  * *****  3 potentiometers (on PC4. PC5 and PC2).. Data resolution is 10bits [0, 1023], smoothed us
+   7:Core/Src/UI_hardware.c ****  * *****  1 encoder (PB4 / PB5) 
+   8:Core/Src/UI_hardware.c ****  * @version 0.1
+   9:Core/Src/UI_hardware.c ****  * @date 2024-01-05
+  10:Core/Src/UI_hardware.c ****  * 
+  11:Core/Src/UI_hardware.c ****  * @copyright Copyright (c) 2024
+  12:Core/Src/UI_hardware.c ****  * 
+  13:Core/Src/UI_hardware.c ****  */
+  14:Core/Src/UI_hardware.c **** 
+  15:Core/Src/UI_hardware.c **** 
+  16:Core/Src/UI_hardware.c **** #include "UI_hardware.h"
+  17:Core/Src/UI_hardware.c **** #include "adc.h"
+  18:Core/Src/UI_hardware.c **** #include "filters.h"
+  19:Core/Src/UI_hardware.c **** #include "SEGGER_RTT.h"
+  20:Core/Src/UI_hardware.c **** #include "helper_functions.h"
+  21:Core/Src/UI_hardware.c **** #include "tim.h"
+  22:Core/Src/UI_hardware.c **** #include "UI_LCD.h"
+  23:Core/Src/UI_hardware.c **** #include "LCDController.h"
+  24:Core/Src/UI_hardware.c **** #include "st7789v.h"
+  25:Core/Src/UI_hardware.c **** 
+  26:Core/Src/UI_hardware.c **** uint16_t raw1, raw2, raw3;
+  27:Core/Src/UI_hardware.c **** extern onepoleLP_t smooth_ADC1;
+ARM GAS  /var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccorh1wO.s 			page 2
+
+
+  28:Core/Src/UI_hardware.c **** extern onepoleLP_t smooth_ADC2;
+  29:Core/Src/UI_hardware.c **** extern onepoleLP_t smooth_ADC3;
+  30:Core/Src/UI_hardware.c **** static uint16_t data_pot1, data_pot2, data_pot3;
+  31:Core/Src/UI_hardware.c **** float pot1_norm, pot2_norm, pot3_norm;
+  32:Core/Src/UI_hardware.c **** uint16_t old_count = 0, count = 0, current_count;
+  33:Core/Src/UI_hardware.c **** int8_t enc_diff = 0;
+  34:Core/Src/UI_hardware.c **** uint16_t old_btn = 1, current_btn = 1;
+  35:Core/Src/UI_hardware.c **** uint8_t btn_pressed;
+  36:Core/Src/UI_hardware.c **** extern lv_obj_t *tabview;
+  37:Core/Src/UI_hardware.c **** 
+  38:Core/Src/UI_hardware.c **** /**
+  39:Core/Src/UI_hardware.c ****  * @brief Polling ADC values. This function is called by SysTick_Handler (in stm32f4xx_it.c) every 
+  40:Core/Src/UI_hardware.c ****  * 
+  41:Core/Src/UI_hardware.c ****  */
+  42:Core/Src/UI_hardware.c **** void poll_ADCs(void){
+  32              		.loc 1 42 21 view -0
+  33              		.cfi_startproc
+  34              		@ args = 0, pretend = 0, frame = 0
+  35              		@ frame_needed = 0, uses_anonymous_args = 0
+  36 0000 10B5     		push	{r4, lr}
+  37              		.cfi_def_cfa_offset 8
+  38              		.cfi_offset 4, -8
+  39              		.cfi_offset 14, -4
+  40 0002 2DED028B 		vpush.64	{d8}
+  41              		.cfi_def_cfa_offset 16
+  42              		.cfi_offset 80, -16
+  43              		.cfi_offset 81, -12
+  43:Core/Src/UI_hardware.c ****     HAL_ADC_Start(&hadc1);
+  44              		.loc 1 43 5 view .LVU1
+  45 0006 484C     		ldr	r4, .L3+8
+  46 0008 2046     		mov	r0, r4
+  47 000a FFF7FEFF 		bl	HAL_ADC_Start
+  48              	.LVL0:
+  44:Core/Src/UI_hardware.c **** 	HAL_ADC_PollForConversion(&hadc1, HAL_MAX_DELAY);
+  49              		.loc 1 44 2 view .LVU2
+  50 000e 4FF0FF31 		mov	r1, #-1
+  51 0012 2046     		mov	r0, r4
+  52 0014 FFF7FEFF 		bl	HAL_ADC_PollForConversion
+  53              	.LVL1:
+  45:Core/Src/UI_hardware.c **** 	raw1 = HAL_ADC_GetValue(&hadc1);
+  54              		.loc 1 45 2 view .LVU3
+  55              		.loc 1 45 9 is_stmt 0 view .LVU4
+  56 0018 2046     		mov	r0, r4
+  57 001a FFF7FEFF 		bl	HAL_ADC_GetValue
+  58              	.LVL2:
+  59              		.loc 1 45 7 discriminator 1 view .LVU5
+  60 001e 434B     		ldr	r3, .L3+12
+  61 0020 1880     		strh	r0, [r3]	@ movhi
+  46:Core/Src/UI_hardware.c **** 	data_pot1 = (uint16_t)smoothing_LP(&smooth_ADC1, HAL_ADC_GetValue(&hadc1), 0.98) >> 2;
+  62              		.loc 1 46 2 is_stmt 1 view .LVU6
+  63              		.loc 1 46 51 is_stmt 0 view .LVU7
+  64 0022 2046     		mov	r0, r4
+  65 0024 FFF7FEFF 		bl	HAL_ADC_GetValue
+  66              	.LVL3:
+  67 0028 00EE100A 		vmov	s0, r0	@ int
+  68              		.loc 1 46 24 discriminator 1 view .LVU8
+  69 002c 9FED408A 		vldr.32	s16, .L3+16
+ARM GAS  /var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccorh1wO.s 			page 3
+
+
+  70 0030 F0EE480A 		vmov.f32	s1, s16
+  71 0034 B8EE400A 		vcvt.f32.u32	s0, s0
+  72 0038 3E48     		ldr	r0, .L3+20
+  73 003a FFF7FEFF 		bl	smoothing_LP
+  74              	.LVL4:
+  75              		.loc 1 46 14 discriminator 2 view .LVU9
+  76 003e FCEEC07A 		vcvt.u32.f32	s15, s0
+  77 0042 17EE900A 		vmov	r0, s15	@ int
+  78              		.loc 1 46 12 discriminator 2 view .LVU10
+  79 0046 C0F38D00 		ubfx	r0, r0, #2, #14
+  80 004a 3B4B     		ldr	r3, .L3+24
+  81 004c 1880     		strh	r0, [r3]	@ movhi
+  47:Core/Src/UI_hardware.c **** 	pot1_norm = data_pot1 * ONE_OVER_1023;
+  82              		.loc 1 47 2 is_stmt 1 view .LVU11
+  83              		.loc 1 47 24 is_stmt 0 view .LVU12
+  84 004e FFF7FEFF 		bl	__aeabi_i2d
+  85              	.LVL5:
+  86 0052 33A3     		adr	r3, .L3
+  87 0054 D3E90023 		ldrd	r2, [r3]
+  88 0058 FFF7FEFF 		bl	__aeabi_dmul
+  89              	.LVL6:
+  90 005c FFF7FEFF 		bl	__aeabi_d2f
+  91              	.LVL7:
+  92              		.loc 1 47 12 view .LVU13
+  93 0060 364B     		ldr	r3, .L3+28
+  94 0062 1860     		str	r0, [r3]	@ float
+  48:Core/Src/UI_hardware.c **** 
+  49:Core/Src/UI_hardware.c **** 	HAL_ADC_Start(&hadc2);
+  95              		.loc 1 49 2 is_stmt 1 view .LVU14
+  96 0064 364C     		ldr	r4, .L3+32
+  97 0066 2046     		mov	r0, r4
+  98 0068 FFF7FEFF 		bl	HAL_ADC_Start
+  99              	.LVL8:
+  50:Core/Src/UI_hardware.c **** 	HAL_ADC_PollForConversion(&hadc2, HAL_MAX_DELAY);
+ 100              		.loc 1 50 2 view .LVU15
+ 101 006c 4FF0FF31 		mov	r1, #-1
+ 102 0070 2046     		mov	r0, r4
+ 103 0072 FFF7FEFF 		bl	HAL_ADC_PollForConversion
+ 104              	.LVL9:
+  51:Core/Src/UI_hardware.c **** 	raw2 = HAL_ADC_GetValue(&hadc2);
+ 105              		.loc 1 51 2 view .LVU16
+ 106              		.loc 1 51 9 is_stmt 0 view .LVU17
+ 107 0076 2046     		mov	r0, r4
+ 108 0078 FFF7FEFF 		bl	HAL_ADC_GetValue
+ 109              	.LVL10:
+ 110              		.loc 1 51 7 discriminator 1 view .LVU18
+ 111 007c 314B     		ldr	r3, .L3+36
+ 112 007e 1880     		strh	r0, [r3]	@ movhi
+  52:Core/Src/UI_hardware.c **** 	data_pot2 = (uint16_t)smoothing_LP(&smooth_ADC2, HAL_ADC_GetValue(&hadc2), 0.98) >> 2;
+ 113              		.loc 1 52 2 is_stmt 1 view .LVU19
+ 114              		.loc 1 52 51 is_stmt 0 view .LVU20
+ 115 0080 2046     		mov	r0, r4
+ 116 0082 FFF7FEFF 		bl	HAL_ADC_GetValue
+ 117              	.LVL11:
+ 118 0086 00EE100A 		vmov	s0, r0	@ int
+ 119              		.loc 1 52 24 discriminator 1 view .LVU21
+ 120 008a F0EE480A 		vmov.f32	s1, s16
+ARM GAS  /var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccorh1wO.s 			page 4
+
+
+ 121 008e B8EE400A 		vcvt.f32.u32	s0, s0
+ 122 0092 2D48     		ldr	r0, .L3+40
+ 123 0094 FFF7FEFF 		bl	smoothing_LP
+ 124              	.LVL12:
+ 125              		.loc 1 52 14 discriminator 2 view .LVU22
+ 126 0098 FCEEC07A 		vcvt.u32.f32	s15, s0
+ 127 009c 17EE900A 		vmov	r0, s15	@ int
+ 128              		.loc 1 52 12 discriminator 2 view .LVU23
+ 129 00a0 C0F38D00 		ubfx	r0, r0, #2, #14
+ 130 00a4 294B     		ldr	r3, .L3+44
+ 131 00a6 1880     		strh	r0, [r3]	@ movhi
+  53:Core/Src/UI_hardware.c **** 	pot2_norm = data_pot2 * ONE_OVER_1023;
+ 132              		.loc 1 53 2 is_stmt 1 view .LVU24
+ 133              		.loc 1 53 24 is_stmt 0 view .LVU25
+ 134 00a8 FFF7FEFF 		bl	__aeabi_i2d
+ 135              	.LVL13:
+ 136 00ac 1CA3     		adr	r3, .L3
+ 137 00ae D3E90023 		ldrd	r2, [r3]
+ 138 00b2 FFF7FEFF 		bl	__aeabi_dmul
+ 139              	.LVL14:
+ 140 00b6 FFF7FEFF 		bl	__aeabi_d2f
+ 141              	.LVL15:
+ 142              		.loc 1 53 12 view .LVU26
+ 143 00ba 254B     		ldr	r3, .L3+48
+ 144 00bc 1860     		str	r0, [r3]	@ float
+  54:Core/Src/UI_hardware.c **** 
+  55:Core/Src/UI_hardware.c **** 	HAL_ADC_Start(&hadc3);
+ 145              		.loc 1 55 2 is_stmt 1 view .LVU27
+ 146 00be 254C     		ldr	r4, .L3+52
+ 147 00c0 2046     		mov	r0, r4
+ 148 00c2 FFF7FEFF 		bl	HAL_ADC_Start
+ 149              	.LVL16:
+  56:Core/Src/UI_hardware.c **** 	HAL_ADC_PollForConversion(&hadc3, HAL_MAX_DELAY);
+ 150              		.loc 1 56 2 view .LVU28
+ 151 00c6 4FF0FF31 		mov	r1, #-1
+ 152 00ca 2046     		mov	r0, r4
+ 153 00cc FFF7FEFF 		bl	HAL_ADC_PollForConversion
+ 154              	.LVL17:
+  57:Core/Src/UI_hardware.c **** 	raw3 = HAL_ADC_GetValue(&hadc3);
+ 155              		.loc 1 57 2 view .LVU29
+ 156              		.loc 1 57 9 is_stmt 0 view .LVU30
+ 157 00d0 2046     		mov	r0, r4
+ 158 00d2 FFF7FEFF 		bl	HAL_ADC_GetValue
+ 159              	.LVL18:
+ 160              		.loc 1 57 7 discriminator 1 view .LVU31
+ 161 00d6 204B     		ldr	r3, .L3+56
+ 162 00d8 1880     		strh	r0, [r3]	@ movhi
+  58:Core/Src/UI_hardware.c **** 	data_pot3 = (uint16_t)smoothing_LP(&smooth_ADC3, HAL_ADC_GetValue(&hadc3), 0.98) >> 2;
+ 163              		.loc 1 58 2 is_stmt 1 view .LVU32
+ 164              		.loc 1 58 51 is_stmt 0 view .LVU33
+ 165 00da 2046     		mov	r0, r4
+ 166 00dc FFF7FEFF 		bl	HAL_ADC_GetValue
+ 167              	.LVL19:
+ 168 00e0 00EE100A 		vmov	s0, r0	@ int
+ 169              		.loc 1 58 24 discriminator 1 view .LVU34
+ 170 00e4 F0EE480A 		vmov.f32	s1, s16
+ 171 00e8 B8EE400A 		vcvt.f32.u32	s0, s0
+ARM GAS  /var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccorh1wO.s 			page 5
+
+
+ 172 00ec 1B48     		ldr	r0, .L3+60
+ 173 00ee FFF7FEFF 		bl	smoothing_LP
+ 174              	.LVL20:
+ 175              		.loc 1 58 14 discriminator 2 view .LVU35
+ 176 00f2 FCEEC07A 		vcvt.u32.f32	s15, s0
+ 177 00f6 17EE900A 		vmov	r0, s15	@ int
+ 178              		.loc 1 58 12 discriminator 2 view .LVU36
+ 179 00fa C0F38D00 		ubfx	r0, r0, #2, #14
+ 180 00fe 184B     		ldr	r3, .L3+64
+ 181 0100 1880     		strh	r0, [r3]	@ movhi
+  59:Core/Src/UI_hardware.c **** 	pot3_norm = data_pot3 * ONE_OVER_1023;
+ 182              		.loc 1 59 2 is_stmt 1 view .LVU37
+ 183              		.loc 1 59 24 is_stmt 0 view .LVU38
+ 184 0102 FFF7FEFF 		bl	__aeabi_i2d
+ 185              	.LVL21:
+ 186 0106 06A3     		adr	r3, .L3
+ 187 0108 D3E90023 		ldrd	r2, [r3]
+ 188 010c FFF7FEFF 		bl	__aeabi_dmul
+ 189              	.LVL22:
+ 190 0110 FFF7FEFF 		bl	__aeabi_d2f
+ 191              	.LVL23:
+ 192              		.loc 1 59 12 view .LVU39
+ 193 0114 134B     		ldr	r3, .L3+68
+ 194 0116 1860     		str	r0, [r3]	@ float
+  60:Core/Src/UI_hardware.c **** 
+  61:Core/Src/UI_hardware.c **** 	// SEGGER_RTT_printf(0, "Pots values [0, 1023] : %u %u\r\n", data_pot1, data_pot2); // debug
+  62:Core/Src/UI_hardware.c **** }
+ 195              		.loc 1 62 1 view .LVU40
+ 196 0118 BDEC028B 		vldm	sp!, {d8}
+ 197              		.cfi_restore 80
+ 198              		.cfi_restore 81
+ 199              		.cfi_def_cfa_offset 8
+ 200 011c 10BD     		pop	{r4, pc}
+ 201              	.L4:
+ 202 011e 00BF     		.align	3
+ 203              	.L3:
+ 204 0120 BE963C00 		.word	3970750
+ 205 0124 0104503F 		.word	1062208513
+ 206 0128 00000000 		.word	hadc1
+ 207 012c 00000000 		.word	raw1
+ 208 0130 48E17A3F 		.word	1065017672
+ 209 0134 00000000 		.word	smooth_ADC1
+ 210 0138 00000000 		.word	data_pot1
+ 211 013c 00000000 		.word	pot1_norm
+ 212 0140 00000000 		.word	hadc2
+ 213 0144 00000000 		.word	raw2
+ 214 0148 00000000 		.word	smooth_ADC2
+ 215 014c 00000000 		.word	data_pot2
+ 216 0150 00000000 		.word	pot2_norm
+ 217 0154 00000000 		.word	hadc3
+ 218 0158 00000000 		.word	raw3
+ 219 015c 00000000 		.word	smooth_ADC3
+ 220 0160 00000000 		.word	data_pot3
+ 221 0164 00000000 		.word	pot3_norm
+ 222              		.cfi_endproc
+ 223              	.LFE446:
+ 225              		.section	.text.poll_Encoder,"ax",%progbits
+ARM GAS  /var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccorh1wO.s 			page 6
+
+
+ 226              		.align	1
+ 227              		.global	poll_Encoder
+ 228              		.syntax unified
+ 229              		.thumb
+ 230              		.thumb_func
+ 232              	poll_Encoder:
+ 233              	.LFB447:
+  63:Core/Src/UI_hardware.c **** 
+  64:Core/Src/UI_hardware.c **** /**
+  65:Core/Src/UI_hardware.c ****  * @brief poll encoder.  This function is called by SysTick_Handler (in stm32f4xx_it.c) every ms.
+  66:Core/Src/UI_hardware.c ****  * 
+  67:Core/Src/UI_hardware.c ****  */
+  68:Core/Src/UI_hardware.c **** void poll_Encoder(void){
+ 234              		.loc 1 68 24 is_stmt 1 view -0
+ 235              		.cfi_startproc
+ 236              		@ args = 0, pretend = 0, frame = 0
+ 237              		@ frame_needed = 0, uses_anonymous_args = 0
+ 238              		@ link register save eliminated.
+  69:Core/Src/UI_hardware.c **** 	// static old_count;
+  70:Core/Src/UI_hardware.c **** 	count = ((TIM3->CNT) >> 2);
+ 239              		.loc 1 70 2 view .LVU42
+ 240              		.loc 1 70 16 is_stmt 0 view .LVU43
+ 241 0000 074B     		ldr	r3, .L7
+ 242 0002 5B6A     		ldr	r3, [r3, #36]
+ 243              		.loc 1 70 8 view .LVU44
+ 244 0004 C3F38F03 		ubfx	r3, r3, #2, #16
+ 245 0008 064A     		ldr	r2, .L7+4
+ 246 000a 1380     		strh	r3, [r2]	@ movhi
+  71:Core/Src/UI_hardware.c **** 	if (count != old_count){
+ 247              		.loc 1 71 2 is_stmt 1 view .LVU45
+ 248              		.loc 1 71 12 is_stmt 0 view .LVU46
+ 249 000c 064A     		ldr	r2, .L7+8
+ 250 000e 1288     		ldrh	r2, [r2]
+ 251              		.loc 1 71 5 view .LVU47
+ 252 0010 9342     		cmp	r3, r2
+ 253 0012 03D0     		beq	.L5
+  72:Core/Src/UI_hardware.c **** 		// enc_diff = count - old_count;
+  73:Core/Src/UI_hardware.c **** 		current_count = count;
+ 254              		.loc 1 73 3 is_stmt 1 view .LVU48
+ 255              		.loc 1 73 17 is_stmt 0 view .LVU49
+ 256 0014 054A     		ldr	r2, .L7+12
+ 257 0016 1380     		strh	r3, [r2]	@ movhi
+  74:Core/Src/UI_hardware.c **** 		old_count = count;
+ 258              		.loc 1 74 3 is_stmt 1 view .LVU50
+ 259              		.loc 1 74 13 is_stmt 0 view .LVU51
+ 260 0018 034A     		ldr	r2, .L7+8
+ 261 001a 1380     		strh	r3, [r2]	@ movhi
+ 262              	.L5:
+  75:Core/Src/UI_hardware.c **** 		// SEGGER_RTT_printf(0, "Encoder count = %d\r\n", current_count); // debug
+  76:Core/Src/UI_hardware.c **** 		// SEGGER_RTT_printf(0, "Encoder diff = %d\r\n", enc_diff); // debug
+  77:Core/Src/UI_hardware.c **** 		// return enc_diff;
+  78:Core/Src/UI_hardware.c **** 	}
+  79:Core/Src/UI_hardware.c **** 	
+  80:Core/Src/UI_hardware.c **** }
+ 263              		.loc 1 80 1 view .LVU52
+ 264 001c 7047     		bx	lr
+ 265              	.L8:
+ARM GAS  /var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccorh1wO.s 			page 7
+
+
+ 266 001e 00BF     		.align	2
+ 267              	.L7:
+ 268 0020 00040040 		.word	1073742848
+ 269 0024 00000000 		.word	count
+ 270 0028 00000000 		.word	old_count
+ 271 002c 00000000 		.word	current_count
+ 272              		.cfi_endproc
+ 273              	.LFE447:
+ 275              		.section	.text.poll_EncoderBtn,"ax",%progbits
+ 276              		.align	1
+ 277              		.global	poll_EncoderBtn
+ 278              		.syntax unified
+ 279              		.thumb
+ 280              		.thumb_func
+ 282              	poll_EncoderBtn:
+ 283              	.LFB448:
+  81:Core/Src/UI_hardware.c **** 
+  82:Core/Src/UI_hardware.c **** 
+  83:Core/Src/UI_hardware.c **** /**
+  84:Core/Src/UI_hardware.c ****  * @brief poll encoder button.  This function is called by SysTick_Handler (in stm32f4xx_it.c) ever
+  85:Core/Src/UI_hardware.c ****  * not used at the moment.. TODO!
+  86:Core/Src/UI_hardware.c ****  */
+  87:Core/Src/UI_hardware.c **** void poll_EncoderBtn(void){
+ 284              		.loc 1 87 27 is_stmt 1 view -0
+ 285              		.cfi_startproc
+ 286              		@ args = 0, pretend = 0, frame = 0
+ 287              		@ frame_needed = 0, uses_anonymous_args = 0
+ 288 0000 08B5     		push	{r3, lr}
+ 289              		.cfi_def_cfa_offset 8
+ 290              		.cfi_offset 3, -8
+ 291              		.cfi_offset 14, -4
+  88:Core/Src/UI_hardware.c **** 	current_btn = HAL_GPIO_ReadPin(GPIOB, GPIO_PIN_7);
+ 292              		.loc 1 88 2 view .LVU54
+ 293              		.loc 1 88 16 is_stmt 0 view .LVU55
+ 294 0002 8021     		movs	r1, #128
+ 295 0004 0948     		ldr	r0, .L13
+ 296 0006 FFF7FEFF 		bl	HAL_GPIO_ReadPin
+ 297              	.LVL24:
+ 298              		.loc 1 88 14 discriminator 1 view .LVU56
+ 299 000a 094B     		ldr	r3, .L13+4
+ 300 000c 1880     		strh	r0, [r3]	@ movhi
+  89:Core/Src/UI_hardware.c **** 	if (current_btn != old_btn && old_btn == 0){
+ 301              		.loc 1 89 2 is_stmt 1 view .LVU57
+ 302              		.loc 1 89 18 is_stmt 0 view .LVU58
+ 303 000e 094B     		ldr	r3, .L13+8
+ 304 0010 1B88     		ldrh	r3, [r3]
+ 305              		.loc 1 89 5 view .LVU59
+ 306 0012 9842     		cmp	r0, r3
+ 307 0014 04D0     		beq	.L10
+ 308              		.loc 1 89 29 discriminator 1 view .LVU60
+ 309 0016 1BB9     		cbnz	r3, .L10
+  90:Core/Src/UI_hardware.c **** 		btn_pressed = 1;
+ 310              		.loc 1 90 3 is_stmt 1 view .LVU61
+ 311              		.loc 1 90 15 is_stmt 0 view .LVU62
+ 312 0018 074B     		ldr	r3, .L13+12
+ 313 001a 0122     		movs	r2, #1
+ 314 001c 1A70     		strb	r2, [r3]
+ARM GAS  /var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccorh1wO.s 			page 8
+
+
+ 315 001e 02E0     		b	.L11
+ 316              	.L10:
+  91:Core/Src/UI_hardware.c **** 		//SEGGER_RTT_printf(0, "Encoder button released!\r\n"); // debug
+  92:Core/Src/UI_hardware.c **** 	} else
+  93:Core/Src/UI_hardware.c **** 		btn_pressed = 0;
+ 317              		.loc 1 93 3 is_stmt 1 view .LVU63
+ 318              		.loc 1 93 15 is_stmt 0 view .LVU64
+ 319 0020 054B     		ldr	r3, .L13+12
+ 320 0022 0022     		movs	r2, #0
+ 321 0024 1A70     		strb	r2, [r3]
+ 322              	.L11:
+  94:Core/Src/UI_hardware.c **** 	old_btn = current_btn;
+ 323              		.loc 1 94 2 is_stmt 1 view .LVU65
+ 324              		.loc 1 94 10 is_stmt 0 view .LVU66
+ 325 0026 034B     		ldr	r3, .L13+8
+ 326 0028 1880     		strh	r0, [r3]	@ movhi
+  95:Core/Src/UI_hardware.c **** }
+ 327              		.loc 1 95 1 view .LVU67
+ 328 002a 08BD     		pop	{r3, pc}
+ 329              	.L14:
+ 330              		.align	2
+ 331              	.L13:
+ 332 002c 00040240 		.word	1073873920
+ 333 0030 00000000 		.word	current_btn
+ 334 0034 00000000 		.word	old_btn
+ 335 0038 00000000 		.word	btn_pressed
+ 336              		.cfi_endproc
+ 337              	.LFE448:
+ 339              		.global	btn_pressed
+ 340              		.section	.bss.btn_pressed,"aw",%nobits
+ 343              	btn_pressed:
+ 344 0000 00       		.space	1
+ 345              		.global	current_btn
+ 346              		.section	.data.current_btn,"aw"
+ 347              		.align	1
+ 350              	current_btn:
+ 351 0000 0100     		.short	1
+ 352              		.global	old_btn
+ 353              		.section	.data.old_btn,"aw"
+ 354              		.align	1
+ 357              	old_btn:
+ 358 0000 0100     		.short	1
+ 359              		.global	enc_diff
+ 360              		.section	.bss.enc_diff,"aw",%nobits
+ 363              	enc_diff:
+ 364 0000 00       		.space	1
+ 365              		.global	current_count
+ 366              		.section	.bss.current_count,"aw",%nobits
+ 367              		.align	1
+ 370              	current_count:
+ 371 0000 0000     		.space	2
+ 372              		.global	count
+ 373              		.section	.bss.count,"aw",%nobits
+ 374              		.align	1
+ 377              	count:
+ 378 0000 0000     		.space	2
+ 379              		.global	old_count
+ARM GAS  /var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccorh1wO.s 			page 9
+
+
+ 380              		.section	.bss.old_count,"aw",%nobits
+ 381              		.align	1
+ 384              	old_count:
+ 385 0000 0000     		.space	2
+ 386              		.global	pot3_norm
+ 387              		.section	.bss.pot3_norm,"aw",%nobits
+ 388              		.align	2
+ 391              	pot3_norm:
+ 392 0000 00000000 		.space	4
+ 393              		.global	pot2_norm
+ 394              		.section	.bss.pot2_norm,"aw",%nobits
+ 395              		.align	2
+ 398              	pot2_norm:
+ 399 0000 00000000 		.space	4
+ 400              		.global	pot1_norm
+ 401              		.section	.bss.pot1_norm,"aw",%nobits
+ 402              		.align	2
+ 405              	pot1_norm:
+ 406 0000 00000000 		.space	4
+ 407              		.section	.bss.data_pot3,"aw",%nobits
+ 408              		.align	1
+ 411              	data_pot3:
+ 412 0000 0000     		.space	2
+ 413              		.section	.bss.data_pot2,"aw",%nobits
+ 414              		.align	1
+ 417              	data_pot2:
+ 418 0000 0000     		.space	2
+ 419              		.section	.bss.data_pot1,"aw",%nobits
+ 420              		.align	1
+ 423              	data_pot1:
+ 424 0000 0000     		.space	2
+ 425              		.global	raw3
+ 426              		.section	.bss.raw3,"aw",%nobits
+ 427              		.align	1
+ 430              	raw3:
+ 431 0000 0000     		.space	2
+ 432              		.global	raw2
+ 433              		.section	.bss.raw2,"aw",%nobits
+ 434              		.align	1
+ 437              	raw2:
+ 438 0000 0000     		.space	2
+ 439              		.global	raw1
+ 440              		.section	.bss.raw1,"aw",%nobits
+ 441              		.align	1
+ 444              	raw1:
+ 445 0000 0000     		.space	2
+ 446              		.text
+ 447              	.Letext0:
+ 448              		.file 2 "/Users/jr/Library/Application Support/Code/User/globalStorage/bmd.stm32-for-vscode/@xpack
+ 449              		.file 3 "/Users/jr/Library/Application Support/Code/User/globalStorage/bmd.stm32-for-vscode/@xpack
+ 450              		.file 4 "Drivers/CMSIS/Device/ST/STM32F4xx/Include/stm32f407xx.h"
+ 451              		.file 5 "Drivers/CMSIS/Device/ST/STM32F4xx/Include/stm32f4xx.h"
+ 452              		.file 6 "Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_def.h"
+ 453              		.file 7 "Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_gpio.h"
+ 454              		.file 8 "Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_dma.h"
+ 455              		.file 9 "Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_adc.h"
+ 456              		.file 10 "Core/Inc/filters.h"
+ARM GAS  /var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccorh1wO.s 			page 10
+
+
+ 457              		.file 11 "Core/Inc/adc.h"
+ 458              		.file 12 "Drivers/lvgl/src/core/lv_obj.h"
+ 459              		.file 13 "Drivers/lvgl/src/widgets/lv_bar.h"
+ 460              		.file 14 "Drivers/lvgl/src/extra/widgets/imgbtn/lv_imgbtn.h"
+ARM GAS  /var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccorh1wO.s 			page 11
+
+
+DEFINED SYMBOLS
+                            *ABS*:00000000 UI_hardware.c
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccorh1wO.s:24     .text.poll_ADCs:00000000 $t
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccorh1wO.s:30     .text.poll_ADCs:00000000 poll_ADCs
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccorh1wO.s:204    .text.poll_ADCs:00000120 $d
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccorh1wO.s:444    .bss.raw1:00000000 raw1
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccorh1wO.s:423    .bss.data_pot1:00000000 data_pot1
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccorh1wO.s:405    .bss.pot1_norm:00000000 pot1_norm
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccorh1wO.s:437    .bss.raw2:00000000 raw2
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccorh1wO.s:417    .bss.data_pot2:00000000 data_pot2
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccorh1wO.s:398    .bss.pot2_norm:00000000 pot2_norm
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccorh1wO.s:430    .bss.raw3:00000000 raw3
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccorh1wO.s:411    .bss.data_pot3:00000000 data_pot3
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccorh1wO.s:391    .bss.pot3_norm:00000000 pot3_norm
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccorh1wO.s:226    .text.poll_Encoder:00000000 $t
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccorh1wO.s:232    .text.poll_Encoder:00000000 poll_Encoder
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccorh1wO.s:268    .text.poll_Encoder:00000020 $d
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccorh1wO.s:377    .bss.count:00000000 count
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccorh1wO.s:384    .bss.old_count:00000000 old_count
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccorh1wO.s:370    .bss.current_count:00000000 current_count
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccorh1wO.s:276    .text.poll_EncoderBtn:00000000 $t
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccorh1wO.s:282    .text.poll_EncoderBtn:00000000 poll_EncoderBtn
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccorh1wO.s:332    .text.poll_EncoderBtn:0000002c $d
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccorh1wO.s:350    .data.current_btn:00000000 current_btn
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccorh1wO.s:357    .data.old_btn:00000000 old_btn
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccorh1wO.s:343    .bss.btn_pressed:00000000 btn_pressed
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccorh1wO.s:344    .bss.btn_pressed:00000000 $d
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccorh1wO.s:347    .data.current_btn:00000000 $d
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccorh1wO.s:354    .data.old_btn:00000000 $d
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccorh1wO.s:363    .bss.enc_diff:00000000 enc_diff
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccorh1wO.s:364    .bss.enc_diff:00000000 $d
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccorh1wO.s:367    .bss.current_count:00000000 $d
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccorh1wO.s:374    .bss.count:00000000 $d
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccorh1wO.s:381    .bss.old_count:00000000 $d
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccorh1wO.s:388    .bss.pot3_norm:00000000 $d
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccorh1wO.s:395    .bss.pot2_norm:00000000 $d
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccorh1wO.s:402    .bss.pot1_norm:00000000 $d
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccorh1wO.s:408    .bss.data_pot3:00000000 $d
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccorh1wO.s:414    .bss.data_pot2:00000000 $d
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccorh1wO.s:420    .bss.data_pot1:00000000 $d
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccorh1wO.s:427    .bss.raw3:00000000 $d
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccorh1wO.s:434    .bss.raw2:00000000 $d
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccorh1wO.s:441    .bss.raw1:00000000 $d
+
+UNDEFINED SYMBOLS
+__aeabi_i2d
+__aeabi_dmul
+__aeabi_d2f
+HAL_ADC_Start
+HAL_ADC_PollForConversion
+HAL_ADC_GetValue
+smoothing_LP
+hadc1
+smooth_ADC1
+hadc2
+smooth_ADC2
+hadc3
+ARM GAS  /var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccorh1wO.s 			page 12
+
+
+smooth_ADC3
+HAL_GPIO_ReadPin

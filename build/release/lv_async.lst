@@ -1,0 +1,164 @@
+ARM GAS  /var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccQZkzYG.s 			page 1
+
+
+   1              		.cpu cortex-m4
+   2              		.arch armv7e-m
+   3              		.fpu fpv4-sp-d16
+   4              		.eabi_attribute 27, 1
+   5              		.eabi_attribute 28, 1
+   6              		.eabi_attribute 20, 1
+   7              		.eabi_attribute 21, 1
+   8              		.eabi_attribute 23, 3
+   9              		.eabi_attribute 24, 1
+  10              		.eabi_attribute 25, 1
+  11              		.eabi_attribute 26, 1
+  12              		.eabi_attribute 30, 2
+  13              		.eabi_attribute 34, 1
+  14              		.eabi_attribute 18, 4
+  15              		.file	"lv_async.c"
+  16              		.text
+  17              		.section	.text.lv_async_timer_cb,"ax",%progbits
+  18              		.align	1
+  19              		.p2align 2,,3
+  20              		.syntax unified
+  21              		.thumb
+  22              		.thumb_func
+  24              	lv_async_timer_cb:
+  25              		@ args = 0, pretend = 0, frame = 0
+  26              		@ frame_needed = 0, uses_anonymous_args = 0
+  27 0000 10B5     		push	{r4, lr}
+  28 0002 C468     		ldr	r4, [r0, #12]
+  29 0004 D4E90030 		ldrd	r3, r0, [r4]
+  30 0008 9847     		blx	r3
+  31 000a 2046     		mov	r0, r4
+  32 000c BDE81040 		pop	{r4, lr}
+  33 0010 FFF7FEBF 		b	lv_mem_free
+  35              		.section	.text.lv_async_call,"ax",%progbits
+  36              		.align	1
+  37              		.p2align 2,,3
+  38              		.global	lv_async_call
+  39              		.syntax unified
+  40              		.thumb
+  41              		.thumb_func
+  43              	lv_async_call:
+  44              		@ args = 0, pretend = 0, frame = 0
+  45              		@ frame_needed = 0, uses_anonymous_args = 0
+  46 0000 70B5     		push	{r4, r5, r6, lr}
+  47 0002 0646     		mov	r6, r0
+  48 0004 0820     		movs	r0, #8
+  49 0006 0D46     		mov	r5, r1
+  50 0008 FFF7FEFF 		bl	lv_mem_alloc
+  51 000c 80B1     		cbz	r0, .L5
+  52 000e 0446     		mov	r4, r0
+  53 0010 0246     		mov	r2, r0
+  54 0012 0021     		movs	r1, #0
+  55 0014 0748     		ldr	r0, .L13
+  56 0016 FFF7FEFF 		bl	lv_timer_create
+  57 001a 30B1     		cbz	r0, .L12
+  58 001c C4E90065 		strd	r6, r5, [r4]
+  59 0020 0121     		movs	r1, #1
+  60 0022 FFF7FEFF 		bl	lv_timer_set_repeat_count
+ARM GAS  /var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccQZkzYG.s 			page 2
+
+
+  61 0026 0120     		movs	r0, #1
+  62 0028 70BD     		pop	{r4, r5, r6, pc}
+  63              	.L12:
+  64 002a 2046     		mov	r0, r4
+  65 002c FFF7FEFF 		bl	lv_mem_free
+  66              	.L5:
+  67 0030 0020     		movs	r0, #0
+  68 0032 70BD     		pop	{r4, r5, r6, pc}
+  69              	.L14:
+  70              		.align	2
+  71              	.L13:
+  72 0034 00000000 		.word	lv_async_timer_cb
+  74              		.section	.text.lv_async_call_cancel,"ax",%progbits
+  75              		.align	1
+  76              		.p2align 2,,3
+  77              		.global	lv_async_call_cancel
+  78              		.syntax unified
+  79              		.thumb
+  80              		.thumb_func
+  82              	lv_async_call_cancel:
+  83              		@ args = 0, pretend = 0, frame = 8
+  84              		@ frame_needed = 0, uses_anonymous_args = 0
+  85 0000 2DE9F043 		push	{r4, r5, r6, r7, r8, r9, lr}
+  86 0004 0746     		mov	r7, r0
+  87 0006 83B0     		sub	sp, sp, #12
+  88 0008 0020     		movs	r0, #0
+  89 000a 8846     		mov	r8, r1
+  90 000c FFF7FEFF 		bl	lv_timer_get_next
+  91 0010 0446     		mov	r4, r0
+  92 0012 20B3     		cbz	r0, .L19
+  93 0014 144E     		ldr	r6, .L23
+  94 0016 4FF00009 		mov	r9, #0
+  95              	.L18:
+  96 001a 2546     		mov	r5, r4
+  97 001c 2046     		mov	r0, r4
+  98 001e FFF7FEFF 		bl	lv_timer_get_next
+  99 0022 AB68     		ldr	r3, [r5, #8]
+ 100 0024 B342     		cmp	r3, r6
+ 101 0026 0446     		mov	r4, r0
+ 102 0028 05D0     		beq	.L22
+ 103              	.L17:
+ 104 002a 002C     		cmp	r4, #0
+ 105 002c F5D1     		bne	.L18
+ 106              	.L16:
+ 107 002e 4846     		mov	r0, r9
+ 108 0030 03B0     		add	sp, sp, #12
+ 109              		@ sp needed
+ 110 0032 BDE8F083 		pop	{r4, r5, r6, r7, r8, r9, pc}
+ 111              	.L22:
+ 112 0036 EB68     		ldr	r3, [r5, #12]
+ 113 0038 1A68     		ldr	r2, [r3]
+ 114 003a BA42     		cmp	r2, r7
+ 115 003c F5D1     		bne	.L17
+ 116 003e 5A68     		ldr	r2, [r3, #4]
+ 117 0040 4245     		cmp	r2, r8
+ 118 0042 F2D1     		bne	.L17
+ 119 0044 2846     		mov	r0, r5
+ARM GAS  /var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccQZkzYG.s 			page 3
+
+
+ 120 0046 0193     		str	r3, [sp, #4]
+ 121 0048 FFF7FEFF 		bl	lv_timer_del
+ 122 004c 019B     		ldr	r3, [sp, #4]
+ 123 004e 1846     		mov	r0, r3
+ 124 0050 FFF7FEFF 		bl	lv_mem_free
+ 125 0054 4FF00109 		mov	r9, #1
+ 126 0058 002C     		cmp	r4, #0
+ 127 005a DED1     		bne	.L18
+ 128 005c E7E7     		b	.L16
+ 129              	.L19:
+ 130 005e 8146     		mov	r9, r0
+ 131 0060 4846     		mov	r0, r9
+ 132 0062 03B0     		add	sp, sp, #12
+ 133              		@ sp needed
+ 134 0064 BDE8F083 		pop	{r4, r5, r6, r7, r8, r9, pc}
+ 135              	.L24:
+ 136              		.align	2
+ 137              	.L23:
+ 138 0068 00000000 		.word	lv_async_timer_cb
+ 140              		.ident	"GCC: (xPack GNU Arm Embedded GCC arm64) 13.3.1 20240614"
+ARM GAS  /var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccQZkzYG.s 			page 4
+
+
+DEFINED SYMBOLS
+                            *ABS*:00000000 lv_async.c
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccQZkzYG.s:18     .text.lv_async_timer_cb:00000000 $t
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccQZkzYG.s:24     .text.lv_async_timer_cb:00000000 lv_async_timer_cb
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccQZkzYG.s:36     .text.lv_async_call:00000000 $t
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccQZkzYG.s:43     .text.lv_async_call:00000000 lv_async_call
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccQZkzYG.s:72     .text.lv_async_call:00000034 $d
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccQZkzYG.s:75     .text.lv_async_call_cancel:00000000 $t
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccQZkzYG.s:82     .text.lv_async_call_cancel:00000000 lv_async_call_cancel
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccQZkzYG.s:138    .text.lv_async_call_cancel:00000068 $d
+
+UNDEFINED SYMBOLS
+lv_mem_free
+lv_mem_alloc
+lv_timer_create
+lv_timer_set_repeat_count
+lv_timer_get_next
+lv_timer_del

@@ -1,0 +1,429 @@
+ARM GAS  /var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cc2J6VW4.s 			page 1
+
+
+   1              		.cpu cortex-m4
+   2              		.arch armv7e-m
+   3              		.fpu fpv4-sp-d16
+   4              		.eabi_attribute 27, 1
+   5              		.eabi_attribute 28, 1
+   6              		.eabi_attribute 20, 1
+   7              		.eabi_attribute 21, 1
+   8              		.eabi_attribute 23, 3
+   9              		.eabi_attribute 24, 1
+  10              		.eabi_attribute 25, 1
+  11              		.eabi_attribute 26, 1
+  12              		.eabi_attribute 30, 1
+  13              		.eabi_attribute 34, 1
+  14              		.eabi_attribute 18, 4
+  15              		.file	"filters.c"
+  16              		.text
+  17              	.Ltext0:
+  18              		.cfi_sections	.debug_frame
+  19              		.file 1 "Core/Src/filters.c"
+  20              		.section	.text.SVF_LP_init,"ax",%progbits
+  21              		.align	1
+  22              		.global	SVF_LP_init
+  23              		.syntax unified
+  24              		.thumb
+  25              		.thumb_func
+  27              	SVF_LP_init:
+  28              	.LVL0:
+  29              	.LFB3:
+   1:Core/Src/filters.c **** 
+   2:Core/Src/filters.c **** /**
+   3:Core/Src/filters.c ****  * @file filters.c
+   4:Core/Src/filters.c ****  * @author johannes regnier
+   5:Core/Src/filters.c ****  * @brief various filters
+   6:Core/Src/filters.c ****  * @version 0.1
+   7:Core/Src/filters.c ****  * @date 2024-01-05
+   8:Core/Src/filters.c ****  * 
+   9:Core/Src/filters.c ****  * @copyright Copyright (c) 2024
+  10:Core/Src/filters.c ****  * 
+  11:Core/Src/filters.c ****  */
+  12:Core/Src/filters.c **** 
+  13:Core/Src/filters.c **** 
+  14:Core/Src/filters.c **** #include "helper_functions.h"
+  15:Core/Src/filters.c **** #include "filters.h"
+  16:Core/Src/filters.c **** #include "CONSTS.h"
+  17:Core/Src/filters.c **** #include "ladder_filter.h"
+  18:Core/Src/filters.c **** #include "lut_tan.h"
+  19:Core/Src/filters.c **** 
+  20:Core/Src/filters.c **** 
+  21:Core/Src/filters.c **** ZDFLP_t lp_L ;
+  22:Core/Src/filters.c **** ZDFLP_t lp_R ;
+  23:Core/Src/filters.c **** 
+  24:Core/Src/filters.c **** onepoleLP_t smooth_ADC1;
+  25:Core/Src/filters.c **** onepoleLP_t smooth_ADC2;
+  26:Core/Src/filters.c **** onepoleLP_t smooth_ADC3;
+  27:Core/Src/filters.c **** 
+  28:Core/Src/filters.c **** 
+  29:Core/Src/filters.c **** 
+ARM GAS  /var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cc2J6VW4.s 			page 2
+
+
+  30:Core/Src/filters.c **** void SVF_LP_init(ZDFLP_t * filter){
+  30              		.loc 1 30 35 view -0
+  31              		.cfi_startproc
+  32              		@ args = 0, pretend = 0, frame = 0
+  33              		@ frame_needed = 0, uses_anonymous_args = 0
+  34              		@ link register save eliminated.
+  31:Core/Src/filters.c ****     filter->s1 = 0.0f;
+  35              		.loc 1 31 5 view .LVU1
+  36              		.loc 1 31 16 is_stmt 0 view .LVU2
+  37 0000 0023     		movs	r3, #0
+  38 0002 0360     		str	r3, [r0]	@ float
+  32:Core/Src/filters.c ****     filter->s2 = 0.0f;
+  39              		.loc 1 32 5 is_stmt 1 view .LVU3
+  40              		.loc 1 32 16 is_stmt 0 view .LVU4
+  41 0004 4360     		str	r3, [r0, #4]	@ float
+  33:Core/Src/filters.c ****     filter->r = 0.65f;           // slight resonance
+  42              		.loc 1 33 5 is_stmt 1 view .LVU5
+  43              		.loc 1 33 15 is_stmt 0 view .LVU6
+  44 0006 024B     		ldr	r3, .L2
+  45 0008 8360     		str	r3, [r0, #8]	@ float
+  34:Core/Src/filters.c ****     filter->cutoff = 1200;    
+  46              		.loc 1 34 5 is_stmt 1 view .LVU7
+  47              		.loc 1 34 20 is_stmt 0 view .LVU8
+  48 000a 024B     		ldr	r3, .L2+4
+  49 000c C360     		str	r3, [r0, #12]	@ float
+  35:Core/Src/filters.c **** }
+  50              		.loc 1 35 1 view .LVU9
+  51 000e 7047     		bx	lr
+  52              	.L3:
+  53              		.align	2
+  54              	.L2:
+  55 0010 6666263F 		.word	1059481190
+  56 0014 00009644 		.word	1150681088
+  57              		.cfi_endproc
+  58              	.LFE3:
+  60              		.global	__aeabi_f2d
+  61              		.global	__aeabi_dmul
+  62              		.global	__aeabi_d2f
+  63              		.section	.text.freq_to_g,"ax",%progbits
+  64              		.align	1
+  65              		.global	freq_to_g
+  66              		.syntax unified
+  67              		.thumb
+  68              		.thumb_func
+  70              	freq_to_g:
+  71              	.LVL1:
+  72              	.LFB4:
+  36:Core/Src/filters.c **** 
+  37:Core/Src/filters.c **** /**
+  38:Core/Src/filters.c ****  * @brief calculate g coefficient for SVF
+  39:Core/Src/filters.c ****  * 
+  40:Core/Src/filters.c ****  * @param freq 
+  41:Core/Src/filters.c ****  * @return float 
+  42:Core/Src/filters.c ****  */
+  43:Core/Src/filters.c **** float freq_to_g(float freq) 
+  44:Core/Src/filters.c **** {
+  73              		.loc 1 44 1 is_stmt 1 view -0
+ARM GAS  /var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cc2J6VW4.s 			page 3
+
+
+  74              		.cfi_startproc
+  75              		@ args = 0, pretend = 0, frame = 0
+  76              		@ frame_needed = 0, uses_anonymous_args = 0
+  77              		.loc 1 44 1 is_stmt 0 view .LVU11
+  78 0000 08B5     		push	{r3, lr}
+  79              		.cfi_def_cfa_offset 8
+  80              		.cfi_offset 3, -8
+  81              		.cfi_offset 14, -4
+  82 0002 10EE100A 		vmov	r0, s0
+  45:Core/Src/filters.c **** 	return interp_lin_lut(LUT_TAN_SIZE * (PI* freq * TS), LUT_TAN_SIZE, tan_lut);
+  83              		.loc 1 45 2 is_stmt 1 view .LVU12
+  84              		.loc 1 45 42 is_stmt 0 view .LVU13
+  85 0006 FFF7FEFF 		bl	__aeabi_f2d
+  86              	.LVL2:
+  87              		.loc 1 45 42 view .LVU14
+  88 000a 0FA3     		adr	r3, .L6+8
+  89 000c D3E90023 		ldrd	r2, [r3]
+  90 0010 FFF7FEFF 		bl	__aeabi_dmul
+  91              	.LVL3:
+  92              		.loc 1 45 49 view .LVU15
+  93 0014 0EA3     		adr	r3, .L6+16
+  94 0016 D3E90023 		ldrd	r2, [r3]
+  95 001a FFF7FEFF 		bl	__aeabi_dmul
+  96              	.LVL4:
+  97              		.loc 1 45 37 view .LVU16
+  98 001e 0022     		movs	r2, #0
+  99 0020 074B     		ldr	r3, .L6
+ 100 0022 FFF7FEFF 		bl	__aeabi_dmul
+ 101              	.LVL5:
+ 102              		.loc 1 45 9 view .LVU17
+ 103 0026 FFF7FEFF 		bl	__aeabi_d2f
+ 104              	.LVL6:
+ 105 002a 00EE100A 		vmov	s0, r0
+ 106 002e 0549     		ldr	r1, .L6+4
+ 107 0030 4FF40060 		mov	r0, #2048
+ 108 0034 FFF7FEFF 		bl	interp_lin_lut
+ 109              	.LVL7:
+  46:Core/Src/filters.c ****     //return 0;
+  47:Core/Src/filters.c **** }
+ 110              		.loc 1 47 1 view .LVU18
+ 111 0038 08BD     		pop	{r3, pc}
+ 112              	.L7:
+ 113 003a 00BFAFF3 		.align	3
+ 113      0080
+ 114              	.L6:
+ 115 0040 0000A040 		.word	1084227584
+ 116 0044 00000000 		.word	tan_lut
+ 117 0048 EA2E4454 		.word	1413754602
+ 118 004c FB210940 		.word	1074340347
+ 119 0050 000000C0 		.word	-1073741824
+ 120 0054 F8C6F73E 		.word	1056425720
+ 121              		.cfi_endproc
+ 122              	.LFE4:
+ 124              		.section	.text.SVF_LP_compute,"ax",%progbits
+ 125              		.align	1
+ 126              		.global	SVF_LP_compute
+ 127              		.syntax unified
+ARM GAS  /var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cc2J6VW4.s 			page 4
+
+
+ 128              		.thumb
+ 129              		.thumb_func
+ 131              	SVF_LP_compute:
+ 132              	.LVL8:
+ 133              	.LFB5:
+  48:Core/Src/filters.c **** 
+  49:Core/Src/filters.c **** /**
+  50:Core/Src/filters.c ****  * @brief 2-pole resonant state variable filter, in lowpass mode
+  51:Core/Src/filters.c ****  * 
+  52:Core/Src/filters.c ****  * @param f 
+  53:Core/Src/filters.c ****  * @param sample 
+  54:Core/Src/filters.c ****  * @return float 
+  55:Core/Src/filters.c ****  */
+  56:Core/Src/filters.c **** float SVF_LP_compute(ZDFLP_t *f, float sample)
+  57:Core/Src/filters.c **** {
+ 134              		.loc 1 57 1 is_stmt 1 view -0
+ 135              		.cfi_startproc
+ 136              		@ args = 0, pretend = 0, frame = 0
+ 137              		@ frame_needed = 0, uses_anonymous_args = 0
+ 138              		.loc 1 57 1 is_stmt 0 view .LVU20
+ 139 0000 10B5     		push	{r4, lr}
+ 140              		.cfi_def_cfa_offset 8
+ 141              		.cfi_offset 4, -8
+ 142              		.cfi_offset 14, -4
+ 143 0002 2DED028B 		vpush.64	{d8}
+ 144              		.cfi_def_cfa_offset 16
+ 145              		.cfi_offset 80, -16
+ 146              		.cfi_offset 81, -12
+ 147 0006 0446     		mov	r4, r0
+ 148 0008 B0EE408A 		vmov.f32	s16, s0
+  58:Core/Src/filters.c **** 	float bp, lp, hp;
+ 149              		.loc 1 58 2 is_stmt 1 view .LVU21
+  59:Core/Src/filters.c ****     f->g = freq_to_g(f->cutoff);
+ 150              		.loc 1 59 5 view .LVU22
+ 151              		.loc 1 59 12 is_stmt 0 view .LVU23
+ 152 000c 90ED030A 		vldr.32	s0, [r0, #12]
+ 153              	.LVL9:
+ 154              		.loc 1 59 12 view .LVU24
+ 155 0010 FFF7FEFF 		bl	freq_to_g
+ 156              	.LVL10:
+ 157              		.loc 1 59 10 discriminator 1 view .LVU25
+ 158 0014 84ED040A 		vstr.32	s0, [r4, #16]
+  60:Core/Src/filters.c ****     hp = (sample - 2.0f * f->r * f->s1 - f->g * f->s1 - f->s2) / (1.0f + 2.0f * f->r * f->g + f->g 
+ 159              		.loc 1 60 5 is_stmt 1 view .LVU26
+ 160              		.loc 1 60 28 is_stmt 0 view .LVU27
+ 161 0018 D4ED027A 		vldr.32	s15, [r4, #8]
+ 162              		.loc 1 60 25 view .LVU28
+ 163 001c 77EEA77A 		vadd.f32	s15, s15, s15
+ 164              		.loc 1 60 35 view .LVU29
+ 165 0020 94ED007A 		vldr.32	s14, [r4]
+ 166              		.loc 1 60 32 view .LVU30
+ 167 0024 67EE876A 		vmul.f32	s13, s15, s14
+ 168              		.loc 1 60 18 view .LVU31
+ 169 0028 38EE668A 		vsub.f32	s16, s16, s13
+ 170              	.LVL11:
+ 171              		.loc 1 60 47 view .LVU32
+ 172 002c 60EE076A 		vmul.f32	s13, s0, s14
+ARM GAS  /var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cc2J6VW4.s 			page 5
+
+
+ 173              		.loc 1 60 40 view .LVU33
+ 174 0030 38EE668A 		vsub.f32	s16, s16, s13
+ 175              		.loc 1 60 58 view .LVU34
+ 176 0034 94ED016A 		vldr.32	s12, [r4, #4]
+ 177              		.loc 1 60 55 view .LVU35
+ 178 0038 38EE468A 		vsub.f32	s16, s16, s12
+ 179              		.loc 1 60 86 view .LVU36
+ 180 003c 60EE277A 		vmul.f32	s15, s0, s15
+ 181              		.loc 1 60 72 view .LVU37
+ 182 0040 F7EE006A 		vmov.f32	s13, #1.0e+0
+ 183 0044 77EEA67A 		vadd.f32	s15, s15, s13
+ 184              		.loc 1 60 100 view .LVU38
+ 185 0048 60EE006A 		vmul.f32	s13, s0, s0
+ 186              		.loc 1 60 93 view .LVU39
+ 187 004c 77EEA67A 		vadd.f32	s15, s15, s13
+ 188              		.loc 1 60 8 view .LVU40
+ 189 0050 C8EE276A 		vdiv.f32	s13, s16, s15
+ 190              	.LVL12:
+  61:Core/Src/filters.c ****     bp = f->g * hp + f->s1;
+ 191              		.loc 1 61 5 is_stmt 1 view .LVU41
+ 192              		.loc 1 61 15 is_stmt 0 view .LVU42
+ 193 0054 60EE267A 		vmul.f32	s15, s0, s13
+ 194              		.loc 1 61 8 view .LVU43
+ 195 0058 37EE277A 		vadd.f32	s14, s14, s15
+ 196              	.LVL13:
+  62:Core/Src/filters.c **** 	f->s1 = f->g * hp + bp; // state in 1st trapezoidal integrator
+ 197              		.loc 1 62 2 is_stmt 1 view .LVU44
+ 198              		.loc 1 62 20 is_stmt 0 view .LVU45
+ 199 005c 77EE877A 		vadd.f32	s15, s15, s14
+ 200              		.loc 1 62 8 view .LVU46
+ 201 0060 C4ED007A 		vstr.32	s15, [r4]
+  63:Core/Src/filters.c **** 	lp = f->g * bp + f->s2;
+ 202              		.loc 1 63 2 is_stmt 1 view .LVU47
+ 203              		.loc 1 63 12 is_stmt 0 view .LVU48
+ 204 0064 60EE077A 		vmul.f32	s15, s0, s14
+ 205              		.loc 1 63 5 view .LVU49
+ 206 0068 36EE270A 		vadd.f32	s0, s12, s15
+ 207              	.LVL14:
+  64:Core/Src/filters.c **** 	f->s2 = f->g * bp + lp; // state in 2nd trapezoidal integrator
+ 208              		.loc 1 64 2 is_stmt 1 view .LVU50
+ 209              		.loc 1 64 20 is_stmt 0 view .LVU51
+ 210 006c 77EE807A 		vadd.f32	s15, s15, s0
+ 211              		.loc 1 64 8 view .LVU52
+ 212 0070 C4ED017A 		vstr.32	s15, [r4, #4]
+  65:Core/Src/filters.c **** 	return lp;
+ 213              		.loc 1 65 2 is_stmt 1 view .LVU53
+  66:Core/Src/filters.c **** }
+ 214              		.loc 1 66 1 is_stmt 0 view .LVU54
+ 215 0074 BDEC028B 		vldm	sp!, {d8}
+ 216              		.cfi_restore 80
+ 217              		.cfi_restore 81
+ 218              		.cfi_def_cfa_offset 8
+ 219 0078 10BD     		pop	{r4, pc}
+ 220              		.loc 1 66 1 view .LVU55
+ 221              		.cfi_endproc
+ 222              	.LFE5:
+ 224              		.section	.text.smoothing_LP,"ax",%progbits
+ARM GAS  /var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cc2J6VW4.s 			page 6
+
+
+ 225              		.align	1
+ 226              		.global	smoothing_LP
+ 227              		.syntax unified
+ 228              		.thumb
+ 229              		.thumb_func
+ 231              	smoothing_LP:
+ 232              	.LVL15:
+ 233              	.LFB6:
+  67:Core/Src/filters.c **** 
+  68:Core/Src/filters.c **** 
+  69:Core/Src/filters.c **** /**
+  70:Core/Src/filters.c ****  * @brief A simple lowpass filter, useful to smooth data. 
+  71:Core/Src/filters.c ****  * @note    alpha = 0: no filtering. alpha close to 1: strong smoothing/filtering
+  72:Core/Src/filters.c ****  * @param f 
+  73:Core/Src/filters.c ****  * @param sample 
+  74:Core/Src/filters.c ****  * @return float 
+  75:Core/Src/filters.c ****  */
+  76:Core/Src/filters.c **** float smoothing_LP(onepoleLP_t *f, float sample, float alpha){
+ 234              		.loc 1 76 62 is_stmt 1 view -0
+ 235              		.cfi_startproc
+ 236              		@ args = 0, pretend = 0, frame = 0
+ 237              		@ frame_needed = 0, uses_anonymous_args = 0
+ 238              		@ link register save eliminated.
+  77:Core/Src/filters.c ****   float output;
+ 239              		.loc 1 77 3 view .LVU57
+  78:Core/Src/filters.c ****   output = alpha * f->old_value + (1 - alpha) * sample;
+ 240              		.loc 1 78 3 view .LVU58
+ 241              		.loc 1 78 21 is_stmt 0 view .LVU59
+ 242 0000 D0ED007A 		vldr.32	s15, [r0]
+ 243              		.loc 1 78 18 view .LVU60
+ 244 0004 67EEA07A 		vmul.f32	s15, s15, s1
+ 245              		.loc 1 78 38 view .LVU61
+ 246 0008 B7EE007A 		vmov.f32	s14, #1.0e+0
+ 247 000c 77EE600A 		vsub.f32	s1, s14, s1
+ 248              	.LVL16:
+ 249              		.loc 1 78 47 view .LVU62
+ 250 0010 60EE800A 		vmul.f32	s1, s1, s0
+ 251              		.loc 1 78 10 view .LVU63
+ 252 0014 37EEA00A 		vadd.f32	s0, s15, s1
+ 253              	.LVL17:
+  79:Core/Src/filters.c ****   f->old_value = output;
+ 254              		.loc 1 79 3 is_stmt 1 view .LVU64
+ 255              		.loc 1 79 16 is_stmt 0 view .LVU65
+ 256 0018 80ED000A 		vstr.32	s0, [r0]
+  80:Core/Src/filters.c ****   return output;
+ 257              		.loc 1 80 3 is_stmt 1 view .LVU66
+  81:Core/Src/filters.c **** }...
+ 258              		.loc 1 81 1 is_stmt 0 view .LVU67
+ 259 001c 7047     		bx	lr
+ 260              		.cfi_endproc
+ 261              	.LFE6:
+ 263              		.global	smooth_ADC3
+ 264              		.section	.bss.smooth_ADC3,"aw",%nobits
+ 265              		.align	2
+ 268              	smooth_ADC3:
+ 269 0000 00000000 		.space	4
+ 270              		.global	smooth_ADC2
+ARM GAS  /var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cc2J6VW4.s 			page 7
+
+
+ 271              		.section	.bss.smooth_ADC2,"aw",%nobits
+ 272              		.align	2
+ 275              	smooth_ADC2:
+ 276 0000 00000000 		.space	4
+ 277              		.global	smooth_ADC1
+ 278              		.section	.bss.smooth_ADC1,"aw",%nobits
+ 279              		.align	2
+ 282              	smooth_ADC1:
+ 283 0000 00000000 		.space	4
+ 284              		.global	lp_R
+ 285              		.section	.bss.lp_R,"aw",%nobits
+ 286              		.align	2
+ 289              	lp_R:
+ 290 0000 00000000 		.space	20
+ 290      00000000 
+ 290      00000000 
+ 290      00000000 
+ 290      00000000 
+ 291              		.global	lp_L
+ 292              		.section	.bss.lp_L,"aw",%nobits
+ 293              		.align	2
+ 296              	lp_L:
+ 297 0000 00000000 		.space	20
+ 297      00000000 
+ 297      00000000 
+ 297      00000000 
+ 297      00000000 
+ 298              		.text
+ 299              	.Letext0:
+ 300              		.file 2 "/Users/jr/Library/Application Support/Code/User/globalStorage/bmd.stm32-for-vscode/@xpack
+ 301              		.file 3 "/Users/jr/Library/Application Support/Code/User/globalStorage/bmd.stm32-for-vscode/@xpack
+ 302              		.file 4 "Core/Inc/filters.h"
+ 303              		.file 5 "Core/Inc/lut_tan.h"
+ 304              		.file 6 "Core/Inc/helper_functions.h"
+ARM GAS  /var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cc2J6VW4.s 			page 8
+
+
+DEFINED SYMBOLS
+                            *ABS*:00000000 filters.c
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cc2J6VW4.s:21     .text.SVF_LP_init:00000000 $t
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cc2J6VW4.s:27     .text.SVF_LP_init:00000000 SVF_LP_init
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cc2J6VW4.s:55     .text.SVF_LP_init:00000010 $d
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cc2J6VW4.s:64     .text.freq_to_g:00000000 $t
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cc2J6VW4.s:70     .text.freq_to_g:00000000 freq_to_g
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cc2J6VW4.s:115    .text.freq_to_g:00000040 $d
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cc2J6VW4.s:125    .text.SVF_LP_compute:00000000 $t
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cc2J6VW4.s:131    .text.SVF_LP_compute:00000000 SVF_LP_compute
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cc2J6VW4.s:225    .text.smoothing_LP:00000000 $t
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cc2J6VW4.s:231    .text.smoothing_LP:00000000 smoothing_LP
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cc2J6VW4.s:268    .bss.smooth_ADC3:00000000 smooth_ADC3
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cc2J6VW4.s:265    .bss.smooth_ADC3:00000000 $d
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cc2J6VW4.s:275    .bss.smooth_ADC2:00000000 smooth_ADC2
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cc2J6VW4.s:272    .bss.smooth_ADC2:00000000 $d
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cc2J6VW4.s:282    .bss.smooth_ADC1:00000000 smooth_ADC1
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cc2J6VW4.s:279    .bss.smooth_ADC1:00000000 $d
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cc2J6VW4.s:289    .bss.lp_R:00000000 lp_R
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cc2J6VW4.s:286    .bss.lp_R:00000000 $d
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cc2J6VW4.s:296    .bss.lp_L:00000000 lp_L
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cc2J6VW4.s:293    .bss.lp_L:00000000 $d
+
+UNDEFINED SYMBOLS
+__aeabi_f2d
+__aeabi_dmul
+__aeabi_d2f
+interp_lin_lut
+tan_lut

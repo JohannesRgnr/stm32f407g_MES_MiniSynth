@@ -1,0 +1,949 @@
+ARM GAS  /var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cc9BVNLC.s 			page 1
+
+
+   1              		.cpu cortex-m4
+   2              		.arch armv7e-m
+   3              		.fpu fpv4-sp-d16
+   4              		.eabi_attribute 27, 1
+   5              		.eabi_attribute 28, 1
+   6              		.eabi_attribute 20, 1
+   7              		.eabi_attribute 21, 1
+   8              		.eabi_attribute 23, 3
+   9              		.eabi_attribute 24, 1
+  10              		.eabi_attribute 25, 1
+  11              		.eabi_attribute 26, 1
+  12              		.eabi_attribute 30, 2
+  13              		.eabi_attribute 34, 1
+  14              		.eabi_attribute 18, 4
+  15              		.file	"lv_calendar.c"
+  16              		.text
+  17              		.section	.text.get_month_length,"ax",%progbits
+  18              		.align	1
+  19              		.p2align 2,,3
+  20              		.syntax unified
+  21              		.thumb
+  22              		.thumb_func
+  24              	get_month_length:
+  25              		@ args = 0, pretend = 0, frame = 0
+  26              		@ frame_needed = 0, uses_anonymous_args = 0
+  27              		@ link register save eliminated.
+  28 0000 4B1E     		subs	r3, r1, #1
+  29 0002 18D4     		bmi	.L10
+  30 0004 0B2B     		cmp	r3, #11
+  31 0006 C4BF     		itt	gt
+  32 0008 A1F10D03 		subgt	r3, r1, #13
+  33 000c 0130     		addgt	r0, r0, #1
+  34 000e 012B     		cmp	r3, #1
+  35 0010 17D0     		beq	.L11
+  36              	.L4:
+  37 0012 1649     		ldr	r1, .L12
+  38 0014 81FB0301 		smull	r0, r1, r1, r3
+  39 0018 1944     		add	r1, r1, r3
+  40 001a DA17     		asrs	r2, r3, #31
+  41 001c C2EBA102 		rsb	r2, r2, r1, asr #2
+  42 0020 C2EBC202 		rsb	r2, r2, r2, lsl #3
+  43 0024 9B1A     		subs	r3, r3, r2
+  44 0026 03F00100 		and	r0, r3, #1
+  45 002a 48BF     		it	mi
+  46 002c 4042     		rsbmi	r0, r0, #0
+  47 002e C0F11F00 		rsb	r0, r0, #31
+  48 0032 C0B2     		uxtb	r0, r0
+  49 0034 7047     		bx	lr
+  50              	.L10:
+  51 0036 01F10B03 		add	r3, r1, #11
+  52 003a 012B     		cmp	r3, #1
+  53 003c 00F1FF30 		add	r0, r0, #-1
+  54 0040 E7D1     		bne	.L4
+  55              	.L11:
+  56 0042 8307     		lsls	r3, r0, #30
+  57 0044 0ED1     		bne	.L7
+  58 0046 0A4A     		ldr	r2, .L12+4
+ARM GAS  /var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cc9BVNLC.s 			page 2
+
+
+  59 0048 0A4B     		ldr	r3, .L12+8
+  60 004a 02FB00F0 		mul	r0, r2, r0
+  61 004e B3EBB00F 		cmp	r3, r0, ror #2
+  62 0052 09D3     		bcc	.L8
+  63 0054 084B     		ldr	r3, .L12+12
+  64 0056 B3EB301F 		cmp	r3, r0, ror #4
+  65 005a 2CBF     		ite	cs
+  66 005c 0120     		movcs	r0, #1
+  67 005e 0020     		movcc	r0, #0
+  68 0060 1C30     		adds	r0, r0, #28
+  69 0062 7047     		bx	lr
+  70              	.L7:
+  71 0064 1C20     		movs	r0, #28
+  72 0066 7047     		bx	lr
+  73              	.L8:
+  74 0068 1D20     		movs	r0, #29
+  75 006a 7047     		bx	lr
+  76              	.L13:
+  77              		.align	2
+  78              	.L12:
+  79 006c 93244992 		.word	-1840700269
+  80 0070 295C8FC2 		.word	-1030792151
+  81 0074 285C8F02 		.word	42949672
+  82 0078 0AD7A300 		.word	10737418
+  84              		.section	.text.draw_part_begin_event_cb,"ax",%progbits
+  85              		.align	1
+  86              		.p2align 2,,3
+  87              		.syntax unified
+  88              		.thumb
+  89              		.thumb_func
+  91              	draw_part_begin_event_cb:
+  92              		@ args = 0, pretend = 0, frame = 0
+  93              		@ frame_needed = 0, uses_anonymous_args = 0
+  94 0000 70B5     		push	{r4, r5, r6, lr}
+  95 0002 0446     		mov	r4, r0
+  96 0004 FFF7FEFF 		bl	lv_event_get_target
+  97 0008 0546     		mov	r5, r0
+  98 000a 2046     		mov	r0, r4
+  99 000c FFF7FEFF 		bl	lv_event_get_param
+ 100 0010 436B     		ldr	r3, [r0, #52]
+ 101 0012 B3F5A02F 		cmp	r3, #327680
+ 102 0016 00D0     		beq	.L29
+ 103              	.L14:
+ 104 0018 70BD     		pop	{r4, r5, r6, pc}
+ 105              	.L29:
+ 106 001a 816B     		ldr	r1, [r0, #56]
+ 107 001c 0629     		cmp	r1, #6
+ 108 001e 0446     		mov	r4, r0
+ 109 0020 32D8     		bhi	.L17
+ 110 0022 0369     		ldr	r3, [r0, #16]
+ 111 0024 0022     		movs	r2, #0
+ 112 0026 DA70     		strb	r2, [r3, #3]
+ 113 0028 83F82220 		strb	r2, [r3, #34]
+ 114              	.L18:
+ 115 002c 4FF40042 		mov	r2, #32768
+ 116 0030 89B2     		uxth	r1, r1
+ 117 0032 2846     		mov	r0, r5
+ARM GAS  /var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cc9BVNLC.s 			page 3
+
+
+ 118 0034 FFF7FEFF 		bl	lv_btnmatrix_has_btn_ctrl
+ 119 0038 A8B9     		cbnz	r0, .L20
+ 120 003a A16B     		ldr	r1, [r4, #56]
+ 121              	.L21:
+ 122 003c 4FF48042 		mov	r2, #16384
+ 123 0040 89B2     		uxth	r1, r1
+ 124 0042 2846     		mov	r0, r5
+ 125 0044 FFF7FEFF 		bl	lv_btnmatrix_has_btn_ctrl
+ 126 0048 0028     		cmp	r0, #0
+ 127 004a E5D0     		beq	.L14
+ 128 004c 2669     		ldr	r6, [r4, #16]
+ 129 004e FF23     		movs	r3, #255
+ 130 0050 86F82230 		strb	r3, [r6, #34]
+ 131 0054 2846     		mov	r0, r5
+ 132 0056 FFF7FEFF 		bl	lv_theme_get_color_primary
+ 133 005a 2269     		ldr	r2, [r4, #16]
+ 134 005c F083     		strh	r0, [r6, #30]	@ movhi
+ 135 005e 138C     		ldrh	r3, [r2, #32]
+ 136 0060 0133     		adds	r3, r3, #1
+ 137 0062 1384     		strh	r3, [r2, #32]	@ movhi
+ 138 0064 70BD     		pop	{r4, r5, r6, pc}
+ 139              	.L20:
+ 140 0066 2669     		ldr	r6, [r4, #16]
+ 141 0068 6623     		movs	r3, #102
+ 142 006a F370     		strb	r3, [r6, #3]
+ 143 006c 2846     		mov	r0, r5
+ 144 006e FFF7FEFF 		bl	lv_theme_get_color_primary
+ 145 0072 B080     		strh	r0, [r6, #4]	@ movhi
+ 146 0074 2846     		mov	r0, r5
+ 147 0076 FFF7FEFF 		bl	lv_btnmatrix_get_selected_btn
+ 148 007a A16B     		ldr	r1, [r4, #56]
+ 149 007c 8842     		cmp	r0, r1
+ 150 007e DDD1     		bne	.L21
+ 151 0080 2369     		ldr	r3, [r4, #16]
+ 152 0082 B222     		movs	r2, #178
+ 153 0084 DA70     		strb	r2, [r3, #3]
+ 154 0086 D9E7     		b	.L21
+ 155              	.L17:
+ 156 0088 4022     		movs	r2, #64
+ 157 008a 89B2     		uxth	r1, r1
+ 158 008c 2846     		mov	r0, r5
+ 159 008e FFF7FEFF 		bl	lv_btnmatrix_has_btn_ctrl
+ 160 0092 08B9     		cbnz	r0, .L19
+ 161 0094 A16B     		ldr	r1, [r4, #56]
+ 162 0096 C9E7     		b	.L18
+ 163              	.L19:
+ 164 0098 2369     		ldr	r3, [r4, #16]
+ 165 009a 0022     		movs	r2, #0
+ 166 009c DA70     		strb	r2, [r3, #3]
+ 167 009e 83F82220 		strb	r2, [r3, #34]
+ 168 00a2 1220     		movs	r0, #18
+ 169 00a4 6669     		ldr	r6, [r4, #20]
+ 170 00a6 FFF7FEFF 		bl	lv_palette_main
+ 171 00aa A16B     		ldr	r1, [r4, #56]
+ 172 00ac B081     		strh	r0, [r6, #12]	@ movhi
+ 173 00ae BDE7     		b	.L18
+ 175              		.section	.text.highlight_update,"ax",%progbits
+ARM GAS  /var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cc9BVNLC.s 			page 4
+
+
+ 176              		.align	1
+ 177              		.p2align 2,,3
+ 178              		.syntax unified
+ 179              		.thumb
+ 180              		.thumb_func
+ 182              	highlight_update:
+ 183              		@ args = 0, pretend = 0, frame = 0
+ 184              		@ frame_needed = 0, uses_anonymous_args = 0
+ 185 0000 70B5     		push	{r4, r5, r6, lr}
+ 186 0002 0546     		mov	r5, r0
+ 187 0004 4FF44041 		mov	r1, #49152
+ 188 0008 406A     		ldr	r0, [r0, #36]
+ 189 000a 334C     		ldr	r4, .L44
+ 190 000c 334E     		ldr	r6, .L44+4
+ 191 000e FFF7FEFF 		bl	lv_btnmatrix_clear_btn_ctrl_all
+ 192 0012 95F92E10 		ldrsb	r1, [r5, #46]
+ 193 0016 AA8D     		ldrh	r2, [r5, #44]
+ 194 0018 0229     		cmp	r1, #2
+ 195 001a 8CBF     		ite	hi
+ 196 001c 0020     		movhi	r0, #0
+ 197 001e 0120     		movls	r0, #1
+ 198 0020 0028     		cmp	r0, #0
+ 199 0022 A2EB0000 		sub	r0, r2, r0
+ 200 0026 A4FB0034 		umull	r3, r4, r4, r0
+ 201 002a 14BF     		ite	ne
+ 202 002c 0C23     		movne	r3, #12
+ 203 002e 0023     		moveq	r3, #0
+ 204 0030 0B44     		add	r3, r3, r1
+ 205 0032 411C     		adds	r1, r0, #1
+ 206 0034 01EB9001 		add	r1, r1, r0, lsr #2
+ 207 0038 C3EB4313 		rsb	r3, r3, r3, lsl #5
+ 208 003c 2848     		ldr	r0, .L44+8
+ 209 003e 3E3B     		subs	r3, r3, #62
+ 210 0040 01EBD411 		add	r1, r1, r4, lsr #7
+ 211 0044 A0FB0303 		umull	r0, r3, r0, r3
+ 212 0048 A1EB5411 		sub	r1, r1, r4, lsr #5
+ 213 004c 01EBD301 		add	r1, r1, r3, lsr #3
+ 214 0050 A6FB0136 		umull	r3, r6, r6, r1
+ 215 0054 8B1B     		subs	r3, r1, r6
+ 216 0056 06EB5306 		add	r6, r6, r3, lsr #1
+ 217 005a B608     		lsrs	r6, r6, #2
+ 218 005c 2B6B     		ldr	r3, [r5, #48]
+ 219 005e C6EBC606 		rsb	r6, r6, r6, lsl #3
+ 220 0062 8E1B     		subs	r6, r1, r6
+ 221 0064 23B3     		cbz	r3, .L31
+ 222 0066 A88E     		ldrh	r0, [r5, #52]
+ 223 0068 10B3     		cbz	r0, .L31
+ 224 006a 0024     		movs	r4, #0
+ 225 006c 05E0     		b	.L33
+ 226              	.L32:
+ 227 006e 0134     		adds	r4, r4, #1
+ 228 0070 A3B2     		uxth	r3, r4
+ 229 0072 9842     		cmp	r0, r3
+ 230 0074 1CD9     		bls	.L31
+ 231              	.L42:
+ 232 0076 2B6B     		ldr	r3, [r5, #48]
+ 233 0078 AA8D     		ldrh	r2, [r5, #44]
+ARM GAS  /var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cc9BVNLC.s 			page 5
+
+
+ 234              	.L33:
+ 235 007a 33F82410 		ldrh	r1, [r3, r4, lsl #2]
+ 236 007e 9142     		cmp	r1, r2
+ 237 0080 03EB8403 		add	r3, r3, r4, lsl #2
+ 238 0084 F3D1     		bne	.L32
+ 239 0086 93F90210 		ldrsb	r1, [r3, #2]
+ 240 008a 95F92E20 		ldrsb	r2, [r5, #46]
+ 241 008e 9142     		cmp	r1, r2
+ 242 0090 EDD1     		bne	.L32
+ 243 0092 93F90310 		ldrsb	r1, [r3, #3]
+ 244 0096 686A     		ldr	r0, [r5, #36]
+ 245 0098 B31D     		adds	r3, r6, #6
+ 246 009a 1944     		add	r1, r1, r3
+ 247 009c 4FF40042 		mov	r2, #32768
+ 248 00a0 89B2     		uxth	r1, r1
+ 249 00a2 FFF7FEFF 		bl	lv_btnmatrix_set_btn_ctrl
+ 250 00a6 0134     		adds	r4, r4, #1
+ 251 00a8 A88E     		ldrh	r0, [r5, #52]
+ 252 00aa A3B2     		uxth	r3, r4
+ 253 00ac 9842     		cmp	r0, r3
+ 254 00ae E2D8     		bhi	.L42
+ 255              	.L31:
+ 256 00b0 D5E90A23 		ldrd	r2, r3, [r5, #40]
+ 257 00b4 5340     		eors	r3, r3, r2
+ 258 00b6 33F07F43 		bics	r3, r3, #-16777216
+ 259 00ba 00D0     		beq	.L43
+ 260 00bc 70BD     		pop	{r4, r5, r6, pc}
+ 261              	.L43:
+ 262 00be 95F92B10 		ldrsb	r1, [r5, #43]
+ 263 00c2 686A     		ldr	r0, [r5, #36]
+ 264 00c4 0631     		adds	r1, r1, #6
+ 265 00c6 3144     		add	r1, r1, r6
+ 266 00c8 4FF48042 		mov	r2, #16384
+ 267 00cc BDE87040 		pop	{r4, r5, r6, lr}
+ 268 00d0 89B2     		uxth	r1, r1
+ 269 00d2 FFF7FEBF 		b	lv_btnmatrix_set_btn_ctrl
+ 270              	.L45:
+ 271 00d6 00BF     		.align	2
+ 272              	.L44:
+ 273 00d8 1F85EB51 		.word	1374389535
+ 274 00dc 25499224 		.word	613566757
+ 275 00e0 ABAAAAAA 		.word	-1431655765
+ 277              		.section	.text.lv_calendar_create,"ax",%progbits
+ 278              		.align	1
+ 279              		.p2align 2,,3
+ 280              		.global	lv_calendar_create
+ 281              		.syntax unified
+ 282              		.thumb
+ 283              		.thumb_func
+ 285              	lv_calendar_create:
+ 286              		@ args = 0, pretend = 0, frame = 0
+ 287              		@ frame_needed = 0, uses_anonymous_args = 0
+ 288 0000 10B5     		push	{r4, lr}
+ 289 0002 0146     		mov	r1, r0
+ 290 0004 0348     		ldr	r0, .L48
+ 291 0006 FFF7FEFF 		bl	lv_obj_class_create_obj
+ 292 000a 0446     		mov	r4, r0
+ARM GAS  /var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cc9BVNLC.s 			page 6
+
+
+ 293 000c FFF7FEFF 		bl	lv_obj_class_init_obj
+ 294 0010 2046     		mov	r0, r4
+ 295 0012 10BD     		pop	{r4, pc}
+ 296              	.L49:
+ 297              		.align	2
+ 298              	.L48:
+ 299 0014 00000000 		.word	lv_calendar_class
+ 301              		.section	.text.lv_calendar_set_day_names,"ax",%progbits
+ 302              		.align	1
+ 303              		.p2align 2,,3
+ 304              		.global	lv_calendar_set_day_names
+ 305              		.syntax unified
+ 306              		.thumb
+ 307              		.thumb_func
+ 309              	lv_calendar_set_day_names:
+ 310              		@ args = 0, pretend = 0, frame = 0
+ 311              		@ frame_needed = 0, uses_anonymous_args = 0
+ 312              		@ link register save eliminated.
+ 313 0000 0B1F     		subs	r3, r1, #4
+ 314 0002 00F13402 		add	r2, r0, #52
+ 315 0006 01F1180C 		add	ip, r1, #24
+ 316              	.L51:
+ 317 000a 53F8041F 		ldr	r1, [r3, #4]!
+ 318 000e 42F8041F 		str	r1, [r2, #4]!
+ 319 0012 6345     		cmp	r3, ip
+ 320 0014 F9D1     		bne	.L51
+ 321 0016 FFF7FEBF 		b	lv_obj_invalidate
+ 323 001a 00BF     		.section	.text.lv_calendar_set_today_date,"ax",%progbits
+ 324              		.align	1
+ 325              		.p2align 2,,3
+ 326              		.global	lv_calendar_set_today_date
+ 327              		.syntax unified
+ 328              		.thumb
+ 329              		.thumb_func
+ 331              	lv_calendar_set_today_date:
+ 332              		@ args = 0, pretend = 0, frame = 0
+ 333              		@ frame_needed = 0, uses_anonymous_args = 0
+ 334              		@ link register save eliminated.
+ 335 0000 0185     		strh	r1, [r0, #40]	@ movhi
+ 336 0002 80F82A20 		strb	r2, [r0, #42]
+ 337 0006 80F82B30 		strb	r3, [r0, #43]
+ 338 000a FFF7FEBF 		b	highlight_update
+ 340 000e 00BF     		.section	.text.lv_calendar_set_highlighted_dates,"ax",%progbits
+ 341              		.align	1
+ 342              		.p2align 2,,3
+ 343              		.global	lv_calendar_set_highlighted_dates
+ 344              		.syntax unified
+ 345              		.thumb
+ 346              		.thumb_func
+ 348              	lv_calendar_set_highlighted_dates:
+ 349              		@ args = 0, pretend = 0, frame = 0
+ 350              		@ frame_needed = 0, uses_anonymous_args = 0
+ 351              		@ link register save eliminated.
+ 352 0000 19B1     		cbz	r1, .L56
+ 353 0002 0163     		str	r1, [r0, #48]
+ 354 0004 8286     		strh	r2, [r0, #52]	@ movhi
+ 355 0006 FFF7FEBF 		b	highlight_update
+ARM GAS  /var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cc9BVNLC.s 			page 7
+
+
+ 356              	.L56:
+ 357 000a FEE7     		b	.L56
+ 359              		.section	.rodata.lv_calendar_set_showed_date.str1.4,"aMS",%progbits,1
+ 360              		.align	2
+ 361              	.LC0:
+ 362 0000 256400   		.ascii	"%d\000"
+ 363              		.section	.text.lv_calendar_set_showed_date,"ax",%progbits
+ 364              		.align	1
+ 365              		.p2align 2,,3
+ 366              		.global	lv_calendar_set_showed_date
+ 367              		.syntax unified
+ 368              		.thumb
+ 369              		.thumb_func
+ 371              	lv_calendar_set_showed_date:
+ 372              		@ args = 0, pretend = 0, frame = 16
+ 373              		@ frame_needed = 0, uses_anonymous_args = 0
+ 374 0000 2DE9F04F 		push	{r4, r5, r6, r7, r8, r9, r10, fp, lr}
+ 375 0004 0446     		mov	r4, r0
+ 376 0006 4FFA82FB 		sxtb	fp, r2
+ 377 000a 0123     		movs	r3, #1
+ 378 000c 406A     		ldr	r0, [r0, #36]
+ 379 000e 85B0     		sub	sp, sp, #20
+ 380 0010 8946     		mov	r9, r1
+ 381 0012 A185     		strh	r1, [r4, #44]	@ movhi
+ 382 0014 84F82EB0 		strb	fp, [r4, #46]
+ 383 0018 84F82F30 		strb	r3, [r4, #47]
+ 384 001c 4021     		movs	r1, #64
+ 385 001e FFF7FEFF 		bl	lv_btnmatrix_clear_btn_ctrl_all
+ 386 0022 0025     		movs	r5, #0
+ 387              	.L58:
+ 388 0024 A9B2     		uxth	r1, r5
+ 389 0026 606A     		ldr	r0, [r4, #36]
+ 390 0028 4022     		movs	r2, #64
+ 391 002a 0135     		adds	r5, r5, #1
+ 392 002c FFF7FEFF 		bl	lv_btnmatrix_set_btn_ctrl
+ 393 0030 072D     		cmp	r5, #7
+ 394 0032 F7D1     		bne	.L58
+ 395 0034 1FFA89F9 		uxth	r9, r9
+ 396 0038 5946     		mov	r1, fp
+ 397 003a 4846     		mov	r0, r9
+ 398 003c FFF7FEFF 		bl	get_month_length
+ 399 0040 BBF1020F 		cmp	fp, #2
+ 400 0044 8CBF     		ite	hi
+ 401 0046 0021     		movhi	r1, #0
+ 402 0048 0121     		movls	r1, #1
+ 403 004a 654D     		ldr	r5, .L83
+ 404 004c 0029     		cmp	r1, #0
+ 405 004e A9EB0101 		sub	r1, r9, r1
+ 406 0052 A5FB0135 		umull	r3, r5, r5, r1
+ 407 0056 14BF     		ite	ne
+ 408 0058 0C23     		movne	r3, #12
+ 409 005a 0023     		moveq	r3, #0
+ 410 005c 5B44     		add	r3, r3, fp
+ 411 005e C3EB4313 		rsb	r3, r3, r3, lsl #5
+ 412 0062 A3F13E02 		sub	r2, r3, #62
+ 413 0066 4B1C     		adds	r3, r1, #1
+ 414 0068 03EB9103 		add	r3, r3, r1, lsr #2
+ARM GAS  /var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cc9BVNLC.s 			page 8
+
+
+ 415 006c 5D49     		ldr	r1, .L83+4
+ 416 006e 03EBD513 		add	r3, r3, r5, lsr #7
+ 417 0072 A1FB0212 		umull	r1, r2, r1, r2
+ 418 0076 A3EB5513 		sub	r3, r3, r5, lsr #5
+ 419 007a 03EBD203 		add	r3, r3, r2, lsr #3
+ 420 007e 5A4A     		ldr	r2, .L83+8
+ 421 0080 A2FB0312 		umull	r1, r2, r2, r3
+ 422 0084 991A     		subs	r1, r3, r2
+ 423 0086 02EB5102 		add	r2, r2, r1, lsr #1
+ 424 008a 9208     		lsrs	r2, r2, #2
+ 425 008c C2EBC202 		rsb	r2, r2, r2, lsl #3
+ 426 0090 9A1A     		subs	r2, r3, r2
+ 427 0092 8718     		adds	r7, r0, r2
+ 428 0094 D3B2     		uxtb	r3, r2
+ 429 0096 BA42     		cmp	r2, r7
+ 430 0098 0393     		str	r3, [sp, #12]
+ 431 009a 80F09080 		bcs	.L59
+ 432 009e 02F14606 		add	r6, r2, #70
+ 433 00a2 DFF848A1 		ldr	r10, .L83+12
+ 434 00a6 CDF804B0 		str	fp, [sp, #4]
+ 435 00aa 04EB8606 		add	r6, r4, r6, lsl #2
+ 436 00ae 1546     		mov	r5, r2
+ 437 00b0 C3F10108 		rsb	r8, r3, #1
+ 438 00b4 9346     		mov	fp, r2
+ 439              	.L60:
+ 440 00b6 08EB0503 		add	r3, r8, r5
+ 441 00ba 3046     		mov	r0, r6
+ 442 00bc DBB2     		uxtb	r3, r3
+ 443 00be 5246     		mov	r2, r10
+ 444 00c0 0421     		movs	r1, #4
+ 445 00c2 0135     		adds	r5, r5, #1
+ 446 00c4 FFF7FEFF 		bl	lv_snprintf
+ 447 00c8 BD42     		cmp	r5, r7
+ 448 00ca 06F10406 		add	r6, r6, #4
+ 449 00ce F2D1     		bne	.L60
+ 450 00d0 CDF808B0 		str	fp, [sp, #8]
+ 451 00d4 DDF804B0 		ldr	fp, [sp, #4]
+ 452 00d8 4846     		mov	r0, r9
+ 453 00da 0BF1FF31 		add	r1, fp, #-1
+ 454 00de FFF7FEFF 		bl	get_month_length
+ 455 00e2 029A     		ldr	r2, [sp, #8]
+ 456 00e4 00EB0809 		add	r9, r0, r8
+ 457 00e8 5FFA89F9 		uxtb	r9, r9
+ 458 00ec F2B1     		cbz	r2, .L61
+ 459              	.L69:
+ 460 00ee 0732     		adds	r2, r2, #7
+ 461 00f0 A9F10709 		sub	r9, r9, #7
+ 462 00f4 DFF8F4A0 		ldr	r10, .L83+12
+ 463 00f8 1FFA82F8 		uxth	r8, r2
+ 464 00fc 5FFA89F9 		uxtb	r9, r9
+ 465 0100 04F58C76 		add	r6, r4, #280
+ 466 0104 0725     		movs	r5, #7
+ 467              	.L62:
+ 468 0106 09EB0503 		add	r3, r9, r5
+ 469 010a DBB2     		uxtb	r3, r3
+ 470 010c 5246     		mov	r2, r10
+ 471 010e 0421     		movs	r1, #4
+ARM GAS  /var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cc9BVNLC.s 			page 9
+
+
+ 472 0110 3046     		mov	r0, r6
+ 473 0112 FFF7FEFF 		bl	lv_snprintf
+ 474 0116 2946     		mov	r1, r5
+ 475 0118 0135     		adds	r5, r5, #1
+ 476 011a 606A     		ldr	r0, [r4, #36]
+ 477 011c 4022     		movs	r2, #64
+ 478 011e ADB2     		uxth	r5, r5
+ 479 0120 FFF7FEFF 		bl	lv_btnmatrix_set_btn_ctrl
+ 480 0124 4545     		cmp	r5, r8
+ 481 0126 06F10406 		add	r6, r6, #4
+ 482 012a ECD1     		bne	.L62
+ 483              	.L61:
+ 484 012c 292F     		cmp	r7, #41
+ 485 012e 1BDC     		bgt	.L63
+ 486              	.L70:
+ 487 0130 07F14605 		add	r5, r7, #70
+ 488 0134 07F10609 		add	r9, r7, #6
+ 489 0138 2C4F     		ldr	r7, .L83+12
+ 490 013a 04EB8505 		add	r5, r4, r5, lsl #2
+ 491 013e 04F5E078 		add	r8, r4, #448
+ 492 0142 0126     		movs	r6, #1
+ 493              	.L64:
+ 494 0144 3346     		mov	r3, r6
+ 495 0146 3A46     		mov	r2, r7
+ 496 0148 0421     		movs	r1, #4
+ 497 014a 2846     		mov	r0, r5
+ 498 014c FFF7FEFF 		bl	lv_snprintf
+ 499 0150 09EB0601 		add	r1, r9, r6
+ 500 0154 606A     		ldr	r0, [r4, #36]
+ 501 0156 4022     		movs	r2, #64
+ 502 0158 89B2     		uxth	r1, r1
+ 503 015a 0435     		adds	r5, r5, #4
+ 504 015c FFF7FEFF 		bl	lv_btnmatrix_set_btn_ctrl
+ 505 0160 A845     		cmp	r8, r5
+ 506 0162 06F10106 		add	r6, r6, #1
+ 507 0166 EDD1     		bne	.L64
+ 508              	.L63:
+ 509 0168 2046     		mov	r0, r4
+ 510 016a FFF7FEFF 		bl	highlight_update
+ 511 016e 606A     		ldr	r0, [r4, #36]
+ 512 0170 FFF7FEFF 		bl	lv_btnmatrix_get_selected_btn
+ 513 0174 4FF6FF73 		movw	r3, #65535
+ 514 0178 9842     		cmp	r0, r3
+ 515 017a 05D0     		beq	.L65
+ 516 017c 0399     		ldr	r1, [sp, #12]
+ 517 017e 606A     		ldr	r0, [r4, #36]
+ 518 0180 0731     		adds	r1, r1, #7
+ 519 0182 C9B2     		uxtb	r1, r1
+ 520 0184 FFF7FEFF 		bl	lv_btnmatrix_set_selected_btn
+ 521              	.L65:
+ 522 0188 2046     		mov	r0, r4
+ 523 018a FFF7FEFF 		bl	lv_obj_invalidate
+ 524 018e 2046     		mov	r0, r4
+ 525 0190 FFF7FEFF 		bl	lv_obj_get_child_cnt
+ 526 0194 0646     		mov	r6, r0
+ 527 0196 78B1     		cbz	r0, .L57
+ 528 0198 0025     		movs	r5, #0
+ARM GAS  /var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cc9BVNLC.s 			page 10
+
+
+ 529              	.L68:
+ 530 019a 2946     		mov	r1, r5
+ 531 019c 2046     		mov	r0, r4
+ 532 019e FFF7FEFF 		bl	lv_obj_get_child
+ 533 01a2 636A     		ldr	r3, [r4, #36]
+ 534 01a4 8342     		cmp	r3, r0
+ 535 01a6 4FF01C01 		mov	r1, #28
+ 536 01aa 2246     		mov	r2, r4
+ 537 01ac 01D0     		beq	.L67
+ 538 01ae FFF7FEFF 		bl	lv_event_send
+ 539              	.L67:
+ 540 01b2 0135     		adds	r5, r5, #1
+ 541 01b4 AE42     		cmp	r6, r5
+ 542 01b6 F0D1     		bne	.L68
+ 543              	.L57:
+ 544 01b8 05B0     		add	sp, sp, #20
+ 545              		@ sp needed
+ 546 01ba BDE8F08F 		pop	{r4, r5, r6, r7, r8, r9, r10, fp, pc}
+ 547              	.L59:
+ 548 01be 4846     		mov	r0, r9
+ 549 01c0 0BF1FF31 		add	r1, fp, #-1
+ 550 01c4 0192     		str	r2, [sp, #4]
+ 551 01c6 FFF7FEFF 		bl	get_month_length
+ 552 01ca 039B     		ldr	r3, [sp, #12]
+ 553 01cc 019A     		ldr	r2, [sp, #4]
+ 554 01ce C3F10103 		rsb	r3, r3, #1
+ 555 01d2 00EB0309 		add	r9, r0, r3
+ 556 01d6 5FFA89F9 		uxtb	r9, r9
+ 557 01da 002A     		cmp	r2, #0
+ 558 01dc 87D1     		bne	.L69
+ 559 01de A7E7     		b	.L70
+ 560              	.L84:
+ 561              		.align	2
+ 562              	.L83:
+ 563 01e0 1F85EB51 		.word	1374389535
+ 564 01e4 ABAAAAAA 		.word	-1431655765
+ 565 01e8 25499224 		.word	613566757
+ 566 01ec 00000000 		.word	.LC0
+ 568              		.section	.rodata.lv_calendar_constructor.str1.4,"aMS",%progbits,1
+ 569              		.align	2
+ 570              	.LC1:
+ 571 0000 0A00     		.ascii	"\012\000"
+ 572 0002 0000     		.align	2
+ 573              	.LC2:
+ 574 0004 537500   		.ascii	"Su\000"
+ 575 0007 00       		.align	2
+ 576              	.LC3:
+ 577 0008 00       		.ascii	"\000"
+ 578              		.section	.text.lv_calendar_constructor,"ax",%progbits
+ 579              		.align	1
+ 580              		.p2align 2,,3
+ 581              		.syntax unified
+ 582              		.thumb
+ 583              		.thumb_func
+ 585              	lv_calendar_constructor:
+ 586              		@ args = 0, pretend = 0, frame = 0
+ 587              		@ frame_needed = 0, uses_anonymous_args = 0
+ARM GAS  /var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cc9BVNLC.s 			page 11
+
+
+ 588 0000 384B     		ldr	r3, .L97
+ 589 0002 2DE9F041 		push	{r4, r5, r6, r7, r8, lr}
+ 590 0006 0024     		movs	r4, #0
+ 591 0008 0D46     		mov	r5, r1
+ 592 000a C1E90A33 		strd	r3, r3, [r1, #40]
+ 593 000e 0C63     		str	r4, [r1, #48]
+ 594 0010 8C86     		strh	r4, [r1, #52]	@ movhi
+ 595 0012 05F58C70 		add	r0, r5, #280
+ 596 0016 A821     		movs	r1, #168
+ 597 0018 FFF7FEFF 		bl	lv_memset_00
+ 598 001c 2246     		mov	r2, r4
+ 599 001e 324E     		ldr	r6, .L97+4
+ 600 0020 324F     		ldr	r7, .L97+8
+ 601 0022 DFF8D480 		ldr	r8, .L97+20
+ 602 0026 05F13404 		add	r4, r5, #52
+ 603 002a 9446     		mov	ip, r2
+ 604 002c 4FF0780E 		mov	lr, #120
+ 605 0030 531C     		adds	r3, r2, #1
+ 606 0032 B2B1     		cbz	r2, .L86
+ 607              	.L95:
+ 608 0034 13F0070F 		tst	r3, #7
+ 609 0038 0CF14600 		add	r0, ip, #70
+ 610 003c 0CF10101 		add	r1, ip, #1
+ 611 0040 47D0     		beq	.L92
+ 612 0042 062A     		cmp	r2, #6
+ 613 0044 47D9     		bls	.L94
+ 614 0046 05F820E0 		strb	lr, [r5, r0, lsl #2]
+ 615 004a 5FFA81FC 		uxtb	ip, r1
+ 616 004e 05EB8000 		add	r0, r5, r0, lsl #2
+ 617              	.L87:
+ 618 0052 382B     		cmp	r3, #56
+ 619 0054 44F8040F 		str	r0, [r4, #4]!
+ 620 0058 08D0     		beq	.L90
+ 621 005a 1A46     		mov	r2, r3
+ 622              	.L96:
+ 623 005c 531C     		adds	r3, r2, #1
+ 624 005e 002A     		cmp	r2, #0
+ 625 0060 E8D1     		bne	.L95
+ 626              	.L86:
+ 627 0062 0123     		movs	r3, #1
+ 628 0064 44F8046F 		str	r6, [r4, #4]!
+ 629 0068 1A46     		mov	r2, r3
+ 630 006a F7E7     		b	.L96
+ 631              	.L90:
+ 632 006c 204B     		ldr	r3, .L97+12
+ 633 006e C5F81431 		str	r3, [r5, #276]
+ 634 0072 2846     		mov	r0, r5
+ 635 0074 FFF7FEFF 		bl	lv_btnmatrix_create
+ 636 0078 05F13801 		add	r1, r5, #56
+ 637 007c 6862     		str	r0, [r5, #36]
+ 638 007e FFF7FEFF 		bl	lv_btnmatrix_set_map
+ 639 0082 686A     		ldr	r0, [r5, #36]
+ 640 0084 4FF40871 		mov	r1, #544
+ 641 0088 FFF7FEFF 		bl	lv_btnmatrix_set_btn_ctrl_all
+ 642 008c 0023     		movs	r3, #0
+ 643 008e 1A22     		movs	r2, #26
+ 644 0090 1849     		ldr	r1, .L97+16
+ARM GAS  /var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cc9BVNLC.s 			page 12
+
+
+ 645 0092 686A     		ldr	r0, [r5, #36]
+ 646 0094 FFF7FEFF 		bl	lv_obj_add_event_cb
+ 647 0098 686A     		ldr	r0, [r5, #36]
+ 648 009a 42F26401 		movw	r1, #8292
+ 649 009e FFF7FEFF 		bl	lv_obj_set_width
+ 650 00a2 2846     		mov	r0, r5
+ 651 00a4 0121     		movs	r1, #1
+ 652 00a6 FFF7FEFF 		bl	lv_obj_set_flex_flow
+ 653 00aa 686A     		ldr	r0, [r5, #36]
+ 654 00ac 0121     		movs	r1, #1
+ 655 00ae FFF7FEFF 		bl	lv_obj_set_flex_grow
+ 656 00b2 A98D     		ldrh	r1, [r5, #44]
+ 657 00b4 95F92E20 		ldrsb	r2, [r5, #46]
+ 658 00b8 2846     		mov	r0, r5
+ 659 00ba FFF7FEFF 		bl	lv_calendar_set_showed_date
+ 660 00be 2846     		mov	r0, r5
+ 661 00c0 FFF7FEFF 		bl	highlight_update
+ 662 00c4 686A     		ldr	r0, [r5, #36]
+ 663 00c6 4FF48041 		mov	r1, #16384
+ 664 00ca BDE8F041 		pop	{r4, r5, r6, r7, r8, lr}
+ 665 00ce FFF7FEBF 		b	lv_obj_add_flag
+ 666              	.L92:
+ 667 00d2 3846     		mov	r0, r7
+ 668 00d4 BDE7     		b	.L87
+ 669              	.L94:
+ 670 00d6 58F82220 		ldr	r2, [r8, r2, lsl #2]
+ 671 00da 44F8042F 		str	r2, [r4, #4]!
+ 672 00de 1A46     		mov	r2, r3
+ 673 00e0 BCE7     		b	.L96
+ 674              	.L98:
+ 675 00e2 00BF     		.align	2
+ 676              	.L97:
+ 677 00e4 E4070101 		.word	16844772
+ 678 00e8 04000000 		.word	.LC2
+ 679 00ec 00000000 		.word	.LC1
+ 680 00f0 08000000 		.word	.LC3
+ 681 00f4 00000000 		.word	draw_part_begin_event_cb
+ 682 00f8 00000000 		.word	day_names_def
+ 684              		.section	.text.lv_calendar_get_btnmatrix,"ax",%progbits
+ 685              		.align	1
+ 686              		.p2align 2,,3
+ 687              		.global	lv_calendar_get_btnmatrix
+ 688              		.syntax unified
+ 689              		.thumb
+ 690              		.thumb_func
+ 692              	lv_calendar_get_btnmatrix:
+ 693              		@ args = 0, pretend = 0, frame = 0
+ 694              		@ frame_needed = 0, uses_anonymous_args = 0
+ 695              		@ link register save eliminated.
+ 696 0000 406A     		ldr	r0, [r0, #36]
+ 697 0002 7047     		bx	lr
+ 699              		.section	.text.lv_calendar_get_today_date,"ax",%progbits
+ 700              		.align	1
+ 701              		.p2align 2,,3
+ 702              		.global	lv_calendar_get_today_date
+ 703              		.syntax unified
+ 704              		.thumb
+ARM GAS  /var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cc9BVNLC.s 			page 13
+
+
+ 705              		.thumb_func
+ 707              	lv_calendar_get_today_date:
+ 708              		@ args = 0, pretend = 0, frame = 0
+ 709              		@ frame_needed = 0, uses_anonymous_args = 0
+ 710              		@ link register save eliminated.
+ 711 0000 2830     		adds	r0, r0, #40
+ 712 0002 7047     		bx	lr
+ 714              		.section	.text.lv_calendar_get_showed_date,"ax",%progbits
+ 715              		.align	1
+ 716              		.p2align 2,,3
+ 717              		.global	lv_calendar_get_showed_date
+ 718              		.syntax unified
+ 719              		.thumb
+ 720              		.thumb_func
+ 722              	lv_calendar_get_showed_date:
+ 723              		@ args = 0, pretend = 0, frame = 0
+ 724              		@ frame_needed = 0, uses_anonymous_args = 0
+ 725              		@ link register save eliminated.
+ 726 0000 2C30     		adds	r0, r0, #44
+ 727 0002 7047     		bx	lr
+ 729              		.section	.text.lv_calendar_get_highlighted_dates,"ax",%progbits
+ 730              		.align	1
+ 731              		.p2align 2,,3
+ 732              		.global	lv_calendar_get_highlighted_dates
+ 733              		.syntax unified
+ 734              		.thumb
+ 735              		.thumb_func
+ 737              	lv_calendar_get_highlighted_dates:
+ 738              		@ args = 0, pretend = 0, frame = 0
+ 739              		@ frame_needed = 0, uses_anonymous_args = 0
+ 740              		@ link register save eliminated.
+ 741 0000 006B     		ldr	r0, [r0, #48]
+ 742 0002 7047     		bx	lr
+ 744              		.section	.text.lv_calendar_get_highlighted_dates_num,"ax",%progbits
+ 745              		.align	1
+ 746              		.p2align 2,,3
+ 747              		.global	lv_calendar_get_highlighted_dates_num
+ 748              		.syntax unified
+ 749              		.thumb
+ 750              		.thumb_func
+ 752              	lv_calendar_get_highlighted_dates_num:
+ 753              		@ args = 0, pretend = 0, frame = 0
+ 754              		@ frame_needed = 0, uses_anonymous_args = 0
+ 755              		@ link register save eliminated.
+ 756 0000 808E     		ldrh	r0, [r0, #52]
+ 757 0002 7047     		bx	lr
+ 759              		.section	.text.lv_calendar_get_pressed_date,"ax",%progbits
+ 760              		.align	1
+ 761              		.p2align 2,,3
+ 762              		.global	lv_calendar_get_pressed_date
+ 763              		.syntax unified
+ 764              		.thumb
+ 765              		.thumb_func
+ 767              	lv_calendar_get_pressed_date:
+ 768              		@ args = 0, pretend = 0, frame = 0
+ 769              		@ frame_needed = 0, uses_anonymous_args = 0
+ 770 0000 70B5     		push	{r4, r5, r6, lr}
+ARM GAS  /var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cc9BVNLC.s 			page 14
+
+
+ 771 0002 0446     		mov	r4, r0
+ 772 0004 406A     		ldr	r0, [r0, #36]
+ 773 0006 0D46     		mov	r5, r1
+ 774 0008 FFF7FEFF 		bl	lv_btnmatrix_get_selected_btn
+ 775 000c 4FF6FF73 		movw	r3, #65535
+ 776 0010 9842     		cmp	r0, r3
+ 777 0012 1DD0     		beq	.L110
+ 778 0014 666A     		ldr	r6, [r4, #36]
+ 779 0016 3046     		mov	r0, r6
+ 780 0018 FFF7FEFF 		bl	lv_btnmatrix_get_selected_btn
+ 781 001c 0146     		mov	r1, r0
+ 782 001e 3046     		mov	r0, r6
+ 783 0020 FFF7FEFF 		bl	lv_btnmatrix_get_btn_text
+ 784 0024 4378     		ldrb	r3, [r0, #1]	@ zero_extendqisi2
+ 785 0026 7BB1     		cbz	r3, .L111
+ 786 0028 0278     		ldrb	r2, [r0]	@ zero_extendqisi2
+ 787 002a 303A     		subs	r2, r2, #48
+ 788 002c 303B     		subs	r3, r3, #48
+ 789 002e 02EB8202 		add	r2, r2, r2, lsl #2
+ 790 0032 03EB4203 		add	r3, r3, r2, lsl #1
+ 791 0036 5BB2     		sxtb	r3, r3
+ 792              	.L108:
+ 793 0038 EB70     		strb	r3, [r5, #3]
+ 794 003a A38D     		ldrh	r3, [r4, #44]
+ 795 003c 2B80     		strh	r3, [r5]	@ movhi
+ 796 003e 94F92E30 		ldrsb	r3, [r4, #46]
+ 797 0042 AB70     		strb	r3, [r5, #2]
+ 798 0044 0120     		movs	r0, #1
+ 799 0046 70BD     		pop	{r4, r5, r6, pc}
+ 800              	.L111:
+ 801 0048 0378     		ldrb	r3, [r0]	@ zero_extendqisi2
+ 802 004a 303B     		subs	r3, r3, #48
+ 803 004c 5BB2     		sxtb	r3, r3
+ 804 004e F3E7     		b	.L108
+ 805              	.L110:
+ 806 0050 0020     		movs	r0, #0
+ 807 0052 6880     		strh	r0, [r5, #2]	@ movhi
+ 808 0054 2880     		strh	r0, [r5]	@ movhi
+ 809 0056 70BD     		pop	{r4, r5, r6, pc}
+ 811              		.section	.rodata.str1.4,"aMS",%progbits,1
+ 812              		.align	2
+ 813              	.LC4:
+ 814 0000 4D6F00   		.ascii	"Mo\000"
+ 815 0003 00       		.align	2
+ 816              	.LC5:
+ 817 0004 547500   		.ascii	"Tu\000"
+ 818 0007 00       		.align	2
+ 819              	.LC6:
+ 820 0008 576500   		.ascii	"We\000"
+ 821 000b 00       		.align	2
+ 822              	.LC7:
+ 823 000c 546800   		.ascii	"Th\000"
+ 824 000f 00       		.align	2
+ 825              	.LC8:
+ 826 0010 467200   		.ascii	"Fr\000"
+ 827 0013 00       		.align	2
+ 828              	.LC9:
+ARM GAS  /var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cc9BVNLC.s 			page 15
+
+
+ 829 0014 536100   		.ascii	"Sa\000"
+ 830              		.section	.rodata.day_names_def,"a"
+ 831              		.align	2
+ 834              	day_names_def:
+ 835 0000 04000000 		.word	.LC2
+ 836 0004 00000000 		.word	.LC4
+ 837 0008 04000000 		.word	.LC5
+ 838 000c 08000000 		.word	.LC6
+ 839 0010 0C000000 		.word	.LC7
+ 840 0014 10000000 		.word	.LC8
+ 841 0018 14000000 		.word	.LC9
+ 842              		.global	lv_calendar_class
+ 843              		.section	.rodata.lv_calendar_class,"a"
+ 844              		.align	2
+ 847              	lv_calendar_class:
+ 848 0000 00000000 		.word	lv_obj_class
+ 849 0004 00000000 		.word	lv_calendar_constructor
+ 850 0008 00000000 		.space	12
+ 850      00000000 
+ 850      00000000 
+ 851 0014 C300     		.short	195
+ 852 0016 C300     		.short	195
+ 853 0018 04       		.byte	4
+ 854 0019 1C       		.byte	28
+ 855 001a 00       		.byte	0
+ 856 001b 00       		.space	1
+ 857              		.ident	"GCC: (xPack GNU Arm Embedded GCC arm64) 13.3.1 20240614"
+ARM GAS  /var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cc9BVNLC.s 			page 16
+
+
+DEFINED SYMBOLS
+                            *ABS*:00000000 lv_calendar.c
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cc9BVNLC.s:18     .text.get_month_length:00000000 $t
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cc9BVNLC.s:24     .text.get_month_length:00000000 get_month_length
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cc9BVNLC.s:79     .text.get_month_length:0000006c $d
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cc9BVNLC.s:85     .text.draw_part_begin_event_cb:00000000 $t
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cc9BVNLC.s:91     .text.draw_part_begin_event_cb:00000000 draw_part_begin_event_cb
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cc9BVNLC.s:176    .text.highlight_update:00000000 $t
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cc9BVNLC.s:182    .text.highlight_update:00000000 highlight_update
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cc9BVNLC.s:273    .text.highlight_update:000000d8 $d
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cc9BVNLC.s:278    .text.lv_calendar_create:00000000 $t
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cc9BVNLC.s:285    .text.lv_calendar_create:00000000 lv_calendar_create
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cc9BVNLC.s:299    .text.lv_calendar_create:00000014 $d
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cc9BVNLC.s:847    .rodata.lv_calendar_class:00000000 lv_calendar_class
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cc9BVNLC.s:302    .text.lv_calendar_set_day_names:00000000 $t
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cc9BVNLC.s:309    .text.lv_calendar_set_day_names:00000000 lv_calendar_set_day_names
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cc9BVNLC.s:324    .text.lv_calendar_set_today_date:00000000 $t
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cc9BVNLC.s:331    .text.lv_calendar_set_today_date:00000000 lv_calendar_set_today_date
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cc9BVNLC.s:341    .text.lv_calendar_set_highlighted_dates:00000000 $t
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cc9BVNLC.s:348    .text.lv_calendar_set_highlighted_dates:00000000 lv_calendar_set_highlighted_dates
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cc9BVNLC.s:360    .rodata.lv_calendar_set_showed_date.str1.4:00000000 $d
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cc9BVNLC.s:364    .text.lv_calendar_set_showed_date:00000000 $t
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cc9BVNLC.s:371    .text.lv_calendar_set_showed_date:00000000 lv_calendar_set_showed_date
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cc9BVNLC.s:563    .text.lv_calendar_set_showed_date:000001e0 $d
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cc9BVNLC.s:569    .rodata.lv_calendar_constructor.str1.4:00000000 $d
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cc9BVNLC.s:579    .text.lv_calendar_constructor:00000000 $t
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cc9BVNLC.s:585    .text.lv_calendar_constructor:00000000 lv_calendar_constructor
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cc9BVNLC.s:677    .text.lv_calendar_constructor:000000e4 $d
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cc9BVNLC.s:834    .rodata.day_names_def:00000000 day_names_def
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cc9BVNLC.s:685    .text.lv_calendar_get_btnmatrix:00000000 $t
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cc9BVNLC.s:692    .text.lv_calendar_get_btnmatrix:00000000 lv_calendar_get_btnmatrix
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cc9BVNLC.s:700    .text.lv_calendar_get_today_date:00000000 $t
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cc9BVNLC.s:707    .text.lv_calendar_get_today_date:00000000 lv_calendar_get_today_date
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cc9BVNLC.s:715    .text.lv_calendar_get_showed_date:00000000 $t
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cc9BVNLC.s:722    .text.lv_calendar_get_showed_date:00000000 lv_calendar_get_showed_date
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cc9BVNLC.s:730    .text.lv_calendar_get_highlighted_dates:00000000 $t
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cc9BVNLC.s:737    .text.lv_calendar_get_highlighted_dates:00000000 lv_calendar_get_highlighted_dates
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cc9BVNLC.s:745    .text.lv_calendar_get_highlighted_dates_num:00000000 $t
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cc9BVNLC.s:752    .text.lv_calendar_get_highlighted_dates_num:00000000 lv_calendar_get_highlighted_dates_num
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cc9BVNLC.s:760    .text.lv_calendar_get_pressed_date:00000000 $t
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cc9BVNLC.s:767    .text.lv_calendar_get_pressed_date:00000000 lv_calendar_get_pressed_date
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cc9BVNLC.s:812    .rodata.str1.4:00000000 $d
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cc9BVNLC.s:831    .rodata.day_names_def:00000000 $d
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cc9BVNLC.s:844    .rodata.lv_calendar_class:00000000 $d
+
+UNDEFINED SYMBOLS
+lv_event_get_target
+lv_event_get_param
+lv_btnmatrix_has_btn_ctrl
+lv_theme_get_color_primary
+lv_btnmatrix_get_selected_btn
+lv_palette_main
+lv_btnmatrix_clear_btn_ctrl_all
+lv_btnmatrix_set_btn_ctrl
+lv_obj_class_create_obj
+lv_obj_class_init_obj
+lv_obj_invalidate
+ARM GAS  /var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cc9BVNLC.s 			page 17
+
+
+lv_snprintf
+lv_btnmatrix_set_selected_btn
+lv_obj_get_child_cnt
+lv_obj_get_child
+lv_event_send
+lv_memset_00
+lv_btnmatrix_create
+lv_btnmatrix_set_map
+lv_btnmatrix_set_btn_ctrl_all
+lv_obj_add_event_cb
+lv_obj_set_width
+lv_obj_set_flex_flow
+lv_obj_set_flex_grow
+lv_obj_add_flag
+lv_btnmatrix_get_btn_text
+lv_obj_class

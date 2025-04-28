@@ -1,0 +1,395 @@
+ARM GAS  /var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccaoo2Lz.s 			page 1
+
+
+   1              		.cpu cortex-m4
+   2              		.arch armv7e-m
+   3              		.fpu fpv4-sp-d16
+   4              		.eabi_attribute 27, 1
+   5              		.eabi_attribute 28, 1
+   6              		.eabi_attribute 20, 1
+   7              		.eabi_attribute 21, 1
+   8              		.eabi_attribute 23, 3
+   9              		.eabi_attribute 24, 1
+  10              		.eabi_attribute 25, 1
+  11              		.eabi_attribute 26, 1
+  12              		.eabi_attribute 30, 1
+  13              		.eabi_attribute 34, 1
+  14              		.eabi_attribute 18, 4
+  15              		.file	"flanger.c"
+  16              		.text
+  17              	.Ltext0:
+  18              		.cfi_sections	.debug_frame
+  19              		.file 1 "Core/Src/flanger.c"
+  20              		.section	.text.flanger_init,"ax",%progbits
+  21              		.align	1
+  22              		.global	flanger_init
+  23              		.syntax unified
+  24              		.thumb
+  25              		.thumb_func
+  27              	flanger_init:
+  28              	.LFB4:
+   1:Core/Src/flanger.c **** 
+   2:Core/Src/flanger.c **** /* TODO ... need linear or allpass interpolation .... */
+   3:Core/Src/flanger.c **** 
+   4:Core/Src/flanger.c **** 
+   5:Core/Src/flanger.c **** 
+   6:Core/Src/flanger.c **** #include "flanger.h"
+   7:Core/Src/flanger.c **** #include "oscillators.h"
+   8:Core/Src/flanger.c **** 
+   9:Core/Src/flanger.c **** static float	flanger_buff[FLANGER_BUFF_SIZE + 2]; 	 
+  10:Core/Src/flanger.c **** static float    *FLreadptr, *FLwriteptr;
+  11:Core/Src/flanger.c **** static float    FL_feedback = INIT_FL_FEEDB;
+  12:Core/Src/flanger.c **** static float    flanger_wet  = INIT_FLANGER_WET;
+  13:Core/Src/flanger.c **** static uint16_t		fl_delay_time;
+  14:Core/Src/flanger.c **** 
+  15:Core/Src/flanger.c **** extern oscillator_t flanger_lfo;
+  16:Core/Src/flanger.c **** 
+  17:Core/Src/flanger.c **** void flanger_init(void)
+  18:Core/Src/flanger.c **** {
+  29              		.loc 1 18 1 view -0
+  30              		.cfi_startproc
+  31              		@ args = 0, pretend = 0, frame = 0
+  32              		@ frame_needed = 0, uses_anonymous_args = 0
+  33 0000 08B5     		push	{r3, lr}
+  34              		.cfi_def_cfa_offset 8
+  35              		.cfi_offset 3, -8
+  36              		.cfi_offset 14, -4
+  19:Core/Src/flanger.c **** 	fl_delay_time = INIT_FL_DEL;
+  37              		.loc 1 19 2 view .LVU1
+  38              		.loc 1 19 16 is_stmt 0 view .LVU2
+  39 0002 0C4B     		ldr	r3, .L3
+ARM GAS  /var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccaoo2Lz.s 			page 2
+
+
+  40 0004 DC22     		movs	r2, #220
+  41 0006 1A80     		strh	r2, [r3]	@ movhi
+  20:Core/Src/flanger.c **** 	FLreadptr = flanger_buff;
+  42              		.loc 1 20 2 is_stmt 1 view .LVU3
+  43              		.loc 1 20 12 is_stmt 0 view .LVU4
+  44 0008 0B4B     		ldr	r3, .L3+4
+  45 000a 0C4A     		ldr	r2, .L3+8
+  46 000c 1360     		str	r3, [r2]
+  21:Core/Src/flanger.c **** 	FLwriteptr = flanger_buff + INIT_FL_DEL;
+  47              		.loc 1 21 2 is_stmt 1 view .LVU5
+  48              		.loc 1 21 13 is_stmt 0 view .LVU6
+  49 000e 03F55C73 		add	r3, r3, #880
+  50 0012 0B4A     		ldr	r2, .L3+12
+  51 0014 1360     		str	r3, [r2]
+  22:Core/Src/flanger.c **** 	osc_init(&flanger_lfo, 0.5, 1, 0, 0, 0.5);
+  52              		.loc 1 22 2 is_stmt 1 view .LVU7
+  53 0016 9FED0B1A 		vldr.32	s2, .L3+16
+  54 001a B6EE002A 		vmov.f32	s4, #5.0e-1
+  55 001e F0EE411A 		vmov.f32	s3, s2
+  56 0022 F7EE000A 		vmov.f32	s1, #1.0e+0
+  57 0026 B0EE420A 		vmov.f32	s0, s4
+  58 002a 0748     		ldr	r0, .L3+20
+  59 002c FFF7FEFF 		bl	osc_init
+  60              	.LVL0:
+  23:Core/Src/flanger.c **** }
+  61              		.loc 1 23 1 is_stmt 0 view .LVU8
+  62 0030 08BD     		pop	{r3, pc}
+  63              	.L4:
+  64 0032 00BF     		.align	2
+  65              	.L3:
+  66 0034 00000000 		.word	fl_delay_time
+  67 0038 00000000 		.word	flanger_buff
+  68 003c 00000000 		.word	FLreadptr
+  69 0040 00000000 		.word	FLwriteptr
+  70 0044 00000000 		.word	0
+  71 0048 00000000 		.word	flanger_lfo
+  72              		.cfi_endproc
+  73              	.LFE4:
+  75              		.section	.text.flanger_compute,"ax",%progbits
+  76              		.align	1
+  77              		.global	flanger_compute
+  78              		.syntax unified
+  79              		.thumb
+  80              		.thumb_func
+  82              	flanger_compute:
+  83              	.LVL1:
+  84              	.LFB5:
+  24:Core/Src/flanger.c **** 
+  25:Core/Src/flanger.c **** 
+  26:Core/Src/flanger.c **** 
+  27:Core/Src/flanger.c **** 
+  28:Core/Src/flanger.c **** 
+  29:Core/Src/flanger.c **** float flanger_compute (float input_sample)
+  30:Core/Src/flanger.c **** {
+  85              		.loc 1 30 1 is_stmt 1 view -0
+  86              		.cfi_startproc
+  87              		@ args = 0, pretend = 0, frame = 0
+ARM GAS  /var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccaoo2Lz.s 			page 3
+
+
+  88              		@ frame_needed = 0, uses_anonymous_args = 0
+  89              		.loc 1 30 1 is_stmt 0 view .LVU10
+  90 0000 70B5     		push	{r4, r5, r6, lr}
+  91              		.cfi_def_cfa_offset 16
+  92              		.cfi_offset 4, -16
+  93              		.cfi_offset 5, -12
+  94              		.cfi_offset 6, -8
+  95              		.cfi_offset 14, -4
+  96 0002 2DED028B 		vpush.64	{d8}
+  97              		.cfi_def_cfa_offset 24
+  98              		.cfi_offset 80, -24
+  99              		.cfi_offset 81, -20
+ 100 0006 B0EE408A 		vmov.f32	s16, s0
+  31:Core/Src/flanger.c **** 	float delayed_sample, sample;
+ 101              		.loc 1 31 2 is_stmt 1 view .LVU11
+  32:Core/Src/flanger.c **** 	float 	*pos;
+ 102              		.loc 1 32 2 view .LVU12
+  33:Core/Src/flanger.c **** 
+  34:Core/Src/flanger.c **** 	flanger_lfo.freq = 0.1;
+ 103              		.loc 1 34 2 view .LVU13
+ 104              		.loc 1 34 19 is_stmt 0 view .LVU14
+ 105 000a 3048     		ldr	r0, .L11
+ 106 000c 304B     		ldr	r3, .L11+4
+ 107 000e 4360     		str	r3, [r0, #4]	@ float
+  35:Core/Src/flanger.c **** 	fl_delay_time = osc_Sine(&flanger_lfo) * 200 + 100;
+ 108              		.loc 1 35 2 is_stmt 1 view .LVU15
+ 109              		.loc 1 35 18 is_stmt 0 view .LVU16
+ 110 0010 FFF7FEFF 		bl	osc_Sine
+ 111              	.LVL2:
+ 112              		.loc 1 35 41 discriminator 1 view .LVU17
+ 113 0014 DFED2F7A 		vldr.32	s15, .L11+8
+ 114 0018 60EE277A 		vmul.f32	s15, s0, s15
+ 115              		.loc 1 35 47 discriminator 1 view .LVU18
+ 116 001c 9FED2E7A 		vldr.32	s14, .L11+12
+ 117 0020 77EE877A 		vadd.f32	s15, s15, s14
+ 118              		.loc 1 35 16 discriminator 1 view .LVU19
+ 119 0024 FCEEE77A 		vcvt.u32.f32	s15, s15
+ 120 0028 17EE903A 		vmov	r3, s15	@ int
+ 121 002c 9BB2     		uxth	r3, r3
+ 122 002e 2B4C     		ldr	r4, .L11+16
+ 123 0030 2380     		strh	r3, [r4]	@ movhi
+  36:Core/Src/flanger.c **** 	fl_delay_time = clip(fl_delay_time, 1, FLANGER_BUFF_SIZE - 1);
+ 124              		.loc 1 36 2 is_stmt 1 view .LVU20
+ 125              		.loc 1 36 18 is_stmt 0 view .LVU21
+ 126 0032 9FED2B1A 		vldr.32	s2, .L11+20
+ 127 0036 F7EE000A 		vmov.f32	s1, #1.0e+0
+ 128 003a 07EE903A 		vmov	s15, r3	@ int
+ 129 003e B8EE670A 		vcvt.f32.u32	s0, s15
+ 130 0042 FFF7FEFF 		bl	clip
+ 131              	.LVL3:
+ 132              		.loc 1 36 16 discriminator 1 view .LVU22
+ 133 0046 FCEEC07A 		vcvt.u32.f32	s15, s0
+ 134 004a 17EE903A 		vmov	r3, s15	@ int
+ 135 004e 9BB2     		uxth	r3, r3
+ 136 0050 2380     		strh	r3, [r4]	@ movhi
+  37:Core/Src/flanger.c **** 	pos = FLwriteptr - fl_delay_time;
+ 137              		.loc 1 37 2 is_stmt 1 view .LVU23
+ARM GAS  /var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccaoo2Lz.s 			page 4
+
+
+ 138              		.loc 1 37 19 is_stmt 0 view .LVU24
+ 139 0052 244A     		ldr	r2, .L11+24
+ 140 0054 1468     		ldr	r4, [r2]
+ 141              		.loc 1 37 6 view .LVU25
+ 142 0056 A4EB8303 		sub	r3, r4, r3, lsl #2
+ 143              	.LVL4:
+  38:Core/Src/flanger.c **** 	if (pos >= flanger_buff)
+ 144              		.loc 1 38 2 is_stmt 1 view .LVU26
+ 145              		.loc 1 38 5 is_stmt 0 view .LVU27
+ 146 005a 234A     		ldr	r2, .L11+28
+ 147 005c 9342     		cmp	r3, r2
+ 148 005e 2FD3     		bcc	.L6
+  39:Core/Src/flanger.c **** 		FLreadptr = pos;
+ 149              		.loc 1 39 3 is_stmt 1 view .LVU28
+ 150              		.loc 1 39 13 is_stmt 0 view .LVU29
+ 151 0060 224A     		ldr	r2, .L11+32
+ 152 0062 1360     		str	r3, [r2]
+ 153              	.LVL5:
+ 154              	.L7:
+  40:Core/Src/flanger.c **** 	else
+  41:Core/Src/flanger.c **** 		FLreadptr = pos + FLANGER_BUFF_SIZE - 1;
+  42:Core/Src/flanger.c **** 
+  43:Core/Src/flanger.c **** 	
+  44:Core/Src/flanger.c **** 
+  45:Core/Src/flanger.c **** 	// read first so that we can have feedback, apply lowpass filtering
+  46:Core/Src/flanger.c **** 	delayed_sample = *FLreadptr;
+ 155              		.loc 1 46 2 is_stmt 1 view .LVU30
+ 156              		.loc 1 46 19 is_stmt 0 view .LVU31
+ 157 0064 214E     		ldr	r6, .L11+32
+ 158              		.loc 1 46 17 view .LVU32
+ 159 0066 3568     		ldr	r5, [r6]
+ 160 0068 B5EC010A 		vldmia.32	r5!, {s0}
+ 161              	.LVL6:
+  47:Core/Src/flanger.c **** 	
+  48:Core/Src/flanger.c **** 	// apply soft clipping 
+  49:Core/Src/flanger.c **** 	sample = SoftClip(input_sample + FL_feedback * delayed_sample);
+ 162              		.loc 1 49 2 is_stmt 1 view .LVU33
+ 163              		.loc 1 49 47 is_stmt 0 view .LVU34
+ 164 006c DFED207A 		vldr.32	s15, .L11+36
+ 165              	.LVL7:
+ 166              		.loc 1 49 47 view .LVU35
+ 167 0070 20EE270A 		vmul.f32	s0, s0, s15
+ 168              	.LVL8:
+ 169              		.loc 1 49 11 view .LVU36
+ 170 0074 30EE080A 		vadd.f32	s0, s0, s16
+ 171 0078 FFF7FEFF 		bl	SoftClip
+ 172              	.LVL9:
+  50:Core/Src/flanger.c **** 
+  51:Core/Src/flanger.c **** 	// write then update pointers
+  52:Core/Src/flanger.c **** 	*FLwriteptr = sample; 
+ 173              		.loc 1 52 2 is_stmt 1 view .LVU37
+ 174              		.loc 1 52 14 is_stmt 0 view .LVU38
+ 175 007c A4EC010A 		vstmia.32	r4!, {s0}
+  53:Core/Src/flanger.c **** 	FLwriteptr++;
+ 176              		.loc 1 53 2 is_stmt 1 view .LVU39
+ 177              		.loc 1 53 12 is_stmt 0 view .LVU40
+ 178 0080 184A     		ldr	r2, .L11+24
+ARM GAS  /var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccaoo2Lz.s 			page 5
+
+
+ 179 0082 1460     		str	r4, [r2]
+  54:Core/Src/flanger.c **** 	FLreadptr++;
+ 180              		.loc 1 54 2 is_stmt 1 view .LVU41
+ 181              		.loc 1 54 11 is_stmt 0 view .LVU42
+ 182 0084 3560     		str	r5, [r6]
+  55:Core/Src/flanger.c **** 	
+  56:Core/Src/flanger.c **** 
+  57:Core/Src/flanger.c **** 
+  58:Core/Src/flanger.c **** 	
+  59:Core/Src/flanger.c **** 	if ((FLwriteptr - flanger_buff) >= FLANGER_BUFF_SIZE)
+ 183              		.loc 1 59 2 is_stmt 1 view .LVU43
+ 184              		.loc 1 59 18 is_stmt 0 view .LVU44
+ 185 0086 184A     		ldr	r2, .L11+28
+ 186 0088 A31A     		subs	r3, r4, r2
+ 187              		.loc 1 59 5 view .LVU45
+ 188 008a 40F69C72 		movw	r2, #3996
+ 189 008e 9342     		cmp	r3, r2
+ 190 0090 02DD     		ble	.L8
+  60:Core/Src/flanger.c **** 		FLwriteptr = flanger_buff;
+ 191              		.loc 1 60 3 is_stmt 1 view .LVU46
+ 192              		.loc 1 60 14 is_stmt 0 view .LVU47
+ 193 0092 144B     		ldr	r3, .L11+24
+ 194 0094 144A     		ldr	r2, .L11+28
+ 195 0096 1A60     		str	r2, [r3]
+ 196              	.L8:
+  61:Core/Src/flanger.c **** 
+  62:Core/Src/flanger.c **** 	if ((FLreadptr - flanger_buff) >= FLANGER_BUFF_SIZE)
+ 197              		.loc 1 62 2 is_stmt 1 view .LVU48
+ 198              		.loc 1 62 17 is_stmt 0 view .LVU49
+ 199 0098 134B     		ldr	r3, .L11+28
+ 200 009a EB1A     		subs	r3, r5, r3
+ 201              		.loc 1 62 5 view .LVU50
+ 202 009c 40F69C72 		movw	r2, #3996
+ 203 00a0 9342     		cmp	r3, r2
+ 204 00a2 02DD     		ble	.L9
+  63:Core/Src/flanger.c **** 		FLreadptr = flanger_buff;
+ 205              		.loc 1 63 3 is_stmt 1 view .LVU51
+ 206              		.loc 1 63 13 is_stmt 0 view .LVU52
+ 207 00a4 114B     		ldr	r3, .L11+32
+ 208 00a6 104A     		ldr	r2, .L11+28
+ 209 00a8 1A60     		str	r2, [r3]
+ 210              	.L9:
+  64:Core/Src/flanger.c **** 
+  65:Core/Src/flanger.c **** 	
+  66:Core/Src/flanger.c **** 
+  67:Core/Src/flanger.c **** 	
+  68:Core/Src/flanger.c **** 
+  69:Core/Src/flanger.c **** 	return (flanger_wet * sample + (1 - flanger_wet) * input_sample); // linear crossfade
+ 211              		.loc 1 69 2 is_stmt 1 view .LVU53
+ 212              		.loc 1 69 22 is_stmt 0 view .LVU54
+ 213 00aa F6EE007A 		vmov.f32	s15, #5.0e-1
+ 214 00ae 20EE270A 		vmul.f32	s0, s0, s15
+ 215              	.LVL10:
+ 216              		.loc 1 69 51 view .LVU55
+ 217 00b2 28EE278A 		vmul.f32	s16, s16, s15
+ 218              	.LVL11:
+  70:Core/Src/flanger.c **** }...
+ARM GAS  /var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccaoo2Lz.s 			page 6
+
+
+ 219              		.loc 1 70 1 view .LVU56
+ 220 00b6 30EE080A 		vadd.f32	s0, s0, s16
+ 221 00ba BDEC028B 		vldm	sp!, {d8}
+ 222              		.cfi_remember_state
+ 223              		.cfi_restore 80
+ 224              		.cfi_restore 81
+ 225              		.cfi_def_cfa_offset 16
+ 226 00be 70BD     		pop	{r4, r5, r6, pc}
+ 227              	.LVL12:
+ 228              	.L6:
+ 229              		.cfi_restore_state
+  41:Core/Src/flanger.c **** 		FLreadptr = pos + FLANGER_BUFF_SIZE - 1;
+ 230              		.loc 1 41 3 is_stmt 1 view .LVU57
+  41:Core/Src/flanger.c **** 		FLreadptr = pos + FLANGER_BUFF_SIZE - 1;
+ 231              		.loc 1 41 39 is_stmt 0 view .LVU58
+ 232 00c0 03F69C73 		addw	r3, r3, #3996
+ 233              	.LVL13:
+  41:Core/Src/flanger.c **** 		FLreadptr = pos + FLANGER_BUFF_SIZE - 1;
+ 234              		.loc 1 41 13 view .LVU59
+ 235 00c4 094A     		ldr	r2, .L11+32
+ 236 00c6 1360     		str	r3, [r2]
+ 237 00c8 CCE7     		b	.L7
+ 238              	.L12:
+ 239 00ca 00BF     		.align	2
+ 240              	.L11:
+ 241 00cc 00000000 		.word	flanger_lfo
+ 242 00d0 CDCCCC3D 		.word	1036831949
+ 243 00d4 00004843 		.word	1128792064
+ 244 00d8 0000C842 		.word	1120403456
+ 245 00dc 00000000 		.word	fl_delay_time
+ 246 00e0 00C07944 		.word	1148829696
+ 247 00e4 00000000 		.word	FLwriteptr
+ 248 00e8 00000000 		.word	flanger_buff
+ 249 00ec 00000000 		.word	FLreadptr
+ 250 00f0 6666663F 		.word	1063675494
+ 251              		.cfi_endproc
+ 252              	.LFE5:
+ 254              		.section	.bss.fl_delay_time,"aw",%nobits
+ 255              		.align	1
+ 258              	fl_delay_time:
+ 259 0000 0000     		.space	2
+ 260              		.section	.bss.FLwriteptr,"aw",%nobits
+ 261              		.align	2
+ 264              	FLwriteptr:
+ 265 0000 00000000 		.space	4
+ 266              		.section	.bss.FLreadptr,"aw",%nobits
+ 267              		.align	2
+ 270              	FLreadptr:
+ 271 0000 00000000 		.space	4
+ 272              		.section	.bss.flanger_buff,"aw",%nobits
+ 273              		.align	2
+ 276              	flanger_buff:
+ 277 0000 00000000 		.space	4008
+ 277      00000000 
+ 277      00000000 
+ 277      00000000 
+ 277      00000000 
+ARM GAS  /var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccaoo2Lz.s 			page 7
+
+
+ 278              		.text
+ 279              	.Letext0:
+ 280              		.file 2 "/Users/jr/Library/Application Support/Code/User/globalStorage/bmd.stm32-for-vscode/@xpack
+ 281              		.file 3 "/Users/jr/Library/Application Support/Code/User/globalStorage/bmd.stm32-for-vscode/@xpack
+ 282              		.file 4 "Core/Inc/oscillators.h"
+ 283              		.file 5 "Core/Inc/helper_functions.h"
+ARM GAS  /var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccaoo2Lz.s 			page 8
+
+
+DEFINED SYMBOLS
+                            *ABS*:00000000 flanger.c
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccaoo2Lz.s:21     .text.flanger_init:00000000 $t
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccaoo2Lz.s:27     .text.flanger_init:00000000 flanger_init
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccaoo2Lz.s:66     .text.flanger_init:00000034 $d
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccaoo2Lz.s:258    .bss.fl_delay_time:00000000 fl_delay_time
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccaoo2Lz.s:276    .bss.flanger_buff:00000000 flanger_buff
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccaoo2Lz.s:270    .bss.FLreadptr:00000000 FLreadptr
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccaoo2Lz.s:264    .bss.FLwriteptr:00000000 FLwriteptr
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccaoo2Lz.s:76     .text.flanger_compute:00000000 $t
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccaoo2Lz.s:82     .text.flanger_compute:00000000 flanger_compute
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccaoo2Lz.s:241    .text.flanger_compute:000000cc $d
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccaoo2Lz.s:255    .bss.fl_delay_time:00000000 $d
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccaoo2Lz.s:261    .bss.FLwriteptr:00000000 $d
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccaoo2Lz.s:267    .bss.FLreadptr:00000000 $d
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccaoo2Lz.s:273    .bss.flanger_buff:00000000 $d
+
+UNDEFINED SYMBOLS
+osc_init
+flanger_lfo
+osc_Sine
+clip
+SoftClip

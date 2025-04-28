@@ -1,0 +1,338 @@
+ARM GAS  /var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccctK29X.s 			page 1
+
+
+   1              		.cpu cortex-m4
+   2              		.arch armv7e-m
+   3              		.fpu fpv4-sp-d16
+   4              		.eabi_attribute 27, 1
+   5              		.eabi_attribute 28, 1
+   6              		.eabi_attribute 20, 1
+   7              		.eabi_attribute 21, 1
+   8              		.eabi_attribute 23, 3
+   9              		.eabi_attribute 24, 1
+  10              		.eabi_attribute 25, 1
+  11              		.eabi_attribute 26, 1
+  12              		.eabi_attribute 30, 2
+  13              		.eabi_attribute 34, 1
+  14              		.eabi_attribute 18, 4
+  15              		.file	"UI_hardware.c"
+  16              		.text
+  17              		.global	__aeabi_i2d
+  18              		.global	__aeabi_dmul
+  19              		.global	__aeabi_d2f
+  20              		.section	.text.poll_ADCs,"ax",%progbits
+  21              		.align	1
+  22              		.p2align 2,,3
+  23              		.global	poll_ADCs
+  24              		.syntax unified
+  25              		.thumb
+  26              		.thumb_func
+  28              	poll_ADCs:
+  29              		@ args = 0, pretend = 0, frame = 0
+  30              		@ frame_needed = 0, uses_anonymous_args = 0
+  31 0000 38B5     		push	{r3, r4, r5, lr}
+  32 0002 474C     		ldr	r4, .L4+8
+  33 0004 474D     		ldr	r5, .L4+12
+  34 0006 2DED028B 		vpush.64	{d8}
+  35 000a 2046     		mov	r0, r4
+  36 000c FFF7FEFF 		bl	HAL_ADC_Start
+  37 0010 4FF0FF31 		mov	r1, #-1
+  38 0014 2046     		mov	r0, r4
+  39 0016 FFF7FEFF 		bl	HAL_ADC_PollForConversion
+  40 001a 2046     		mov	r0, r4
+  41 001c FFF7FEFF 		bl	HAL_ADC_GetValue
+  42 0020 414B     		ldr	r3, .L4+16
+  43 0022 9FED428A 		vldr.32	s16, .L4+20
+  44 0026 0246     		mov	r2, r0
+  45 0028 2046     		mov	r0, r4
+  46 002a 1A80     		strh	r2, [r3]	@ movhi
+  47 002c FFF7FEFF 		bl	HAL_ADC_GetValue
+  48 0030 00EE100A 		vmov	s0, r0	@ int
+  49 0034 F0EE480A 		vmov.f32	s1, s16
+  50 0038 3D48     		ldr	r0, .L4+24
+  51 003a 3E4C     		ldr	r4, .L4+28
+  52 003c B8EE400A 		vcvt.f32.u32	s0, s0
+  53 0040 FFF7FEFF 		bl	smoothing_LP
+  54 0044 FCEEC07A 		vcvt.u32.f32	s15, s0
+  55 0048 17EE900A 		vmov	r0, s15	@ int
+  56 004c C0F38D00 		ubfx	r0, r0, #2, #14
+  57 0050 FFF7FEFF 		bl	__aeabi_i2d
+  58 0054 30A3     		adr	r3, .L4
+ARM GAS  /var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccctK29X.s 			page 2
+
+
+  59 0056 D3E90023 		ldrd	r2, [r3]
+  60 005a FFF7FEFF 		bl	__aeabi_dmul
+  61 005e FFF7FEFF 		bl	__aeabi_d2f
+  62 0062 2860     		str	r0, [r5]	@ float
+  63 0064 2046     		mov	r0, r4
+  64 0066 FFF7FEFF 		bl	HAL_ADC_Start
+  65 006a 4FF0FF31 		mov	r1, #-1
+  66 006e 2046     		mov	r0, r4
+  67 0070 FFF7FEFF 		bl	HAL_ADC_PollForConversion
+  68 0074 2046     		mov	r0, r4
+  69 0076 FFF7FEFF 		bl	HAL_ADC_GetValue
+  70 007a 2F4B     		ldr	r3, .L4+32
+  71 007c 2F4D     		ldr	r5, .L4+36
+  72 007e 0246     		mov	r2, r0
+  73 0080 2046     		mov	r0, r4
+  74 0082 1A80     		strh	r2, [r3]	@ movhi
+  75 0084 FFF7FEFF 		bl	HAL_ADC_GetValue
+  76 0088 00EE100A 		vmov	s0, r0	@ int
+  77 008c F0EE480A 		vmov.f32	s1, s16
+  78 0090 2B48     		ldr	r0, .L4+40
+  79 0092 2C4C     		ldr	r4, .L4+44
+  80 0094 B8EE400A 		vcvt.f32.u32	s0, s0
+  81 0098 FFF7FEFF 		bl	smoothing_LP
+  82 009c FCEEC07A 		vcvt.u32.f32	s15, s0
+  83 00a0 17EE900A 		vmov	r0, s15	@ int
+  84 00a4 C0F38D00 		ubfx	r0, r0, #2, #14
+  85 00a8 FFF7FEFF 		bl	__aeabi_i2d
+  86 00ac 1AA3     		adr	r3, .L4
+  87 00ae D3E90023 		ldrd	r2, [r3]
+  88 00b2 FFF7FEFF 		bl	__aeabi_dmul
+  89 00b6 FFF7FEFF 		bl	__aeabi_d2f
+  90 00ba 2860     		str	r0, [r5]	@ float
+  91 00bc 2046     		mov	r0, r4
+  92 00be FFF7FEFF 		bl	HAL_ADC_Start
+  93 00c2 4FF0FF31 		mov	r1, #-1
+  94 00c6 2046     		mov	r0, r4
+  95 00c8 FFF7FEFF 		bl	HAL_ADC_PollForConversion
+  96 00cc 2046     		mov	r0, r4
+  97 00ce FFF7FEFF 		bl	HAL_ADC_GetValue
+  98 00d2 1D4B     		ldr	r3, .L4+48
+  99 00d4 0246     		mov	r2, r0
+ 100 00d6 2046     		mov	r0, r4
+ 101 00d8 1A80     		strh	r2, [r3]	@ movhi
+ 102 00da FFF7FEFF 		bl	HAL_ADC_GetValue
+ 103 00de 00EE100A 		vmov	s0, r0	@ int
+ 104 00e2 F0EE480A 		vmov.f32	s1, s16
+ 105 00e6 1948     		ldr	r0, .L4+52
+ 106 00e8 194C     		ldr	r4, .L4+56
+ 107 00ea B8EE400A 		vcvt.f32.u32	s0, s0
+ 108 00ee FFF7FEFF 		bl	smoothing_LP
+ 109 00f2 FCEEC07A 		vcvt.u32.f32	s15, s0
+ 110 00f6 17EE900A 		vmov	r0, s15	@ int
+ 111 00fa C0F38D00 		ubfx	r0, r0, #2, #14
+ 112 00fe FFF7FEFF 		bl	__aeabi_i2d
+ 113 0102 05A3     		adr	r3, .L4
+ 114 0104 D3E90023 		ldrd	r2, [r3]
+ 115 0108 FFF7FEFF 		bl	__aeabi_dmul
+ARM GAS  /var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccctK29X.s 			page 3
+
+
+ 116 010c FFF7FEFF 		bl	__aeabi_d2f
+ 117 0110 BDEC028B 		vldm	sp!, {d8}
+ 118 0114 2060     		str	r0, [r4]	@ float
+ 119 0116 38BD     		pop	{r3, r4, r5, pc}
+ 120              	.L5:
+ 121              		.align	3
+ 122              	.L4:
+ 123 0118 BE963C00 		.word	3970750
+ 124 011c 0104503F 		.word	1062208513
+ 125 0120 00000000 		.word	hadc1
+ 126 0124 00000000 		.word	pot1_norm
+ 127 0128 00000000 		.word	raw1
+ 128 012c 48E17A3F 		.word	1065017672
+ 129 0130 00000000 		.word	smooth_ADC1
+ 130 0134 00000000 		.word	hadc2
+ 131 0138 00000000 		.word	raw2
+ 132 013c 00000000 		.word	pot2_norm
+ 133 0140 00000000 		.word	smooth_ADC2
+ 134 0144 00000000 		.word	hadc3
+ 135 0148 00000000 		.word	raw3
+ 136 014c 00000000 		.word	smooth_ADC3
+ 137 0150 00000000 		.word	pot3_norm
+ 139              		.section	.text.poll_Encoder,"ax",%progbits
+ 140              		.align	1
+ 141              		.p2align 2,,3
+ 142              		.global	poll_Encoder
+ 143              		.syntax unified
+ 144              		.thumb
+ 145              		.thumb_func
+ 147              	poll_Encoder:
+ 148              		@ args = 0, pretend = 0, frame = 0
+ 149              		@ frame_needed = 0, uses_anonymous_args = 0
+ 150              		@ link register save eliminated.
+ 151 0000 064B     		ldr	r3, .L8
+ 152 0002 074A     		ldr	r2, .L8+4
+ 153 0004 5B6A     		ldr	r3, [r3, #36]
+ 154 0006 1188     		ldrh	r1, [r2]
+ 155 0008 0648     		ldr	r0, .L8+8
+ 156 000a C3F38F03 		ubfx	r3, r3, #2, #16
+ 157 000e 9942     		cmp	r1, r3
+ 158 0010 0380     		strh	r3, [r0]	@ movhi
+ 159 0012 02D0     		beq	.L6
+ 160 0014 0449     		ldr	r1, .L8+12
+ 161 0016 1380     		strh	r3, [r2]	@ movhi
+ 162 0018 0B80     		strh	r3, [r1]	@ movhi
+ 163              	.L6:
+ 164 001a 7047     		bx	lr
+ 165              	.L9:
+ 166              		.align	2
+ 167              	.L8:
+ 168 001c 00040040 		.word	1073742848
+ 169 0020 00000000 		.word	old_count
+ 170 0024 00000000 		.word	count
+ 171 0028 00000000 		.word	current_count
+ 173              		.section	.text.poll_EncoderBtn,"ax",%progbits
+ 174              		.align	1
+ 175              		.p2align 2,,3
+ARM GAS  /var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccctK29X.s 			page 4
+
+
+ 176              		.global	poll_EncoderBtn
+ 177              		.syntax unified
+ 178              		.thumb
+ 179              		.thumb_func
+ 181              	poll_EncoderBtn:
+ 182              		@ args = 0, pretend = 0, frame = 0
+ 183              		@ frame_needed = 0, uses_anonymous_args = 0
+ 184 0000 08B5     		push	{r3, lr}
+ 185 0002 8021     		movs	r1, #128
+ 186 0004 0848     		ldr	r0, .L14
+ 187 0006 FFF7FEFF 		bl	HAL_GPIO_ReadPin
+ 188 000a 084A     		ldr	r2, .L14+4
+ 189 000c 0849     		ldr	r1, .L14+8
+ 190 000e 1388     		ldrh	r3, [r2]
+ 191 0010 0880     		strh	r0, [r1]	@ movhi
+ 192 0012 9842     		cmp	r0, r3
+ 193 0014 18BF     		it	ne
+ 194 0016 B3FA83F3 		clzne	r3, r3
+ 195 001a 0649     		ldr	r1, .L14+12
+ 196 001c 1080     		strh	r0, [r2]	@ movhi
+ 197 001e 14BF     		ite	ne
+ 198 0020 5B09     		lsrne	r3, r3, #5
+ 199 0022 0023     		moveq	r3, #0
+ 200 0024 0B70     		strb	r3, [r1]
+ 201 0026 08BD     		pop	{r3, pc}
+ 202              	.L15:
+ 203              		.align	2
+ 204              	.L14:
+ 205 0028 00040240 		.word	1073873920
+ 206 002c 00000000 		.word	old_btn
+ 207 0030 00000000 		.word	current_btn
+ 208 0034 00000000 		.word	btn_pressed
+ 210              		.global	btn_pressed
+ 211              		.section	.bss.btn_pressed,"aw",%nobits
+ 214              	btn_pressed:
+ 215 0000 00       		.space	1
+ 216              		.global	current_btn
+ 217              		.section	.data.current_btn,"aw"
+ 218              		.align	1
+ 221              	current_btn:
+ 222 0000 0100     		.short	1
+ 223              		.global	old_btn
+ 224              		.section	.data.old_btn,"aw"
+ 225              		.align	1
+ 228              	old_btn:
+ 229 0000 0100     		.short	1
+ 230              		.global	enc_diff
+ 231              		.section	.bss.enc_diff,"aw",%nobits
+ 234              	enc_diff:
+ 235 0000 00       		.space	1
+ 236              		.global	current_count
+ 237              		.section	.bss.current_count,"aw",%nobits
+ 238              		.align	1
+ 241              	current_count:
+ 242 0000 0000     		.space	2
+ 243              		.global	count
+ 244              		.section	.bss.count,"aw",%nobits
+ARM GAS  /var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccctK29X.s 			page 5
+
+
+ 245              		.align	1
+ 248              	count:
+ 249 0000 0000     		.space	2
+ 250              		.global	old_count
+ 251              		.section	.bss.old_count,"aw",%nobits
+ 252              		.align	1
+ 255              	old_count:
+ 256 0000 0000     		.space	2
+ 257              		.global	pot3_norm
+ 258              		.section	.bss.pot3_norm,"aw",%nobits
+ 259              		.align	2
+ 262              	pot3_norm:
+ 263 0000 00000000 		.space	4
+ 264              		.global	pot2_norm
+ 265              		.section	.bss.pot2_norm,"aw",%nobits
+ 266              		.align	2
+ 269              	pot2_norm:
+ 270 0000 00000000 		.space	4
+ 271              		.global	pot1_norm
+ 272              		.section	.bss.pot1_norm,"aw",%nobits
+ 273              		.align	2
+ 276              	pot1_norm:
+ 277 0000 00000000 		.space	4
+ 278              		.global	raw3
+ 279              		.section	.bss.raw3,"aw",%nobits
+ 280              		.align	1
+ 283              	raw3:
+ 284 0000 0000     		.space	2
+ 285              		.global	raw2
+ 286              		.section	.bss.raw2,"aw",%nobits
+ 287              		.align	1
+ 290              	raw2:
+ 291 0000 0000     		.space	2
+ 292              		.global	raw1
+ 293              		.section	.bss.raw1,"aw",%nobits
+ 294              		.align	1
+ 297              	raw1:
+ 298 0000 0000     		.space	2
+ 299              		.ident	"GCC: (xPack GNU Arm Embedded GCC arm64) 13.3.1 20240614"
+ARM GAS  /var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccctK29X.s 			page 6
+
+
+DEFINED SYMBOLS
+                            *ABS*:00000000 UI_hardware.c
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccctK29X.s:21     .text.poll_ADCs:00000000 $t
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccctK29X.s:28     .text.poll_ADCs:00000000 poll_ADCs
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccctK29X.s:123    .text.poll_ADCs:00000118 $d
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccctK29X.s:276    .bss.pot1_norm:00000000 pot1_norm
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccctK29X.s:297    .bss.raw1:00000000 raw1
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccctK29X.s:290    .bss.raw2:00000000 raw2
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccctK29X.s:269    .bss.pot2_norm:00000000 pot2_norm
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccctK29X.s:283    .bss.raw3:00000000 raw3
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccctK29X.s:262    .bss.pot3_norm:00000000 pot3_norm
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccctK29X.s:140    .text.poll_Encoder:00000000 $t
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccctK29X.s:147    .text.poll_Encoder:00000000 poll_Encoder
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccctK29X.s:168    .text.poll_Encoder:0000001c $d
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccctK29X.s:255    .bss.old_count:00000000 old_count
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccctK29X.s:248    .bss.count:00000000 count
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccctK29X.s:241    .bss.current_count:00000000 current_count
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccctK29X.s:174    .text.poll_EncoderBtn:00000000 $t
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccctK29X.s:181    .text.poll_EncoderBtn:00000000 poll_EncoderBtn
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccctK29X.s:205    .text.poll_EncoderBtn:00000028 $d
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccctK29X.s:228    .data.old_btn:00000000 old_btn
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccctK29X.s:221    .data.current_btn:00000000 current_btn
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccctK29X.s:214    .bss.btn_pressed:00000000 btn_pressed
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccctK29X.s:215    .bss.btn_pressed:00000000 $d
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccctK29X.s:218    .data.current_btn:00000000 $d
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccctK29X.s:225    .data.old_btn:00000000 $d
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccctK29X.s:234    .bss.enc_diff:00000000 enc_diff
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccctK29X.s:235    .bss.enc_diff:00000000 $d
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccctK29X.s:238    .bss.current_count:00000000 $d
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccctK29X.s:245    .bss.count:00000000 $d
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccctK29X.s:252    .bss.old_count:00000000 $d
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccctK29X.s:259    .bss.pot3_norm:00000000 $d
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccctK29X.s:266    .bss.pot2_norm:00000000 $d
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccctK29X.s:273    .bss.pot1_norm:00000000 $d
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccctK29X.s:280    .bss.raw3:00000000 $d
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccctK29X.s:287    .bss.raw2:00000000 $d
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccctK29X.s:294    .bss.raw1:00000000 $d
+
+UNDEFINED SYMBOLS
+__aeabi_i2d
+__aeabi_dmul
+__aeabi_d2f
+HAL_ADC_Start
+HAL_ADC_PollForConversion
+HAL_ADC_GetValue
+smoothing_LP
+hadc1
+smooth_ADC1
+hadc2
+smooth_ADC2
+hadc3
+smooth_ADC3
+HAL_GPIO_ReadPin

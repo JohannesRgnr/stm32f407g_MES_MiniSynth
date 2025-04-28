@@ -1,0 +1,1517 @@
+ARM GAS  /var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cct9ZEZh.s 			page 1
+
+
+   1              		.cpu cortex-m4
+   2              		.arch armv7e-m
+   3              		.fpu fpv4-sp-d16
+   4              		.eabi_attribute 27, 1
+   5              		.eabi_attribute 28, 1
+   6              		.eabi_attribute 20, 1
+   7              		.eabi_attribute 21, 1
+   8              		.eabi_attribute 23, 3
+   9              		.eabi_attribute 24, 1
+  10              		.eabi_attribute 25, 1
+  11              		.eabi_attribute 26, 1
+  12              		.eabi_attribute 30, 2
+  13              		.eabi_attribute 34, 1
+  14              		.eabi_attribute 18, 4
+  15              		.file	"stm32f4_discovery_audio.c"
+  16              		.text
+  17              		.section	.text.BSP_AUDIO_OUT_Play,"ax",%progbits
+  18              		.align	1
+  19              		.p2align 2,,3
+  20              		.global	BSP_AUDIO_OUT_Play
+  21              		.syntax unified
+  22              		.thumb
+  23              		.thumb_func
+  25              	BSP_AUDIO_OUT_Play:
+  26              		@ args = 0, pretend = 0, frame = 0
+  27              		@ frame_needed = 0, uses_anonymous_args = 0
+  28 0000 38B5     		push	{r3, r4, r5, lr}
+  29 0002 0C4B     		ldr	r3, .L8
+  30 0004 1B68     		ldr	r3, [r3]
+  31 0006 0546     		mov	r5, r0
+  32 0008 0C46     		mov	r4, r1
+  33 000a 8AB2     		uxth	r2, r1
+  34 000c DB68     		ldr	r3, [r3, #12]
+  35 000e 0146     		mov	r1, r0
+  36 0010 9420     		movs	r0, #148
+  37 0012 9847     		blx	r3
+  38 0014 60B9     		cbnz	r0, .L4
+  39 0016 B4F5003F 		cmp	r4, #131072
+  40 001a 34BF     		ite	cc
+  41 001c C4F34F02 		ubfxcc	r2, r4, #1, #16
+  42 0020 4FF6FF72 		movwcs	r2, #65535
+  43 0024 2946     		mov	r1, r5
+  44 0026 0448     		ldr	r0, .L8+4
+  45 0028 FFF7FEFF 		bl	HAL_I2S_Transmit_DMA
+  46 002c 0020     		movs	r0, #0
+  47 002e 38BD     		pop	{r3, r4, r5, pc}
+  48              	.L4:
+  49 0030 0120     		movs	r0, #1
+  50 0032 38BD     		pop	{r3, r4, r5, pc}
+  51              	.L9:
+  52              		.align	2
+  53              	.L8:
+  54 0034 00000000 		.word	pAudioDrv
+  55 0038 00000000 		.word	hAudioOutI2s
+  57              		.section	.text.BSP_AUDIO_OUT_ChangeBuffer,"ax",%progbits
+  58              		.align	1
+  59              		.p2align 2,,3
+ARM GAS  /var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cct9ZEZh.s 			page 2
+
+
+  60              		.global	BSP_AUDIO_OUT_ChangeBuffer
+  61              		.syntax unified
+  62              		.thumb
+  63              		.thumb_func
+  65              	BSP_AUDIO_OUT_ChangeBuffer:
+  66              		@ args = 0, pretend = 0, frame = 0
+  67              		@ frame_needed = 0, uses_anonymous_args = 0
+  68              		@ link register save eliminated.
+  69 0000 0346     		mov	r3, r0
+  70 0002 0A46     		mov	r2, r1
+  71 0004 0148     		ldr	r0, .L11
+  72 0006 1946     		mov	r1, r3
+  73 0008 FFF7FEBF 		b	HAL_I2S_Transmit_DMA
+  74              	.L12:
+  75              		.align	2
+  76              	.L11:
+  77 000c 00000000 		.word	hAudioOutI2s
+  79              		.section	.text.BSP_AUDIO_OUT_Pause,"ax",%progbits
+  80              		.align	1
+  81              		.p2align 2,,3
+  82              		.global	BSP_AUDIO_OUT_Pause
+  83              		.syntax unified
+  84              		.thumb
+  85              		.thumb_func
+  87              	BSP_AUDIO_OUT_Pause:
+  88              		@ args = 0, pretend = 0, frame = 0
+  89              		@ frame_needed = 0, uses_anonymous_args = 0
+  90 0000 074B     		ldr	r3, .L18
+  91 0002 1B68     		ldr	r3, [r3]
+  92 0004 10B5     		push	{r4, lr}
+  93 0006 1B69     		ldr	r3, [r3, #16]
+  94 0008 9420     		movs	r0, #148
+  95 000a 9847     		blx	r3
+  96 000c 08B1     		cbz	r0, .L17
+  97 000e 0120     		movs	r0, #1
+  98 0010 10BD     		pop	{r4, pc}
+  99              	.L17:
+ 100 0012 0446     		mov	r4, r0
+ 101 0014 0348     		ldr	r0, .L18+4
+ 102 0016 FFF7FEFF 		bl	HAL_I2S_DMAPause
+ 103 001a 2046     		mov	r0, r4
+ 104 001c 10BD     		pop	{r4, pc}
+ 105              	.L19:
+ 106 001e 00BF     		.align	2
+ 107              	.L18:
+ 108 0020 00000000 		.word	pAudioDrv
+ 109 0024 00000000 		.word	hAudioOutI2s
+ 111              		.section	.text.BSP_AUDIO_OUT_Resume,"ax",%progbits
+ 112              		.align	1
+ 113              		.p2align 2,,3
+ 114              		.global	BSP_AUDIO_OUT_Resume
+ 115              		.syntax unified
+ 116              		.thumb
+ 117              		.thumb_func
+ 119              	BSP_AUDIO_OUT_Resume:
+ 120              		@ args = 0, pretend = 0, frame = 0
+ 121              		@ frame_needed = 0, uses_anonymous_args = 0
+ARM GAS  /var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cct9ZEZh.s 			page 3
+
+
+ 122 0000 074B     		ldr	r3, .L25
+ 123 0002 1B68     		ldr	r3, [r3]
+ 124 0004 10B5     		push	{r4, lr}
+ 125 0006 5B69     		ldr	r3, [r3, #20]
+ 126 0008 9420     		movs	r0, #148
+ 127 000a 9847     		blx	r3
+ 128 000c 08B1     		cbz	r0, .L24
+ 129 000e 0120     		movs	r0, #1
+ 130 0010 10BD     		pop	{r4, pc}
+ 131              	.L24:
+ 132 0012 0446     		mov	r4, r0
+ 133 0014 0348     		ldr	r0, .L25+4
+ 134 0016 FFF7FEFF 		bl	HAL_I2S_DMAResume
+ 135 001a 2046     		mov	r0, r4
+ 136 001c 10BD     		pop	{r4, pc}
+ 137              	.L26:
+ 138 001e 00BF     		.align	2
+ 139              	.L25:
+ 140 0020 00000000 		.word	pAudioDrv
+ 141 0024 00000000 		.word	hAudioOutI2s
+ 143              		.section	.text.BSP_AUDIO_OUT_Stop,"ax",%progbits
+ 144              		.align	1
+ 145              		.p2align 2,,3
+ 146              		.global	BSP_AUDIO_OUT_Stop
+ 147              		.syntax unified
+ 148              		.thumb
+ 149              		.thumb_func
+ 151              	BSP_AUDIO_OUT_Stop:
+ 152              		@ args = 0, pretend = 0, frame = 0
+ 153              		@ frame_needed = 0, uses_anonymous_args = 0
+ 154 0000 38B5     		push	{r3, r4, r5, lr}
+ 155 0002 0446     		mov	r4, r0
+ 156 0004 0D48     		ldr	r0, .L33
+ 157 0006 FFF7FEFF 		bl	HAL_I2S_DMAStop
+ 158 000a 0D4B     		ldr	r3, .L33+4
+ 159 000c 1B68     		ldr	r3, [r3]
+ 160 000e 9420     		movs	r0, #148
+ 161 0010 9B69     		ldr	r3, [r3, #24]
+ 162 0012 2146     		mov	r1, r4
+ 163 0014 9847     		blx	r3
+ 164 0016 18B9     		cbnz	r0, .L30
+ 165 0018 012C     		cmp	r4, #1
+ 166 001a 03D0     		beq	.L32
+ 167 001c 0020     		movs	r0, #0
+ 168              	.L28:
+ 169 001e 38BD     		pop	{r3, r4, r5, pc}
+ 170              	.L30:
+ 171 0020 0120     		movs	r0, #1
+ 172 0022 38BD     		pop	{r3, r4, r5, pc}
+ 173              	.L32:
+ 174 0024 0546     		mov	r5, r0
+ 175 0026 2046     		mov	r0, r4
+ 176 0028 FFF7FEFF 		bl	HAL_Delay
+ 177 002c 0548     		ldr	r0, .L33+8
+ 178 002e 2A46     		mov	r2, r5
+ 179 0030 1021     		movs	r1, #16
+ 180 0032 FFF7FEFF 		bl	HAL_GPIO_WritePin
+ARM GAS  /var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cct9ZEZh.s 			page 4
+
+
+ 181 0036 0020     		movs	r0, #0
+ 182 0038 F1E7     		b	.L28
+ 183              	.L34:
+ 184 003a 00BF     		.align	2
+ 185              	.L33:
+ 186 003c 00000000 		.word	hAudioOutI2s
+ 187 0040 00000000 		.word	pAudioDrv
+ 188 0044 000C0240 		.word	1073875968
+ 190              		.section	.text.BSP_AUDIO_OUT_SetVolume,"ax",%progbits
+ 191              		.align	1
+ 192              		.p2align 2,,3
+ 193              		.global	BSP_AUDIO_OUT_SetVolume
+ 194              		.syntax unified
+ 195              		.thumb
+ 196              		.thumb_func
+ 198              	BSP_AUDIO_OUT_SetVolume:
+ 199              		@ args = 0, pretend = 0, frame = 0
+ 200              		@ frame_needed = 0, uses_anonymous_args = 0
+ 201 0000 08B5     		push	{r3, lr}
+ 202 0002 054B     		ldr	r3, .L37
+ 203 0004 1B68     		ldr	r3, [r3]
+ 204 0006 0146     		mov	r1, r0
+ 205 0008 1B6A     		ldr	r3, [r3, #32]
+ 206 000a 9420     		movs	r0, #148
+ 207 000c 9847     		blx	r3
+ 208 000e 0038     		subs	r0, r0, #0
+ 209 0010 18BF     		it	ne
+ 210 0012 0120     		movne	r0, #1
+ 211 0014 08BD     		pop	{r3, pc}
+ 212              	.L38:
+ 213 0016 00BF     		.align	2
+ 214              	.L37:
+ 215 0018 00000000 		.word	pAudioDrv
+ 217              		.section	.text.BSP_AUDIO_OUT_SetMute,"ax",%progbits
+ 218              		.align	1
+ 219              		.p2align 2,,3
+ 220              		.global	BSP_AUDIO_OUT_SetMute
+ 221              		.syntax unified
+ 222              		.thumb
+ 223              		.thumb_func
+ 225              	BSP_AUDIO_OUT_SetMute:
+ 226              		@ args = 0, pretend = 0, frame = 0
+ 227              		@ frame_needed = 0, uses_anonymous_args = 0
+ 228 0000 08B5     		push	{r3, lr}
+ 229 0002 054B     		ldr	r3, .L41
+ 230 0004 1B68     		ldr	r3, [r3]
+ 231 0006 0146     		mov	r1, r0
+ 232 0008 5B6A     		ldr	r3, [r3, #36]
+ 233 000a 9420     		movs	r0, #148
+ 234 000c 9847     		blx	r3
+ 235 000e 0038     		subs	r0, r0, #0
+ 236 0010 18BF     		it	ne
+ 237 0012 0120     		movne	r0, #1
+ 238 0014 08BD     		pop	{r3, pc}
+ 239              	.L42:
+ 240 0016 00BF     		.align	2
+ 241              	.L41:
+ARM GAS  /var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cct9ZEZh.s 			page 5
+
+
+ 242 0018 00000000 		.word	pAudioDrv
+ 244              		.section	.text.BSP_AUDIO_OUT_SetOutputMode,"ax",%progbits
+ 245              		.align	1
+ 246              		.p2align 2,,3
+ 247              		.global	BSP_AUDIO_OUT_SetOutputMode
+ 248              		.syntax unified
+ 249              		.thumb
+ 250              		.thumb_func
+ 252              	BSP_AUDIO_OUT_SetOutputMode:
+ 253              		@ args = 0, pretend = 0, frame = 0
+ 254              		@ frame_needed = 0, uses_anonymous_args = 0
+ 255 0000 08B5     		push	{r3, lr}
+ 256 0002 054B     		ldr	r3, .L45
+ 257 0004 1B68     		ldr	r3, [r3]
+ 258 0006 0146     		mov	r1, r0
+ 259 0008 9B6A     		ldr	r3, [r3, #40]
+ 260 000a 9420     		movs	r0, #148
+ 261 000c 9847     		blx	r3
+ 262 000e 0038     		subs	r0, r0, #0
+ 263 0010 18BF     		it	ne
+ 264 0012 0120     		movne	r0, #1
+ 265 0014 08BD     		pop	{r3, pc}
+ 266              	.L46:
+ 267 0016 00BF     		.align	2
+ 268              	.L45:
+ 269 0018 00000000 		.word	pAudioDrv
+ 271              		.section	.text.BSP_AUDIO_OUT_ClockConfig,"ax",%progbits
+ 272              		.align	1
+ 273              		.p2align 2,,3
+ 274              		.weak	BSP_AUDIO_OUT_ClockConfig
+ 275              		.syntax unified
+ 276              		.thumb
+ 277              		.thumb_func
+ 279              	BSP_AUDIO_OUT_ClockConfig:
+ 280              		@ args = 0, pretend = 0, frame = 16
+ 281              		@ frame_needed = 0, uses_anonymous_args = 0
+ 282 0000 10B5     		push	{r4, lr}
+ 283 0002 174A     		ldr	r2, .L54+8
+ 284 0004 84B0     		sub	sp, sp, #16
+ 285 0006 0023     		movs	r3, #0
+ 286 0008 FF24     		movs	r4, #255
+ 287              	.L49:
+ 288 000a 52F8040F 		ldr	r0, [r2, #4]!
+ 289 000e 8142     		cmp	r1, r0
+ 290 0010 08BF     		it	eq
+ 291 0012 DCB2     		uxtbeq	r4, r3
+ 292 0014 0133     		adds	r3, r3, #1
+ 293 0016 082B     		cmp	r3, #8
+ 294 0018 F7D1     		bne	.L49
+ 295 001a 6846     		mov	r0, sp
+ 296 001c FFF7FEFF 		bl	HAL_RCCEx_GetPeriphCLKConfig
+ 297 0020 6307     		lsls	r3, r4, #29
+ 298 0022 0ED1     		bne	.L50
+ 299 0024 0F4A     		ldr	r2, .L54+12
+ 300 0026 104B     		ldr	r3, .L54+16
+ 301 0028 52F82420 		ldr	r2, [r2, r4, lsl #2]
+ 302 002c 53F82430 		ldr	r3, [r3, r4, lsl #2]
+ARM GAS  /var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cct9ZEZh.s 			page 6
+
+
+ 303 0030 0293     		str	r3, [sp, #8]
+ 304 0032 0121     		movs	r1, #1
+ 305 0034 6846     		mov	r0, sp
+ 306 0036 CDE90012 		strd	r1, r2, [sp]
+ 307 003a FFF7FEFF 		bl	HAL_RCCEx_PeriphCLKConfig
+ 308 003e 04B0     		add	sp, sp, #16
+ 309              		@ sp needed
+ 310 0040 10BD     		pop	{r4, pc}
+ 311              	.L50:
+ 312 0042 9FED057B 		vldr.64	d7, .L54	@ int
+ 313 0046 0223     		movs	r3, #2
+ 314 0048 6846     		mov	r0, sp
+ 315 004a 8DED007B 		vstr.64	d7, [sp]	@ int
+ 316 004e 0293     		str	r3, [sp, #8]
+ 317 0050 FFF7FEFF 		bl	HAL_RCCEx_PeriphCLKConfig
+ 318 0054 04B0     		add	sp, sp, #16
+ 319              		@ sp needed
+ 320 0056 10BD     		pop	{r4, pc}
+ 321              	.L55:
+ 322              		.align	3
+ 323              	.L54:
+ 324 0058 01000000 		.word	1
+ 325 005c 25010000 		.word	293
+ 326 0060 FCFFFFFF 		.word	I2SFreq-4
+ 327 0064 00000000 		.word	I2SPLLN
+ 328 0068 00000000 		.word	I2SPLLR
+ 330              		.section	.text.BSP_AUDIO_OUT_SetFrequency,"ax",%progbits
+ 331              		.align	1
+ 332              		.p2align 2,,3
+ 333              		.global	BSP_AUDIO_OUT_SetFrequency
+ 334              		.syntax unified
+ 335              		.thumb
+ 336              		.thumb_func
+ 338              	BSP_AUDIO_OUT_SetFrequency:
+ 339              		@ args = 0, pretend = 0, frame = 0
+ 340              		@ frame_needed = 0, uses_anonymous_args = 0
+ 341 0000 38B5     		push	{r3, r4, r5, lr}
+ 342 0002 0E4C     		ldr	r4, .L58
+ 343 0004 0546     		mov	r5, r0
+ 344 0006 0146     		mov	r1, r0
+ 345 0008 0022     		movs	r2, #0
+ 346 000a 2046     		mov	r0, r4
+ 347 000c FFF7FEFF 		bl	BSP_AUDIO_OUT_ClockConfig
+ 348 0010 0B4A     		ldr	r2, .L58+4
+ 349 0012 2260     		str	r2, [r4]
+ 350 0014 D169     		ldr	r1, [r2, #28]
+ 351 0016 6561     		str	r5, [r4, #20]
+ 352 0018 0023     		movs	r3, #0
+ 353 001a 4FF40075 		mov	r5, #512
+ 354 001e 21F48061 		bic	r1, r1, #1024
+ 355 0022 D161     		str	r1, [r2, #28]
+ 356 0024 2046     		mov	r0, r4
+ 357 0026 C4E90633 		strd	r3, r3, [r4, #24]
+ 358 002a C4E90153 		strd	r5, r3, [r4, #4]
+ 359 002e C4E90335 		strd	r3, r5, [r4, #12]
+ 360 0032 BDE83840 		pop	{r3, r4, r5, lr}
+ 361 0036 FFF7FEBF 		b	HAL_I2S_Init
+ARM GAS  /var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cct9ZEZh.s 			page 7
+
+
+ 362              	.L59:
+ 363 003a 00BF     		.align	2
+ 364              	.L58:
+ 365 003c 00000000 		.word	hAudioOutI2s
+ 366 0040 003C0040 		.word	1073757184
+ 368              		.section	.text.BSP_AUDIO_OUT_MspInit,"ax",%progbits
+ 369              		.align	1
+ 370              		.p2align 2,,3
+ 371              		.weak	BSP_AUDIO_OUT_MspInit
+ 372              		.syntax unified
+ 373              		.thumb
+ 374              		.thumb_func
+ 376              	BSP_AUDIO_OUT_MspInit:
+ 377              		@ args = 0, pretend = 0, frame = 48
+ 378              		@ frame_needed = 0, uses_anonymous_args = 0
+ 379 0000 70B5     		push	{r4, r5, r6, lr}
+ 380 0002 8CB0     		sub	sp, sp, #48
+ 381 0004 414C     		ldr	r4, .L64
+ 382 0006 0025     		movs	r5, #0
+ 383 0008 0195     		str	r5, [sp, #4]
+ 384 000a 236C     		ldr	r3, [r4, #64]
+ 385 000c 43F40043 		orr	r3, r3, #32768
+ 386 0010 2364     		str	r3, [r4, #64]
+ 387 0012 236C     		ldr	r3, [r4, #64]
+ 388 0014 03F40043 		and	r3, r3, #32768
+ 389 0018 0193     		str	r3, [sp, #4]
+ 390 001a 019B     		ldr	r3, [sp, #4]
+ 391 001c 0295     		str	r5, [sp, #8]
+ 392 001e 236B     		ldr	r3, [r4, #48]
+ 393 0020 43F00403 		orr	r3, r3, #4
+ 394 0024 2363     		str	r3, [r4, #48]
+ 395 0026 236B     		ldr	r3, [r4, #48]
+ 396 0028 03F00403 		and	r3, r3, #4
+ 397 002c 0293     		str	r3, [sp, #8]
+ 398 002e 029B     		ldr	r3, [sp, #8]
+ 399 0030 0395     		str	r5, [sp, #12]
+ 400 0032 236B     		ldr	r3, [r4, #48]
+ 401 0034 43F00103 		orr	r3, r3, #1
+ 402 0038 2363     		str	r3, [r4, #48]
+ 403 003a 236B     		ldr	r3, [r4, #48]
+ 404 003c 03F00103 		and	r3, r3, #1
+ 405 0040 0393     		str	r3, [sp, #12]
+ 406 0042 4FF4A052 		mov	r2, #5120
+ 407 0046 0223     		movs	r3, #2
+ 408 0048 CDE90623 		strd	r2, [sp, #24]
+ 409 004c 0022     		movs	r2, #0
+ 410 004e 0223     		movs	r3, #2
+ 411 0050 CDE90823 		strd	r2, [sp, #32]
+ 412 0054 0646     		mov	r6, r0
+ 413 0056 0623     		movs	r3, #6
+ 414 0058 2D48     		ldr	r0, .L64+4
+ 415 005a 039A     		ldr	r2, [sp, #12]
+ 416 005c 0A93     		str	r3, [sp, #40]
+ 417 005e 06A9     		add	r1, sp, #24
+ 418 0060 FFF7FEFF 		bl	HAL_GPIO_Init
+ 419 0064 1023     		movs	r3, #16
+ 420 0066 2B48     		ldr	r0, .L64+8
+ARM GAS  /var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cct9ZEZh.s 			page 8
+
+
+ 421 0068 0693     		str	r3, [sp, #24]
+ 422 006a 06A9     		add	r1, sp, #24
+ 423 006c FFF7FEFF 		bl	HAL_GPIO_Init
+ 424 0070 0495     		str	r5, [sp, #16]
+ 425 0072 236B     		ldr	r3, [r4, #48]
+ 426 0074 2648     		ldr	r0, .L64+4
+ 427 0076 43F00403 		orr	r3, r3, #4
+ 428 007a 2363     		str	r3, [r4, #48]
+ 429 007c 236B     		ldr	r3, [r4, #48]
+ 430 007e 03F00403 		and	r3, r3, #4
+ 431 0082 0493     		str	r3, [sp, #16]
+ 432 0084 06A9     		add	r1, sp, #24
+ 433 0086 8023     		movs	r3, #128
+ 434 0088 049A     		ldr	r2, [sp, #16]
+ 435 008a 0693     		str	r3, [sp, #24]
+ 436 008c FFF7FEFF 		bl	HAL_GPIO_Init
+ 437 0090 0595     		str	r5, [sp, #20]
+ 438 0092 236B     		ldr	r3, [r4, #48]
+ 439 0094 204A     		ldr	r2, .L64+12
+ 440 0096 43F40013 		orr	r3, r3, #2097152
+ 441 009a 2363     		str	r3, [r4, #48]
+ 442 009c 236B     		ldr	r3, [r4, #48]
+ 443 009e 03F40013 		and	r3, r3, #2097152
+ 444 00a2 0593     		str	r3, [sp, #20]
+ 445 00a4 3368     		ldr	r3, [r6]
+ 446 00a6 0599     		ldr	r1, [sp, #20]
+ 447 00a8 9342     		cmp	r3, r2
+ 448 00aa 09D0     		beq	.L63
+ 449              	.L61:
+ 450 00ac 0022     		movs	r2, #0
+ 451 00ae 0E21     		movs	r1, #14
+ 452 00b0 2F20     		movs	r0, #47
+ 453 00b2 FFF7FEFF 		bl	HAL_NVIC_SetPriority
+ 454 00b6 2F20     		movs	r0, #47
+ 455 00b8 FFF7FEFF 		bl	HAL_NVIC_EnableIRQ
+ 456 00bc 0CB0     		add	sp, sp, #48
+ 457              		@ sp needed
+ 458 00be 70BD     		pop	{r4, r5, r6, pc}
+ 459              	.L63:
+ 460 00c0 164C     		ldr	r4, .L64+16
+ 461 00c2 174B     		ldr	r3, .L64+20
+ 462 00c4 B463     		str	r4, [r6, #56]
+ 463 00c6 4022     		movs	r2, #64
+ 464 00c8 C4E90152 		strd	r5, r2, [r4, #4]
+ 465 00cc 4FF48062 		mov	r2, #1024
+ 466 00d0 C4E90352 		strd	r5, r2, [r4, #12]
+ 467 00d4 4FF40061 		mov	r1, #2048
+ 468 00d8 4FF40052 		mov	r2, #8192
+ 469 00dc C4E90512 		strd	r1, r2, [r4, #20]
+ 470 00e0 4FF48070 		mov	r0, #256
+ 471 00e4 4FF40032 		mov	r2, #131072
+ 472 00e8 C4E90702 		strd	r0, r2, [r4, #28]
+ 473 00ec 4FF0040C 		mov	ip, #4
+ 474 00f0 0322     		movs	r2, #3
+ 475 00f2 2046     		mov	r0, r4
+ 476 00f4 C4E909C2 		strd	ip, r2, [r4, #36]
+ 477 00f8 C4E90B55 		strd	r5, r5, [r4, #44]
+ARM GAS  /var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cct9ZEZh.s 			page 9
+
+
+ 478 00fc 2360     		str	r3, [r4]
+ 479 00fe A663     		str	r6, [r4, #56]
+ 480 0100 FFF7FEFF 		bl	HAL_DMA_DeInit
+ 481 0104 2046     		mov	r0, r4
+ 482 0106 FFF7FEFF 		bl	HAL_DMA_Init
+ 483 010a CFE7     		b	.L61
+ 484              	.L65:
+ 485              		.align	2
+ 486              	.L64:
+ 487 010c 00380240 		.word	1073887232
+ 488 0110 00080240 		.word	1073874944
+ 489 0114 00000240 		.word	1073872896
+ 490 0118 003C0040 		.word	1073757184
+ 491 011c 00000000 		.word	hdma_i2sTx.1
+ 492 0120 B8600240 		.word	1073897656
+ 494              		.section	.text.BSP_AUDIO_OUT_Init,"ax",%progbits
+ 495              		.align	1
+ 496              		.p2align 2,,3
+ 497              		.global	BSP_AUDIO_OUT_Init
+ 498              		.syntax unified
+ 499              		.thumb
+ 500              		.thumb_func
+ 502              	BSP_AUDIO_OUT_Init:
+ 503              		@ args = 0, pretend = 0, frame = 0
+ 504              		@ frame_needed = 0, uses_anonymous_args = 0
+ 505 0000 2DE9F041 		push	{r4, r5, r6, r7, r8, lr}
+ 506 0004 214C     		ldr	r4, .L74
+ 507 0006 1546     		mov	r5, r2
+ 508 0008 0646     		mov	r6, r0
+ 509 000a 0022     		movs	r2, #0
+ 510 000c 2046     		mov	r0, r4
+ 511 000e 0F46     		mov	r7, r1
+ 512 0010 2946     		mov	r1, r5
+ 513 0012 FFF7FEFF 		bl	BSP_AUDIO_OUT_ClockConfig
+ 514 0016 1E4B     		ldr	r3, .L74+4
+ 515 0018 2360     		str	r3, [r4]
+ 516 001a 2046     		mov	r0, r4
+ 517 001c FFF7FEFF 		bl	HAL_I2S_GetState
+ 518 0020 10B3     		cbz	r0, .L72
+ 519              	.L67:
+ 520 0022 1B4B     		ldr	r3, .L74+4
+ 521 0024 6561     		str	r5, [r4, #20]
+ 522 0026 DA69     		ldr	r2, [r3, #28]
+ 523 0028 2360     		str	r3, [r4]
+ 524 002a 22F48062 		bic	r2, r2, #1024
+ 525 002e DA61     		str	r2, [r3, #28]
+ 526 0030 0023     		movs	r3, #0
+ 527 0032 C4E90633 		strd	r3, r3, [r4, #24]
+ 528 0036 C4E90233 		strd	r3, r3, [r4, #8]
+ 529 003a 1448     		ldr	r0, .L74
+ 530 003c 4FF40073 		mov	r3, #512
+ 531 0040 6360     		str	r3, [r4, #4]
+ 532 0042 2361     		str	r3, [r4, #16]
+ 533 0044 FFF7FEFF 		bl	HAL_I2S_Init
+ 534 0048 0446     		mov	r4, r0
+ 535 004a 48B9     		cbnz	r0, .L70
+ 536 004c DFF84880 		ldr	r8, .L74+12
+ARM GAS  /var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cct9ZEZh.s 			page 10
+
+
+ 537 0050 9420     		movs	r0, #148
+ 538 0052 D8F80830 		ldr	r3, [r8, #8]
+ 539 0056 9847     		blx	r3
+ 540 0058 00F0F800 		and	r0, r0, #248
+ 541 005c E028     		cmp	r0, #224
+ 542 005e 08D0     		beq	.L73
+ 543              	.L70:
+ 544 0060 0124     		movs	r4, #1
+ 545 0062 2046     		mov	r0, r4
+ 546 0064 BDE8F081 		pop	{r4, r5, r6, r7, r8, pc}
+ 547              	.L72:
+ 548 0068 0146     		mov	r1, r0
+ 549 006a 2046     		mov	r0, r4
+ 550 006c FFF7FEFF 		bl	BSP_AUDIO_OUT_MspInit
+ 551 0070 D7E7     		b	.L67
+ 552              	.L73:
+ 553 0072 0848     		ldr	r0, .L74+8
+ 554 0074 2B46     		mov	r3, r5
+ 555 0076 C0F80080 		str	r8, [r0]
+ 556 007a D8F80050 		ldr	r5, [r8]
+ 557 007e 3A46     		mov	r2, r7
+ 558 0080 3146     		mov	r1, r6
+ 559 0082 9420     		movs	r0, #148
+ 560 0084 A847     		blx	r5
+ 561 0086 2046     		mov	r0, r4
+ 562 0088 BDE8F081 		pop	{r4, r5, r6, r7, r8, pc}
+ 563              	.L75:
+ 564              		.align	2
+ 565              	.L74:
+ 566 008c 00000000 		.word	hAudioOutI2s
+ 567 0090 003C0040 		.word	1073757184
+ 568 0094 00000000 		.word	pAudioDrv
+ 569 0098 00000000 		.word	cs43l22_drv
+ 571              		.section	.text.BSP_AUDIO_OUT_MspDeInit,"ax",%progbits
+ 572              		.align	1
+ 573              		.p2align 2,,3
+ 574              		.weak	BSP_AUDIO_OUT_MspDeInit
+ 575              		.syntax unified
+ 576              		.thumb
+ 577              		.thumb_func
+ 579              	BSP_AUDIO_OUT_MspDeInit:
+ 580              		@ args = 0, pretend = 0, frame = 0
+ 581              		@ frame_needed = 0, uses_anonymous_args = 0
+ 582 0000 10B5     		push	{r4, lr}
+ 583 0002 0446     		mov	r4, r0
+ 584 0004 2F20     		movs	r0, #47
+ 585 0006 FFF7FEFF 		bl	HAL_NVIC_DisableIRQ
+ 586 000a 104A     		ldr	r2, .L80
+ 587 000c 2368     		ldr	r3, [r4]
+ 588 000e 9342     		cmp	r3, r2
+ 589 0010 16D0     		beq	.L79
+ 590              	.L77:
+ 591 0012 DA69     		ldr	r2, [r3, #28]
+ 592 0014 0E48     		ldr	r0, .L80+4
+ 593 0016 22F48062 		bic	r2, r2, #1024
+ 594 001a DA61     		str	r2, [r3, #28]
+ 595 001c 4FF4A051 		mov	r1, #5120
+ARM GAS  /var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cct9ZEZh.s 			page 11
+
+
+ 596 0020 FFF7FEFF 		bl	HAL_GPIO_DeInit
+ 597 0024 0B48     		ldr	r0, .L80+8
+ 598 0026 1021     		movs	r1, #16
+ 599 0028 FFF7FEFF 		bl	HAL_GPIO_DeInit
+ 600 002c 0848     		ldr	r0, .L80+4
+ 601 002e 8021     		movs	r1, #128
+ 602 0030 FFF7FEFF 		bl	HAL_GPIO_DeInit
+ 603 0034 084A     		ldr	r2, .L80+12
+ 604 0036 136C     		ldr	r3, [r2, #64]
+ 605 0038 23F40043 		bic	r3, r3, #32768
+ 606 003c 1364     		str	r3, [r2, #64]
+ 607 003e 10BD     		pop	{r4, pc}
+ 608              	.L79:
+ 609 0040 A06B     		ldr	r0, [r4, #56]
+ 610 0042 FFF7FEFF 		bl	HAL_DMA_DeInit
+ 611 0046 2368     		ldr	r3, [r4]
+ 612 0048 E3E7     		b	.L77
+ 613              	.L81:
+ 614 004a 00BF     		.align	2
+ 615              	.L80:
+ 616 004c 003C0040 		.word	1073757184
+ 617 0050 00080240 		.word	1073874944
+ 618 0054 00000240 		.word	1073872896
+ 619 0058 00380240 		.word	1073887232
+ 621              		.section	.text.BSP_AUDIO_OUT_TransferComplete_CallBack,"ax",%progbits
+ 622              		.align	1
+ 623              		.p2align 2,,3
+ 624              		.weak	BSP_AUDIO_OUT_TransferComplete_CallBack
+ 625              		.syntax unified
+ 626              		.thumb
+ 627              		.thumb_func
+ 629              	BSP_AUDIO_OUT_TransferComplete_CallBack:
+ 630              		@ args = 0, pretend = 0, frame = 0
+ 631              		@ frame_needed = 0, uses_anonymous_args = 0
+ 632              		@ link register save eliminated.
+ 633 0000 7047     		bx	lr
+ 635 0002 00BF     		.section	.text.HAL_I2S_TxCpltCallback,"ax",%progbits
+ 636              		.align	1
+ 637              		.p2align 2,,3
+ 638              		.global	HAL_I2S_TxCpltCallback
+ 639              		.syntax unified
+ 640              		.thumb
+ 641              		.thumb_func
+ 643              	HAL_I2S_TxCpltCallback:
+ 644              		@ args = 0, pretend = 0, frame = 0
+ 645              		@ frame_needed = 0, uses_anonymous_args = 0
+ 646 0000 08B5     		push	{r3, lr}
+ 647 0002 0268     		ldr	r2, [r0]
+ 648 0004 034B     		ldr	r3, .L87
+ 649 0006 9A42     		cmp	r2, r3
+ 650 0008 00D0     		beq	.L86
+ 651 000a 08BD     		pop	{r3, pc}
+ 652              	.L86:
+ 653 000c FFF7FEFF 		bl	BSP_AUDIO_OUT_TransferComplete_CallBack
+ 654 0010 08BD     		pop	{r3, pc}
+ 655              	.L88:
+ 656 0012 00BF     		.align	2
+ARM GAS  /var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cct9ZEZh.s 			page 12
+
+
+ 657              	.L87:
+ 658 0014 003C0040 		.word	1073757184
+ 660              		.section	.text.BSP_AUDIO_OUT_HalfTransfer_CallBack,"ax",%progbits
+ 661              		.align	1
+ 662              		.p2align 2,,3
+ 663              		.weak	BSP_AUDIO_OUT_HalfTransfer_CallBack
+ 664              		.syntax unified
+ 665              		.thumb
+ 666              		.thumb_func
+ 668              	BSP_AUDIO_OUT_HalfTransfer_CallBack:
+ 669              		@ args = 0, pretend = 0, frame = 0
+ 670              		@ frame_needed = 0, uses_anonymous_args = 0
+ 671              		@ link register save eliminated.
+ 672 0000 7047     		bx	lr
+ 674 0002 00BF     		.section	.text.HAL_I2S_TxHalfCpltCallback,"ax",%progbits
+ 675              		.align	1
+ 676              		.p2align 2,,3
+ 677              		.global	HAL_I2S_TxHalfCpltCallback
+ 678              		.syntax unified
+ 679              		.thumb
+ 680              		.thumb_func
+ 682              	HAL_I2S_TxHalfCpltCallback:
+ 683              		@ args = 0, pretend = 0, frame = 0
+ 684              		@ frame_needed = 0, uses_anonymous_args = 0
+ 685 0000 08B5     		push	{r3, lr}
+ 686 0002 0268     		ldr	r2, [r0]
+ 687 0004 034B     		ldr	r3, .L94
+ 688 0006 9A42     		cmp	r2, r3
+ 689 0008 00D0     		beq	.L93
+ 690 000a 08BD     		pop	{r3, pc}
+ 691              	.L93:
+ 692 000c FFF7FEFF 		bl	BSP_AUDIO_OUT_HalfTransfer_CallBack
+ 693 0010 08BD     		pop	{r3, pc}
+ 694              	.L95:
+ 695 0012 00BF     		.align	2
+ 696              	.L94:
+ 697 0014 003C0040 		.word	1073757184
+ 699              		.section	.text.BSP_AUDIO_OUT_Error_CallBack,"ax",%progbits
+ 700              		.align	1
+ 701              		.p2align 2,,3
+ 702              		.weak	BSP_AUDIO_OUT_Error_CallBack
+ 703              		.syntax unified
+ 704              		.thumb
+ 705              		.thumb_func
+ 707              	BSP_AUDIO_OUT_Error_CallBack:
+ 708              		@ args = 0, pretend = 0, frame = 0
+ 709              		@ frame_needed = 0, uses_anonymous_args = 0
+ 710              		@ link register save eliminated.
+ 711 0000 7047     		bx	lr
+ 713 0002 00BF     		.section	.text.BSP_AUDIO_IN_Record,"ax",%progbits
+ 714              		.align	1
+ 715              		.p2align 2,,3
+ 716              		.global	BSP_AUDIO_IN_Record
+ 717              		.syntax unified
+ 718              		.thumb
+ 719              		.thumb_func
+ 721              	BSP_AUDIO_IN_Record:
+ARM GAS  /var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cct9ZEZh.s 			page 13
+
+
+ 722              		@ args = 0, pretend = 0, frame = 0
+ 723              		@ frame_needed = 0, uses_anonymous_args = 0
+ 724 0000 08B5     		push	{r3, lr}
+ 725 0002 0346     		mov	r3, r0
+ 726 0004 8AB2     		uxth	r2, r1
+ 727 0006 0348     		ldr	r0, .L99
+ 728 0008 1946     		mov	r1, r3
+ 729 000a FFF7FEFF 		bl	HAL_I2S_Receive_DMA
+ 730 000e 0020     		movs	r0, #0
+ 731 0010 08BD     		pop	{r3, pc}
+ 732              	.L100:
+ 733 0012 00BF     		.align	2
+ 734              	.L99:
+ 735 0014 00000000 		.word	hAudioInI2s
+ 737              		.section	.text.BSP_AUDIO_IN_Stop,"ax",%progbits
+ 738              		.align	1
+ 739              		.p2align 2,,3
+ 740              		.global	BSP_AUDIO_IN_Stop
+ 741              		.syntax unified
+ 742              		.thumb
+ 743              		.thumb_func
+ 745              	BSP_AUDIO_IN_Stop:
+ 746              		@ args = 0, pretend = 0, frame = 0
+ 747              		@ frame_needed = 0, uses_anonymous_args = 0
+ 748 0000 08B5     		push	{r3, lr}
+ 749 0002 0248     		ldr	r0, .L103
+ 750 0004 FFF7FEFF 		bl	HAL_I2S_DMAStop
+ 751 0008 0020     		movs	r0, #0
+ 752 000a 08BD     		pop	{r3, pc}
+ 753              	.L104:
+ 754              		.align	2
+ 755              	.L103:
+ 756 000c 00000000 		.word	hAudioInI2s
+ 758              		.section	.text.BSP_AUDIO_IN_Pause,"ax",%progbits
+ 759              		.align	1
+ 760              		.p2align 2,,3
+ 761              		.global	BSP_AUDIO_IN_Pause
+ 762              		.syntax unified
+ 763              		.thumb
+ 764              		.thumb_func
+ 766              	BSP_AUDIO_IN_Pause:
+ 767              		@ args = 0, pretend = 0, frame = 0
+ 768              		@ frame_needed = 0, uses_anonymous_args = 0
+ 769 0000 08B5     		push	{r3, lr}
+ 770 0002 0248     		ldr	r0, .L107
+ 771 0004 FFF7FEFF 		bl	HAL_I2S_DMAPause
+ 772 0008 0020     		movs	r0, #0
+ 773 000a 08BD     		pop	{r3, pc}
+ 774              	.L108:
+ 775              		.align	2
+ 776              	.L107:
+ 777 000c 00000000 		.word	hAudioInI2s
+ 779              		.section	.text.BSP_AUDIO_IN_Resume,"ax",%progbits
+ 780              		.align	1
+ 781              		.p2align 2,,3
+ 782              		.global	BSP_AUDIO_IN_Resume
+ 783              		.syntax unified
+ARM GAS  /var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cct9ZEZh.s 			page 14
+
+
+ 784              		.thumb
+ 785              		.thumb_func
+ 787              	BSP_AUDIO_IN_Resume:
+ 788              		@ args = 0, pretend = 0, frame = 0
+ 789              		@ frame_needed = 0, uses_anonymous_args = 0
+ 790 0000 08B5     		push	{r3, lr}
+ 791 0002 0248     		ldr	r0, .L111
+ 792 0004 FFF7FEFF 		bl	HAL_I2S_DMAResume
+ 793 0008 0020     		movs	r0, #0
+ 794 000a 08BD     		pop	{r3, pc}
+ 795              	.L112:
+ 796              		.align	2
+ 797              	.L111:
+ 798 000c 00000000 		.word	hAudioInI2s
+ 800              		.section	.text.BSP_AUDIO_IN_SetVolume,"ax",%progbits
+ 801              		.align	1
+ 802              		.p2align 2,,3
+ 803              		.global	BSP_AUDIO_IN_SetVolume
+ 804              		.syntax unified
+ 805              		.thumb
+ 806              		.thumb_func
+ 808              	BSP_AUDIO_IN_SetVolume:
+ 809              		@ args = 0, pretend = 0, frame = 0
+ 810              		@ frame_needed = 0, uses_anonymous_args = 0
+ 811              		@ link register save eliminated.
+ 812 0000 014B     		ldr	r3, .L114
+ 813 0002 1880     		strh	r0, [r3]	@ movhi
+ 814 0004 0020     		movs	r0, #0
+ 815 0006 7047     		bx	lr
+ 816              	.L115:
+ 817              		.align	2
+ 818              	.L114:
+ 819 0008 00000000 		.word	AudioInVolume
+ 821              		.section	.text.BSP_AUDIO_IN_PDMToPCM,"ax",%progbits
+ 822              		.align	1
+ 823              		.p2align 2,,3
+ 824              		.global	BSP_AUDIO_IN_PDMToPCM
+ 825              		.syntax unified
+ 826              		.thumb
+ 827              		.thumb_func
+ 829              	BSP_AUDIO_IN_PDMToPCM:
+ 830              		@ args = 0, pretend = 0, frame = 128
+ 831              		@ frame_needed = 0, uses_anonymous_args = 0
+ 832 0000 10B5     		push	{r4, lr}
+ 833 0002 A0B0     		sub	sp, sp, #128
+ 834 0004 0C46     		mov	r4, r1
+ 835 0006 0238     		subs	r0, r0, #2
+ 836 0008 6A46     		mov	r2, sp
+ 837 000a 0DF1800C 		add	ip, sp, #128
+ 838              	.L117:
+ 839 000e 30F8023F 		ldrh	r3, [r0, #2]!
+ 840 0012 5BBA     		rev16	r3, r3
+ 841 0014 22F8023B 		strh	r3, [r2], #2	@ movhi
+ 842 0018 6245     		cmp	r2, ip
+ 843 001a F8D1     		bne	.L117
+ 844 001c 2146     		mov	r1, r4
+ 845 001e 084A     		ldr	r2, .L122
+ARM GAS  /var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cct9ZEZh.s 			page 15
+
+
+ 846 0020 6846     		mov	r0, sp
+ 847 0022 FFF7FEFF 		bl	PDM_Filter
+ 848 0026 0023     		movs	r3, #0
+ 849 0028 A11C     		adds	r1, r4, #2
+ 850              	.L118:
+ 851 002a 34F82320 		ldrh	r2, [r4, r3, lsl #2]
+ 852 002e 21F82320 		strh	r2, [r1, r3, lsl #2]	@ movhi
+ 853 0032 0133     		adds	r3, r3, #1
+ 854 0034 102B     		cmp	r3, #16
+ 855 0036 F8D1     		bne	.L118
+ 856 0038 0020     		movs	r0, #0
+ 857 003a 20B0     		add	sp, sp, #128
+ 858              		@ sp needed
+ 859 003c 10BD     		pop	{r4, pc}
+ 860              	.L123:
+ 861 003e 00BF     		.align	2
+ 862              	.L122:
+ 863 0040 00000000 		.word	PDM_FilterHandler
+ 865              		.section	.text.BSP_AUDIO_IN_ClockConfig,"ax",%progbits
+ 866              		.align	1
+ 867              		.p2align 2,,3
+ 868              		.weak	BSP_AUDIO_IN_ClockConfig
+ 869              		.syntax unified
+ 870              		.thumb
+ 871              		.thumb_func
+ 873              	BSP_AUDIO_IN_ClockConfig:
+ 874              		@ args = 0, pretend = 0, frame = 16
+ 875              		@ frame_needed = 0, uses_anonymous_args = 0
+ 876 0000 10B5     		push	{r4, lr}
+ 877 0002 84B0     		sub	sp, sp, #16
+ 878 0004 0C46     		mov	r4, r1
+ 879 0006 6846     		mov	r0, sp
+ 880 0008 FFF7FEFF 		bl	HAL_RCCEx_GetPeriphCLKConfig
+ 881 000c 6307     		lsls	r3, r4, #29
+ 882 000e 0BBF     		itete	eq
+ 883 0010 9FED077B 		vldreq.64	d7, .L128	@ int
+ 884 0014 9FED087B 		vldrne.64	d7, .L128+8	@ int
+ 885 0018 0623     		moveq	r3, #6
+ 886 001a 0223     		movne	r3, #2
+ 887 001c 6846     		mov	r0, sp
+ 888 001e 8DED007B 		vstr.64	d7, [sp]	@ int
+ 889 0022 0293     		str	r3, [sp, #8]
+ 890 0024 FFF7FEFF 		bl	HAL_RCCEx_PeriphCLKConfig
+ 891 0028 04B0     		add	sp, sp, #16
+ 892              		@ sp needed
+ 893 002a 10BD     		pop	{r4, pc}
+ 894              	.L129:
+ 895 002c AFF30080 		.align	3
+ 896              	.L128:
+ 897 0030 01000000 		.word	1
+ 898 0034 C0000000 		.word	192
+ 899 0038 01000000 		.word	1
+ 900 003c 22010000 		.word	290
+ 902              		.section	.text.BSP_AUDIO_IN_MspInit,"ax",%progbits
+ 903              		.align	1
+ 904              		.p2align 2,,3
+ 905              		.weak	BSP_AUDIO_IN_MspInit
+ARM GAS  /var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cct9ZEZh.s 			page 16
+
+
+ 906              		.syntax unified
+ 907              		.thumb
+ 908              		.thumb_func
+ 910              	BSP_AUDIO_IN_MspInit:
+ 911              		@ args = 0, pretend = 0, frame = 40
+ 912              		@ frame_needed = 0, uses_anonymous_args = 0
+ 913 0000 F0B5     		push	{r4, r5, r6, r7, lr}
+ 914 0002 8BB0     		sub	sp, sp, #44
+ 915 0004 384C     		ldr	r4, .L134
+ 916 0006 0025     		movs	r5, #0
+ 917 0008 0095     		str	r5, [sp]
+ 918 000a 236C     		ldr	r3, [r4, #64]
+ 919 000c 43F48043 		orr	r3, r3, #16384
+ 920 0010 2364     		str	r3, [r4, #64]
+ 921 0012 236C     		ldr	r3, [r4, #64]
+ 922 0014 03F48043 		and	r3, r3, #16384
+ 923 0018 0093     		str	r3, [sp]
+ 924 001a 009B     		ldr	r3, [sp]
+ 925 001c 0195     		str	r5, [sp, #4]
+ 926 001e 236B     		ldr	r3, [r4, #48]
+ 927 0020 43F00203 		orr	r3, r3, #2
+ 928 0024 2363     		str	r3, [r4, #48]
+ 929 0026 236B     		ldr	r3, [r4, #48]
+ 930 0028 03F00203 		and	r3, r3, #2
+ 931 002c 0193     		str	r3, [sp, #4]
+ 932 002e 019B     		ldr	r3, [sp, #4]
+ 933 0030 0295     		str	r5, [sp, #8]
+ 934 0032 236B     		ldr	r3, [r4, #48]
+ 935 0034 43F00403 		orr	r3, r3, #4
+ 936 0038 2363     		str	r3, [r4, #48]
+ 937 003a 236B     		ldr	r3, [r4, #48]
+ 938 003c 03F00403 		and	r3, r3, #4
+ 939 0040 0293     		str	r3, [sp, #8]
+ 940 0042 4FF48062 		mov	r2, #1024
+ 941 0046 0223     		movs	r3, #2
+ 942 0048 CDE90423 		strd	r2, [sp, #16]
+ 943 004c 0646     		mov	r6, r0
+ 944 004e 0022     		movs	r2, #0
+ 945 0050 2648     		ldr	r0, .L134+4
+ 946 0052 0223     		movs	r3, #2
+ 947 0054 0527     		movs	r7, #5
+ 948 0056 04A9     		add	r1, sp, #16
+ 949 0058 CDE90623 		strd	r2, [sp, #24]
+ 950 005c 0897     		str	r7, [sp, #32]
+ 951 005e 029B     		ldr	r3, [sp, #8]
+ 952 0060 FFF7FEFF 		bl	HAL_GPIO_Init
+ 953 0064 0823     		movs	r3, #8
+ 954 0066 04A9     		add	r1, sp, #16
+ 955 0068 2148     		ldr	r0, .L134+8
+ 956 006a 0493     		str	r3, [sp, #16]
+ 957 006c 0897     		str	r7, [sp, #32]
+ 958 006e FFF7FEFF 		bl	HAL_GPIO_Init
+ 959 0072 0395     		str	r5, [sp, #12]
+ 960 0074 236B     		ldr	r3, [r4, #48]
+ 961 0076 1F4A     		ldr	r2, .L134+12
+ 962 0078 43F40013 		orr	r3, r3, #2097152
+ 963 007c 2363     		str	r3, [r4, #48]
+ARM GAS  /var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cct9ZEZh.s 			page 17
+
+
+ 964 007e 236B     		ldr	r3, [r4, #48]
+ 965 0080 03F40013 		and	r3, r3, #2097152
+ 966 0084 0393     		str	r3, [sp, #12]
+ 967 0086 3368     		ldr	r3, [r6]
+ 968 0088 0399     		ldr	r1, [sp, #12]
+ 969 008a 9342     		cmp	r3, r2
+ 970 008c 09D0     		beq	.L133
+ 971              	.L131:
+ 972 008e 0022     		movs	r2, #0
+ 973 0090 0F21     		movs	r1, #15
+ 974 0092 0E20     		movs	r0, #14
+ 975 0094 FFF7FEFF 		bl	HAL_NVIC_SetPriority
+ 976 0098 0E20     		movs	r0, #14
+ 977 009a FFF7FEFF 		bl	HAL_NVIC_EnableIRQ
+ 978 009e 0BB0     		add	sp, sp, #44
+ 979              		@ sp needed
+ 980 00a0 F0BD     		pop	{r4, r5, r6, r7, pc}
+ 981              	.L133:
+ 982 00a2 154C     		ldr	r4, .L134+16
+ 983 00a4 154B     		ldr	r3, .L134+20
+ 984 00a6 F463     		str	r4, [r6, #60]
+ 985 00a8 4FF48062 		mov	r2, #1024
+ 986 00ac C4E90352 		strd	r5, r2, [r4, #12]
+ 987 00b0 4FF40061 		mov	r1, #2048
+ 988 00b4 4FF40052 		mov	r2, #8192
+ 989 00b8 C4E90512 		strd	r1, r2, [r4, #20]
+ 990 00bc 4FF48070 		mov	r0, #256
+ 991 00c0 4FF40032 		mov	r2, #131072
+ 992 00c4 C4E90702 		strd	r0, r2, [r4, #28]
+ 993 00c8 0322     		movs	r2, #3
+ 994 00ca 2046     		mov	r0, r4
+ 995 00cc C4E90155 		strd	r5, r5, [r4, #4]
+ 996 00d0 C4E90952 		strd	r5, r2, [r4, #36]
+ 997 00d4 C4E90B55 		strd	r5, r5, [r4, #44]
+ 998 00d8 2360     		str	r3, [r4]
+ 999 00da A663     		str	r6, [r4, #56]
+ 1000 00dc FFF7FEFF 		bl	HAL_DMA_DeInit
+ 1001 00e0 2046     		mov	r0, r4
+ 1002 00e2 FFF7FEFF 		bl	HAL_DMA_Init
+ 1003 00e6 D2E7     		b	.L131
+ 1004              	.L135:
+ 1005              		.align	2
+ 1006              	.L134:
+ 1007 00e8 00380240 		.word	1073887232
+ 1008 00ec 00040240 		.word	1073873920
+ 1009 00f0 00080240 		.word	1073874944
+ 1010 00f4 00380040 		.word	1073756160
+ 1011 00f8 00000000 		.word	hdma_i2sRx.0
+ 1012 00fc 58600240 		.word	1073897560
+ 1014              		.section	.text.BSP_AUDIO_IN_Init,"ax",%progbits
+ 1015              		.align	1
+ 1016              		.p2align 2,,3
+ 1017              		.global	BSP_AUDIO_IN_Init
+ 1018              		.syntax unified
+ 1019              		.thumb
+ 1020              		.thumb_func
+ 1022              	BSP_AUDIO_IN_Init:
+ARM GAS  /var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cct9ZEZh.s 			page 18
+
+
+ 1023              		@ args = 0, pretend = 0, frame = 8
+ 1024              		@ frame_needed = 0, uses_anonymous_args = 0
+ 1025 0000 2DE9F04F 		push	{r4, r5, r6, r7, r8, r9, r10, fp, lr}
+ 1026 0004 0546     		mov	r5, r0
+ 1027 0006 83B0     		sub	sp, sp, #12
+ 1028 0008 2946     		mov	r1, r5
+ 1029 000a 3148     		ldr	r0, .L145
+ 1030 000c 1646     		mov	r6, r2
+ 1031 000e 0022     		movs	r2, #0
+ 1032 0010 FFF7FEFF 		bl	BSP_AUDIO_IN_ClockConfig
+ 1033 0014 2F4A     		ldr	r2, .L145+4
+ 1034 0016 0023     		movs	r3, #0
+ 1035 0018 0193     		str	r3, [sp, #4]
+ 1036 001a 116B     		ldr	r1, [r2, #48]
+ 1037 001c 41F48051 		orr	r1, r1, #4096
+ 1038 0020 1163     		str	r1, [r2, #48]
+ 1039 0022 126B     		ldr	r2, [r2, #48]
+ 1040 0024 02F48052 		and	r2, r2, #4096
+ 1041 0028 0192     		str	r2, [sp, #4]
+ 1042 002a 019A     		ldr	r2, [sp, #4]
+ 1043 002c 56B3     		cbz	r6, .L141
+ 1044 002e 2A4F     		ldr	r7, .L145+8
+ 1045 0030 2A4C     		ldr	r4, .L145+12
+ 1046 0032 DFF8B490 		ldr	r9, .L145+24
+ 1047 0036 A7FB0527 		umull	r2, r7, r7, r5
+ 1048 003a 9A46     		mov	r10, r3
+ 1049 003c C7F38F17 		ubfx	r7, r7, #6, #16
+ 1050 0040 1FFA86FB 		uxth	fp, r6
+ 1051 0044 4FF00208 		mov	r8, #2
+ 1052              	.L140:
+ 1053 0048 254B     		ldr	r3, .L145+16
+ 1054 004a A4F80A80 		strh	r8, [r4, #10]	@ movhi
+ 1055 004e 0022     		movs	r2, #0
+ 1056 0050 C4E90023 		strd	r2, r3, [r4]
+ 1057 0054 A4F808B0 		strh	fp, [r4, #8]	@ movhi
+ 1058 0058 2046     		mov	r0, r4
+ 1059 005a FFF7FEFF 		bl	PDM_Filter_Init
+ 1060 005e 1822     		movs	r2, #24
+ 1061 0060 A9F80270 		strh	r7, [r9, #2]	@ movhi
+ 1062 0064 A9F80080 		strh	r8, [r9]	@ movhi
+ 1063 0068 A9F80420 		strh	r2, [r9, #4]	@ movhi
+ 1064 006c 4946     		mov	r1, r9
+ 1065 006e 2046     		mov	r0, r4
+ 1066 0070 0AF1010A 		add	r10, r10, #1
+ 1067 0074 FFF7FEFF 		bl	PDM_Filter_setConfig
+ 1068 0078 5645     		cmp	r6, r10
+ 1069 007a 04F14C04 		add	r4, r4, #76
+ 1070 007e 09F10609 		add	r9, r9, #6
+ 1071 0082 E1D1     		bne	.L140
+ 1072              	.L141:
+ 1073 0084 124C     		ldr	r4, .L145
+ 1074 0086 174B     		ldr	r3, .L145+20
+ 1075 0088 2360     		str	r3, [r4]
+ 1076 008a 2046     		mov	r0, r4
+ 1077 008c FFF7FEFF 		bl	HAL_I2S_GetState
+ 1078 0090 C8B1     		cbz	r0, .L144
+ 1079              	.L139:
+ARM GAS  /var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cct9ZEZh.s 			page 19
+
+
+ 1080 0092 144B     		ldr	r3, .L145+20
+ 1081 0094 2360     		str	r3, [r4]
+ 1082 0096 DA69     		ldr	r2, [r3, #28]
+ 1083 0098 0D48     		ldr	r0, .L145
+ 1084 009a 22F48062 		bic	r2, r2, #1024
+ 1085 009e DA61     		str	r2, [r3, #28]
+ 1086 00a0 0026     		movs	r6, #0
+ 1087 00a2 0823     		movs	r3, #8
+ 1088 00a4 C4E90636 		strd	r3, r6, [r4, #24]
+ 1089 00a8 4FF44072 		mov	r2, #768
+ 1090 00ac 2023     		movs	r3, #32
+ 1091 00ae 6D00     		lsls	r5, r5, #1
+ 1092 00b0 C4E90366 		strd	r6, r6, [r4, #12]
+ 1093 00b4 C4E90123 		strd	r2, r3, [r4, #4]
+ 1094 00b8 6561     		str	r5, [r4, #20]
+ 1095 00ba FFF7FEFF 		bl	HAL_I2S_Init
+ 1096 00be 3046     		mov	r0, r6
+ 1097 00c0 03B0     		add	sp, sp, #12
+ 1098              		@ sp needed
+ 1099 00c2 BDE8F08F 		pop	{r4, r5, r6, r7, r8, r9, r10, fp, pc}
+ 1100              	.L144:
+ 1101 00c6 0146     		mov	r1, r0
+ 1102 00c8 2046     		mov	r0, r4
+ 1103 00ca FFF7FEFF 		bl	BSP_AUDIO_IN_MspInit
+ 1104 00ce E0E7     		b	.L139
+ 1105              	.L146:
+ 1106              		.align	2
+ 1107              	.L145:
+ 1108 00d0 00000000 		.word	hAudioInI2s
+ 1109 00d4 00380240 		.word	1073887232
+ 1110 00d8 D34D6210 		.word	274877907
+ 1111 00dc 00000000 		.word	PDM_FilterHandler
+ 1112 00e0 489D807E 		.word	2122358088
+ 1113 00e4 00380040 		.word	1073756160
+ 1114 00e8 00000000 		.word	PDM_FilterConfig
+ 1116              		.section	.text.BSP_AUDIO_IN_MspDeInit,"ax",%progbits
+ 1117              		.align	1
+ 1118              		.p2align 2,,3
+ 1119              		.weak	BSP_AUDIO_IN_MspDeInit
+ 1120              		.syntax unified
+ 1121              		.thumb
+ 1122              		.thumb_func
+ 1124              	BSP_AUDIO_IN_MspDeInit:
+ 1125              		@ args = 0, pretend = 0, frame = 0
+ 1126              		@ frame_needed = 0, uses_anonymous_args = 0
+ 1127 0000 10B5     		push	{r4, lr}
+ 1128 0002 0446     		mov	r4, r0
+ 1129 0004 0E20     		movs	r0, #14
+ 1130 0006 FFF7FEFF 		bl	HAL_NVIC_DisableIRQ
+ 1131 000a 0E4A     		ldr	r2, .L151
+ 1132 000c 2368     		ldr	r3, [r4]
+ 1133 000e 9342     		cmp	r3, r2
+ 1134 0010 12D0     		beq	.L150
+ 1135              	.L148:
+ 1136 0012 DA69     		ldr	r2, [r3, #28]
+ 1137 0014 0C48     		ldr	r0, .L151+4
+ 1138 0016 22F48062 		bic	r2, r2, #1024
+ARM GAS  /var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cct9ZEZh.s 			page 20
+
+
+ 1139 001a DA61     		str	r2, [r3, #28]
+ 1140 001c 4FF48061 		mov	r1, #1024
+ 1141 0020 FFF7FEFF 		bl	HAL_GPIO_DeInit
+ 1142 0024 0948     		ldr	r0, .L151+8
+ 1143 0026 0821     		movs	r1, #8
+ 1144 0028 FFF7FEFF 		bl	HAL_GPIO_DeInit
+ 1145 002c 084A     		ldr	r2, .L151+12
+ 1146 002e 136C     		ldr	r3, [r2, #64]
+ 1147 0030 23F48043 		bic	r3, r3, #16384
+ 1148 0034 1364     		str	r3, [r2, #64]
+ 1149 0036 10BD     		pop	{r4, pc}
+ 1150              	.L150:
+ 1151 0038 E06B     		ldr	r0, [r4, #60]
+ 1152 003a FFF7FEFF 		bl	HAL_DMA_DeInit
+ 1153 003e 2368     		ldr	r3, [r4]
+ 1154 0040 E7E7     		b	.L148
+ 1155              	.L152:
+ 1156 0042 00BF     		.align	2
+ 1157              	.L151:
+ 1158 0044 00380040 		.word	1073756160
+ 1159 0048 00040240 		.word	1073873920
+ 1160 004c 00080240 		.word	1073874944
+ 1161 0050 00380240 		.word	1073887232
+ 1163              		.section	.text.BSP_AUDIO_IN_TransferComplete_CallBack,"ax",%progbits
+ 1164              		.align	1
+ 1165              		.p2align 2,,3
+ 1166              		.weak	BSP_AUDIO_IN_TransferComplete_CallBack
+ 1167              		.syntax unified
+ 1168              		.thumb
+ 1169              		.thumb_func
+ 1171              	BSP_AUDIO_IN_TransferComplete_CallBack:
+ 1172              		@ args = 0, pretend = 0, frame = 0
+ 1173              		@ frame_needed = 0, uses_anonymous_args = 0
+ 1174              		@ link register save eliminated.
+ 1175 0000 7047     		bx	lr
+ 1177 0002 00BF     		.section	.text.HAL_I2S_RxCpltCallback,"ax",%progbits
+ 1178              		.align	1
+ 1179              		.p2align 2,,3
+ 1180              		.global	HAL_I2S_RxCpltCallback
+ 1181              		.syntax unified
+ 1182              		.thumb
+ 1183              		.thumb_func
+ 1185              	HAL_I2S_RxCpltCallback:
+ 1186              		@ args = 0, pretend = 0, frame = 0
+ 1187              		@ frame_needed = 0, uses_anonymous_args = 0
+ 1188 0000 08B5     		push	{r3, lr}
+ 1189 0002 FFF7FEFF 		bl	BSP_AUDIO_IN_TransferComplete_CallBack
+ 1190 0006 08BD     		pop	{r3, pc}
+ 1192              		.section	.text.BSP_AUDIO_IN_HalfTransfer_CallBack,"ax",%progbits
+ 1193              		.align	1
+ 1194              		.p2align 2,,3
+ 1195              		.weak	BSP_AUDIO_IN_HalfTransfer_CallBack
+ 1196              		.syntax unified
+ 1197              		.thumb
+ 1198              		.thumb_func
+ 1200              	BSP_AUDIO_IN_HalfTransfer_CallBack:
+ 1201              		@ args = 0, pretend = 0, frame = 0
+ARM GAS  /var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cct9ZEZh.s 			page 21
+
+
+ 1202              		@ frame_needed = 0, uses_anonymous_args = 0
+ 1203              		@ link register save eliminated.
+ 1204 0000 7047     		bx	lr
+ 1206 0002 00BF     		.section	.text.HAL_I2S_RxHalfCpltCallback,"ax",%progbits
+ 1207              		.align	1
+ 1208              		.p2align 2,,3
+ 1209              		.global	HAL_I2S_RxHalfCpltCallback
+ 1210              		.syntax unified
+ 1211              		.thumb
+ 1212              		.thumb_func
+ 1214              	HAL_I2S_RxHalfCpltCallback:
+ 1215              		@ args = 0, pretend = 0, frame = 0
+ 1216              		@ frame_needed = 0, uses_anonymous_args = 0
+ 1217 0000 08B5     		push	{r3, lr}
+ 1218 0002 FFF7FEFF 		bl	BSP_AUDIO_IN_HalfTransfer_CallBack
+ 1219 0006 08BD     		pop	{r3, pc}
+ 1221              		.section	.text.BSP_AUDIO_IN_Error_Callback,"ax",%progbits
+ 1222              		.align	1
+ 1223              		.p2align 2,,3
+ 1224              		.weak	BSP_AUDIO_IN_Error_Callback
+ 1225              		.syntax unified
+ 1226              		.thumb
+ 1227              		.thumb_func
+ 1229              	BSP_AUDIO_IN_Error_Callback:
+ 1230              		@ args = 0, pretend = 0, frame = 0
+ 1231              		@ frame_needed = 0, uses_anonymous_args = 0
+ 1232              		@ link register save eliminated.
+ 1233 0000 7047     		bx	lr
+ 1235 0002 00BF     		.section	.text.HAL_I2S_ErrorCallback,"ax",%progbits
+ 1236              		.align	1
+ 1237              		.p2align 2,,3
+ 1238              		.global	HAL_I2S_ErrorCallback
+ 1239              		.syntax unified
+ 1240              		.thumb
+ 1241              		.thumb_func
+ 1243              	HAL_I2S_ErrorCallback:
+ 1244              		@ args = 0, pretend = 0, frame = 0
+ 1245              		@ frame_needed = 0, uses_anonymous_args = 0
+ 1246 0000 084A     		ldr	r2, .L166
+ 1247 0002 0368     		ldr	r3, [r0]
+ 1248 0004 9342     		cmp	r3, r2
+ 1249 0006 10B5     		push	{r4, lr}
+ 1250 0008 06D0     		beq	.L164
+ 1251              	.L161:
+ 1252 000a 074A     		ldr	r2, .L166+4
+ 1253 000c 9342     		cmp	r3, r2
+ 1254 000e 00D0     		beq	.L165
+ 1255 0010 10BD     		pop	{r4, pc}
+ 1256              	.L165:
+ 1257 0012 FFF7FEFF 		bl	BSP_AUDIO_IN_Error_Callback
+ 1258 0016 10BD     		pop	{r4, pc}
+ 1259              	.L164:
+ 1260 0018 0446     		mov	r4, r0
+ 1261 001a FFF7FEFF 		bl	BSP_AUDIO_OUT_Error_CallBack
+ 1262 001e 2368     		ldr	r3, [r4]
+ 1263 0020 F3E7     		b	.L161
+ 1264              	.L167:
+ARM GAS  /var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cct9ZEZh.s 			page 22
+
+
+ 1265 0022 00BF     		.align	2
+ 1266              	.L166:
+ 1267 0024 003C0040 		.word	1073757184
+ 1268 0028 00380040 		.word	1073756160
+ 1270              		.section	.bss.hdma_i2sRx.0,"aw",%nobits
+ 1271              		.align	3
+ 1274              	hdma_i2sRx.0:
+ 1275 0000 00000000 		.space	96
+ 1275      00000000 
+ 1275      00000000 
+ 1275      00000000 
+ 1275      00000000 
+ 1276              		.section	.bss.hdma_i2sTx.1,"aw",%nobits
+ 1277              		.align	3
+ 1280              	hdma_i2sTx.1:
+ 1281 0000 00000000 		.space	96
+ 1281      00000000 
+ 1281      00000000 
+ 1281      00000000 
+ 1281      00000000 
+ 1282              		.global	AudioInVolume
+ 1283              		.section	.data.AudioInVolume,"aw"
+ 1284              		.align	1
+ 1287              	AudioInVolume:
+ 1288 0000 4000     		.short	64
+ 1289              		.global	PDM_FilterConfig
+ 1290              		.section	.bss.PDM_FilterConfig,"aw",%nobits
+ 1291              		.align	2
+ 1294              	PDM_FilterConfig:
+ 1295 0000 00000000 		.space	12
+ 1295      00000000 
+ 1295      00000000 
+ 1296              		.global	PDM_FilterHandler
+ 1297              		.section	.bss.PDM_FilterHandler,"aw",%nobits
+ 1298              		.align	2
+ 1301              	PDM_FilterHandler:
+ 1302 0000 00000000 		.space	152
+ 1302      00000000 
+ 1302      00000000 
+ 1302      00000000 
+ 1302      00000000 
+ 1303              		.global	hAudioInI2s
+ 1304              		.section	.bss.hAudioInI2s,"aw",%nobits
+ 1305              		.align	2
+ 1308              	hAudioInI2s:
+ 1309 0000 00000000 		.space	72
+ 1309      00000000 
+ 1309      00000000 
+ 1309      00000000 
+ 1309      00000000 
+ 1310              		.global	hAudioOutI2s
+ 1311              		.section	.bss.hAudioOutI2s,"aw",%nobits
+ 1312              		.align	3
+ 1315              	hAudioOutI2s:
+ 1316 0000 00000000 		.space	72
+ 1316      00000000 
+ 1316      00000000 
+ARM GAS  /var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cct9ZEZh.s 			page 23
+
+
+ 1316      00000000 
+ 1316      00000000 
+ 1317              		.section	.bss.pAudioDrv,"aw",%nobits
+ 1318              		.align	2
+ 1321              	pAudioDrv:
+ 1322 0000 00000000 		.space	4
+ 1323              		.global	I2SPLLR
+ 1324              		.section	.rodata.I2SPLLR,"a"
+ 1325              		.align	2
+ 1328              	I2SPLLR:
+ 1329 0000 05000000 		.word	5
+ 1330 0004 04000000 		.word	4
+ 1331 0008 04000000 		.word	4
+ 1332 000c 04000000 		.word	4
+ 1333 0010 04000000 		.word	4
+ 1334 0014 06000000 		.word	6
+ 1335 0018 03000000 		.word	3
+ 1336 001c 01000000 		.word	1
+ 1337              		.global	I2SPLLN
+ 1338              		.section	.rodata.I2SPLLN,"a"
+ 1339              		.align	2
+ 1342              	I2SPLLN:
+ 1343 0000 00010000 		.word	256
+ 1344 0004 AD010000 		.word	429
+ 1345 0008 D5000000 		.word	213
+ 1346 000c AD010000 		.word	429
+ 1347 0010 AA010000 		.word	426
+ 1348 0014 0F010000 		.word	271
+ 1349 0018 02010000 		.word	258
+ 1350 001c 58010000 		.word	344
+ 1351              		.global	I2SFreq
+ 1352              		.section	.rodata.I2SFreq,"a"
+ 1353              		.align	2
+ 1356              	I2SFreq:
+ 1357 0000 401F0000 		.word	8000
+ 1358 0004 112B0000 		.word	11025
+ 1359 0008 803E0000 		.word	16000
+ 1360 000c 22560000 		.word	22050
+ 1361 0010 007D0000 		.word	32000
+ 1362 0014 44AC0000 		.word	44100
+ 1363 0018 80BB0000 		.word	48000
+ 1364 001c 00770100 		.word	96000
+ 1365              		.ident	"GCC: (xPack GNU Arm Embedded GCC arm64) 13.3.1 20240614"
+ARM GAS  /var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cct9ZEZh.s 			page 24
+
+
+DEFINED SYMBOLS
+                            *ABS*:00000000 stm32f4_discovery_audio.c
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cct9ZEZh.s:18     .text.BSP_AUDIO_OUT_Play:00000000 $t
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cct9ZEZh.s:25     .text.BSP_AUDIO_OUT_Play:00000000 BSP_AUDIO_OUT_Play
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cct9ZEZh.s:54     .text.BSP_AUDIO_OUT_Play:00000034 $d
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cct9ZEZh.s:1321   .bss.pAudioDrv:00000000 pAudioDrv
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cct9ZEZh.s:1315   .bss.hAudioOutI2s:00000000 hAudioOutI2s
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cct9ZEZh.s:58     .text.BSP_AUDIO_OUT_ChangeBuffer:00000000 $t
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cct9ZEZh.s:65     .text.BSP_AUDIO_OUT_ChangeBuffer:00000000 BSP_AUDIO_OUT_ChangeBuffer
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cct9ZEZh.s:77     .text.BSP_AUDIO_OUT_ChangeBuffer:0000000c $d
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cct9ZEZh.s:80     .text.BSP_AUDIO_OUT_Pause:00000000 $t
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cct9ZEZh.s:87     .text.BSP_AUDIO_OUT_Pause:00000000 BSP_AUDIO_OUT_Pause
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cct9ZEZh.s:108    .text.BSP_AUDIO_OUT_Pause:00000020 $d
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cct9ZEZh.s:112    .text.BSP_AUDIO_OUT_Resume:00000000 $t
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cct9ZEZh.s:119    .text.BSP_AUDIO_OUT_Resume:00000000 BSP_AUDIO_OUT_Resume
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cct9ZEZh.s:140    .text.BSP_AUDIO_OUT_Resume:00000020 $d
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cct9ZEZh.s:144    .text.BSP_AUDIO_OUT_Stop:00000000 $t
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cct9ZEZh.s:151    .text.BSP_AUDIO_OUT_Stop:00000000 BSP_AUDIO_OUT_Stop
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cct9ZEZh.s:186    .text.BSP_AUDIO_OUT_Stop:0000003c $d
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cct9ZEZh.s:191    .text.BSP_AUDIO_OUT_SetVolume:00000000 $t
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cct9ZEZh.s:198    .text.BSP_AUDIO_OUT_SetVolume:00000000 BSP_AUDIO_OUT_SetVolume
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cct9ZEZh.s:215    .text.BSP_AUDIO_OUT_SetVolume:00000018 $d
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cct9ZEZh.s:218    .text.BSP_AUDIO_OUT_SetMute:00000000 $t
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cct9ZEZh.s:225    .text.BSP_AUDIO_OUT_SetMute:00000000 BSP_AUDIO_OUT_SetMute
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cct9ZEZh.s:242    .text.BSP_AUDIO_OUT_SetMute:00000018 $d
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cct9ZEZh.s:245    .text.BSP_AUDIO_OUT_SetOutputMode:00000000 $t
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cct9ZEZh.s:252    .text.BSP_AUDIO_OUT_SetOutputMode:00000000 BSP_AUDIO_OUT_SetOutputMode
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cct9ZEZh.s:269    .text.BSP_AUDIO_OUT_SetOutputMode:00000018 $d
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cct9ZEZh.s:272    .text.BSP_AUDIO_OUT_ClockConfig:00000000 $t
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cct9ZEZh.s:279    .text.BSP_AUDIO_OUT_ClockConfig:00000000 BSP_AUDIO_OUT_ClockConfig
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cct9ZEZh.s:324    .text.BSP_AUDIO_OUT_ClockConfig:00000058 $d
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cct9ZEZh.s:1356   .rodata.I2SFreq:00000000 I2SFreq
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cct9ZEZh.s:1342   .rodata.I2SPLLN:00000000 I2SPLLN
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cct9ZEZh.s:1328   .rodata.I2SPLLR:00000000 I2SPLLR
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cct9ZEZh.s:331    .text.BSP_AUDIO_OUT_SetFrequency:00000000 $t
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cct9ZEZh.s:338    .text.BSP_AUDIO_OUT_SetFrequency:00000000 BSP_AUDIO_OUT_SetFrequency
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cct9ZEZh.s:365    .text.BSP_AUDIO_OUT_SetFrequency:0000003c $d
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cct9ZEZh.s:369    .text.BSP_AUDIO_OUT_MspInit:00000000 $t
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cct9ZEZh.s:376    .text.BSP_AUDIO_OUT_MspInit:00000000 BSP_AUDIO_OUT_MspInit
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cct9ZEZh.s:487    .text.BSP_AUDIO_OUT_MspInit:0000010c $d
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cct9ZEZh.s:1280   .bss.hdma_i2sTx.1:00000000 hdma_i2sTx.1
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cct9ZEZh.s:495    .text.BSP_AUDIO_OUT_Init:00000000 $t
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cct9ZEZh.s:502    .text.BSP_AUDIO_OUT_Init:00000000 BSP_AUDIO_OUT_Init
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cct9ZEZh.s:566    .text.BSP_AUDIO_OUT_Init:0000008c $d
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cct9ZEZh.s:572    .text.BSP_AUDIO_OUT_MspDeInit:00000000 $t
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cct9ZEZh.s:579    .text.BSP_AUDIO_OUT_MspDeInit:00000000 BSP_AUDIO_OUT_MspDeInit
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cct9ZEZh.s:616    .text.BSP_AUDIO_OUT_MspDeInit:0000004c $d
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cct9ZEZh.s:622    .text.BSP_AUDIO_OUT_TransferComplete_CallBack:00000000 $t
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cct9ZEZh.s:629    .text.BSP_AUDIO_OUT_TransferComplete_CallBack:00000000 BSP_AUDIO_OUT_TransferComplete_CallBack
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cct9ZEZh.s:636    .text.HAL_I2S_TxCpltCallback:00000000 $t
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cct9ZEZh.s:643    .text.HAL_I2S_TxCpltCallback:00000000 HAL_I2S_TxCpltCallback
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cct9ZEZh.s:658    .text.HAL_I2S_TxCpltCallback:00000014 $d
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cct9ZEZh.s:661    .text.BSP_AUDIO_OUT_HalfTransfer_CallBack:00000000 $t
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cct9ZEZh.s:668    .text.BSP_AUDIO_OUT_HalfTransfer_CallBack:00000000 BSP_AUDIO_OUT_HalfTransfer_CallBack
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cct9ZEZh.s:675    .text.HAL_I2S_TxHalfCpltCallback:00000000 $t
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cct9ZEZh.s:682    .text.HAL_I2S_TxHalfCpltCallback:00000000 HAL_I2S_TxHalfCpltCallback
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cct9ZEZh.s:697    .text.HAL_I2S_TxHalfCpltCallback:00000014 $d
+ARM GAS  /var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cct9ZEZh.s 			page 25
+
+
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cct9ZEZh.s:700    .text.BSP_AUDIO_OUT_Error_CallBack:00000000 $t
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cct9ZEZh.s:707    .text.BSP_AUDIO_OUT_Error_CallBack:00000000 BSP_AUDIO_OUT_Error_CallBack
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cct9ZEZh.s:714    .text.BSP_AUDIO_IN_Record:00000000 $t
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cct9ZEZh.s:721    .text.BSP_AUDIO_IN_Record:00000000 BSP_AUDIO_IN_Record
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cct9ZEZh.s:735    .text.BSP_AUDIO_IN_Record:00000014 $d
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cct9ZEZh.s:1308   .bss.hAudioInI2s:00000000 hAudioInI2s
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cct9ZEZh.s:738    .text.BSP_AUDIO_IN_Stop:00000000 $t
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cct9ZEZh.s:745    .text.BSP_AUDIO_IN_Stop:00000000 BSP_AUDIO_IN_Stop
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cct9ZEZh.s:756    .text.BSP_AUDIO_IN_Stop:0000000c $d
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cct9ZEZh.s:759    .text.BSP_AUDIO_IN_Pause:00000000 $t
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cct9ZEZh.s:766    .text.BSP_AUDIO_IN_Pause:00000000 BSP_AUDIO_IN_Pause
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cct9ZEZh.s:777    .text.BSP_AUDIO_IN_Pause:0000000c $d
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cct9ZEZh.s:780    .text.BSP_AUDIO_IN_Resume:00000000 $t
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cct9ZEZh.s:787    .text.BSP_AUDIO_IN_Resume:00000000 BSP_AUDIO_IN_Resume
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cct9ZEZh.s:798    .text.BSP_AUDIO_IN_Resume:0000000c $d
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cct9ZEZh.s:801    .text.BSP_AUDIO_IN_SetVolume:00000000 $t
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cct9ZEZh.s:808    .text.BSP_AUDIO_IN_SetVolume:00000000 BSP_AUDIO_IN_SetVolume
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cct9ZEZh.s:819    .text.BSP_AUDIO_IN_SetVolume:00000008 $d
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cct9ZEZh.s:1287   .data.AudioInVolume:00000000 AudioInVolume
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cct9ZEZh.s:822    .text.BSP_AUDIO_IN_PDMToPCM:00000000 $t
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cct9ZEZh.s:829    .text.BSP_AUDIO_IN_PDMToPCM:00000000 BSP_AUDIO_IN_PDMToPCM
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cct9ZEZh.s:863    .text.BSP_AUDIO_IN_PDMToPCM:00000040 $d
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cct9ZEZh.s:1301   .bss.PDM_FilterHandler:00000000 PDM_FilterHandler
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cct9ZEZh.s:866    .text.BSP_AUDIO_IN_ClockConfig:00000000 $t
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cct9ZEZh.s:873    .text.BSP_AUDIO_IN_ClockConfig:00000000 BSP_AUDIO_IN_ClockConfig
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cct9ZEZh.s:897    .text.BSP_AUDIO_IN_ClockConfig:00000030 $d
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cct9ZEZh.s:903    .text.BSP_AUDIO_IN_MspInit:00000000 $t
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cct9ZEZh.s:910    .text.BSP_AUDIO_IN_MspInit:00000000 BSP_AUDIO_IN_MspInit
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cct9ZEZh.s:1007   .text.BSP_AUDIO_IN_MspInit:000000e8 $d
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cct9ZEZh.s:1274   .bss.hdma_i2sRx.0:00000000 hdma_i2sRx.0
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cct9ZEZh.s:1015   .text.BSP_AUDIO_IN_Init:00000000 $t
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cct9ZEZh.s:1022   .text.BSP_AUDIO_IN_Init:00000000 BSP_AUDIO_IN_Init
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cct9ZEZh.s:1108   .text.BSP_AUDIO_IN_Init:000000d0 $d
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cct9ZEZh.s:1294   .bss.PDM_FilterConfig:00000000 PDM_FilterConfig
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cct9ZEZh.s:1117   .text.BSP_AUDIO_IN_MspDeInit:00000000 $t
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cct9ZEZh.s:1124   .text.BSP_AUDIO_IN_MspDeInit:00000000 BSP_AUDIO_IN_MspDeInit
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cct9ZEZh.s:1158   .text.BSP_AUDIO_IN_MspDeInit:00000044 $d
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cct9ZEZh.s:1164   .text.BSP_AUDIO_IN_TransferComplete_CallBack:00000000 $t
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cct9ZEZh.s:1171   .text.BSP_AUDIO_IN_TransferComplete_CallBack:00000000 BSP_AUDIO_IN_TransferComplete_CallBack
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cct9ZEZh.s:1178   .text.HAL_I2S_RxCpltCallback:00000000 $t
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cct9ZEZh.s:1185   .text.HAL_I2S_RxCpltCallback:00000000 HAL_I2S_RxCpltCallback
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cct9ZEZh.s:1193   .text.BSP_AUDIO_IN_HalfTransfer_CallBack:00000000 $t
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cct9ZEZh.s:1200   .text.BSP_AUDIO_IN_HalfTransfer_CallBack:00000000 BSP_AUDIO_IN_HalfTransfer_CallBack
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cct9ZEZh.s:1207   .text.HAL_I2S_RxHalfCpltCallback:00000000 $t
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cct9ZEZh.s:1214   .text.HAL_I2S_RxHalfCpltCallback:00000000 HAL_I2S_RxHalfCpltCallback
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cct9ZEZh.s:1222   .text.BSP_AUDIO_IN_Error_Callback:00000000 $t
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cct9ZEZh.s:1229   .text.BSP_AUDIO_IN_Error_Callback:00000000 BSP_AUDIO_IN_Error_Callback
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cct9ZEZh.s:1236   .text.HAL_I2S_ErrorCallback:00000000 $t
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cct9ZEZh.s:1243   .text.HAL_I2S_ErrorCallback:00000000 HAL_I2S_ErrorCallback
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cct9ZEZh.s:1267   .text.HAL_I2S_ErrorCallback:00000024 $d
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cct9ZEZh.s:1271   .bss.hdma_i2sRx.0:00000000 $d
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cct9ZEZh.s:1277   .bss.hdma_i2sTx.1:00000000 $d
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cct9ZEZh.s:1284   .data.AudioInVolume:00000000 $d
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cct9ZEZh.s:1291   .bss.PDM_FilterConfig:00000000 $d
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cct9ZEZh.s:1298   .bss.PDM_FilterHandler:00000000 $d
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cct9ZEZh.s:1305   .bss.hAudioInI2s:00000000 $d
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cct9ZEZh.s:1312   .bss.hAudioOutI2s:00000000 $d
+ARM GAS  /var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cct9ZEZh.s 			page 26
+
+
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cct9ZEZh.s:1318   .bss.pAudioDrv:00000000 $d
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cct9ZEZh.s:1325   .rodata.I2SPLLR:00000000 $d
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cct9ZEZh.s:1339   .rodata.I2SPLLN:00000000 $d
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cct9ZEZh.s:1353   .rodata.I2SFreq:00000000 $d
+
+UNDEFINED SYMBOLS
+HAL_I2S_Transmit_DMA
+HAL_I2S_DMAPause
+HAL_I2S_DMAResume
+HAL_I2S_DMAStop
+HAL_Delay
+HAL_GPIO_WritePin
+HAL_RCCEx_GetPeriphCLKConfig
+HAL_RCCEx_PeriphCLKConfig
+HAL_I2S_Init
+HAL_GPIO_Init
+HAL_NVIC_SetPriority
+HAL_NVIC_EnableIRQ
+HAL_DMA_DeInit
+HAL_DMA_Init
+HAL_I2S_GetState
+cs43l22_drv
+HAL_NVIC_DisableIRQ
+HAL_GPIO_DeInit
+HAL_I2S_Receive_DMA
+PDM_Filter
+PDM_Filter_Init
+PDM_Filter_setConfig

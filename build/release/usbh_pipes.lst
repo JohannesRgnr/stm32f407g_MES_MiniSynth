@@ -1,0 +1,128 @@
+ARM GAS  /var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cchoBNcT.s 			page 1
+
+
+   1              		.cpu cortex-m4
+   2              		.arch armv7e-m
+   3              		.fpu fpv4-sp-d16
+   4              		.eabi_attribute 27, 1
+   5              		.eabi_attribute 28, 1
+   6              		.eabi_attribute 20, 1
+   7              		.eabi_attribute 21, 1
+   8              		.eabi_attribute 23, 3
+   9              		.eabi_attribute 24, 1
+  10              		.eabi_attribute 25, 1
+  11              		.eabi_attribute 26, 1
+  12              		.eabi_attribute 30, 2
+  13              		.eabi_attribute 34, 1
+  14              		.eabi_attribute 18, 4
+  15              		.file	"usbh_pipes.c"
+  16              		.text
+  17              		.section	.text.USBH_OpenPipe,"ax",%progbits
+  18              		.align	1
+  19              		.p2align 2,,3
+  20              		.global	USBH_OpenPipe
+  21              		.syntax unified
+  22              		.thumb
+  23              		.thumb_func
+  25              	USBH_OpenPipe:
+  26              		@ args = 12, pretend = 0, frame = 0
+  27              		@ frame_needed = 0, uses_anonymous_args = 0
+  28 0000 10B5     		push	{r4, lr}
+  29 0002 84B0     		sub	sp, sp, #16
+  30 0004 9DF81840 		ldrb	r4, [sp, #24]	@ zero_extendqisi2
+  31 0008 0094     		str	r4, [sp]
+  32 000a 9DF81C40 		ldrb	r4, [sp, #28]	@ zero_extendqisi2
+  33 000e 0194     		str	r4, [sp, #4]
+  34 0010 BDF82040 		ldrh	r4, [sp, #32]
+  35 0014 0294     		str	r4, [sp, #8]
+  36 0016 FFF7FEFF 		bl	USBH_LL_OpenPipe
+  37 001a 0020     		movs	r0, #0
+  38 001c 04B0     		add	sp, sp, #16
+  39              		@ sp needed
+  40 001e 10BD     		pop	{r4, pc}
+  42              		.section	.text.USBH_ClosePipe,"ax",%progbits
+  43              		.align	1
+  44              		.p2align 2,,3
+  45              		.global	USBH_ClosePipe
+  46              		.syntax unified
+  47              		.thumb
+  48              		.thumb_func
+  50              	USBH_ClosePipe:
+  51              		@ args = 0, pretend = 0, frame = 0
+  52              		@ frame_needed = 0, uses_anonymous_args = 0
+  53 0000 08B5     		push	{r3, lr}
+  54 0002 FFF7FEFF 		bl	USBH_LL_ClosePipe
+  55 0006 0020     		movs	r0, #0
+  56 0008 08BD     		pop	{r3, pc}
+  58 000a 00BF     		.section	.text.USBH_AllocPipe,"ax",%progbits
+  59              		.align	1
+  60              		.p2align 2,,3
+  61              		.global	USBH_AllocPipe
+ARM GAS  /var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cchoBNcT.s 			page 2
+
+
+  62              		.syntax unified
+  63              		.thumb
+  64              		.thumb_func
+  66              	USBH_AllocPipe:
+  67              		@ args = 0, pretend = 0, frame = 0
+  68              		@ frame_needed = 0, uses_anonymous_args = 0
+  69              		@ link register save eliminated.
+  70 0000 10B4     		push	{r4}
+  71 0002 00F2CC52 		addw	r2, r0, #1484
+  72 0006 0023     		movs	r3, #0
+  73              	.L9:
+  74 0008 52F8044F 		ldr	r4, [r2, #4]!
+  75 000c 2404     		lsls	r4, r4, #16
+  76 000e 06D5     		bpl	.L12
+  77 0010 0133     		adds	r3, r3, #1
+  78 0012 0B2B     		cmp	r3, #11
+  79 0014 F8D1     		bne	.L9
+  80 0016 FF20     		movs	r0, #255
+  81 0018 5DF8044B 		ldr	r4, [sp], #4
+  82 001c 7047     		bx	lr
+  83              	.L12:
+  84 001e 03F5BA72 		add	r2, r3, #372
+  85 0022 41F40041 		orr	r1, r1, #32768
+  86 0026 40F82210 		str	r1, [r0, r2, lsl #2]
+  87 002a 5DF8044B 		ldr	r4, [sp], #4
+  88 002e D8B2     		uxtb	r0, r3
+  89 0030 7047     		bx	lr
+  91 0032 00BF     		.section	.text.USBH_FreePipe,"ax",%progbits
+  92              		.align	1
+  93              		.p2align 2,,3
+  94              		.global	USBH_FreePipe
+  95              		.syntax unified
+  96              		.thumb
+  97              		.thumb_func
+  99              	USBH_FreePipe:
+ 100              		@ args = 0, pretend = 0, frame = 0
+ 101              		@ frame_needed = 0, uses_anonymous_args = 0
+ 102              		@ link register save eliminated.
+ 103 0000 0A29     		cmp	r1, #10
+ 104 0002 07D8     		bhi	.L14
+ 105 0004 00EB8101 		add	r1, r0, r1, lsl #2
+ 106 0008 D1F8D035 		ldr	r3, [r1, #1488]
+ 107 000c C3F30E03 		ubfx	r3, r3, #0, #15
+ 108 0010 C1F8D035 		str	r3, [r1, #1488]
+ 109              	.L14:
+ 110 0014 0020     		movs	r0, #0
+ 111 0016 7047     		bx	lr
+ 113              		.ident	"GCC: (xPack GNU Arm Embedded GCC arm64) 13.3.1 20240614"
+ARM GAS  /var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cchoBNcT.s 			page 3
+
+
+DEFINED SYMBOLS
+                            *ABS*:00000000 usbh_pipes.c
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cchoBNcT.s:18     .text.USBH_OpenPipe:00000000 $t
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cchoBNcT.s:25     .text.USBH_OpenPipe:00000000 USBH_OpenPipe
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cchoBNcT.s:43     .text.USBH_ClosePipe:00000000 $t
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cchoBNcT.s:50     .text.USBH_ClosePipe:00000000 USBH_ClosePipe
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cchoBNcT.s:59     .text.USBH_AllocPipe:00000000 $t
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cchoBNcT.s:66     .text.USBH_AllocPipe:00000000 USBH_AllocPipe
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cchoBNcT.s:92     .text.USBH_FreePipe:00000000 $t
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//cchoBNcT.s:99     .text.USBH_FreePipe:00000000 USBH_FreePipe
+
+UNDEFINED SYMBOLS
+USBH_LL_OpenPipe
+USBH_LL_ClosePipe

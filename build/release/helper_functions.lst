@@ -1,0 +1,84 @@
+ARM GAS  /var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccC1cX68.s 			page 1
+
+
+   1              		.cpu cortex-m4
+   2              		.arch armv7e-m
+   3              		.fpu fpv4-sp-d16
+   4              		.eabi_attribute 27, 1
+   5              		.eabi_attribute 28, 1
+   6              		.eabi_attribute 20, 1
+   7              		.eabi_attribute 21, 1
+   8              		.eabi_attribute 23, 3
+   9              		.eabi_attribute 24, 1
+  10              		.eabi_attribute 25, 1
+  11              		.eabi_attribute 26, 1
+  12              		.eabi_attribute 30, 2
+  13              		.eabi_attribute 34, 1
+  14              		.eabi_attribute 18, 4
+  15              		.file	"helper_functions.c"
+  16              		.text
+  17              		.section	.text.interp_lin_lut,"ax",%progbits
+  18              		.align	1
+  19              		.p2align 2,,3
+  20              		.global	interp_lin_lut
+  21              		.syntax unified
+  22              		.thumb
+  23              		.thumb_func
+  25              	interp_lin_lut:
+  26              		@ args = 0, pretend = 0, frame = 0
+  27              		@ frame_needed = 0, uses_anonymous_args = 0
+  28              		@ link register save eliminated.
+  29 0000 FCEEC07A 		vcvt.u32.f32	s15, s0
+  30 0004 17EE903A 		vmov	r3, s15	@ int
+  31 0008 F8EE677A 		vcvt.f32.u32	s15, s15
+  32 000c 8342     		cmp	r3, r0
+  33 000e 70EE677A 		vsub.f32	s15, s0, s15
+  34 0012 02D9     		bls	.L2
+  35              	.L3:
+  36 0014 1B1A     		subs	r3, r3, r0
+  37 0016 8342     		cmp	r3, r0
+  38 0018 FCD8     		bhi	.L3
+  39              	.L2:
+  40 001a 0133     		adds	r3, r3, #1
+  41 001c 01EB8301 		add	r1, r1, r3, lsl #2
+  42 0020 11ED010A 		vldr.32	s0, [r1, #-4]
+  43 0024 91ED007A 		vldr.32	s14, [r1]
+  44 0028 37EE407A 		vsub.f32	s14, s14, s0
+  45 002c A7EE870A 		vfma.f32	s0, s15, s14
+  46 0030 7047     		bx	lr
+  48 0032 00BF     		.section	.text.clip,"ax",%progbits
+  49              		.align	1
+  50              		.p2align 2,,3
+  51              		.global	clip
+  52              		.syntax unified
+  53              		.thumb
+  54              		.thumb_func
+  56              	clip:
+  57              		@ args = 0, pretend = 0, frame = 0
+  58              		@ frame_needed = 0, uses_anonymous_args = 0
+  59              		@ link register save eliminated.
+  60 0000 B4EE410A 		vcmp.f32	s0, s2
+ARM GAS  /var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccC1cX68.s 			page 2
+
+
+  61 0004 F1EE10FA 		vmrs	APSR_nzcv, FPSCR
+  62 0008 48BF     		it	mi
+  63 000a B0EE401A 		vmovmi.f32	s2, s0
+  64 000e B4EE601A 		vcmp.f32	s2, s1
+  65 0012 F1EE10FA 		vmrs	APSR_nzcv, FPSCR
+  66 0016 4CBF     		ite	mi
+  67 0018 B0EE600A 		vmovmi.f32	s0, s1
+  68 001c B0EE410A 		vmovpl.f32	s0, s2
+  69 0020 7047     		bx	lr
+  71 0022 00BF     		.ident	"GCC: (xPack GNU Arm Embedded GCC arm64) 13.3.1 20240614"
+ARM GAS  /var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccC1cX68.s 			page 3
+
+
+DEFINED SYMBOLS
+                            *ABS*:00000000 helper_functions.c
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccC1cX68.s:18     .text.interp_lin_lut:00000000 $t
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccC1cX68.s:25     .text.interp_lin_lut:00000000 interp_lin_lut
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccC1cX68.s:49     .text.clip:00000000 $t
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccC1cX68.s:56     .text.clip:00000000 clip
+
+NO UNDEFINED SYMBOLS

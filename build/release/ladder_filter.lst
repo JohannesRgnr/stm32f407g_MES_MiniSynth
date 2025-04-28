@@ -1,0 +1,218 @@
+ARM GAS  /var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccpZC4nH.s 			page 1
+
+
+   1              		.cpu cortex-m4
+   2              		.arch armv7e-m
+   3              		.fpu fpv4-sp-d16
+   4              		.eabi_attribute 27, 1
+   5              		.eabi_attribute 28, 1
+   6              		.eabi_attribute 20, 1
+   7              		.eabi_attribute 21, 1
+   8              		.eabi_attribute 23, 3
+   9              		.eabi_attribute 24, 1
+  10              		.eabi_attribute 25, 1
+  11              		.eabi_attribute 26, 1
+  12              		.eabi_attribute 30, 2
+  13              		.eabi_attribute 34, 1
+  14              		.eabi_attribute 18, 4
+  15              		.file	"ladder_filter.c"
+  16              		.text
+  17              		.section	.text.MoogLP_init,"ax",%progbits
+  18              		.align	1
+  19              		.p2align 2,,3
+  20              		.global	MoogLP_init
+  21              		.syntax unified
+  22              		.thumb
+  23              		.thumb_func
+  25              	MoogLP_init:
+  26              		@ args = 0, pretend = 0, frame = 0
+  27              		@ frame_needed = 0, uses_anonymous_args = 0
+  28              		@ link register save eliminated.
+  29 0000 0023     		movs	r3, #0
+  30 0002 044A     		ldr	r2, .L3
+  31 0004 0260     		str	r2, [r0]	@ float
+  32 0006 4360     		str	r3, [r0, #4]	@ float
+  33 0008 8360     		str	r3, [r0, #8]	@ float
+  34 000a C360     		str	r3, [r0, #12]	@ float
+  35 000c 0361     		str	r3, [r0, #16]	@ float
+  36 000e 4361     		str	r3, [r0, #20]	@ float
+  37 0010 7047     		bx	lr
+  38              	.L4:
+  39 0012 00BF     		.align	2
+  40              	.L3:
+  41 0014 0000C842 		.word	1120403456
+  43              		.global	__aeabi_f2d
+  44              		.global	__aeabi_dmul
+  45              		.global	__aeabi_d2f
+  46              		.section	.text.MoogLP_compute,"ax",%progbits
+  47              		.align	1
+  48              		.p2align 2,,3
+  49              		.global	MoogLP_compute
+  50              		.syntax unified
+  51              		.thumb
+  52              		.thumb_func
+  54              	MoogLP_compute:
+  55              		@ args = 0, pretend = 0, frame = 0
+  56              		@ frame_needed = 0, uses_anonymous_args = 0
+  57 0000 10B5     		push	{r4, lr}
+  58 0002 0446     		mov	r4, r0
+  59 0004 2DED028B 		vpush.64	{d8}
+  60 0008 0068     		ldr	r0, [r0]	@ float
+ARM GAS  /var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccpZC4nH.s 			page 2
+
+
+  61 000a B0EE408A 		vmov.f32	s16, s0
+  62 000e FFF7FEFF 		bl	__aeabi_f2d
+  63 0012 61A3     		adr	r3, .L14+8
+  64 0014 D3E90023 		ldrd	r2, [r3]
+  65 0018 FFF7FEFF 		bl	__aeabi_dmul
+  66 001c 60A3     		adr	r3, .L14+16
+  67 001e D3E90023 		ldrd	r2, [r3]
+  68 0022 FFF7FEFF 		bl	__aeabi_dmul
+  69 0026 5A4B     		ldr	r3, .L14
+  70 0028 0022     		movs	r2, #0
+  71 002a FFF7FEFF 		bl	__aeabi_dmul
+  72 002e FFF7FEFF 		bl	__aeabi_d2f
+  73 0032 5849     		ldr	r1, .L14+4
+  74 0034 00EE100A 		vmov	s0, r0
+  75 0038 4FF40060 		mov	r0, #2048
+  76 003c FFF7FEFF 		bl	interp_lin_lut
+  77 0040 F7EE006A 		vmov.f32	s13, #1.0e+0
+  78 0044 70EE267A 		vadd.f32	s15, s0, s13
+  79 0048 94ED036A 		vldr.32	s12, [r4, #12]
+  80 004c D4ED044A 		vldr.32	s9, [r4, #16]
+  81 0050 94ED017A 		vldr.32	s14, [r4, #4]
+  82 0054 94ED054A 		vldr.32	s8, [r4, #20]
+  83 0058 C6EEA73A 		vdiv.f32	s7, s13, s15
+  84 005c D4ED027A 		vldr.32	s15, [r4, #8]
+  85 0060 20EE235A 		vmul.f32	s10, s0, s7
+  86 0064 F8EE081A 		vmov.f32	s3, #-3.0e+0
+  87 0068 E6EE054A 		vfma.f32	s9, s12, s10
+  88 006c 25EE053A 		vmul.f32	s6, s10, s10
+  89 0070 B4EEE18A 		vcmpe.f32	s16, s3
+  90 0074 E3EE274A 		vfma.f32	s9, s6, s15
+  91 0078 23EE052A 		vmul.f32	s4, s6, s10
+  92 007c F1EE10FA 		vmrs	APSR_nzcv, FPSCR
+  93 0080 62EE052A 		vmul.f32	s5, s4, s10
+  94 0084 E2EE074A 		vfma.f32	s9, s4, s14
+  95 0088 22EE883A 		vmul.f32	s6, s5, s16
+  96 008c B0EE662A 		vmov.f32	s4, s13
+  97 0090 A4EE222A 		vfma.f32	s4, s8, s5
+  98 0094 A4EEA33A 		vfma.f32	s6, s9, s7
+  99 0098 F0EE405A 		vmov.f32	s11, s0
+ 100 009c 83EE020A 		vdiv.f32	s0, s6, s4
+ 101 00a0 72D4     		bmi	.L8
+ 102 00a2 F0EE084A 		vmov.f32	s9, #3.0e+0
+ 103 00a6 B4EEE48A 		vcmpe.f32	s16, s9
+ 104 00aa F1EE10FA 		vmrs	APSR_nzcv, FPSCR
+ 105 00ae 55DD     		ble	.L13
+ 106              	.L6:
+ 107 00b0 64EE004A 		vmul.f32	s9, s8, s0
+ 108 00b4 B8EE084A 		vmov.f32	s8, #-3.0e+0
+ 109 00b8 F4EEC44A 		vcmpe.f32	s9, s8
+ 110 00bc F1EE10FA 		vmrs	APSR_nzcv, FPSCR
+ 111 00c0 5FD4     		bmi	.L10
+ 112 00c2 B0EE084A 		vmov.f32	s8, #3.0e+0
+ 113 00c6 F4EEC44A 		vcmpe.f32	s9, s8
+ 114 00ca F1EE10FA 		vmrs	APSR_nzcv, FPSCR
+ 115 00ce 42DC     		bgt	.L11
+ 116 00d0 B3EE0B4A 		vmov.f32	s8, #2.7e+1
+ 117 00d4 F2EE022A 		vmov.f32	s5, #9.0e+0
+ARM GAS  /var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccpZC4nH.s 			page 3
+
+
+ 118 00d8 64EEA22A 		vmul.f32	s5, s9, s5
+ 119 00dc B0EE442A 		vmov.f32	s4, s8
+ 120 00e0 A4EEA42A 		vfma.f32	s4, s9, s9
+ 121 00e4 A4EEA24A 		vfma.f32	s8, s9, s5
+ 122 00e8 64EE824A 		vmul.f32	s9, s9, s4
+ 123 00ec B0EE443A 		vmov.f32	s6, s8
+ 124 00f0 84EE834A 		vdiv.f32	s8, s9, s6
+ 125              	.L7:
+ 126 00f4 BDEC028B 		vldm	sp!, {d8}
+ 127 00f8 76EEC46A 		vsub.f32	s13, s13, s8
+ 128 00fc 27EE237A 		vmul.f32	s14, s14, s7
+ 129 0100 67EEA37A 		vmul.f32	s15, s15, s7
+ 130 0104 A5EE267A 		vfma.f32	s14, s10, s13
+ 131 0108 26EE236A 		vmul.f32	s12, s12, s7
+ 132 010c E5EE077A 		vfma.f32	s15, s10, s14
+ 133 0110 76EEC76A 		vsub.f32	s13, s13, s14
+ 134 0114 F0EE474A 		vmov.f32	s9, s14
+ 135 0118 E6EEA54A 		vfma.f32	s9, s13, s11
+ 136 011c F0EE466A 		vmov.f32	s13, s12
+ 137 0120 E5EE276A 		vfma.f32	s13, s10, s15
+ 138 0124 37EE677A 		vsub.f32	s14, s14, s15
+ 139 0128 B0EE676A 		vmov.f32	s12, s15
+ 140 012c 77EEE67A 		vsub.f32	s15, s15, s13
+ 141 0130 A7EE256A 		vfma.f32	s12, s14, s11
+ 142 0134 36EEC07A 		vsub.f32	s14, s13, s0
+ 143 0138 E7EEA56A 		vfma.f32	s13, s15, s11
+ 144 013c F0EE407A 		vmov.f32	s15, s0
+ 145 0140 E7EE257A 		vfma.f32	s15, s14, s11
+ 146 0144 C4ED014A 		vstr.32	s9, [r4, #4]
+ 147 0148 84ED026A 		vstr.32	s12, [r4, #8]
+ 148 014c C4ED036A 		vstr.32	s13, [r4, #12]
+ 149 0150 C4ED047A 		vstr.32	s15, [r4, #16]
+ 150 0154 10BD     		pop	{r4, pc}
+ 151              	.L11:
+ 152 0156 B7EE004A 		vmov.f32	s8, #1.0e+0
+ 153 015a CBE7     		b	.L7
+ 154              	.L13:
+ 155 015c F3EE0B6A 		vmov.f32	s13, #2.7e+1
+ 156 0160 B2EE023A 		vmov.f32	s6, #9.0e+0
+ 157 0164 28EE033A 		vmul.f32	s6, s16, s6
+ 158 0168 F0EE662A 		vmov.f32	s5, s13
+ 159 016c E8EE082A 		vfma.f32	s5, s16, s16
+ 160 0170 E8EE036A 		vfma.f32	s13, s16, s6
+ 161 0174 28EE228A 		vmul.f32	s16, s16, s5
+ 162 0178 F0EE664A 		vmov.f32	s9, s13
+ 163 017c C8EE246A 		vdiv.f32	s13, s16, s9
+ 164 0180 96E7     		b	.L6
+ 165              	.L10:
+ 166 0182 BFEE004A 		vmov.f32	s8, #-1.0e+0
+ 167 0186 B5E7     		b	.L7
+ 168              	.L8:
+ 169 0188 FFEE006A 		vmov.f32	s13, #-1.0e+0
+ 170 018c 90E7     		b	.L6
+ 171              	.L15:
+ 172 018e 00BF     		.align	3
+ 173              	.L14:
+ 174 0190 0000A040 		.word	1084227584
+ARM GAS  /var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccpZC4nH.s 			page 4
+
+
+ 175 0194 00000000 		.word	tan_lut
+ 176 0198 EA2E4454 		.word	1413754602
+ 177 019c FB21F93F 		.word	1073291771
+ 178 01a0 000000C0 		.word	-1073741824
+ 179 01a4 F8C6F73E 		.word	1056425720
+ 181              		.global	Moog_filter
+ 182              		.section	.bss.Moog_filter,"aw",%nobits
+ 183              		.align	2
+ 186              	Moog_filter:
+ 187 0000 00000000 		.space	24
+ 187      00000000 
+ 187      00000000 
+ 187      00000000 
+ 187      00000000 
+ 188              		.ident	"GCC: (xPack GNU Arm Embedded GCC arm64) 13.3.1 20240614"
+ARM GAS  /var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccpZC4nH.s 			page 5
+
+
+DEFINED SYMBOLS
+                            *ABS*:00000000 ladder_filter.c
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccpZC4nH.s:18     .text.MoogLP_init:00000000 $t
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccpZC4nH.s:25     .text.MoogLP_init:00000000 MoogLP_init
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccpZC4nH.s:41     .text.MoogLP_init:00000014 $d
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccpZC4nH.s:47     .text.MoogLP_compute:00000000 $t
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccpZC4nH.s:54     .text.MoogLP_compute:00000000 MoogLP_compute
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccpZC4nH.s:174    .text.MoogLP_compute:00000190 $d
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccpZC4nH.s:186    .bss.Moog_filter:00000000 Moog_filter
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccpZC4nH.s:183    .bss.Moog_filter:00000000 $d
+
+UNDEFINED SYMBOLS
+__aeabi_f2d
+__aeabi_dmul
+__aeabi_d2f
+interp_lin_lut
+tan_lut

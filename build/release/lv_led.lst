@@ -1,0 +1,653 @@
+ARM GAS  /var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccPeniOU.s 			page 1
+
+
+   1              		.cpu cortex-m4
+   2              		.arch armv7e-m
+   3              		.fpu fpv4-sp-d16
+   4              		.eabi_attribute 27, 1
+   5              		.eabi_attribute 28, 1
+   6              		.eabi_attribute 20, 1
+   7              		.eabi_attribute 21, 1
+   8              		.eabi_attribute 23, 3
+   9              		.eabi_attribute 24, 1
+  10              		.eabi_attribute 25, 1
+  11              		.eabi_attribute 26, 1
+  12              		.eabi_attribute 30, 2
+  13              		.eabi_attribute 34, 1
+  14              		.eabi_attribute 18, 4
+  15              		.file	"lv_led.c"
+  16              		.text
+  17              		.section	.text.lv_led_constructor,"ax",%progbits
+  18              		.align	1
+  19              		.p2align 2,,3
+  20              		.syntax unified
+  21              		.thumb
+  22              		.thumb_func
+  24              	lv_led_constructor:
+  25              		@ args = 0, pretend = 0, frame = 0
+  26              		@ frame_needed = 0, uses_anonymous_args = 0
+  27 0000 10B5     		push	{r4, lr}
+  28 0002 0846     		mov	r0, r1
+  29 0004 0C46     		mov	r4, r1
+  30 0006 FFF7FEFF 		bl	lv_theme_get_color_primary
+  31 000a FF23     		movs	r3, #255
+  32 000c 84F82630 		strb	r3, [r4, #38]
+  33 0010 A084     		strh	r0, [r4, #36]	@ movhi
+  34 0012 10BD     		pop	{r4, pc}
+  36              		.section	.text.lv_led_event,"ax",%progbits
+  37              		.align	1
+  38              		.p2align 2,,3
+  39              		.syntax unified
+  40              		.thumb
+  41              		.thumb_func
+  43              	lv_led_event:
+  44              		@ args = 0, pretend = 0, frame = 184
+  45              		@ frame_needed = 0, uses_anonymous_args = 0
+  46 0000 2DE9F04F 		push	{r4, r5, r6, r7, r8, r9, r10, fp, lr}
+  47 0004 0846     		mov	r0, r1
+  48 0006 AFB0     		sub	sp, sp, #188
+  49 0008 0C46     		mov	r4, r1
+  50 000a FFF7FEFF 		bl	lv_event_get_code
+  51 000e A0F11503 		sub	r3, r0, #21
+  52 0012 DBB2     		uxtb	r3, r3
+  53 0014 012B     		cmp	r3, #1
+  54 0016 11D9     		bls	.L5
+  55 0018 0748     		ldr	r0, .L11
+  56 001a 2146     		mov	r1, r4
+  57 001c FFF7FEFF 		bl	lv_obj_event_base
+  58 0020 0128     		cmp	r0, #1
+  59 0022 02D0     		beq	.L10
+  60              	.L4:
+ARM GAS  /var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccPeniOU.s 			page 2
+
+
+  61 0024 2FB0     		add	sp, sp, #188
+  62              		@ sp needed
+  63 0026 BDE8F08F 		pop	{r4, r5, r6, r7, r8, r9, r10, fp, pc}
+  64              	.L10:
+  65 002a 2046     		mov	r0, r4
+  66 002c 2FB0     		add	sp, sp, #188
+  67              		@ sp needed
+  68 002e BDE8F04F 		pop	{r4, r5, r6, r7, r8, r9, r10, fp, lr}
+  69 0032 FFF7FEBF 		b	lv_event_get_target
+  70              	.L12:
+  71 0036 00BF     		.align	2
+  72              	.L11:
+  73 0038 00000000 		.word	lv_led_class
+  74              	.L5:
+  75 003c 0546     		mov	r5, r0
+  76 003e 2046     		mov	r0, r4
+  77 0040 FFF7FEFF 		bl	lv_event_get_target
+  78 0044 152D     		cmp	r5, #21
+  79 0046 0646     		mov	r6, r0
+  80 0048 ECD1     		bne	.L4
+  81 004a 0EA8     		add	r0, sp, #56
+  82 004c FFF7FEFF 		bl	lv_draw_rect_dsc_init
+  83 0050 0EAA     		add	r2, sp, #56
+  84 0052 3046     		mov	r0, r6
+  85 0054 0021     		movs	r1, #0
+  86 0056 0196     		str	r6, [sp, #4]
+  87 0058 FFF7FEFF 		bl	lv_obj_init_draw_rect_dsc
+  88 005c BDF85670 		ldrh	r7, [sp, #86]
+  89 0060 BDF83C90 		ldrh	r9, [sp, #60]
+  90 0064 BDF85C60 		ldrh	r6, [sp, #92]
+  91 0068 BDF83E80 		ldrh	r8, [sp, #62]
+  92 006c BDF842E0 		ldrh	lr, [sp, #66]
+  93 0070 BDF864C0 		ldrh	ip, [sp, #100]
+  94 0074 C7F3C403 		ubfx	r3, r7, #3, #5
+  95 0078 0B93     		str	r3, [sp, #44]
+  96 007a C9F3423A 		ubfx	r10, r9, #13, #3
+  97 007e C6F3C403 		ubfx	r3, r6, #3, #5
+  98 0082 09F0070B 		and	fp, r9, #7
+  99 0086 0D93     		str	r3, [sp, #52]
+ 100 0088 C9F3C405 		ubfx	r5, r9, #3, #5
+ 101 008c 0AEBCB0B 		add	fp, r10, fp, lsl #3
+ 102 0090 C9F30423 		ubfx	r3, r9, #8, #5
+ 103 0094 2046     		mov	r0, r4
+ 104 0096 C8F34239 		ubfx	r9, r8, #13, #3
+ 105 009a C8F3C404 		ubfx	r4, r8, #3, #5
+ 106 009e 08F0070A 		and	r10, r8, #7
+ 107 00a2 C8F30428 		ubfx	r8, r8, #8, #5
+ 108 00a6 CDF81480 		str	r8, [sp, #20]
+ 109 00aa CEF3C401 		ubfx	r1, lr, #3, #5
+ 110 00ae 09EBCA0A 		add	r10, r9, r10, lsl #3
+ 111 00b2 CEF34238 		ubfx	r8, lr, #13, #3
+ 112 00b6 0EF00709 		and	r9, lr, #7
+ 113 00ba CEF3042E 		ubfx	lr, lr, #8, #5
+ 114 00be CDF810E0 		str	lr, [sp, #16]
+ 115 00c2 CCF3C402 		ubfx	r2, ip, #3, #5
+ 116 00c6 08EBC909 		add	r9, r8, r9, lsl #3
+ 117 00ca CCF3423E 		ubfx	lr, ip, #13, #3
+ARM GAS  /var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccPeniOU.s 			page 3
+
+
+ 118 00ce 0CF00708 		and	r8, ip, #7
+ 119 00d2 CCF3042C 		ubfx	ip, ip, #8, #5
+ 120 00d6 CDF80CC0 		str	ip, [sp, #12]
+ 121 00da 0EEBC808 		add	r8, lr, r8, lsl #3
+ 122 00de C7F3423C 		ubfx	ip, r7, #13, #3
+ 123 00e2 07F0070E 		and	lr, r7, #7
+ 124 00e6 C7F30427 		ubfx	r7, r7, #8, #5
+ 125 00ea 0297     		str	r7, [sp, #8]
+ 126 00ec 0CEBCE0E 		add	lr, ip, lr, lsl #3
+ 127 00f0 C6F34237 		ubfx	r7, r6, #13, #3
+ 128 00f4 06F0070C 		and	ip, r6, #7
+ 129 00f8 07EBCC07 		add	r7, r7, ip, lsl #3
+ 130 00fc C6F3042C 		ubfx	ip, r6, #8, #5
+ 131 0100 05EB4516 		add	r6, r5, r5, lsl #5
+ 132 0104 C5EBC605 		rsb	r5, r5, r6, lsl #3
+ 133 0108 0735     		adds	r5, r5, #7
+ 134 010a 6E11     		asrs	r6, r5, #5
+ 135 010c 04EB4415 		add	r5, r4, r4, lsl #5
+ 136 0110 C4EBC504 		rsb	r4, r4, r5, lsl #3
+ 137 0114 0734     		adds	r4, r4, #7
+ 138 0116 6411     		asrs	r4, r4, #5
+ 139 0118 0894     		str	r4, [sp, #32]
+ 140 011a 01EB4114 		add	r4, r1, r1, lsl #5
+ 141 011e C1EBC401 		rsb	r1, r1, r4, lsl #3
+ 142 0122 0731     		adds	r1, r1, #7
+ 143 0124 4911     		asrs	r1, r1, #5
+ 144 0126 0991     		str	r1, [sp, #36]
+ 145 0128 02EB4211 		add	r1, r2, r2, lsl #5
+ 146 012c 0693     		str	r3, [sp, #24]
+ 147 012e C2EBC102 		rsb	r2, r2, r1, lsl #3
+ 148 0132 0B9B     		ldr	r3, [sp, #44]
+ 149 0134 0796     		str	r6, [sp, #28]
+ 150 0136 0732     		adds	r2, r2, #7
+ 151 0138 5111     		asrs	r1, r2, #5
+ 152 013a 03EB4312 		add	r2, r3, r3, lsl #5
+ 153 013e C3EBC203 		rsb	r3, r3, r2, lsl #3
+ 154 0142 0D9A     		ldr	r2, [sp, #52]
+ 155 0144 0A91     		str	r1, [sp, #40]
+ 156 0146 0733     		adds	r3, r3, #7
+ 157 0148 5D11     		asrs	r5, r3, #5
+ 158 014a 02EB4213 		add	r3, r2, r2, lsl #5
+ 159 014e C2EBC303 		rsb	r3, r2, r3, lsl #3
+ 160 0152 0733     		adds	r3, r3, #7
+ 161 0154 5911     		asrs	r1, r3, #5
+ 162 0156 0BEBCB13 		add	r3, fp, fp, lsl #7
+ 163 015a 0BEB430B 		add	fp, fp, r3, lsl #1
+ 164 015e 0AEBCA13 		add	r3, r10, r10, lsl #7
+ 165 0162 0AEB430A 		add	r10, r10, r3, lsl #1
+ 166 0166 09EBC913 		add	r3, r9, r9, lsl #7
+ 167 016a 09EB4309 		add	r9, r9, r3, lsl #1
+ 168 016e 08EBC813 		add	r3, r8, r8, lsl #7
+ 169 0172 069A     		ldr	r2, [sp, #24]
+ 170 0174 0D91     		str	r1, [sp, #52]
+ 171 0176 08EB4308 		add	r8, r8, r3, lsl #1
+ 172 017a 0EEBCE13 		add	r3, lr, lr, lsl #7
+ 173 017e 0EEB430E 		add	lr, lr, r3, lsl #1
+ 174 0182 07EBC713 		add	r3, r7, r7, lsl #7
+ARM GAS  /var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccPeniOU.s 			page 4
+
+
+ 175 0186 07EB4307 		add	r7, r7, r3, lsl #1
+ 176 018a 02EB4213 		add	r3, r2, r2, lsl #5
+ 177 018e C2EBC306 		rsb	r6, r2, r3, lsl #3
+ 178 0192 059A     		ldr	r2, [sp, #20]
+ 179 0194 039C     		ldr	r4, [sp, #12]
+ 180 0196 0C95     		str	r5, [sp, #48]
+ 181 0198 02EB4213 		add	r3, r2, r2, lsl #5
+ 182 019c 0736     		adds	r6, r6, #7
+ 183 019e C2EBC301 		rsb	r1, r2, r3, lsl #3
+ 184 01a2 7611     		asrs	r6, r6, #5
+ 185 01a4 049A     		ldr	r2, [sp, #16]
+ 186 01a6 0696     		str	r6, [sp, #24]
+ 187 01a8 08F10308 		add	r8, r8, #3
+ 188 01ac 079E     		ldr	r6, [sp, #28]
+ 189 01ae 029D     		ldr	r5, [sp, #8]
+ 190 01b0 4FEAA818 		asr	r8, r8, #6
+ 191 01b4 0EF1030E 		add	lr, lr, #3
+ 192 01b8 CDF82C80 		str	r8, [sp, #44]
+ 193 01bc 02EB4213 		add	r3, r2, r2, lsl #5
+ 194 01c0 4FEAAE18 		asr	r8, lr, #6
+ 195 01c4 0BF1030B 		add	fp, fp, #3
+ 196 01c8 4FF0000E 		mov	lr, #0
+ 197 01cc 4FEAAB1B 		asr	fp, fp, #6
+ 198 01d0 C2EBC303 		rsb	r3, r2, r3, lsl #3
+ 199 01d4 66F3174E 		bfi	lr, r6, #16, #8
+ 200 01d8 04EB4412 		add	r2, r4, r4, lsl #5
+ 201 01dc 069E     		ldr	r6, [sp, #24]
+ 202 01de C4EBC202 		rsb	r2, r4, r2, lsl #3
+ 203 01e2 6BF30F2E 		bfi	lr, fp, #8, #8
+ 204 01e6 05EB4514 		add	r4, r5, r5, lsl #5
+ 205 01ea C5EBC404 		rsb	r4, r5, r4, lsl #3
+ 206 01ee 66F3070E 		bfi	lr, r6, #0, #8
+ 207 01f2 0CEB4C15 		add	r5, ip, ip, lsl #5
+ 208 01f6 089E     		ldr	r6, [sp, #32]
+ 209 01f8 CCEBC505 		rsb	r5, ip, r5, lsl #3
+ 210 01fc 0AF1030A 		add	r10, r10, #3
+ 211 0200 4FF0000C 		mov	ip, #0
+ 212 0204 4FEAAA1A 		asr	r10, r10, #6
+ 213 0208 66F3174C 		bfi	ip, r6, #16, #8
+ 214 020c 0731     		adds	r1, r1, #7
+ 215 020e 099E     		ldr	r6, [sp, #36]
+ 216 0210 4911     		asrs	r1, r1, #5
+ 217 0212 6AF30F2C 		bfi	ip, r10, #8, #8
+ 218 0216 61F3070C 		bfi	ip, r1, #0, #8
+ 219 021a 09F10309 		add	r9, r9, #3
+ 220 021e 0021     		movs	r1, #0
+ 221 0220 4FEAA919 		asr	r9, r9, #6
+ 222 0224 66F31741 		bfi	r1, r6, #16, #8
+ 223 0228 0733     		adds	r3, r3, #7
+ 224 022a 0A9E     		ldr	r6, [sp, #40]
+ 225 022c 5B11     		asrs	r3, r3, #5
+ 226 022e 69F30F21 		bfi	r1, r9, #8, #8
+ 227 0232 63F30701 		bfi	r1, r3, #0, #8
+ 228 0236 0023     		movs	r3, #0
+ 229 0238 66F31743 		bfi	r3, r6, #16, #8
+ 230 023c 0B9E     		ldr	r6, [sp, #44]
+ 231 023e 0732     		adds	r2, r2, #7
+ARM GAS  /var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccPeniOU.s 			page 5
+
+
+ 232 0240 5211     		asrs	r2, r2, #5
+ 233 0242 66F30F23 		bfi	r3, r6, #8, #8
+ 234 0246 0C9E     		ldr	r6, [sp, #48]
+ 235 0248 62F30703 		bfi	r3, r2, #0, #8
+ 236 024c 0022     		movs	r2, #0
+ 237 024e 4EF07F4E 		orr	lr, lr, #-16777216
+ 238 0252 66F31742 		bfi	r2, r6, #16, #8
+ 239 0256 0734     		adds	r4, r4, #7
+ 240 0258 0D9E     		ldr	r6, [sp, #52]
+ 241 025a 6411     		asrs	r4, r4, #5
+ 242 025c 68F30F22 		bfi	r2, r8, #8, #8
+ 243 0260 CEF3074A 		ubfx	r10, lr, #16, #8
+ 244 0264 4CF07F4C 		orr	ip, ip, #-16777216
+ 245 0268 CEF3072B 		ubfx	fp, lr, #8, #8
+ 246 026c 64F30702 		bfi	r2, r4, #0, #8
+ 247 0270 0337     		adds	r7, r7, #3
+ 248 0272 0024     		movs	r4, #0
+ 249 0274 0AEB4A0A 		add	r10, r10, r10, lsl #1
+ 250 0278 0AEB8B0A 		add	r10, r10, fp, lsl #2
+ 251 027c BF11     		asrs	r7, r7, #6
+ 252 027e 66F31744 		bfi	r4, r6, #16, #8
+ 253 0282 CCF30749 		ubfx	r9, ip, #16, #8
+ 254 0286 0735     		adds	r5, r5, #7
+ 255 0288 41F07F41 		orr	r1, r1, #-16777216
+ 256 028c 6D11     		asrs	r5, r5, #5
+ 257 028e 67F30F24 		bfi	r4, r7, #8, #8
+ 258 0292 5AFA8EFE 		uxtab	lr, r10, lr
+ 259 0296 09EB4909 		add	r9, r9, r9, lsl #1
+ 260 029a CCF3072A 		ubfx	r10, ip, #8, #8
+ 261 029e 09EB8A09 		add	r9, r9, r10, lsl #2
+ 262 02a2 65F30704 		bfi	r4, r5, #0, #8
+ 263 02a6 C1F30748 		ubfx	r8, r1, #16, #8
+ 264 02aa 43F07F43 		orr	r3, r3, #-16777216
+ 265 02ae 44F07F44 		orr	r4, r4, #-16777216
+ 266 02b2 59FA8CFC 		uxtab	ip, r9, ip
+ 267 02b6 08EB4808 		add	r8, r8, r8, lsl #1
+ 268 02ba C1F30729 		ubfx	r9, r1, #8, #8
+ 269 02be 08EB8908 		add	r8, r8, r9, lsl #2
+ 270 02c2 C3F30747 		ubfx	r7, r3, #16, #8
+ 271 02c6 C4F30745 		ubfx	r5, r4, #16, #8
+ 272 02ca 42F07F42 		orr	r2, r2, #-16777216
+ 273 02ce 05EB4505 		add	r5, r5, r5, lsl #1
+ 274 02d2 58FA81F1 		uxtab	r1, r8, r1
+ 275 02d6 07EB4707 		add	r7, r7, r7, lsl #1
+ 276 02da C3F30728 		ubfx	r8, r3, #8, #8
+ 277 02de 0295     		str	r5, [sp, #8]
+ 278 02e0 07EB8807 		add	r7, r7, r8, lsl #2
+ 279 02e4 019D     		ldr	r5, [sp, #4]
+ 280 02e6 C2F30746 		ubfx	r6, r2, #16, #8
+ 281 02ea 57FA83F3 		uxtab	r3, r7, r3
+ 282 02ee 06EB4606 		add	r6, r6, r6, lsl #1
+ 283 02f2 C2F30727 		ubfx	r7, r2, #8, #8
+ 284 02f6 AD8C     		ldrh	r5, [r5, #36]
+ 285 02f8 06EB8706 		add	r6, r6, r7, lsl #2
+ 286 02fc 029F     		ldr	r7, [sp, #8]
+ 287 02fe 56FA82F2 		uxtab	r2, r6, r2
+ 288 0302 C4F30726 		ubfx	r6, r4, #8, #8
+ARM GAS  /var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccPeniOU.s 			page 6
+
+
+ 289 0306 07EB8606 		add	r6, r7, r6, lsl #2
+ 290 030a 6DBA     		rev16	r5, r5
+ 291 030c 56FA84F4 		uxtab	r4, r6, r4
+ 292 0310 2F04     		lsls	r7, r5, #16
+ 293 0312 6C4E     		ldr	r6, .L13
+ 294 0314 CEF3CC0E 		ubfx	lr, lr, #3, #13
+ 295 0318 17FA85F5 		uxtah	r5, r7, r5
+ 296 031c 0EF1040E 		add	lr, lr, #4
+ 297 0320 CCF3CC0C 		ubfx	ip, ip, #3, #13
+ 298 0324 3540     		ands	r5, r5, r6
+ 299 0326 4FEADE0E 		lsr	lr, lr, #3
+ 300 032a 0CF1040C 		add	ip, ip, #4
+ 301 032e C1F3CC01 		ubfx	r1, r1, #3, #13
+ 302 0332 C3F3CC03 		ubfx	r3, r3, #3, #13
+ 303 0336 05FB0EF7 		mul	r7, r5, lr
+ 304 033a 4FEADC0C 		lsr	ip, ip, #3
+ 305 033e 0431     		adds	r1, r1, #4
+ 306 0340 0433     		adds	r3, r3, #4
+ 307 0342 C2F3CC02 		ubfx	r2, r2, #3, #13
+ 308 0346 05FB0CFC 		mul	ip, r5, ip
+ 309 034a C908     		lsrs	r1, r1, #3
+ 310 034c 06EA5717 		and	r7, r6, r7, lsr #5
+ 311 0350 DB08     		lsrs	r3, r3, #3
+ 312 0352 0432     		adds	r2, r2, #4
+ 313 0354 05FB01F8 		mul	r8, r5, r1
+ 314 0358 05FB03F3 		mul	r3, r5, r3
+ 315 035c 06EA5C1E 		and	lr, r6, ip, lsr #5
+ 316 0360 D208     		lsrs	r2, r2, #3
+ 317 0362 47EA1747 		orr	r7, r7, r7, lsr #16
+ 318 0366 C4F3CC04 		ubfx	r4, r4, #3, #13
+ 319 036a 05FB02F1 		mul	r1, r5, r2
+ 320 036e 06EA5818 		and	r8, r6, r8, lsr #5
+ 321 0372 06EA5312 		and	r2, r6, r3, lsr #5
+ 322 0376 4EEA1E4E 		orr	lr, lr, lr, lsr #16
+ 323 037a 3B04     		lsls	r3, r7, #16
+ 324 037c 0434     		adds	r4, r4, #4
+ 325 037e 06EA5111 		and	r1, r6, r1, lsr #5
+ 326 0382 48EA1848 		orr	r8, r8, r8, lsr #16
+ 327 0386 13FA87F7 		uxtah	r7, r3, r7
+ 328 038a E408     		lsrs	r4, r4, #3
+ 329 038c 4FEA0E43 		lsl	r3, lr, #16
+ 330 0390 05FB04F4 		mul	r4, r5, r4
+ 331 0394 41EA1141 		orr	r1, r1, r1, lsr #16
+ 332 0398 019D     		ldr	r5, [sp, #4]
+ 333 039a 13FA8EFE 		uxtah	lr, r3, lr
+ 334 039e 4FEA0843 		lsl	r3, r8, #16
+ 335 03a2 06EA5414 		and	r4, r6, r4, lsr #5
+ 336 03a6 42EA1242 		orr	r2, r2, r2, lsr #16
+ 337 03aa 13FA88F8 		uxtah	r8, r3, r8
+ 338 03ae 0B04     		lsls	r3, r1, #16
+ 339 03b0 95F82650 		ldrb	r5, [r5, #38]	@ zero_extendqisi2
+ 340 03b4 44EA1444 		orr	r4, r4, r4, lsr #16
+ 341 03b8 13FA81F1 		uxtah	r1, r3, r1
+ 342 03bc 1304     		lsls	r3, r2, #16
+ 343 03be 13FA82F2 		uxtah	r2, r3, r2
+ 344 03c2 2304     		lsls	r3, r4, #16
+ 345 03c4 13FA84FC 		uxtah	ip, r3, r4
+ARM GAS  /var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccPeniOU.s 			page 7
+
+
+ 346 03c8 2B1D     		adds	r3, r5, #4
+ 347 03ca DB08     		lsrs	r3, r3, #3
+ 348 03cc 3240     		ands	r2, r2, r6
+ 349 03ce 3140     		ands	r1, r1, r6
+ 350 03d0 0CEA060C 		and	ip, ip, r6
+ 351 03d4 03FB02F2 		mul	r2, r3, r2
+ 352 03d8 03FB0CFC 		mul	ip, r3, ip
+ 353 03dc 08EA0608 		and	r8, r8, r6
+ 354 03e0 3740     		ands	r7, r7, r6
+ 355 03e2 0EEA060E 		and	lr, lr, r6
+ 356 03e6 03FB01F1 		mul	r1, r3, r1
+ 357 03ea 06EA5212 		and	r2, r6, r2, lsr #5
+ 358 03ee 03FB08F4 		mul	r4, r3, r8
+ 359 03f2 03FB07F7 		mul	r7, r3, r7
+ 360 03f6 03FB0EFE 		mul	lr, r3, lr
+ 361 03fa 06EA5111 		and	r1, r6, r1, lsr #5
+ 362 03fe 06EA5C13 		and	r3, r6, ip, lsr #5
+ 363 0402 42EA1242 		orr	r2, r2, r2, lsr #16
+ 364 0406 52BA     		rev16	r2, r2
+ 365 0408 41EA1141 		orr	r1, r1, r1, lsr #16
+ 366 040c 43EA1343 		orr	r3, r3, r3, lsr #16
+ 367 0410 ADF86420 		strh	r2, [sp, #100]	@ movhi
+ 368 0414 06EA5414 		and	r4, r6, r4, lsr #5
+ 369 0418 BDF96620 		ldrsh	r2, [sp, #102]
+ 370 041c 49BA     		rev16	r1, r1
+ 371 041e 5BBA     		rev16	r3, r3
+ 372 0420 503D     		subs	r5, r5, #80
+ 373 0422 ADF85610 		strh	r1, [sp, #86]	@ movhi
+ 374 0426 ADF85C30 		strh	r3, [sp, #92]	@ movhi
+ 375 042a 2749     		ldr	r1, .L13+4
+ 376 042c BDF96C30 		ldrsh	r3, [sp, #108]
+ 377 0430 44EA1444 		orr	r4, r4, r4, lsr #16
+ 378 0434 05FB02F2 		mul	r2, r5, r2
+ 379 0438 64BA     		rev16	r4, r4
+ 380 043a 05FB03F3 		mul	r3, r5, r3
+ 381 043e ADF84240 		strh	r4, [sp, #66]	@ movhi
+ 382 0442 D417     		asrs	r4, r2, #31
+ 383 0444 81FB0252 		smull	r5, r2, r1, r2
+ 384 0448 06EA5E1E 		and	lr, r6, lr, lsr #5
+ 385 044c C4EBA212 		rsb	r2, r4, r2, asr #6
+ 386 0450 06EA5717 		and	r7, r6, r7, lsr #5
+ 387 0454 ADF86620 		strh	r2, [sp, #102]	@ movhi
+ 388 0458 4EEA1E46 		orr	r6, lr, lr, lsr #16
+ 389 045c 81FB0321 		smull	r2, r1, r1, r3
+ 390 0460 47EA1747 		orr	r7, r7, r7, lsr #16
+ 391 0464 DB17     		asrs	r3, r3, #31
+ 392 0466 C3EBA113 		rsb	r3, r3, r1, asr #6
+ 393 046a 7FBA     		rev16	r7, r7
+ 394 046c 76BA     		rev16	r6, r6
+ 395 046e ADF83E60 		strh	r6, [sp, #62]	@ movhi
+ 396 0472 ADF86C30 		strh	r3, [sp, #108]	@ movhi
+ 397 0476 ADF83C70 		strh	r7, [sp, #60]	@ movhi
+ 398 047a FFF7FEFF 		bl	lv_event_get_draw_ctx
+ 399 047e 1CAB     		add	r3, sp, #112
+ 400 0480 0446     		mov	r4, r0
+ 401 0482 0146     		mov	r1, r0
+ 402 0484 1846     		mov	r0, r3
+ARM GAS  /var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccPeniOU.s 			page 8
+
+
+ 403 0486 FFF7FEFF 		bl	lv_obj_draw_dsc_init
+ 404 048a 019E     		ldr	r6, [sp, #4]
+ 405 048c 0EAB     		add	r3, sp, #56
+ 406 048e 2093     		str	r3, [sp, #128]
+ 407 0490 0023     		movs	r3, #0
+ 408 0492 06F11405 		add	r5, r6, #20
+ 409 0496 1E93     		str	r3, [sp, #120]
+ 410 0498 2993     		str	r3, [sp, #164]
+ 411 049a 1CAA     		add	r2, sp, #112
+ 412 049c 0B4B     		ldr	r3, .L13+8
+ 413 049e 1D93     		str	r3, [sp, #116]
+ 414 04a0 3046     		mov	r0, r6
+ 415 04a2 1A21     		movs	r1, #26
+ 416 04a4 1F95     		str	r5, [sp, #124]
+ 417 04a6 FFF7FEFF 		bl	lv_event_send
+ 418 04aa 2A46     		mov	r2, r5
+ 419 04ac 0EA9     		add	r1, sp, #56
+ 420 04ae 2046     		mov	r0, r4
+ 421 04b0 FFF7FEFF 		bl	lv_draw_rect
+ 422 04b4 1CAA     		add	r2, sp, #112
+ 423 04b6 1B21     		movs	r1, #27
+ 424 04b8 3046     		mov	r0, r6
+ 425 04ba FFF7FEFF 		bl	lv_event_send
+ 426 04be 2FB0     		add	sp, sp, #188
+ 427              		@ sp needed
+ 428 04c0 BDE8F08F 		pop	{r4, r5, r6, r7, r8, r9, r10, fp, pc}
+ 429              	.L14:
+ 430              		.align	2
+ 431              	.L13:
+ 432 04c4 1FF8E007 		.word	132184095
+ 433 04c8 91739F5D 		.word	1570730897
+ 434 04cc 00000000 		.word	lv_led_class
+ 436              		.section	.text.lv_led_create,"ax",%progbits
+ 437              		.align	1
+ 438              		.p2align 2,,3
+ 439              		.global	lv_led_create
+ 440              		.syntax unified
+ 441              		.thumb
+ 442              		.thumb_func
+ 444              	lv_led_create:
+ 445              		@ args = 0, pretend = 0, frame = 0
+ 446              		@ frame_needed = 0, uses_anonymous_args = 0
+ 447 0000 10B5     		push	{r4, lr}
+ 448 0002 0146     		mov	r1, r0
+ 449 0004 0348     		ldr	r0, .L17
+ 450 0006 FFF7FEFF 		bl	lv_obj_class_create_obj
+ 451 000a 0446     		mov	r4, r0
+ 452 000c FFF7FEFF 		bl	lv_obj_class_init_obj
+ 453 0010 2046     		mov	r0, r4
+ 454 0012 10BD     		pop	{r4, pc}
+ 455              	.L18:
+ 456              		.align	2
+ 457              	.L17:
+ 458 0014 00000000 		.word	lv_led_class
+ 460              		.section	.text.lv_led_set_color,"ax",%progbits
+ 461              		.align	1
+ 462              		.p2align 2,,3
+ARM GAS  /var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccPeniOU.s 			page 9
+
+
+ 463              		.global	lv_led_set_color
+ 464              		.syntax unified
+ 465              		.thumb
+ 466              		.thumb_func
+ 468              	lv_led_set_color:
+ 469              		@ args = 0, pretend = 0, frame = 0
+ 470              		@ frame_needed = 0, uses_anonymous_args = 0
+ 471              		@ link register save eliminated.
+ 472 0000 8184     		strh	r1, [r0, #36]	@ movhi
+ 473 0002 FFF7FEBF 		b	lv_obj_invalidate
+ 475 0006 00BF     		.section	.text.lv_led_set_brightness,"ax",%progbits
+ 476              		.align	1
+ 477              		.p2align 2,,3
+ 478              		.global	lv_led_set_brightness
+ 479              		.syntax unified
+ 480              		.thumb
+ 481              		.thumb_func
+ 483              	lv_led_set_brightness:
+ 484              		@ args = 0, pretend = 0, frame = 0
+ 485              		@ frame_needed = 0, uses_anonymous_args = 0
+ 486              		@ link register save eliminated.
+ 487 0000 90F82620 		ldrb	r2, [r0, #38]	@ zero_extendqisi2
+ 488 0004 8A42     		cmp	r2, r1
+ 489 0006 06D0     		beq	.L20
+ 490 0008 5029     		cmp	r1, #80
+ 491 000a 38BF     		it	cc
+ 492 000c 5021     		movcc	r1, #80
+ 493 000e 80F82610 		strb	r1, [r0, #38]
+ 494 0012 FFF7FEBF 		b	lv_obj_invalidate
+ 495              	.L20:
+ 496 0016 7047     		bx	lr
+ 498              		.section	.text.lv_led_on,"ax",%progbits
+ 499              		.align	1
+ 500              		.p2align 2,,3
+ 501              		.global	lv_led_on
+ 502              		.syntax unified
+ 503              		.thumb
+ 504              		.thumb_func
+ 506              	lv_led_on:
+ 507              		@ args = 0, pretend = 0, frame = 0
+ 508              		@ frame_needed = 0, uses_anonymous_args = 0
+ 509              		@ link register save eliminated.
+ 510 0000 90F82620 		ldrb	r2, [r0, #38]	@ zero_extendqisi2
+ 511 0004 FF2A     		cmp	r2, #255
+ 512 0006 04D0     		beq	.L22
+ 513 0008 FF22     		movs	r2, #255
+ 514 000a 80F82620 		strb	r2, [r0, #38]
+ 515 000e FFF7FEBF 		b	lv_obj_invalidate
+ 516              	.L22:
+ 517 0012 7047     		bx	lr
+ 519              		.section	.text.lv_led_off,"ax",%progbits
+ 520              		.align	1
+ 521              		.p2align 2,,3
+ 522              		.global	lv_led_off
+ 523              		.syntax unified
+ 524              		.thumb
+ 525              		.thumb_func
+ARM GAS  /var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccPeniOU.s 			page 10
+
+
+ 527              	lv_led_off:
+ 528              		@ args = 0, pretend = 0, frame = 0
+ 529              		@ frame_needed = 0, uses_anonymous_args = 0
+ 530              		@ link register save eliminated.
+ 531 0000 90F82620 		ldrb	r2, [r0, #38]	@ zero_extendqisi2
+ 532 0004 502A     		cmp	r2, #80
+ 533 0006 04D0     		beq	.L24
+ 534 0008 5022     		movs	r2, #80
+ 535 000a 80F82620 		strb	r2, [r0, #38]
+ 536 000e FFF7FEBF 		b	lv_obj_invalidate
+ 537              	.L24:
+ 538 0012 7047     		bx	lr
+ 540              		.section	.text.lv_led_toggle,"ax",%progbits
+ 541              		.align	1
+ 542              		.p2align 2,,3
+ 543              		.global	lv_led_toggle
+ 544              		.syntax unified
+ 545              		.thumb
+ 546              		.thumb_func
+ 548              	lv_led_toggle:
+ 549              		@ args = 0, pretend = 0, frame = 0
+ 550              		@ frame_needed = 0, uses_anonymous_args = 0
+ 551              		@ link register save eliminated.
+ 552 0000 90F82620 		ldrb	r2, [r0, #38]	@ zero_extendqisi2
+ 553 0004 A72A     		cmp	r2, #167
+ 554 0006 04D9     		bls	.L27
+ 555 0008 5022     		movs	r2, #80
+ 556 000a 80F82620 		strb	r2, [r0, #38]
+ 557 000e FFF7FEBF 		b	lv_obj_invalidate
+ 558              	.L27:
+ 559 0012 FF22     		movs	r2, #255
+ 560 0014 80F82620 		strb	r2, [r0, #38]
+ 561 0018 FFF7FEBF 		b	lv_obj_invalidate
+ 563              		.section	.text.lv_led_get_brightness,"ax",%progbits
+ 564              		.align	1
+ 565              		.p2align 2,,3
+ 566              		.global	lv_led_get_brightness
+ 567              		.syntax unified
+ 568              		.thumb
+ 569              		.thumb_func
+ 571              	lv_led_get_brightness:
+ 572              		@ args = 0, pretend = 0, frame = 0
+ 573              		@ frame_needed = 0, uses_anonymous_args = 0
+ 574              		@ link register save eliminated.
+ 575 0000 90F82600 		ldrb	r0, [r0, #38]	@ zero_extendqisi2
+ 576 0004 7047     		bx	lr
+ 578              		.global	lv_led_class
+ 579 0006 00BF     		.section	.rodata.lv_led_class,"a"
+ 580              		.align	2
+ 583              	lv_led_class:
+ 584 0000 00000000 		.word	lv_obj_class
+ 585 0004 00000000 		.word	lv_led_constructor
+ 586 0008 00000000 		.space	8
+ 586      00000000 
+ 587 0010 00000000 		.word	lv_led_event
+ 588 0014 1A00     		.short	26
+ 589 0016 1A00     		.short	26
+ARM GAS  /var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccPeniOU.s 			page 11
+
+
+ 590 0018 80       		.byte	128
+ 591 0019 02       		.byte	2
+ 592 001a 00       		.byte	0
+ 593 001b 00       		.space	1
+ 594              		.ident	"GCC: (xPack GNU Arm Embedded GCC arm64) 13.3.1 20240614"
+ARM GAS  /var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccPeniOU.s 			page 12
+
+
+DEFINED SYMBOLS
+                            *ABS*:00000000 lv_led.c
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccPeniOU.s:18     .text.lv_led_constructor:00000000 $t
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccPeniOU.s:24     .text.lv_led_constructor:00000000 lv_led_constructor
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccPeniOU.s:37     .text.lv_led_event:00000000 $t
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccPeniOU.s:43     .text.lv_led_event:00000000 lv_led_event
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccPeniOU.s:73     .text.lv_led_event:00000038 $d
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccPeniOU.s:583    .rodata.lv_led_class:00000000 lv_led_class
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccPeniOU.s:75     .text.lv_led_event:0000003c $t
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccPeniOU.s:432    .text.lv_led_event:000004c4 $d
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccPeniOU.s:437    .text.lv_led_create:00000000 $t
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccPeniOU.s:444    .text.lv_led_create:00000000 lv_led_create
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccPeniOU.s:458    .text.lv_led_create:00000014 $d
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccPeniOU.s:461    .text.lv_led_set_color:00000000 $t
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccPeniOU.s:468    .text.lv_led_set_color:00000000 lv_led_set_color
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccPeniOU.s:476    .text.lv_led_set_brightness:00000000 $t
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccPeniOU.s:483    .text.lv_led_set_brightness:00000000 lv_led_set_brightness
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccPeniOU.s:499    .text.lv_led_on:00000000 $t
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccPeniOU.s:506    .text.lv_led_on:00000000 lv_led_on
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccPeniOU.s:520    .text.lv_led_off:00000000 $t
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccPeniOU.s:527    .text.lv_led_off:00000000 lv_led_off
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccPeniOU.s:541    .text.lv_led_toggle:00000000 $t
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccPeniOU.s:548    .text.lv_led_toggle:00000000 lv_led_toggle
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccPeniOU.s:564    .text.lv_led_get_brightness:00000000 $t
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccPeniOU.s:571    .text.lv_led_get_brightness:00000000 lv_led_get_brightness
+/var/folders/lp/x54gwt890xv47sdkqj1k04q40000gn/T//ccPeniOU.s:580    .rodata.lv_led_class:00000000 $d
+
+UNDEFINED SYMBOLS
+lv_theme_get_color_primary
+lv_event_get_code
+lv_obj_event_base
+lv_event_get_target
+lv_draw_rect_dsc_init
+lv_obj_init_draw_rect_dsc
+lv_event_get_draw_ctx
+lv_obj_draw_dsc_init
+lv_event_send
+lv_draw_rect
+lv_obj_class_create_obj
+lv_obj_class_init_obj
+lv_obj_invalidate
+lv_obj_class
